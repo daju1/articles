@@ -3,6 +3,7 @@
 #include <math.h>
 #define Pi M_PI
 #include "tzap.h"
+#include "dbg_info.h"
 
 extern double c;
 
@@ -37,29 +38,29 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 		theta = (i * dtheta);
 		/* численный расчёта запаздывающего момента */
 		t_zap = calc_tzap(t, R0, r0, a0, theta);
-		printf("theta = %f t_zap = %f ", theta, t_zap);
+		DBG_INFO("theta = %f t_zap = %f ", theta, t_zap);
 		/* Запаздывающий радиус в зависимости от текущего момента */
 		r_zap = get_r(t_zap, r0, a0); /* расстояние от заряда до центра сферы в запаздывающий момент времени */
 		R_zap = get_R(R0, r_zap, theta); /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
-		printf("r_zap = %f ", r_zap);
-		printf("R_zap = %f ", R_zap);
+		DBG_INFO("r_zap = %f ", r_zap);
+		DBG_INFO("R_zap = %f ", R_zap);
 		/* Радиус Лиенара Вихерта */
 		R_lw_zap = get_R(R0, r_zap, theta) - (get_v(t_zap, a0) / c) * (R0 * cos(theta) - r_zap);
-		printf("R_lw_zap = %f ", R_lw_zap);
+		DBG_INFO("R_lw_zap = %f ", R_lw_zap);
 
 		r = get_r(t, r0, a0);
-		printf("r = %f ", r);
+		DBG_INFO("r = %f ", r);
 		dS_dtheta = get_dS_dtheta(r, theta);
-		printf("dS_dtheta = %f ", dS_dtheta);
+		DBG_INFO("dS_dtheta = %f ", dS_dtheta);
 		result += dS_dtheta / R_lw_zap * dtheta;
-		printf("result = %f ", result);
+		DBG_INFO("result = %f ", result);
 
-		printf("\n");
+		DBG_INFO("\n");
 	}
-	printf("result = %f\n", result);
-	printf("sigma = %f\n", sigma);
+	DBG_INFO("result = %f\n", result);
+	DBG_INFO("sigma = %f\n", sigma);
 	result *= sigma;
-	printf("result = %f\n", result);
+	DBG_INFO("result = %f\n", result);
 	return result;
 }
 

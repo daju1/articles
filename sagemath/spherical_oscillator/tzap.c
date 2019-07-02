@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <limits.h>
 #include <float.h>
-
+#include "tzap.h"
 
  
 #ifdef USE_DEBUG
-#define DBG_INFO(fmt, args...) \
+#define DBG_INFO(fmt, args, ...) \
     do \
     { \
         printf(fmt, ## args); \
@@ -14,11 +14,11 @@
     } \
     while(0)
 #else
-#define DBG_INFO(fmt, args...)
+#define DBG_INFO(fmt, args, ...)
 #endif
 
 #ifdef USE_DEBUG
-#define DBG_ERROR(fmt, args...) \
+#define DBG_ERROR(fmt, args, ...) \
     do \
     { \
         printf(fmt, ## args); \
@@ -26,25 +26,28 @@
     } \
     while(0)
 #else
-#define DBG_ERROR(fmt, args...)
+#define DBG_ERROR(fmt, args, ...)
 #endif
 
 double t_start = 0;
- 
+double c = 1.0;
+	
+/* ускорение заряда */
 double get_a(double t_zap, double a0)
 {
 	if (t_zap < t_start)
 		return 0;
 	return a0;
 }
- 
+
+/* радиальная скорость заряда */
 double get_v(double t_zap, double a0)
 {
 	if (t_zap < t_start)
 		return 0;
 	return a0*t_zap;
 }
- 
+/* перемещение заряда */
 double get_s(double t_zap, double a0)
 {
 	if (t_zap < t_start)
@@ -54,19 +57,22 @@ double get_s(double t_zap, double a0)
 	}
 	/*DBG_INFO("get_s t_zap=%f a0=%f returns %f\n", t_zap, a0, a0*t_zap*t_zap/2);*/
 	return a0*t_zap*t_zap/2;
- }
- 
+}
+
+/* расстояние от заряда до центра сферы в запаздывающий момент времени */
 double get_r(double t_zap, double r0, double a0)
 {
 	return r0+get_s(t_zap, a0);
 }
 
+/* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
 double get_R(double R0, double r, double theta)
 {
 	double R = sqrt(R0*R0 - 2*R0*r*cos(theta) + r*r);
 	return R;
 }
- 
+
+/* численный расчёта запаздывающего момента */
 double calc_tzap(double t, double R0, double r0, double a0, double theta)
 {
 	double epsilon = 1.0e-15;
@@ -75,7 +81,7 @@ double calc_tzap(double t, double R0, double r0, double a0, double theta)
 	double r, R, R_pre = DBL_MAX;
 	double dR, dR_pre = DBL_MAX;
 	double R_tmp;
-	double c = 1.0;
+
 	int i = 0;
 	double n = 0.9;
 

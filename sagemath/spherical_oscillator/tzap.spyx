@@ -1,8 +1,14 @@
 cdef extern from "tzap.c":
     double calc_tzap(double t, double R0, double r0, double a0, double theta)
 
+cdef extern from "testtzap.c":
+    double integral_phi(double q, double t, double R0, double r0, double a0)
+
 cdef extern from "tzap.c":
     float calc_tzap_float(float t, float R0, float r0, float a0, float theta)
 
 def tzap(t, R0, r0, a0, theta):
     return calc_tzap_float(t, R0, r0, a0, theta)
+
+def phi_lw(q, t, R0, r0, a0):
+    return integral_phi(q, t, R0, r0, a0)

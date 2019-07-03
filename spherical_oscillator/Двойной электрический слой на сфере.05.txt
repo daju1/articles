@@ -1,0 +1,896 @@
+> 
+;
+> restart; clear;
+# Классический скалярный потенциал заряда распределённого по сферической поверхности радиуса R;  в точке наблюдения расположенной по оси зет на расстоянии R__0; от центра сферы
+# Поверхностная плотность заряда распределённого равномерно по поверхности сферы радиуса 
+> sigma := proc (q, r) options operator, arrow; (1/4)*q/(Pi*r^2) end proc;
+             q   
+(q, r) -> -------
+                2
+          4 Pi r 
+;
+# 
+# diff(S, theta) := 2*Pi*r^2*sin(theta);
+# 
+> varphi__R := proc (q, r, R__0) options operator, arrow; Int(2*Pi*r^2*sin(theta)*sigma(q, r)/sqrt(R__0^2-2*R__0*r*cos(theta)+r^2), theta = 0 .. Pi) end proc;
+                   /Pi           2                             
+                  |        2 Pi r  sin(theta) sigma(q, r)      
+ (q, r, R__0) ->  |    -------------------------------------- d
+                  |        /    2                          2\  
+                 /0    sqrt\R__0  - 2 R__0 r cos(theta) + r /  
+
+   theta
+;
+> 
+;
+> varphi__R(q, r, R__0);
+       /Pi                                                 
+      |                  sin(theta) q                      
+      |    ----------------------------------------- dtheta
+      |                                        (1/2)       
+     /0      /    2                          2\            
+           2 \R__0  - 2 R__0 r cos(theta) + r /            
+;
+> 
+;
+> 
+;
+# Классический скалярный потенциал сферического конденсатора
+> 
+;
+> 
+;
+> varphi__R(q, 1, R__0)+varphi__R(-q, 2, R__0);
+  /  /Pi                                              \
+  | |                 sin(theta) q                    |
+  | |    -------------------------------------- dtheta|
+  | |                                     (1/2)       |
+  |/0      /    2                        \            |
+  \      2 \R__0  - 2 R__0 cos(theta) + 1/            /
+
+       /  /Pi                                                \
+       | |                   sin(theta) q                    |
+     + | |    - -------------------------------------- dtheta|
+       | |                                       (1/2)       |
+       |/0        /    2                        \            |
+       \        2 \R__0  - 4 R__0 cos(theta) + 4/            /
+;
+> 
+;
+> 
+;
+> 
+;
+> evalf(varphi__R(1, 1, R__0)+varphi__R(-1, 2, R__0));
+/  /3.141592654                                              \   
+| |                    0.5000000000 sin(theta)               |   
+| |             -------------------------------------- dtheta| + 
+| |                                              (1/2)       |   
+|/0.            /    2                          \            |   
+\               \R__0  - 2. R__0 cos(theta) + 1./            /   
+
+  /  /3.141592654                                                
+  | |                      0.5000000000 sin(theta)               
+  | |             - -------------------------------------- dtheta
+  | |                                                (1/2)       
+  |/0.              /    2                          \            
+  \                 \R__0  - 4. R__0 cos(theta) + 4./            
+
+  \
+  |
+  |
+  |
+  |
+  /
+;
+> 
+;
+# Поле в сферическом конденсаторе не нулевое только между обкладками
+# 
+# Снаружи отрицательная обкладка радиуса 2 - внутри положительная радиуса 1
+> 
+;
+> with(plots); plot(varphi__R(1, 1, R__0)+varphi__R(-1, 2, R__0), R__0 = -3 .. 3);
+
+# 
+# Расчёт потенциала Лиенара Вихерта
+# 
+# Скалярное произведение радиального вектора скорости заряда на вектор от заряда в точку наблюдения, делённое на скорость света
+# 
+> vr := proc (v, c, r, R__0, theta) options operator, arrow; v*(R__0*cos(theta)-r)/c end proc;
+                          v (R__0 cos(theta) - r)
+(v, c, r, R__0, theta) -> -----------------------
+                                     c           
+;
+> 
+;
+> plot(vr(1, 3, 1, 2, theta), theta = 0 .. Pi);
+
+> 
+;
+> 
+;
+> 
+;
+# Скалярный потенциал Лиенара Вихерта в точке наблюдения R__0; зарядов, равномерно распределённых на сферической поверхности радиуса R; движущихся с радиальной скоростью v; . Формула без учёта запаздывания.
+# 
+> varphi__lw := proc (q, v, c, r, R__0) options operator, arrow; Int(2*Pi*r^2*sin(theta)*sigma(q, r)/(sqrt(R__0^2-2*R__0*r*cos(theta)+r^2)-v*(R__0*cos(theta)-r)/c), theta = 0 .. Pi) end proc;
+                        /Pi 
+                       |    
+                       |    
+(q, v, c, r, R__0) ->  |    
+                       |    
+                      /0    
+
+                         2                                          
+                   2 Pi r  sin(theta) sigma(q, r)                   
+  ---------------------------------------------------------------- d
+      /    2                          2\   v (R__0 cos(theta) - r)  
+  sqrt\R__0  - 2 R__0 r cos(theta) + r / - -----------------------  
+                                                      c             
+
+  theta
+;
+> varphi__lw(q, v, c, r, R__0);
+  /Pi               //  /                                  (1/2)
+ |                   |  |/    2                          2\     
+ |    (sin(theta) q) |2 |\R__0  - 2 R__0 r cos(theta) + r /     
+ |                   \  \                                       
+/0                                                              
+
+                            \\       
+     v (R__0 cos(theta) - r)||       
+   - -----------------------|| dtheta
+                c           //       
+;
+> 
+;
+# Рассмотрим сферический конденсатор. Пусть его внутренняя обкладка заряженная положительно имеет радиус 
+> `R__+` := 1;#  
+# а внешняя отрицательная обкладка имеет радиус 
+> `R__-` := 2;
+> c := 3;
+# 
+# Скалярный потенциал Лиенара Вихерта без учёта запаздывания сферического конденсатора, в котором внешняя отрицательная обкладка разлетается наружу
+> 
+;
+# 
+> with(plots); plot([varphi__R(1, `R__+`, R__0)+varphi__lw(-1, 1, c, `R__-`, R__0), varphi__R(1, `R__+`, R__0)+varphi__R(-1, `R__-`, R__0)], R__0 = -10 .. 10);
+
+# 
+# Скалярный потенциал Лиенара Вихерта без учёта запаздывания сферического конденсатора, в котором внешняя отрицательная обкладка схлопывается внутрь. Внутри внутренней положительной сферы появляется потенциальная яма для положительных зарядов. 
+# 
+> with(plots); plot([varphi__R(1, `R__+`, R__0)+varphi__lw(-1, -1, c, `R__-`, R__0), varphi__R(1, `R__+`, R__0)+varphi__R(-1, `R__-`, R__0)], R__0 = -10 .. 10);
+
+# 
+# Скалярный потенциал Лиенара Вихерта без учёта запаздывания сферического конденсатора, в котором обе обкладки - как внешняя отрицательная  так и внутрення положительная разлетаются наружу. Начальная фаза центрально-симметричного взрыва. 
+# 
+> with(plots); plot([varphi__lw(1, .5, c, `R__+`, R__0)+varphi__lw(-1, 1, c, `R__-`, R__0), varphi__R(1, `R__+`, R__0)+varphi__R(-1, `R__-`, R__0)], R__0 = -10 .. 10);
+
+# Скалярный потенциал Лиенара Вихерта без учёта запаздывания сферического конденсатора, в котором положительная обкладка разлетается наружу, а отрицательная обкладка схлопывается внутрь. Обе обкладки движутся навстречу друг другу. Потенциальная яма внутри положительной обкладки максимально глубокая. Интересно, хватит ли этой потенциальной ямы для слияния ядер?
+# 
+> with(plots); plot([varphi__lw(1, 1, c, `R__+`, R__0)+varphi__lw(-1, -2, c, `R__-`, R__0), varphi__R(1, `R__+`, R__0)+varphi__R(-1, `R__-`, R__0)], R__0 = -10 .. 10);
+
+# 
+# Сумма скалярного потенциала Лиенара Вихерта без учета запаздывания зарядов, равномерно распределённых на сфере и движущихся в радиальном направлении со скалярным потенциалом равного количества неподвижных зарядов противоположного знака, распределённых по той же сфере того же радиуса
+# 
+> dvarphi__lw := proc (q, v, c, R, R__0) options operator, arrow; varphi__lw(q, v, c, R, R__0)+varphi__lw(-q, 0, c, R, R__0) end proc;
+       (q, v, c, R, R__0) -> varphi__lw(q, v, c, R, R__0)
+
+          + varphi__lw(-q, 0, c, R, R__0)
+;
+# для случая движущихся наружу отрицательных зарядов
+> 
+;
+> with(plots); plot([dvarphi__lw(-1, 1, c, `R__+`, R__0)], R__0 = -10 .. 10);
+
+# 
+# для случая движущихся вовнутрь отрицательных зарядов
+# 
+> with(plots); plot([dvarphi__lw(-1, -1, c, `R__+`, R__0)], R__0 = -10 .. 10);
+
+# 
+# 
+# 
+# Для радиальной компоненты скорости частиц примем: 
+# 
+# v__0r := proc (r__0) options operator, arrow; v end proc;
+# v__0r(r__0);
+> 
+;
+# Здесь r__0; радиус слоя заряженных частиц в начальный момент времени
+> 
+;
+> 
+;
+# Для распределения радиальной компоненты ускорения в начальный момент времени взрыва примем
+# 
+> 
+;
+> a__r := proc (t, r__0, v__0, a__0) options operator, arrow; a__0 end proc;
+(t, r__0, v__0, a__0) -> a__0
+;
+# 
+> a__r(t, r__0, v__0, a__0);
+                              a__0
+;
+# Уравнения радиального движения слоя заряженных частиц
+# 
+> r := proc (t, r__0, v__0, a__0) options operator, arrow; r__0+v__0*t+(1/2)*a__0*t^2 end proc;
+                                         1       2
+(t, r__0, v__0, a__0) -> r__0 + v__0 t + - a__0 t 
+                                         2        
+;
+> r(t, r__0, v__0, a__0);
+                                   1       2
+                   r__0 + v__0 t + - a__0 t 
+                                   2        
+;
+> 
+;
+> v__r := proc (t, r__0, v__0, a__0) options operator, arrow; v__0+a__0*t end proc;
+(t, r__0, v__0, a__0) -> v__0 + a__0 t
+;
+> 
+;
+> v__r(t, r__0, v__0, a__0);
+                         a__0 t + v__0
+;
+# численный тест
+# 
+# 
+> evalf([subs(q = -1, t = 0, r__0 = `R__-`, v__0 = .2, a__0 = .1, R__0 = 3, theta = 0, r(t__zap, r__0, v__0, a__0))]);
+           [                                      2]
+           [2. + 0.2 t__zap + 0.05000000000 t__zap ]
+;
+# 
+# Рассчёт запаздывающего момента 
+# 
+> tzap := proc (t, r__0, v__0, a__0, R__0, theta) options operator, arrow; solve(c^2*(t-t__zap)^2 = R__0^2-2*R__0*r(t__zap, r__0, v__0, a__0)*cos(theta)+r(t__zap, r__0, v__0, a__0)^2, t__zap) end proc;
+                                           / 2             2   
+(t, r__0, v__0, a__0, R__0, theta) -> solve\c  (t - t__zap)  = 
+
+      2                                                
+  R__0  - 2 R__0 r(t__zap, r__0, v__0, a__0) cos(theta)
+
+                                2        \
+   + r(t__zap, r__0, v__0, a__0) , t__zap/
+;
+> 
+;
+# tzap(t, r__0, v__0, a__0, R__0, theta);
+> 
+# 
+# численный тест расчёта запаздывающего момента
+> evalf(subs(q = -1, t = 0, r__0 = `R__-`, v__0 = 0, a__0 = 0, R__0 = 3, [subs(theta = 0, tzap(t, r__0, v__0, a__0, R__0, theta)), subs(theta = (1/4)*Pi, tzap(t, r__0, v__0, a__0, R__0, theta)), subs(theta = 2*Pi*(1/4), tzap(t, r__0, v__0, a__0, R__0, theta)), subs(theta = 3*Pi*(1/4), tzap(t, r__0, v__0, a__0, R__0, theta)), subs(theta = 4*Pi*(1/4), tzap(t, r__0, v__0, a__0, R__0, theta)), subs(theta = 5*Pi*(1/4), tzap(t, r__0, v__0, a__0, R__0, theta)), subs(theta = 6*Pi*(1/4), tzap(t, r__0, v__0, a__0, R__0, theta)), subs(theta = 7*Pi*(1/4), tzap(t, r__0, v__0, a__0, R__0, theta)), subs(theta = 8*Pi*(1/4), tzap(t, r__0, v__0, a__0, R__0, theta)), plot(subs(q = -1, t = -5, r__0 = `R__-`, v__0 = 0, a__0 = 0, R__0 = 3, tzap(t, r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = -1, r__0 = `R__-`, v__0 = 0, a__0 = 0, R__0 = 3, tzap(t, r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 0, r__0 = `R__-`, v__0 = 0, a__0 = 0, R__0 = 3, tzap(t, r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 1, r__0 = `R__-`, v__0 = 0, a__0 = 0, R__0 = 3, tzap(t, r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 2, r__0 = `R__-`, v__0 = 0, a__0 = 0, R__0 = 3, tzap(t, r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 2, r__0 = `R__-`, v__0 = 0, a__0 = 0, theta = Pi, tzap(t, r__0, v__0, a__0, R__0, theta)), R__0 = 3 .. 6), plot(subs(q = -1, t = 10, r__0 = `R__-`, v__0 = 0, a__0 = 0, theta = Pi, tzap(t, r__0, v__0, a__0, R__0, theta)), R__0 = 3 .. 6)]));
+
+# 
+# таким образом мы видим интересное поведение формулы для запаздывающего момента - поскольку при вычислении запаздывающего момента происходит решение квадратного уравнения то при определённых входных параметрах эта формула даёт значения не запаздывающего момента, а опержающего
+# 
+# Запаздывающий радиус
+# 
+> R__zap := proc (t__zap, r__0, v__0, a__0, R__0, theta) options operator, arrow; sqrt(R__0^2-2*R__0*r(t__zap, r__0, v__0, a__0)*cos(theta)+r(t__zap, r__0, v__0, a__0)^2) end proc;
+                                                    /    2
+     (t__zap, r__0, v__0, a__0, R__0, theta) -> sqrt\R__0 
+
+        - 2 R__0 r(t__zap, r__0, v__0, a__0) cos(theta)
+
+                                     2\
+        + r(t__zap, r__0, v__0, a__0) /
+;
+> 
+;
+> R__zap(t__zap, r__0, v__0, a__0, R__0, theta);
+/                                                               
+|    2          /                     1            2\           
+|R__0  - 2 R__0 |r__0 + v__0 t__zap + - a__0 t__zap | cos(theta)
+\               \                     2             /           
+
+                                          2\      
+     /                     1            2\ |      
+   + |r__0 + v__0 t__zap + - a__0 t__zap | |^(1/2)
+     \                     2             / /      
+;
+# 
+# 
+> R__zap := proc (t__zap, r__0, v__0, a__0, R__0, theta) options operator, arrow; sqrt(R__0^2-2*R__0*r(t__zap, r__0, v__0, a__0)*cos(theta)+r(t__zap, r__0, v__0, a__0)^2) end proc;
+                                                    /    2
+     (t__zap, r__0, v__0, a__0, R__0, theta) -> sqrt\R__0 
+
+        - 2 R__0 r(t__zap, r__0, v__0, a__0) cos(theta)
+
+                                     2\
+        + r(t__zap, r__0, v__0, a__0) /
+;
+# 
+> 
+;
+# численный тест расчёта запаздывающего момента
+> evalf(subs(q = -1, t__zap = -1, r__0 = `R__-`, v__0 = .2, a__0 = 0, R__0 = 3, [subs(theta = 0, R__zap(t__zap, r__0, v__0, a__0, R__0, theta)), subs(theta = (1/4)*Pi, R__zap(t__zap, r__0, v__0, a__0, R__0, theta)), subs(theta = 2*Pi*(1/4), R__zap(t__zap, r__0, v__0, a__0, R__0, theta)), subs(theta = 3*Pi*(1/4), R__zap(t__zap, r__0, v__0, a__0, R__0, theta)), subs(theta = 4*Pi*(1/4), R__zap(t__zap, r__0, v__0, a__0, R__0, theta)), subs(theta = 5*Pi*(1/4), R__zap(t__zap, r__0, v__0, a__0, R__0, theta)), subs(theta = 6*Pi*(1/4), R__zap(t__zap, r__0, v__0, a__0, R__0, theta)), subs(theta = 7*Pi*(1/4), R__zap(t__zap, r__0, v__0, a__0, R__0, theta)), subs(theta = 8*Pi*(1/4), R__zap(t__zap, r__0, v__0, a__0, R__0, theta))]));
+[1.200000000, 2.145517831, 3.498571137, 4.458335254, 4.800000000, 
+
+  4.458335253, 3.498571135, 2.145517831, 1.200000000]
+;
+# 
+> 
+;
+# Запаздывающий радиус в зависимости от текущего момента
+> 
+;
+> R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta);
+/    2          /                  /    2   4            3     
+|R__0  - 2 R__0 |r__0 + v__0 RootOf\a__0  _Z  + 4 v__0 _Z  a__0
+\               \                                              
+
+     /                                              2     \   2
+   + \-4 R__0 a__0 cos(theta) + 4 a__0 r__0 + 4 v__0  - 36/ _Z 
+
+   + (-8 R__0 v__0 cos(theta) + 8 r__0 v__0 + 72 t) _Z
+
+                                    2         2       2\   1      
+   - 8 R__0 cos(theta) r__0 + 4 R__0  + 4 r__0  - 36 t / + - a__0 
+                                                           2      
+
+        /    2   4            3     
+  RootOf\a__0  _Z  + 4 v__0 _Z  a__0
+
+     /                                              2     \   2
+   + \-4 R__0 a__0 cos(theta) + 4 a__0 r__0 + 4 v__0  - 36/ _Z 
+
+   + (-8 R__0 v__0 cos(theta) + 8 r__0 v__0 + 72 t) _Z
+
+                                    2         2       2\  \     
+   - 8 R__0 cos(theta) r__0 + 4 R__0  + 4 r__0  - 36 t /^2| cos(
+                                                          /     
+
+           /                  /    2   4            3     
+  theta) + |r__0 + v__0 RootOf\a__0  _Z  + 4 v__0 _Z  a__0
+           \                                              
+
+     /                                              2     \   2
+   + \-4 R__0 a__0 cos(theta) + 4 a__0 r__0 + 4 v__0  - 36/ _Z 
+
+   + (-8 R__0 v__0 cos(theta) + 8 r__0 v__0 + 72 t) _Z
+
+                                    2         2       2\   1      
+   - 8 R__0 cos(theta) r__0 + 4 R__0  + 4 r__0  - 36 t / + - a__0 
+                                                           2      
+
+        /    2   4            3     
+  RootOf\a__0  _Z  + 4 v__0 _Z  a__0
+
+     /                                              2     \   2
+   + \-4 R__0 a__0 cos(theta) + 4 a__0 r__0 + 4 v__0  - 36/ _Z 
+
+   + (-8 R__0 v__0 cos(theta) + 8 r__0 v__0 + 72 t) _Z
+
+                                    2         2       2\  \  \     
+   - 8 R__0 cos(theta) r__0 + 4 R__0  + 4 r__0  - 36 t /^2|^2|^(1/2
+                                                          /  /     
+
+  )
+;
+# 
+# численный тест расчёта запаздывающего момента
+> evalf(subs(q = -1, t = -1, r__0 = `R__-`, v__0 = .2, a__0 = 0, R__0 = 3, [subs(theta = 0, R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = (1/4)*Pi, R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 2*Pi*(1/4), R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 3*Pi*(1/4), R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 4*Pi*(1/4), R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 5*Pi*(1/4), R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 6*Pi*(1/4), R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 7*Pi*(1/4), R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 8*Pi*(1/4), R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), plot(subs(q = -1, t = -5, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = -1, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 0, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 1, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 2, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 5, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 10, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = -1, r__0 = `R__-`, v__0 = 1, a__0 = 0, theta = 0, R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), R__0 = 3 .. 9), plot(subs(q = -1, t = 10, r__0 = `R__-`, v__0 = 1, a__0 = 0, theta = Pi, R__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), R__0 = 3 .. 9)]));
+
+# 
+# 
+# 
+# 
+# 
+# 
+# Радиус Лиенара Вихерта равен запаздывающий радиус минус скалярное произведение радиального вектора скорости заряда в запаздывающий момент времени на вектор от заряда в запаздывающей координате в точку наблюдения, делённое на скорость света
+# 
+> K__zap := proc (t__zap, r__0, v__0, a__0, R__0, theta) options operator, arrow; R__zap(t__zap, r__0, v__0, a__0, R__0, theta)-v__r(t__zap, r__0, v__0, a__0)*(R__0*cos(theta)-r(t__zap, r__0, v__0, a__0))/c end proc;
+(t__zap, r__0, v__0, a__0, R__0, theta) -> R__zap(t__zap, r__0, 
+
+                             1                                 
+  v__0, a__0, R__0, theta) - - (v__r(t__zap, r__0, v__0, a__0) 
+                             c                                 
+
+  (R__0 cos(theta) - r(t__zap, r__0, v__0, a__0)))
+;
+> 
+;
+> K__zap(t__zap, r__0, v__0, a__0, R__0, theta);
+/                                                               
+|    2          /                     1            2\           
+|R__0  - 2 R__0 |r__0 + v__0 t__zap + - a__0 t__zap | cos(theta)
+\               \                     2             /           
+
+                                          2\                 
+     /                     1            2\ |         1       
+   + |r__0 + v__0 t__zap + - a__0 t__zap | |^(1/2) - - (a__0 
+     \                     2             / /         3       
+
+                 /                                    
+  t__zap + v__0) |R__0 cos(theta) - r__0 - v__0 t__zap
+                 \                                    
+
+     1            2\
+   - - a__0 t__zap |
+     2             /
+;
+> 
+;
+> K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta);
+/    2          /                  /    2   4            3     
+|R__0  - 2 R__0 |r__0 + v__0 RootOf\a__0  _Z  + 4 v__0 _Z  a__0
+\               \                                              
+
+     /                                              2     \   2
+   + \-4 R__0 a__0 cos(theta) + 4 a__0 r__0 + 4 v__0  - 36/ _Z 
+
+   + (-8 R__0 v__0 cos(theta) + 8 r__0 v__0 + 72 t) _Z
+
+                                    2         2       2\   1      
+   - 8 R__0 cos(theta) r__0 + 4 R__0  + 4 r__0  - 36 t / + - a__0 
+                                                           2      
+
+        /    2   4            3     
+  RootOf\a__0  _Z  + 4 v__0 _Z  a__0
+
+     /                                              2     \   2
+   + \-4 R__0 a__0 cos(theta) + 4 a__0 r__0 + 4 v__0  - 36/ _Z 
+
+   + (-8 R__0 v__0 cos(theta) + 8 r__0 v__0 + 72 t) _Z
+
+                                    2         2       2\  \     
+   - 8 R__0 cos(theta) r__0 + 4 R__0  + 4 r__0  - 36 t /^2| cos(
+                                                          /     
+
+           /                  /    2   4            3     
+  theta) + |r__0 + v__0 RootOf\a__0  _Z  + 4 v__0 _Z  a__0
+           \                                              
+
+     /                                              2     \   2
+   + \-4 R__0 a__0 cos(theta) + 4 a__0 r__0 + 4 v__0  - 36/ _Z 
+
+   + (-8 R__0 v__0 cos(theta) + 8 r__0 v__0 + 72 t) _Z
+
+                                    2         2       2\   1      
+   - 8 R__0 cos(theta) r__0 + 4 R__0  + 4 r__0  - 36 t / + - a__0 
+                                                           2      
+
+        /    2   4            3     
+  RootOf\a__0  _Z  + 4 v__0 _Z  a__0
+
+     /                                              2     \   2
+   + \-4 R__0 a__0 cos(theta) + 4 a__0 r__0 + 4 v__0  - 36/ _Z 
+
+   + (-8 R__0 v__0 cos(theta) + 8 r__0 v__0 + 72 t) _Z
+
+                                    2         2       2\  \  \     
+   - 8 R__0 cos(theta) r__0 + 4 R__0  + 4 r__0  - 36 t /^2|^2|^(1/2
+                                                          /  /     
+
+      1 /                  /    2   4            3     
+  ) - - \v__0 + a__0 RootOf\a__0  _Z  + 4 v__0 _Z  a__0
+      3                                                
+
+     /                                              2     \   2
+   + \-4 R__0 a__0 cos(theta) + 4 a__0 r__0 + 4 v__0  - 36/ _Z 
+
+   + (-8 R__0 v__0 cos(theta) + 8 r__0 v__0 + 72 t) _Z
+
+                                    2         2       2\\ /     
+   - 8 R__0 cos(theta) r__0 + 4 R__0  + 4 r__0  - 36 t // |R__0 
+                                                          \     
+
+                                 /    2   4            3     
+  cos(theta) - r__0 - v__0 RootOf\a__0  _Z  + 4 v__0 _Z  a__0
+
+     /                                              2     \   2
+   + \-4 R__0 a__0 cos(theta) + 4 a__0 r__0 + 4 v__0  - 36/ _Z 
+
+   + (-8 R__0 v__0 cos(theta) + 8 r__0 v__0 + 72 t) _Z
+
+                                    2         2       2\   1      
+   - 8 R__0 cos(theta) r__0 + 4 R__0  + 4 r__0  - 36 t / - - a__0 
+                                                           2      
+
+        /    2   4            3     
+  RootOf\a__0  _Z  + 4 v__0 _Z  a__0
+
+     /                                              2     \   2
+   + \-4 R__0 a__0 cos(theta) + 4 a__0 r__0 + 4 v__0  - 36/ _Z 
+
+   + (-8 R__0 v__0 cos(theta) + 8 r__0 v__0 + 72 t) _Z
+
+                                    2         2       2\  \
+   - 8 R__0 cos(theta) r__0 + 4 R__0  + 4 r__0  - 36 t /^2|
+                                                          /
+;
+> 
+;
+# численный тест расчёта запаздывающего момента
+> evalf(subs(q = -1, t = 1, r__0 = `R__-`, v__0 = .2, a__0 = 0, R__0 = 3, [subs(theta = 0, K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = (1/4)*Pi, K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 2*Pi*(1/4), K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 3*Pi*(1/4), K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 4*Pi*(1/4), K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 5*Pi*(1/4), K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 6*Pi*(1/4), K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 7*Pi*(1/4), K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), subs(theta = 8*Pi*(1/4), K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), plot(subs(q = -1, t = -5, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = -1, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 0, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 1, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 2, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 5, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi), plot(subs(q = -1, t = 10, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta)), theta = 0 .. Pi)]));
+
+# 
+# Рассчёт текущего момента 
+# 
+> t_cur := proc (t__zap, r__0, v__0, a__0, R__0, theta) options operator, arrow; solve(c^2*(t-t__zap)^2 = R__0^2-2*R__0*r(t__zap, r__0, v__0, a__0)*cos(theta)+r(t__zap, r__0, v__0, a__0)^2, t) end proc;
+                                                / 2             2   
+(t__zap, r__0, v__0, a__0, R__0, theta) -> solve\c  (t - t__zap)  = 
+
+      2                                                
+  R__0  - 2 R__0 r(t__zap, r__0, v__0, a__0) cos(theta)
+
+                                2   \
+   + r(t__zap, r__0, v__0, a__0) , t/
+;
+> 
+;
+> t_cur(t__zap, r__0, v__0, a__0, R__0, theta);
+            1 /    2       4                                2
+   t__zap + - \a__0  t__zap  - 4 R__0 cos(theta) a__0 t__zap 
+            6                                                
+
+                     3                                     
+      + 4 v__0 t__zap  a__0 - 8 R__0 cos(theta) v__0 t__zap
+
+                          2         2       2
+      + 4 r__0 a__0 t__zap  + 4 v__0  t__zap 
+
+                                                            2
+      - 8 R__0 cos(theta) r__0 + 8 r__0 v__0 t__zap + 4 R__0 
+
+              2\                 1 /    2       4
+      + 4 r__0 /^(1/2), t__zap - - \a__0  t__zap 
+                                 6               
+
+                                     2                3     
+      - 4 R__0 cos(theta) a__0 t__zap  + 4 v__0 t__zap  a__0
+
+                                                          2
+      - 8 R__0 cos(theta) v__0 t__zap + 4 r__0 a__0 t__zap 
+
+              2       2                         
+      + 4 v__0  t__zap  - 8 R__0 cos(theta) r__0
+
+                                   2         2\      
+      + 8 r__0 v__0 t__zap + 4 R__0  + 4 r__0 /^(1/2)
+;
+# 
+# рассчитаем текущий момент таким образом чтобы в наиболее удалённой от точки наблюдения области заряженной сферы запаздывающий момент был не меньше нуля
+# 
+> evalf(subs(theta = Pi, R__0 = 10, t__zap = 0, r__0 = `R__-`, v__0 = 1, a__0 = 1, [t_cur(t__zap, r__0, v__0, a__0, R__0, theta), t_cur(t__zap, r(t__zap, r__0, v__0, a__0), v__0, a__0, R__0, theta)]));
+     [4.000000001, -4.000000001, 4.000000000, -4.000000000]
+;
+> 
+;
+> evalf(subs(theta = Pi, R__0 = 10, t__zap = 0, r__0 = `R__-`, v__0 = 1, a__0 = 1, t_cur(t__zap, r__0, v__0, a__0, R__0, theta)[1]));
+                          4.000000001
+;
+> 
+;
+# Скалярный потенциал Лиенара Вихерта зарядов равомерно распределённых по сферической поверхности радиуса r;  и движущихся из центра в радиальном направлении, в точке наблюдения расположенной по оси зет на расстоянии R__0; от центра сферы
+> 
+;
+> varphi := proc (q, t, r__0, v__0, a__0, R__0) options operator, arrow; int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*sigma(q, r__0)/K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta), theta = 0 .. Pi) end proc;
+                                     //     
+(q, t, r__0, v__0, a__0, R__0) -> int\\2 Pi 
+
+                        2                          \/(K__zap(
+  r(t, r__0, v__0, a__0)  sin(theta) sigma(q, r__0)/         
+
+  tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, 
+
+  theta))                 \
+         , theta = 0 .. Pi/
+;
+> evalf(subs(q = 1, t = 5, r__0 = 1, R__0 = 2, v__0 = 0, a__0 = 0., varphi(q, t, r__0, v__0, a__0, R__0)));
+                          0.5000000000
+;
+# 
+# радиальная компонента векторного потенциала Лиенара Вихерта зарядов равномерно распределённых по сферической поверхности радиуса r0 и движущихся из центра
+> A__R__0 := proc (q, t, r__0, v__0, a__0, R__0) options operator, arrow; int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*sigma(q, r__0)*v__r(t__zap, r__0, v__0, a__0)*cos(theta)/K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta), theta = 0 .. Pi) end proc;
+                                     //     
+(q, t, r__0, v__0, a__0, R__0) -> int\\2 Pi 
+
+                        2                                        
+  r(t, r__0, v__0, a__0)  sin(theta) sigma(q, r__0) v__r(t__zap, 
+
+                              \/(K__zap(
+  r__0, v__0, a__0) cos(theta)/         
+
+  tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, 
+
+  theta))                 \
+         , theta = 0 .. Pi/
+;
+> 
+;
+> 
+;
+# Для расчёта радиальной компоненты электрического поля в точке наблюдения введём вспомогательную величину - косинус угла между запаздывающим радиус-вектором (вектор из запаздывающего положения заряда в точку наблюдения) и радиус-вектором из центра сферы в точку наблюдения
+> 
+;
+> 
+;
+> cos_alpha__zap := proc (t__zap, r__0, v__0, a__0, R__0, theta) options operator, arrow; (R__0-r(t__zap, r__0, v__0, a__0)*cos(theta))/R__zap(t__zap, r__0, v__0, a__0, R__0, theta) end proc;
+        (t__zap, r__0, v__0, a__0, R__0, theta) -> 
+
+          R__0 - r(t__zap, r__0, v__0, a__0) cos(theta)
+          ---------------------------------------------
+          R__zap(t__zap, r__0, v__0, a__0, R__0, theta)
+;
+# 
+# Скалярное произведение ускорения частицы в запаздывающий момент времени на запаздывающий радиус-вектором (вектор из запаздывающего положения заряда в точку наблюдения) 
+# 
+> aR__zap := proc (t__zap, r__0, v__0, a__0) options operator, arrow; a__r(t__zap, r__0, v__0, a__0)*(R__0*cos(theta)-r(t__zap, r__0, v__0, a__0)) end proc;
+(t__zap, r__0, v__0, a__0) -> a__r(t__zap, r__0, v__0, a__0) (R__0 
+
+  cos(theta) - r(t__zap, r__0, v__0, a__0))
+;
+# 
+# Первое слагаемое радиальной компоненты электрического поля - минус градиент скалярного потенциала
+> 
+;
+> 
+;
+> E_minus_grad_varphi__R__0 := proc (q, t__zap, r__0, v__0, a__0, R__0, theta) options operator, arrow; sigma(q, r__0)*(R__zap(t__zap, r__0, v__0, a__0, R__0, theta)*cos_alpha__zap(t__zap, r__0, v__0, a__0, R__0, theta)*(1+aR__zap(t__zap, r__0, v__0, a__0)/c^2-v__r(t__zap, r__0, v__0, a__0)^2/c^2)/K__zap(t__zap, r__0, v__0, a__0, R__0, theta)-v__r(t__zap, r__0, v__0, a__0)*cos(theta)/c)/K__zap(t__zap, r__0, v__0, a__0, R__0, theta)^2 end proc;
+(q, t__zap, r__0, v__0, a__0, R__0, theta) -> 
+
+                                                 /               
+                        1                        |               
+  ---------------------------------------------- |sigma(q, r__0) 
+                                               2 |               
+  K__zap(t__zap, r__0, v__0, a__0, R__0, theta)  \               
+
+  /                                              /               
+  |                      1                       |               
+  |--------------------------------------------- |R__zap(t__zap, 
+  |K__zap(t__zap, r__0, v__0, a__0, R__0, theta) |               
+  \                                              \               
+
+  r__0, v__0, a__0, R__0, theta) cos_alpha__zap(t__zap, r__0, 
+
+                           /                                     
+                           |    aR__zap(t__zap, r__0, v__0, a__0)
+  v__0, a__0, R__0, theta) |1 + ---------------------------------
+                           |                    2                
+                           \                   c                 
+
+                                   2\\
+     v__r(t__zap, r__0, v__0, a__0) ||
+   - -------------------------------||
+                    2               ||
+                   c                //
+
+                                              \\
+     v__r(t__zap, r__0, v__0, a__0) cos(theta)||
+   - -----------------------------------------||
+                         c                    ||
+                                              //
+;
+# 
+# Интегрируя по поверхности сферы
+# 
+> `E_minus_grad_&varphi;_integral__R__0` := proc (q, t, r__0, v__0, a__0, R__0) options operator, arrow; int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*E_minus_grad_varphi__R__0(q, tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta), theta = 0 .. Pi) end proc;
+                                     /     
+(q, t, r__0, v__0, a__0, R__0) -> int\2 Pi 
+
+                        2                                         
+  r(t, r__0, v__0, a__0)  sin(theta) E_minus_grad_varphi__R__0(q, 
+
+  tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, 
+
+                         \
+  theta), theta = 0 .. Pi/
+;
+# 
+# 
+# Второе слагаемое компоненты электрического поля
+# 
+> E_minus_1_c_dA_dt__R__0 := proc (q, t__zap, r__0, v__0, a__0, R__0, theta) options operator, arrow; cos(theta)*sigma(q, r__0)*(v__r(t__zap, r__0, v__0, a__0)*(R__zap(t__zap, r__0, v__0, a__0, R__0, theta)*(v__r(t__zap, r__0, v__0, a__0)^2/c-aR__zap(t__zap, r__0, v__0, a__0)/c-c)/K__zap(t__zap, r__0, v__0, a__0, R__0, theta)+c)/c^2-a__r(t__zap, r__0, v__0, a__0)*R__zap(t__zap, r__0, v__0, a__0, R__0, theta)/c^2)/K__zap(t__zap, r__0, v__0, a__0, R__0, theta)^2 end proc;
+(q, t__zap, r__0, v__0, a__0, R__0, theta) -> 
+
+                                                 /           
+                        1                        |           
+  ---------------------------------------------- |cos(theta) 
+                                               2 |           
+  K__zap(t__zap, r__0, v__0, a__0, R__0, theta)  \           
+
+                 /   /                               /
+                 |1  |                               |
+  sigma(q, r__0) |-- |v__r(t__zap, r__0, v__0, a__0) |
+                 | 2 \                               \
+                 \c                                   
+
+                                                /               
+                        1                       |               
+  --------------------------------------------- |R__zap(t__zap, 
+  K__zap(t__zap, r__0, v__0, a__0, R__0, theta) \               
+
+                                 /                              2
+                                 |v__r(t__zap, r__0, v__0, a__0) 
+  r__0, v__0, a__0, R__0, theta) |-------------------------------
+                                 \               c               
+
+                                          \\    \\            
+     aR__zap(t__zap, r__0, v__0, a__0)    ||    ||   1        
+   - --------------------------------- - c|| + c|| - -- (a__r(
+                     c                    //    //    2       
+                                                     c        
+
+  t__zap, r__0, v__0, a__0) R__zap(t__zap, r__0, v__0, a__0, 
+
+               \\
+               ||
+  R__0, theta))||
+               ||
+               //
+;
+# 
+# Интегрируя по поверхности сферы
+# 
+> E_minus_1_c_dA_dt_integral__R__0 := proc (q, t, r__0, v__0, a__0, R__0) options operator, arrow; int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*E_minus_1_c_dA_dt__R__0(q, tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta), theta = 0 .. Pi) end proc;
+                                     /     
+(q, t, r__0, v__0, a__0, R__0) -> int\2 Pi 
+
+                        2                                       
+  r(t, r__0, v__0, a__0)  sin(theta) E_minus_1_c_dA_dt__R__0(q, 
+
+  tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, 
+
+                         \
+  theta), theta = 0 .. Pi/
+;
+# 
+> 
+;
+> 
+;
+> tcur := subs(t__zap = 0, r__0 = `R__-`, R__0 = 10, evalf(max(t_cur(t__zap, r(t__zap, r__0, v__0, a__0), v__0, a__0, R__0, Pi))));
+                 max(-4.000000000, 4.000000000)
+;
+> tcur;
+                          4.000000000
+;
+# 
+# 
+> ftcur := proc (R__0) options operator, arrow; subs(t__zap = 0, r__0 = `R__-`, evalf(max(t_cur(t__zap, r(t__zap, r__0, v__0, a__0), v__0, a__0, R__0, Pi)))) end proc;
+ R__0 -> subs(t__zap = 0, r__0 = R__-, evalf(max(t_cur(t__zap, 
+
+   r(t__zap, r__0, v__0, a__0), v__0, a__0, R__0, Pi))))
+;
+> 
+;
+> 
+;
+> evalf([subs(q = -1, r = `R__-`, v = 1, c = 3, R__0 = 3, varphi__lw(q, v, c, r, R__0)), subs(q = -1, t = tcur, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, varphi(q, t, r__0, v__0, a__0, R__0))]);
+                 [-0.3172022481, -1.514125065]
+;
+# 
+> evalf([subs(q = -1, t__zap = .1, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, theta = 0, E_minus_grad_varphi__R__0(q, t__zap, r__0, v__0, a__0, R__0, theta))]);
+                        [-0.05526213297]
+;
+# 
+# 
+# 
+> evalf([subs(q = -1, t__zap = .1, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, theta = 0, E_minus_1_c_dA_dt__R__0(q, t__zap, r__0, v__0, a__0, R__0, theta))]);
+                        [0.006140236998]
+;
+# 
+> evalf([subs(q = -1, t = tcur, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 2, theta = 1, tzap(t, r__0, v__0, a__0, R__0, theta))]);
+                         [2.676568128]
+;
+# 
+# 
+# 
+> evalf([subs(q = -1, t = tcur, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, theta = 0, E_minus_1_c_dA_dt__R__0(q, tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta))]);
+                       [-0.0002456094800]
+;
+# 
+# 
+> evalf([subs(q = -1, t = tcur, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 4, theta = 0, E_minus_grad_varphi__R__0(q, tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta))]);
+                        [0.004973591964]
+;
+# 
+# 
+# 
+> evalf([subs(q = -1, t = tcur, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 4, theta = 0, E_minus_1_c_dA_dt__R__0(q, tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta))]);
+                       [-0.0005526213299]
+;
+# 
+# 
+# 
+# 
+> evalf([subs(q = -1, t = subs(R__0 = 3, ftcur(R__0)), r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = subs(R__0 = 3, ftcur(R__0)), r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0))]);
+                 [0.01662065319, 0.1512906181]
+;
+# 
+# 
+# 
+> evalf([subs(q = -1, t = subs(R__0 = 3, ftcur(R__0)), r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = subs(R__0 = 3, ftcur(R__0)), r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0))]);
+              [-0.01662065319, -0.00005605017475]
+;
+# 
+> subs(R__0 = 3, ftcur(R__0));
+                 max(-1.666666666, 1.666666666)
+;
+> subs(R__0 = 5, ftcur(R__0));
+                 max(-2.333333333, 2.333333333)
+;
+# 
+# 
+> evalf([subs(q = -1, t = subs(R__0 = 3, ftcur(R__0)), r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = subs(R__0 = 3, ftcur(R__0)), r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = -1, t = subs(R__0 = 3, ftcur(R__0)), r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = subs(R__0 = 3, ftcur(R__0)), r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0))]);
+[0.01662065319, 0.1512906181, -0.01662065319, -0.00005605017475]
+;
+# 
+# 
+# 
+# 
+> evalf([subs(q = -1, t = 1.1*subs(R__0 = 3, ftcur(R__0)), r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = 1.1*subs(R__0 = 3, ftcur(R__0)), r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = -1, t = 1.1*subs(R__0 = 3, ftcur(R__0)), r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = 1.1*subs(R__0 = 3, ftcur(R__0)), r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0))]);
+[0.01576912403, 0.1556440828, -0.01576912403, -0.00005766304713]
+;
+# 
+> evalf([subs(q = -1, t = 1.5*subs(R__0 = 3, ftcur(R__0)), r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = 1.5*subs(R__0 = 3, ftcur(R__0)), r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = -1, t = 1.5*subs(R__0 = 3, ftcur(R__0)), r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = 1.5*subs(R__0 = 3, ftcur(R__0)), r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0))]);
+[0.01311807133, 0.1736754544, -0.01311807133, -0.00006434331287]
+;
+# 
+> evalf([subs(q = -1, t = 1.66667, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = 1.66667, r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = -1, t = 1.66667, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = 1.66667, r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0))]);
+[0.01662063518, 0.1512907045, -0.01662063518, -0.00005605020679]
+;
+# 
+# 
+> evalf([subs(q = -1, t = 2.66667, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = 2.66667, r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = -1, t = 2.66667, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = 2.66667, r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0))]);
+[0.01259461396, 0.1783377694, -0.01259461396, -0.00006607060815]
+;
+# 
+# 
+# 
+> evalf([subs(q = -1, t = 2.66667, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 5, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = 2.66667, r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 5, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = -1, t = 2.66667, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 5, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = 2.66667, r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 5, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0))]);
+[-0.2264284024, 0.06420159698, 0.008650313562, -0.00002378541887]
+;
+# 
+# 
+# 
+# plot(evalf([subs(q = -1, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = `1__`, r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = -`1__`, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, r__0 = `R__+`, v__0 = .1, a__0 = 0, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0))]), t = subs(R__0 = 3, ftcur(R__0)) .. 2*subs(R__0 = 3, ftcur(R__0)));
+# 
+# 
+# 
+# 
+# 
+> evalf([subs(q = -1, t = subs(R__0 = 3, ftcur(R__0)), r__0 = `R__-`, v__0 = 0, a__0 = .1, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = subs(R__0 = 3, ftcur(R__0)), r__0 = `R__+`, v__0 = 0, a__0 = .1, R__0 = 3, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0))]);
+# 
+# 
+# 
+> evalf([subs(q = -1, t = subs(R__0 = 3, ftcur(R__0)), r__0 = `R__-`, v__0 = 0, a__0 = .1, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = subs(R__0 = 3, ftcur(R__0)), r__0 = `R__+`, v__0 = 0, a__0 = .1, R__0 = 3, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0))]);
+# 
+# 
+# 
+# 
+> evalf([subs(q = -1, r = `R__-`, v = 1, c = 3, R__0 = 3, varphi__lw(q, v, c, r, R__0)), subs(q = -1, t = tcur, r__0 = `R__-`, v__0 = 1, a__0 = 0, R__0 = 3, varphi(q, t, r__0, v__0, a__0, R__0))]);
+> 
+;
+> Digits := 5;
+# 
+> plot(evalf([subs(q = -1, t = tcur, r__0 = `R__-`, v__0 = 1, a__0 = 0, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = tcur, r__0 = `R__+`, v__0 = .1, a__0 = 0, `E_minus_grad_&varphi;_integral__R__0`(q, t, r__0, v__0, a__0, R__0))]), R__0 = 3 .. 10);
+# 
+# 
+# 
+> plot(evalf([subs(q = -1, t = tcur, r__0 = `R__-`, v__0 = 1, a__0 = 0, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0)), subs(q = 1, t = tcur, r__0 = `R__+`, v__0 = .1, a__0 = 0, E_minus_1_c_dA_dt_integral__R__0(q, t, r__0, v__0, a__0, R__0))]), R__0 = 3 .. 10);
+> 
+;
+# 
+# Скалярный потенциал Лиенара Вихерта c учётом и без учёта запаздывания сферического конденсатора, в котором обе обкладки - как внешняя отрицательная  так и внутрення положительная разлетаются наружу. Начальная фаза центрально-симметричного взрыва.
+# 
+> with(plots); plot(evalf(subs(q = 1, t = 0, r__0e = `R__-`, r__0p = `R__+`, v__0p = 1/2, v__0e = 1, a__0 = 0, [varphi__lw(q, v__0p, c, r__0p, R__0)+varphi__lw(-q, v__0e, c, r__0e, R__0), varphi(q, t, r__0p, v__0p, a__0, R__0)+varphi(-q, t, r__0e, v__0e, a__0, R__0)])), R__0 = -5 .. 5, style = point, numpoints = 10);
+> 
+;
+# Скалярный потенциал Лиенара Вихерта c учётом и без учёта запаздывания сферического конденсатора, в котором положительная обкладка разлетается наружу, а отрицательная обкладка схлопывается внутрь. Обе обкладки движутся навстречу друг другу. Потенциальная яма внутри положительной обкладки при учёте запаздывания оказывается глубже, чем без учёта. Интересный момент, что при учёте запаздывания излом потенциальной кривой в области внутренней положительно заряженной вкладки практически полностью исчёз.
+# 
+> with(plots); plot(evalf(subs(q = 1, t = tcur, r__0e = `R__-`, r__0p = `R__+`, v__0p = 1, v__0e = -2, a__0 = 0, [varphi__lw(q, v__0p, c, r__0p, R__0)+varphi__lw(-q, v__0e, c, r__0e, R__0), varphi(q, t, r__0p, v__0p, a__0, R__0)+varphi(-q, t, r__0e, v__0e, a__0, R__0)])), R__0 = -5 .. 5, style = point, numpoints = 10);
+# 
+# 
+> 
+;
+# 
+> 
+;
+# 
+> 
+;

@@ -99,6 +99,10 @@ double calc_tzap(double t, double R0, double r0, double a0, double theta)
 	
 			R = R_tmp;
 		}
+		else
+		{
+			DBG_INFO("not (fabs(dR) %f >= fabs(dR_pre) %f ) d %e n %e", fabs(dR), fabs(dR_pre), fabs(dR_pre) - fabs(dR), n);
+		}
 		dR_pre = dR;
 		R_pre = R;
 		

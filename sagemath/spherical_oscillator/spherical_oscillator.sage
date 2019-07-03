@@ -32,20 +32,29 @@ t = 5
 q = 1
 
 # Data for plotting of phi_lw of unmoved spherical capacitor
-min_R0 = -5.0
-max_R0 = 5.0
-step_R0 = 0.01
+min_R0 = -10.0
+max_R0 = 10.0
+step_R0 = 0.1
+Rneg=2
+Rpos=1
 
-phi_lw_data = [ (R0_i, phi_lw(-q, t, R0_i, 2, 0) + phi_lw(q, t, R0_i, 1, 0)) for R0_i  in np.arange(min_R0, max_R0, step_R0) ]
+
+phi_lw_data = [ (R0_i, phi_lw(-q, t, R0_i, Rneg, 0) + phi_lw(q, t, R0_i, Rpos, 0)) for R0_i  in np.arange(min_R0, max_R0, step_R0) ]
 #print "phi_lw_data = ", phi_lw_data
 
 p = list_plot (phi_lw_data)
-try:
-    p.show()
-except ValueError as ex:
-    print ex
+#p.show()
+p.save("results/spherical_capascitor_phi" + "_Rneg=" + str(Rneg) + "_Rpos= " + str(Rpos) + ".png")
 
-p.save("results/spherical_capascitor_phi" + "_Rneg=2" + "_Rpos=1 " + ".png")
+# Data for plotting of phi_lw of spherical oscillator with expanding negative sphere
+a0pos = 0
+a0neg = 1
+phi_lw_data = [ (R0_i, phi_lw(-q, t, R0_i, Rneg, a0neg) + phi_lw(q, t, R0_i, 1, a0pos)) for R0_i  in np.arange(min_R0, max_R0, step_R0) ]
+#print "phi_lw_data = ", phi_lw_data
+
+p = list_plot (phi_lw_data)
+#p.show()
+p.save("results/spherical_oscillator_phi" + "_t=" + str(t) + "_Rneg=" + str(Rneg) + "_Rpos= " + str(Rpos) + "_a0neg" + str(a0neg ) + "_a0pos" + str(a0pos ) + ".png")
 
 
 philw = phi_lw(q, t, R0, r0, 0)

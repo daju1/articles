@@ -3,6 +3,8 @@
 #include <math.h>
 #define Pi M_PI
 #include "tzap.h"
+
+//#define USE_DEBUG
 #include "dbg_info.h"
 
 extern double c;
@@ -34,6 +36,7 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 	double sigma = get_sigma(q, r0);
 	double ommited_S = 0.0;
 	double S = 4*Pi*r0*r0;
+	DBG_INFO("integral_phi(q=%f t=%f, R0=%f, r0=%f, a0=%f)\n", q, t, R0, r0, a0);
 	
 	for (i = 0; i <= N; ++i)
 	{
@@ -183,7 +186,22 @@ int main()
 	phi_lw = integral_phi(q, t, R0, r0, a0);
 	printf("phi_lw = %f\n", phi_lw);
 
+	/*infinity error result*/
 	phi_lw = integral_phi(q, t, -1.0000000000000142, 1, 0);
+	printf("phi_lw = %f\n", phi_lw);
+
+	/*hung
+
+	integral_phi(q=-1.000000 t=5.000000, R0=-1.500000, r0=2.000000, a0=1.000000)
+
+	t2=1.000667 t1=0.999333 t=5.000000 R=3.999333 dR=1.333710e-03 dR_pre=-1.333710e-03 
+	t2=0.999333 t1=1.000667 t=5.000000 R=4.000667 dR=-1.333710e-03 dR_pre=1.333710e-03 
+	t2=1.000667 t1=0.999333 t=5.000000 R=3.999333 dR=1.333710e-03 dR_pre=-1.333710e-03 
+	t2=0.999333 t1=1.000667 t=5.000000 R=4.000667 dR=-1.333710e-03 dR_pre=1.333710e-03 
+	*/
+
+	phi_lw = integral_phi(-q, 5.0, -1.5, 2.0, 1.0);
+	printf("phi_lw = %f\n", phi_lw);
 
 	return 0;
 }

@@ -32,6 +32,8 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 	double dtheta = Pi / N;
 	double result = 0.0;
 	double sigma = get_sigma(q, r0);
+	double ommited_S = 0.0;
+	double S = 4*Pi*r0*r0;
 	
 	for (i = 0; i <= N; ++i)
 	{
@@ -52,13 +54,26 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 		DBG_INFO("r = %f ", r);
 		dS_dtheta = get_dS_dtheta(r, theta);
 		DBG_INFO("dS_dtheta = %f ", dS_dtheta);
-		result += dS_dtheta / R_lw_zap * dtheta;
-		DBG_INFO("result = %f ", result);
+		if (0.0 != R_lw_zap){
+			result += dS_dtheta / R_lw_zap * dtheta;
+			DBG_INFO("result = %f ", result);
+		}
+		else
+		{
+			ommited_S += dS_dtheta * dtheta;
+			DBG_INFO("ommited_S = %e ", ommited_S);
+		}
 
 		DBG_INFO("\n");
 	}
 	DBG_INFO("result = %f\n", result);
 	DBG_INFO("sigma = %f\n", sigma);
+	if (0.0 != ommited_S)
+	{
+		S -= ommited_S;
+		sigma = q / S;
+		DBG_INFO("corrected sigma = %f\n", sigma);
+	}
 	result *= sigma;
 	DBG_INFO("result = %f\n", result);
 	return result;
@@ -135,6 +150,7 @@ int main()
 {
 	double r_zap, R_zap, R_lw_zap, phi_lw;
 
+
 	/* Текущий момент */
 	double t = 5;
 	/* расстояние от центра сферы к точке наблюдения. Точка наблюдения расположена на оси z в сферической системе координат */
@@ -145,7 +161,9 @@ int main()
 	double a0 = 0.0;
 	/* угловая координата заряда на заряженной сфере в сферической системе координат */
 	double theta = Pi/2;
+	/* Заряд сферы */
 	double q = 1.0;
+
 	/* численный расчёта запаздывающего момента */
 	double t_zap = calc_tzap(t, R0, r0, a0, theta);
 	printf("t_zap = %f\n", t_zap );
@@ -165,5 +183,8 @@ int main()
 	phi_lw = integral_phi(q, t, R0, r0, a0);
 	printf("phi_lw = %f\n", phi_lw);
 
+	phi_lw = integral_phi(q, t, -1.0000000000000142, 1, 0);
+
 	return 0;
 }
+

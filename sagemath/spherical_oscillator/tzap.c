@@ -62,10 +62,12 @@ double calc_tzap(double t, double R0, double r0, double a0, double theta)
 	int i = 0;
 	double n = 0.9;
 
-
+	DBG_INFO("calc_tzap(t=%f, R0=%f, r0=%f, a0=%f, theta=%f\n", t, R0, r0, a0, theta);
+	/*
 	DBG_INFO("epsilon=%e\n", epsilon);
 	DBG_INFO("t1=%f\n", t1);
 	DBG_INFO("t2=%f\n", t2);
+	*/
 
 	while (fabs(t1 - t2) > epsilon)
 	{
@@ -103,7 +105,7 @@ double calc_tzap(double t, double R0, double r0, double a0, double theta)
 		DBG_INFO("\n");
 	 }
 	 
-    DBG_INFO("fabs(t1 - t2) = %f \n", fabs(t1 - t2)); 
+	DBG_INFO("fabs(t1 - t2) = %e fabs(t - t2) = %e calc_tzap() result=%f\n", fabs(t1 - t2), fabs(t - t2), t2); 
 	return t2;
  }
  

@@ -191,6 +191,13 @@ int main()
 	printf("phi_lw = %f\n", phi_lw);
 
 	/*hung
+	calc_tzap(t=5.000000, R0=-1.500000, r0=2.000000, a0=1.000000, theta=0.000000
+	*/
+
+	t_zap = calc_tzap(5.0, -1.5, 2.0, 1.0, 0.0);
+	printf("t_zap = %f\n", t_zap);
+
+	/*hung
 
 	integral_phi(q=-1.000000 t=5.000000, R0=-1.500000, r0=2.000000, a0=1.000000)
 

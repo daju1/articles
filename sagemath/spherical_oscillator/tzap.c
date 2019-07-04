@@ -53,8 +53,8 @@ double get_R(double R0, double r, double theta)
 double calc_tzap(double t, double R0, double r0, double a0, double theta)
 {
 	double epsilon = 1.0e-15;
-	double t1 = t;
-	double t2 = t - 2 * epsilon;
+	double t1;
+	double t2 = t;
 	double r, R, R_pre = DBL_MAX;
 	double dR, dR_pre = DBL_MAX;
 	double R_tmp;
@@ -69,17 +69,17 @@ double calc_tzap(double t, double R0, double r0, double a0, double theta)
 	DBG_INFO("t2=%f\n", t2);
 	*/
 
-	while (fabs(t1 - t2) > epsilon)
+	do
 	{
-		t1 = t2;
-		r = get_r(t1, r0, a0);
-		R = get_R(R0, r, theta);
-		t2 = t -  R / c;
-		dR = c*(t-t1) - R;
+		t1 = t2;                 /* итерационный момент времени - на первой итерации текущее время наблюдения */
+		r = get_r(t1, r0, a0);   /* итерационная координата заряда                                                                                    */
+		R = get_R(R0, r, theta); /* итерационный радиус - на первой итерации текущий радиус                                      */
+		t2 = t -  R / c;         /* время прохождения сигнала от итерационной координаты в точку наблюдения      */
+		dR = c*(t-t1) - R;       /**/
 
 		DBG_INFO("t2=%f t1=%f t=%f R=%f dR=%e dR_pre=%e ", t2, t1, t, R, dR, dR_pre);
-		
-		if (fabs(dR) >= fabs(dR_pre))
+
+		if (i > 1 && fabs(dR) - fabs(dR_pre) < 1.0e-3)
 		{
 			int j = 0;
 
@@ -94,24 +94,24 @@ double calc_tzap(double t, double R0, double r0, double a0, double theta)
 
 				n *= 0.9;
 				DBG_INFO("n = %f ", n);
+				++j;
 			}
 			while (fabs(dR) > fabs(dR_pre));
 	
 			R = R_tmp;
 		}
-		else
-		{
-			DBG_INFO("not (fabs(dR) %f >= fabs(dR_pre) %f ) d %e n %e", fabs(dR), fabs(dR_pre), fabs(dR_pre) - fabs(dR), n);
-		}
+
 		dR_pre = dR;
 		R_pre = R;
 		
 		DBG_INFO("\n");
-	 }
+		++i;
+	}
+	while (fabs(t1 - t2) > epsilon);
 	 
 	DBG_INFO("fabs(t1 - t2) = %e fabs(t - t2) = %e calc_tzap() result=%f\n", fabs(t1 - t2), fabs(t - t2), t2); 
 	return t2;
- }
+}
  
 float calc_tzap_float(float t, float R0, float r0, float a0, float theta)
 {

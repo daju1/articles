@@ -5,7 +5,7 @@ sys.setdefaultencoding('utf8')
 import numpy as np
 
 def float_formatting(float_value):
-    decimal_part = float_value - int(float_value)
+    decimal_part = abs(float_value - int(float_value))
     if 0 == decimal_part:
         digits_after_point = 1
     else:
@@ -65,8 +65,8 @@ p = list_plot (phi_lw_data)
 p.save("results/spherical_capascitor_phi" + "_Rneg=" + str(Rneg) + "_Rpos= " + str(Rpos) + ".png")
 
 # Data for plotting of phi_lw of spherical oscillator with expanding negative sphere
-a0pos = 0
-a0neg = 0.15
+a0pos = 0.05
+a0neg = -0.15
 phi_lw_data = [ (R0_i, phi_lw(-q, t, R0_i, Rneg, a0neg) + phi_lw(q, t, R0_i, Rpos, a0pos)) for R0_i in np.arange(min_R0, max_R0, step_R0) ]
 
 p = list_plot (phi_lw_data)

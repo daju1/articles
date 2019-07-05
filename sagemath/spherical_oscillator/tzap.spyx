@@ -13,5 +13,3 @@ def tzap(t, R0, r0, a0, theta):
 def phi_lw(q, t, R0, r0, a0):
     return integral_phi(q, t, R0, r0, a0)
 
-def suffix(t, r0, a0):
-    return "_t="+str(t)+"_r0="+str(r0)+"_a0="+str(a0)

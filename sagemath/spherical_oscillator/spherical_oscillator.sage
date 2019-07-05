@@ -14,7 +14,7 @@ t_zap = var("t_zap")
 t = 5
 R0 = 2
 r0 = 1
-a0 = 2
+a0 = 0.1
 attach("tzap.spyx")
 
 # Data for plotting of t_zap
@@ -48,7 +48,7 @@ p.save("results/spherical_capascitor_phi" + "_Rneg=" + str(Rneg) + "_Rpos= " + s
 
 # Data for plotting of phi_lw of spherical oscillator with expanding negative sphere
 a0pos = 0
-a0neg = 1
+a0neg = 0.1
 phi_lw_data = [ (R0_i, phi_lw(-q, t, R0_i, Rneg, a0neg) + phi_lw(q, t, R0_i, 1, a0pos)) for R0_i  in np.arange(min_R0, max_R0, step_R0) ]
 #print "phi_lw_data = ", phi_lw_data
 

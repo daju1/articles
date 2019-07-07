@@ -1,0 +1,348 @@
+> 
+;
+> clear;
+                             clear
+;
+# Классический скалярный потенциал заряда распределённого по сферической поверхности радиуса R;  в точке наблюдения расположенной по оси зет на расстоянии 
+> R__0;#  от центра сферы
+> 
+;
+> varphi__R := proc (q, R, R__0) options operator, arrow; (1/4)*(Int(q*sin(theta)/sqrt(R__0^2-2*R__0*R*cos(theta)+R^2), [theta = 0 .. Pi, varphi = 0 .. 2*Pi]))/Pi end proc;
+                     /  /                                         
+                 1   | |               q sin(theta)               
+(q, R, R__0) -> ---- | |  -------------------------------------- d
+                4 Pi | |      /    2                          2\  
+                     \/   sqrt\R__0  - 2 R__0 R cos(theta) + R /  
+
+                                       \
+                                       |
+  [theta = 0 .. Pi, varphi = 0 .. 2 Pi]|
+                                       |
+                                       /
+;
+> 
+;
+# Классический скалярный потенциал сферического конденсатора
+> 
+;
+> 
+;
+> varphi__R(q, 1, R__0)-varphi__R(q, 2, R__0);
+     /  /                                                         
+ 1   | |              q sin(theta)                                
+---- | |  ------------------------------------ d[theta = 0 .. Pi, 
+4 Pi | |                                 (1/2)                    
+     |/   /    2                        \                         
+     \    \R__0  - 2 R__0 cos(theta) + 1/                         
+
+                     \        /  / 
+                     |    1   | |  
+  varphi = 0 .. 2 Pi]| - ---- | |  
+                     |   4 Pi | |  
+                     |        |/   
+                     /        \    
+
+              q sin(theta)                                
+  ------------------------------------ d[theta = 0 .. Pi, 
+                                 (1/2)                    
+  /    2                        \                         
+  \R__0  - 4 R__0 cos(theta) + 4/                         
+
+                     \
+                     |
+  varphi = 0 .. 2 Pi]|
+                     |
+                     |
+                     /
+;
+> 
+;
+> 
+;
+> 
+;
+> evalf(varphi__R(1, 1, R__0)-varphi__R(1, 2, R__0));
+              /  /6.283185308   /3.141592654 
+              | |              |             
+0.07957747152 | |              |             
+              | |              |             
+              |/0.            /0.            
+              \                              
+
+                                                       \         
+                sin(theta)                             |         
+  -------------------------------------- dtheta dvarphi| - 0.079\
+                                   (1/2)               |         
+  /    2                          \                    |         
+  \R__0  - 2. R__0 cos(theta) + 1./                    /         
+
+           /  /6.283185308   /3.141592654 
+           | |              |             
+  57747152 | |              |             
+           | |              |             
+           |/0.            /0.            
+           \                              
+
+                                                       \
+                sin(theta)                             |
+  -------------------------------------- dtheta dvarphi|
+                                   (1/2)               |
+  /    2                          \                    |
+  \R__0  - 4. R__0 cos(theta) + 4./                    /
+;
+> 
+;
+# Поле в сферическом конденсаторе не нулевое только между обкладками
+> 
+;
+> with(plots); plot(varphi__R(1, 1, R__0)-varphi__R(1, 2, R__0), R__0 = -3 .. 3);
+
+# 
+# Расчёт потенциала Лиенара Вихерта
+# 
+# Скалярное произведение радиального вектора скорости заряда на вектор от заряда в точку наблюдения, делённое на скорость света
+# 
+> vr := proc (v, c, R, R__0, theta) options operator, arrow; v*(R__0*cos(theta)-R)/c end proc;
+                          v (R__0 cos(theta) - R)
+(v, c, R, R__0, theta) -> -----------------------
+                                     c           
+;
+> 
+;
+> `cos_&beta;` := proc (R, R__0, theta) options operator, arrow; cos(arcsin(R__0*sin(theta)/sqrt(R__0^2-2*R__0*R*cos(theta)+R^2))) end proc;
+                                  /      /
+           (R, R__0, theta) -> cos|arcsin|
+                                  |      |
+                                  \      \
+
+                        R__0 sin(theta)            \\
+             --------------------------------------||
+                 /    2                          2\||
+             sqrt\R__0  - 2 R__0 R cos(theta) + R ///
+;
+> 
+;
+> beta := proc (R, R__0, theta) options operator, arrow; arcsin(R__0*sin(theta)/sqrt(R__0^2-2*R__0*R*cos(theta)+R^2)) end proc;
+                          /           R__0 sin(theta)            \
+(R, R__0, theta) -> arcsin|--------------------------------------|
+                          |    /    2                          2\|
+                          \sqrt\R__0  - 2 R__0 R cos(theta) + R //
+;
+> R0r := proc (R, R__0, theta) options operator, arrow; R__0/sqrt(R__0^2-2*R__0*R*cos(theta)+R^2) end proc;
+                                     R__0                 
+(R, R__0, theta) -> --------------------------------------
+                        /    2                          2\
+                    sqrt\R__0  - 2 R__0 R cos(theta) + R /
+;
+> plot(R0r(1, 2, theta), theta = 0 .. Pi);
+
+> 
+;
+> 
+;
+> plot(beta(1, 2, theta), theta = 0 .. Pi);
+
+> 
+;
+> plot(`cos_&beta;`(1, 2, theta), theta = 0 .. Pi);
+
+> cos(Pi);
+                               -1
+;
+> 
+;
+> 
+;
+> plot(vr(1, 3, 1, 2, theta), theta = 0 .. Pi);
+
+> 
+;
+> 
+;
+> 
+;
+> 
+;
+> 
+;
+> varphi__lw := proc (q, v, c, R, R__0) options operator, arrow; (1/4)*(Int(q*sin(theta)/(sqrt(R__0^2-2*R__0*R*cos(theta)+R^2)-v*(R__0*cos(theta)-R)/c), [theta = 0 .. Pi, varphi = 0 .. 2*Pi]))/Pi end proc;
+                           /  / 
+                       1   | |  
+(q, v, c, R, R__0) -> ---- | |  
+                      4 Pi | |  
+                           |/   
+                           \    
+
+                            q sin(theta)                            
+  ---------------------------------------------------------------- d
+      /    2                          2\   v (R__0 cos(theta) - R)  
+  sqrt\R__0  - 2 R__0 R cos(theta) + R / - -----------------------  
+                                                      c             
+
+                                       \
+                                       |
+  [theta = 0 .. Pi, varphi = 0 .. 2 Pi]|
+                                       |
+                                       |
+                                       /
+;
+> 
+;
+> 
+;
+> 
+;
+> 
+;
+> with(plots); plot([varphi__R(1, 1, R__0)-varphi__lw(1, 1, 3, 2, R__0)], R__0 = -10 .. 10);
+
+# 
+# 
+> 
+;
+# 
+> with(plots); plot([varphi__R(1, 1, R__0)-varphi__lw(1, 1, 3, 2, R__0), varphi__R(1, 1, R__0)-varphi__R(1, 2, R__0)], R__0 = -10 .. 10);
+
+# 
+> with(plots); plot(varphi__lw(1, .5, 3, 1, R__0)-varphi__lw(1, 1, 3, 2, R__0), R__0 = -10 .. 10);
+
+> 
+;
+> 
+;
+> 
+;
+> 
+;
+# with(plots); plot3d(varphi__R(1, R, `R__+`)-varphi__lw(1, 1, 3, R, 2), R = -10 .. 10, `R__+` = 1 .. 2);
+> 
+;
+> 
+;
+> E := proc (q, `R__+`, `R__-`, R__0) options operator, arrow; -(diff(varphi__R(q, `R__+`, R__0)+varphi__R(-q, `R__-`, R__0), R__0)) end proc;
+                                 d                             
+ (q, `R__+`, `R__-`, R__0) -> ------- (varphi__R(q, R__+, R__0)
+                                dR__0                          
+
+    + varphi__R(-q, R__-, R__0))
+;
+> E(q, `R__+`, `R__-`, R__0);
+       /  /                                                    
+   1   | |       q sin(theta) (2 R__0 - 2 R__+ cos(theta))     
+- ---- | |  - ----------------------------------------------- d
+  4 Pi | |                                              (3/2)  
+       |/       /    2                                2\       
+       \      2 \R__0  - 2 R__0 R__+ cos(theta) + R__+ /       
+
+                                       \        /  / 
+                                       |    1   | |  
+  [theta = 0 .. Pi, varphi = 0 .. 2 Pi]| - ---- | |  
+                                       |   4 Pi | |  
+                                       |        |/   
+                                       /        \    
+
+     q sin(theta) (2 R__0 - 2 R__- cos(theta))      
+  ----------------------------------------------- d[
+                                            (3/2)   
+    /    2                                2\        
+  2 \R__0  - 2 R__0 R__- cos(theta) + R__- /        
+
+                                      \
+                                      |
+  theta = 0 .. Pi, varphi = 0 .. 2 Pi]|
+                                      |
+                                      |
+                                      /
+;
+> 
+;
+> 
+;
+> E__lw := proc (q, `v__+`, `v__-`, c, `R__+`, `R__-`, R__0) options operator, arrow; -(diff(varphi__lw(q, `v__+`, c, `R__+`, R__0)+varphi__lw(-q, `v__-`, c, `R__-`, R__0), R__0)) end proc;
+                                                       d    
+    (q, `v__+`, `v__-`, c, `R__+`, `R__-`, R__0) -> ------- 
+                                                      dR__0 
+
+      (varphi__lw(q, v__+, c, R__+, R__0)
+
+       + varphi__lw(-q, v__-, c, R__-, R__0))
+;
+> 
+;
+> E__lw(q, `v__+`, `v__-`, c, `R__+`, `R__-`, R__0);
+          /  /   /             /
+      1   | |    |q sin(theta) |
+   - ---- | |  - |             |
+     4 Pi | |    |             |
+          \/     \             \
+
+               2 R__0 - 2 R__+ cos(theta)           
+     -----------------------------------------------
+                                               (1/2)
+       /    2                                2\     
+     2 \R__0  - 2 R__0 R__+ cos(theta) + R__+ /     
+
+        v__+ cos(theta)\\///
+      - ---------------|| ||
+               c       || ||
+                       || \\
+                       //   
+
+                                             (1/2)
+     /    2                                2\     
+     \R__0  - 2 R__0 R__+ cos(theta) + R__+ /     
+
+                                     \  \                    
+        v__+ (R__0 cos(theta) - R__+)|  |                    
+      - -----------------------------|^2| d[theta = 0 .. Pi, 
+                      c              /  /                    
+
+                        \        /  / /             /
+                        |    1   | |  |q sin(theta) |
+     varphi = 0 .. 2 Pi]| - ---- | |  |             |
+                        |   4 Pi | |  |             |
+                        /        \/   \             \
+
+               2 R__0 - 2 R__- cos(theta)           
+     -----------------------------------------------
+                                               (1/2)
+       /    2                                2\     
+     2 \R__0  - 2 R__0 R__- cos(theta) + R__- /     
+
+        v__- cos(theta)\\///
+      - ---------------|| ||
+               c       || ||
+                       || \\
+                       //   
+
+                                             (1/2)
+     /    2                                2\     
+     \R__0  - 2 R__0 R__- cos(theta) + R__- /     
+
+                                     \  \                    
+        v__- (R__0 cos(theta) - R__-)|  |                    
+      - -----------------------------|^2| d[theta = 0 .. Pi, 
+                      c              /  /                    
+
+                        \
+                        |
+     varphi = 0 .. 2 Pi]|
+                        |
+                        /
+;
+> 
+;
+> with(plots); plot(E(1, 1, 2, R__0), R__0);
+
+> with(plots); plot(E__lw(1, 0, 0, 3, 1, 2, R__0), R__0);
+
+> with(plots); plot(E__lw(1, 0, 1, 3, 1, 2, R__0), R__0);
+
+> 
+;
+> 
+;
+> with(plots); plot(E__lw(1, .5, 1, 3, 1, 2, R__0), R__0);
+
+> 
+;

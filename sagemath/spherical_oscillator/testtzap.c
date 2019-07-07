@@ -395,6 +395,58 @@ int main()
 	phi_lw = integral_phi_and_E(-q, 5.0, -1.5, 2.0, 1.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0);
 	printf("phi_lw = %f E1=%f E2 = %f\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
+	{
+		double E1_p, E1_n, E2_p, E2_n, phi_p, phi_n;
+		double a0_p = 0.0001;
+		double a0_n = 0.01;
+		double E_p, E_n, E1, E2, E;
+		double q_add;
+
+		for (double ti = 0.0; ti <= 15.0; ti += 0.1)
+		//for (double R0_i = r0+0.5; R0_i < 20.0; R0_i += 0.5)
+		{
+			for (double R0_i = r0+0.5; R0_i < 20.0; R0_i += 0.5)
+			//for (double ti = 0.0; ti <= 15.0; ti += 0.1)
+			{
+				printf("ti=%03.1f R0_i=%03.1f ", ti, R0_i);
+
+				phi_p = integral_phi_and_E(+q, ti, R0_i, r0, a0_p, &E1_p, &E2_p);
+				phi_n = integral_phi_and_E(-q, ti, R0_i, r0, a0_n, &E1_n, &E2_n);
+				//printf("phi_p = %f ", phi_p);
+				//printf("phi_n = %f ", phi_n);
+
+				printf("E1_p=%e E2_p=%e ", E1_p, E2_p);
+				printf("E1_n=%e E2_n=%e ", E1_n, E2_n);
+
+				E_p = E1_p + E2_p;
+				E_n = E1_n + E2_n;
+
+				printf("E_p=%e ", E_p);
+				printf("E_n=%e ", E_n);
+
+				E1 = E1_p + E1_n;
+				E2 = E2_p + E2_n;
+
+				printf("E1=%e ", E1);
+				printf("E2=%e ", E2);
+
+				E = E_p + E_n;
+
+				printf("E=%f\n", E);
+
+				q_add = E * 4 * Pi*R0_i*R0_i;
+				printf("q_add=%f\n", q_add);
+			}
+			printf("\n");
+		}
+		phi_lw = integral_phi_and_E(q, t, R0, r0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0);
+		printf("phi_lw = %f E1=%f E2 = %f\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
+
+		phi_lw = integral_phi_and_E(-q, t, R0, r0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0);
+		printf("phi_lw = %f E1=%f E2 = %f\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
+
+	}
+
 	return 0;
 }
 

@@ -21,6 +21,25 @@ double get_dS_dtheta(double r, double theta)
 	return dS_dtheta;
 }
 
+/* Радиус Лиенара Вихерта */
+double calc_R_lw(double t, double R0, double r0, double a0, double theta)
+{
+	double t_zap, r_zap, R_zap, R_lw_zap;
+	/* численный расчёта запаздывающего момента */
+	t_zap = calc_tzap(t, R0, r0, a0, theta);
+	DBG_INFO("theta = %f t_zap = %f ", theta, t_zap);
+	/* Запаздывающий радиус в зависимости от текущего момента */
+	r_zap = get_r(t_zap, r0, a0); /* расстояние от заряда до центра сферы в запаздывающий момент времени */
+	R_zap = get_R(R0, r_zap, theta); /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
+	DBG_INFO("r_zap = %f ", r_zap);
+	DBG_INFO("R_zap = %f ", R_zap);
+	/* Радиус Лиенара Вихерта */
+	R_lw_zap = get_R(R0, r_zap, theta) - (get_v(t_zap, a0) / c) * (R0 * cos(theta) - r_zap);
+	DBG_INFO("R_lw_zap = %f ", R_lw_zap);
+
+	return R_lw_zap;
+}
+
 /* скалярный потенциал Лиенара Вихерта зарядов равномерно распределённых по сферической поверхности радиуса r0 и движущихся из центра. */
 /* 
 varphi := proc (q, t, r__0, v__0, a__0, R__0) options operator, arrow; 
@@ -29,7 +48,11 @@ int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*sigma(q, r__0)/K__zap(tzap(t, r__0,
 double integral_phi(double q, double t, double R0, double r0, double a0)
 {
 	int i;
-	double theta, t_zap, r_zap, R_zap, R_lw_zap, r, dS_dtheta;
+	double theta, 
+#if 0
+		t_zap, r_zap, R_zap, 
+#endif
+		R_lw_zap, r, dS_dtheta;
 	int N = 1000;
 	double dtheta = Pi / N;
 	double result = 0.0;
@@ -41,6 +64,7 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 	for (i = 0; i <= N; ++i)
 	{
 		theta = (i * dtheta);
+#if 0
 		/* численный расчёта запаздывающего момента */
 		t_zap = calc_tzap(t, R0, r0, a0, theta);
 		DBG_INFO("theta = %f t_zap = %f ", theta, t_zap);
@@ -52,7 +76,9 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 		/* Радиус Лиенара Вихерта */
 		R_lw_zap = get_R(R0, r_zap, theta) - (get_v(t_zap, a0) / c) * (R0 * cos(theta) - r_zap);
 		DBG_INFO("R_lw_zap = %f ", R_lw_zap);
-
+#else
+		R_lw_zap = calc_R_lw(t, R0, r0, a0, theta);
+#endif
 		r = get_r(t, r0, a0);
 		DBG_INFO("r = %f ", r);
 		dS_dtheta = get_dS_dtheta(r, theta);
@@ -67,7 +93,7 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 			DBG_INFO("ommited_S = %e ", ommited_S);
 		}
 
-		DBG_INFO("\n");
+		DBG_INFO("\n", 0);
 	}
 	DBG_INFO("result = %f\n", result);
 	DBG_INFO("sigma = %f\n", sigma);
@@ -151,7 +177,7 @@ int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*E_minus_1_c_dA_dt__R__0(q, tzap(t, 
 
 int main()
 {
-	double r_zap, R_zap, R_lw_zap, phi_lw;
+	double /*r_zap, R_zap,*/ R_lw_zap, phi_lw;
 
 
 	/* Текущий момент */
@@ -166,9 +192,10 @@ int main()
 	double theta = Pi/2;
 	/* Заряд сферы */
 	double q = 1.0;
-
+	double t_zap;
+#if 0
 	/* численный расчёта запаздывающего момента */
-	double t_zap = calc_tzap(t, R0, r0, a0, theta);
+	t_zap = calc_tzap(t, R0, r0, a0, theta);
 	printf("t_zap = %f\n", t_zap );
 	/* Запаздывающий радиус в зависимости от текущего момента */
 	r_zap = get_r(t_zap, r0, a0); /* расстояние от заряда до центра сферы в запаздывающий момент времени */
@@ -179,7 +206,9 @@ int main()
 	/* Радиус Лиенара Вихерта */
 	R_lw_zap = get_R(R0, r_zap, theta) - (get_v(t_zap, a0) / c) * (R0 * cos(theta) - r_zap);
 	printf("R_lw_zap = %f\n", R_lw_zap);
-	
+#else
+	R_lw_zap = calc_R_lw(t, R0, r0, a0, theta);
+#endif
 	/* скалярный потенциал Лиенара Вихерта зарядов равномерно распределённых по сферической поверхности радиуса r0 и движущихся из центра.  */
 	/* varphi := proc (q, t, r__0, v__0, a__0, R__0) options operator, arrow; 
 	int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*sigma(q, r__0)/K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta), theta = 0 .. Pi) end proc;*/

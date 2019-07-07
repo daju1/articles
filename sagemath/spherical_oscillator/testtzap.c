@@ -82,16 +82,16 @@ K__zap(t__zap, r__0, v__0, a__0, R__0, theta)^2
 end proc;
 */
 
-double get_E_minus_grad_varphi_R0(double q, double r0, double theta, double v_zap, double R_zap, double aR_zap, double R_lw_zap, double cos_alpha_zap)
+double get_E_minus_grad_phi_R0(double r0, double theta, double v_zap, double R_zap, double aR_zap, double R_lw_zap, double cos_alpha_zap)
 {
-	double E_minus_grad_varphi_R0 = 
-		get_sigma(q, r0) * 
+	double E_minus_grad_phi_R0 =
 		(
 			(cos_alpha_zap * R_zap / R_lw_zap) * (1.0 + (aR_zap - v_zap * v_zap) / (c * 2) )
-			- v_zap*cos(theta) / c 
+			- v_zap*cos(theta) / c
 		)
 		/ (R_lw_zap * R_lw_zap);
-	return E_minus_grad_varphi_R0;
+	DBG_INFO("E_minus_grad_phi_R0 = %f ", E_minus_grad_phi_R0);
+	return E_minus_grad_phi_R0;
 }
 
 double calc_E_minus_grad_varphi_R0(double t, double R0, double r0, double a0, double theta, double * pt_zap, double * pr_zap, double * pR_zap)
@@ -113,16 +113,17 @@ K__zap(t__zap, r__0, v__0, a__0, R__0, theta)^2
 end proc;
 */
 
-double get_E_minus_1_c_dA_dt_R0(double q, double r0, double theta, double v_zap, double a_zap, double R_zap, double aR_zap, double R_lw_zap, double cos_alpha_zap)
+double get_E_minus_1_c_dA_dt_R0(double r0, double theta, double v_zap, double a_zap, double R_zap, double aR_zap, double R_lw_zap)
 {
 	double E_minus_1_c_dA_dt_R0 =
-		cos(theta)*get_sigma(q, r0) *
+		cos(theta) *
 		( 
 			(v_zap / (c * c)) * ( (R_zap / R_lw_zap) * ( (v_zap * v_zap - aR_zap) / c - c)  + c)
 			- a_zap * R_zap / (c * c)
 		)
 		/
 		(R_lw_zap * R_lw_zap);
+	DBG_INFO("E_minus_1_c_dA_dt_R0 = %f ", E_minus_1_c_dA_dt_R0);
 	return E_minus_1_c_dA_dt_R0;
 }
 
@@ -148,21 +149,9 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 	for (i = 0; i <= N; ++i)
 	{
 		theta = (i * dtheta);
-#if 0
-		/* численный расчёта запаздывающего момента */
-		t_zap = calc_tzap(t, R0, r0, a0, theta);
-		DBG_INFO("theta = %f t_zap = %f ", theta, t_zap);
-		/* Запаздывающий радиус в зависимости от текущего момента */
-		r_zap = get_r(t_zap, r0, a0); /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-		R_zap = get_R(R0, r_zap, theta); /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
-		DBG_INFO("r_zap = %f ", r_zap);
-		DBG_INFO("R_zap = %f ", R_zap);
-		/* Радиус Лиенара Вихерта */
-		R_lw_zap = get_R(R0, r_zap, theta) - (get_v(t_zap, a0) / c) * (R0 * cos(theta) - r_zap);
-		DBG_INFO("R_lw_zap = %f ", R_lw_zap);
-#else
+
 		R_lw_zap = calc_R_lw(t, R0, r0, a0, theta, &t_zap, &r_zap, &R_zap);
-#endif
+
 		r = get_r(t, r0, a0);
 		DBG_INFO("r = %f ", r);
 		dS_dtheta = get_dS_dtheta(r, theta);
@@ -191,6 +180,83 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 	DBG_INFO("result = %f\n", result);
 	return result;
 }
+
+double integral_phi_and_E(double q, double t, double R0, double r0, double a0, double * pE_minus_grad_phi_R0, double *pE_minus_1_c_dA_dt_R0)
+{
+	int i;
+	double theta, 
+		t_zap, r_zap, R_zap, 
+		R_lw_zap, r, dS_dtheta;
+
+	double v_zap;
+	double a_zap;
+	double aR_zap;
+	double cos_alpha_zap;
+	double E_minus_grad_varphi_R0;
+	double E_minus_1_c_dA_dt_R0;
+
+	int N = 1000;
+	double dtheta = Pi / N;
+	double phi = 0.0;
+	double sigma = get_sigma(q, r0);
+	double ommited_S = 0.0;
+	double S = 4*Pi*r0*r0;
+	DBG_INFO("integral_phi(q=%f t=%f, R0=%f, r0=%f, a0=%f)\n", q, t, R0, r0, a0);
+
+	*pE_minus_grad_phi_R0 = 0.0;
+	*pE_minus_1_c_dA_dt_R0 = 0.0;
+
+	
+	for (i = 0; i <= N; ++i)
+	{
+		theta = (i * dtheta);
+
+		R_lw_zap = calc_R_lw(t, R0, r0, a0, theta, &t_zap, &r_zap, &R_zap);
+		v_zap = get_v(t_zap, a0);
+		DBG_INFO("v_zap = %f ", v_zap);
+		a_zap = get_a(t_zap, a0);
+		DBG_INFO("a_zap = %f ", a_zap);
+		aR_zap = get_aR_zap(R0, theta, r_zap, a_zap);
+		DBG_INFO("aR_zap = %f ", aR_zap);
+		cos_alpha_zap = get_cos_alpha_zap(R0, theta, r_zap, R_zap);
+		DBG_INFO("cos_alpha_zap = %f ", cos_alpha_zap);
+		E_minus_grad_varphi_R0 = get_E_minus_grad_phi_R0 (r0, theta, v_zap, R_zap, aR_zap, R_lw_zap, cos_alpha_zap);
+		E_minus_1_c_dA_dt_R0   = get_E_minus_1_c_dA_dt_R0(r0, theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap);
+
+		r = get_r(t, r0, a0);
+		DBG_INFO("r = %f ", r);
+		dS_dtheta = get_dS_dtheta(r, theta);
+		DBG_INFO("dS_dtheta = %f ", dS_dtheta);
+		if (0.0 != R_lw_zap){
+			phi                    += dS_dtheta * dtheta / R_lw_zap ;
+			*pE_minus_grad_phi_R0  += dS_dtheta * dtheta * E_minus_grad_varphi_R0;
+			*pE_minus_1_c_dA_dt_R0 += dS_dtheta * dtheta * E_minus_1_c_dA_dt_R0;
+			DBG_INFO("result = %f ", result);
+		}
+		else
+		{
+			ommited_S += dS_dtheta * dtheta;
+			DBG_INFO("ommited_S = %e ", ommited_S);
+		}
+
+		DBG_INFO("\n", 0);
+	}
+	DBG_INFO("phi = %f E1 = %f E2 = %f\n", phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0);
+	DBG_INFO("sigma = %f\n", sigma);
+	if (0.0 != ommited_S)
+	{
+		S -= ommited_S;
+		sigma = q / S;
+		DBG_INFO("corrected sigma = %f\n", sigma);
+	}
+	phi                    *= sigma;
+	*pE_minus_grad_phi_R0  *= sigma;
+	*pE_minus_1_c_dA_dt_R0 *= sigma;
+
+	DBG_INFO("phi = %f E1 = %f E2 = %f\n", phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0);
+	return phi;
+}
+
 
 /* радиальная компонента векторного потенциала Лиенара Вихерта зарядов равномерно распределённых по сферической поверхности радиуса r0 и движущихся из центра. */
 
@@ -262,6 +328,7 @@ int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*E_minus_1_c_dA_dt__R__0(q, tzap(t, 
 int main()
 {
 	double r_zap, R_zap, R_lw_zap, phi_lw;
+	double E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0;
 
 	/* Текущий момент */
 	double t = 5;
@@ -297,10 +364,14 @@ int main()
 	int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*sigma(q, r__0)/K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta), theta = 0 .. Pi) end proc;*/
 	phi_lw = integral_phi(q, t, R0, r0, a0);
 	printf("phi_lw = %f\n", phi_lw);
+	phi_lw = integral_phi_and_E(q, t, R0, r0, a0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0);
+	printf("phi_lw = %f E1=%f E2 = %f\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	/*infinity error result*/
 	phi_lw = integral_phi(q, t, -1.0000000000000142, 1, 0);
 	printf("phi_lw = %f\n", phi_lw);
+	phi_lw = integral_phi_and_E(q, t, -1.0000000000000142, 1, 0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0);
+	printf("phi_lw = %f E1=%f E2 = %f\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	/*hung
 	calc_tzap(t=5.000000, R0=-1.500000, r0=2.000000, a0=1.000000, theta=0.000000
@@ -321,6 +392,8 @@ int main()
 
 	phi_lw = integral_phi(-q, 5.0, -1.5, 2.0, 1.0);
 	printf("phi_lw = %f\n", phi_lw);
+	phi_lw = integral_phi_and_E(-q, 5.0, -1.5, 2.0, 1.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0);
+	printf("phi_lw = %f E1=%f E2 = %f\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	return 0;
 }

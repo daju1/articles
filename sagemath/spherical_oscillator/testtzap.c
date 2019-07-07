@@ -22,22 +22,108 @@ double get_dS_dtheta(double r, double theta)
 }
 
 /* Радиус Лиенара Вихерта */
-double calc_R_lw(double t, double R0, double r0, double a0, double theta)
+double calc_R_lw(double t, double R0, double r0, double a0, double theta, double * pt_zap, double * pr_zap, double * pR_zap)
 {
-	double t_zap, r_zap, R_zap, R_lw_zap;
+	double R_lw_zap;
 	/* численный расчёта запаздывающего момента */
-	t_zap = calc_tzap(t, R0, r0, a0, theta);
+	*pt_zap = calc_tzap(t, R0, r0, a0, theta);
 	DBG_INFO("theta = %f t_zap = %f ", theta, t_zap);
 	/* Запаздывающий радиус в зависимости от текущего момента */
-	r_zap = get_r(t_zap, r0, a0); /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-	R_zap = get_R(R0, r_zap, theta); /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
+	*pr_zap = get_r(*pt_zap, r0, a0); /* расстояние от заряда до центра сферы в запаздывающий момент времени */
+	*pR_zap = get_R(R0, *pr_zap, theta); /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
 	DBG_INFO("r_zap = %f ", r_zap);
 	DBG_INFO("R_zap = %f ", R_zap);
 	/* Радиус Лиенара Вихерта */
-	R_lw_zap = get_R(R0, r_zap, theta) - (get_v(t_zap, a0) / c) * (R0 * cos(theta) - r_zap);
+	R_lw_zap = get_R(R0, *pr_zap, theta) - (get_v(*pt_zap, a0) / c) * (R0 * cos(theta) - *pr_zap);
 	DBG_INFO("R_lw_zap = %f ", R_lw_zap);
 
 	return R_lw_zap;
+}
+
+/* Для расчёта радиальной компоненты электрического поля в точке наблюдения введём вспомогательную величину -
+косинус угла между запаздывающим радиус-вектором (вектор из запаздывающего положения заряда в точку наблюдения)
+и радиус-вектором из центра сферы в точку наблюдения
+*/
+/*
+cos_alpha__zap := proc (t__zap, r__0, v__0, a__0, R__0, theta) options operator, arrow;
+(R__0-r(t__zap, r__0, v__0, a__0)*cos(theta))/R__zap(t__zap, r__0, v__0, a__0, R__0, theta) end proc;
+*/
+
+double get_cos_alpha_zap(double R0, double theta, double r_zap, double R_zap)
+{
+	double cos_alpha_zap = (R0 - r_zap*cos(theta)) / R_zap;
+	return cos_alpha_zap;
+}
+
+/* Скалярное произведение ускорения частицы в запаздывающий момент времени на запаздывающий радиус-вектором (вектор из запаздывающего положения заряда в точку наблюдения) */
+/*
+aR__zap := proc (t__zap, r__0, v__0, a__0) options operator, arrow;
+a__r(t__zap, r__0, v__0, a__0)*(R__0*cos(theta)-r(t__zap, r__0, v__0, a__0)) end proc;
+*/
+
+double get_aR_zap(double R0, double theta, double r_zap, double a_zap)
+{
+	double aR_zap = a_zap*(R0*cos(theta) - r_zap);
+	return aR_zap;
+}
+
+/* Первое слагаемое радиальной компоненты электрического поля - минус градиент скалярного потенциала */
+/*
+E_minus_grad_varphi__R__0 := proc (q, t__zap, r__0, v__0, a__0, R__0, theta) options operator, arrow;
+sigma(q, r__0)*
+(
+R__zap(t__zap, r__0, v__0, a__0, R__0, theta)*cos_alpha__zap(t__zap, r__0, v__0, a__0, R__0, theta)*(1+aR__zap(t__zap, r__0, v__0, a__0)/c^2-v__r(t__zap, r__0, v__0, a__0)^2/c^2)
+/
+K__zap(t__zap, r__0, v__0, a__0, R__0, theta)
+- v__r(t__zap, r__0, v__0, a__0)*cos(theta)/c
+)
+/
+K__zap(t__zap, r__0, v__0, a__0, R__0, theta)^2
+end proc;
+*/
+
+double get_E_minus_grad_varphi_R0(double q, double r0, double theta, double v_zap, double R_zap, double aR_zap, double R_lw_zap, double cos_alpha_zap)
+{
+	double E_minus_grad_varphi_R0 = 
+		get_sigma(q, r0) * 
+		(
+			(cos_alpha_zap * R_zap / R_lw_zap) * (1.0 + (aR_zap - v_zap * v_zap) / (c * 2) )
+			- v_zap*cos(theta) / c 
+		)
+		/ (R_lw_zap * R_lw_zap);
+	return E_minus_grad_varphi_R0;
+}
+
+double calc_E_minus_grad_varphi_R0(double t, double R0, double r0, double a0, double theta, double * pt_zap, double * pr_zap, double * pR_zap)
+{
+
+}
+
+
+/* Второе слагаемое компоненты электрического поля */
+/*
+E_minus_1_c_dA_dt__R__0 := proc (q, t__zap, r__0, v__0, a__0, R__0, theta) options operator, arrow;
+cos(theta)*sigma(q, r__0)*
+(
+v__r(t__zap, r__0, v__0, a__0)*(R__zap(t__zap, r__0, v__0, a__0, R__0, theta)*(v__r(t__zap, r__0, v__0, a__0)^2/c-aR__zap(t__zap, r__0, v__0, a__0)/c-c)/K__zap(t__zap, r__0, v__0, a__0, R__0, theta)+c)/c^2
+- a__r(t__zap, r__0, v__0, a__0)*R__zap(t__zap, r__0, v__0, a__0, R__0, theta)/c^2
+)
+/
+K__zap(t__zap, r__0, v__0, a__0, R__0, theta)^2
+end proc;
+*/
+
+double get_E_minus_1_c_dA_dt_R0(double q, double r0, double theta, double v_zap, double a_zap, double R_zap, double aR_zap, double R_lw_zap, double cos_alpha_zap)
+{
+	double E_minus_1_c_dA_dt_R0 =
+		cos(theta)*get_sigma(q, r0) *
+		( 
+			(v_zap / (c * c)) * ( (R_zap / R_lw_zap) * ( (v_zap * v_zap - aR_zap) / c - c)  + c)
+			- a_zap * R_zap / (c * c)
+		)
+		/
+		(R_lw_zap * R_lw_zap);
+	return E_minus_1_c_dA_dt_R0;
 }
 
 /* скалярный потенциал Лиенара Вихерта зарядов равномерно распределённых по сферической поверхности радиуса r0 и движущихся из центра. */
@@ -49,9 +135,7 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 {
 	int i;
 	double theta, 
-#if 0
 		t_zap, r_zap, R_zap, 
-#endif
 		R_lw_zap, r, dS_dtheta;
 	int N = 1000;
 	double dtheta = Pi / N;
@@ -77,7 +161,7 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 		R_lw_zap = get_R(R0, r_zap, theta) - (get_v(t_zap, a0) / c) * (R0 * cos(theta) - r_zap);
 		DBG_INFO("R_lw_zap = %f ", R_lw_zap);
 #else
-		R_lw_zap = calc_R_lw(t, R0, r0, a0, theta);
+		R_lw_zap = calc_R_lw(t, R0, r0, a0, theta, &t_zap, &r_zap, &R_zap);
 #endif
 		r = get_r(t, r0, a0);
 		DBG_INFO("r = %f ", r);
@@ -177,8 +261,7 @@ int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*E_minus_1_c_dA_dt__R__0(q, tzap(t, 
 
 int main()
 {
-	double /*r_zap, R_zap,*/ R_lw_zap, phi_lw;
-
+	double r_zap, R_zap, R_lw_zap, phi_lw;
 
 	/* Текущий момент */
 	double t = 5;
@@ -207,7 +290,7 @@ int main()
 	R_lw_zap = get_R(R0, r_zap, theta) - (get_v(t_zap, a0) / c) * (R0 * cos(theta) - r_zap);
 	printf("R_lw_zap = %f\n", R_lw_zap);
 #else
-	R_lw_zap = calc_R_lw(t, R0, r0, a0, theta);
+	R_lw_zap = calc_R_lw(t, R0, r0, a0, theta, &t_zap, &r_zap, &R_zap);
 #endif
 	/* скалярный потенциал Лиенара Вихерта зарядов равномерно распределённых по сферической поверхности радиуса r0 и движущихся из центра.  */
 	/* varphi := proc (q, t, r__0, v__0, a__0, R__0) options operator, arrow; 

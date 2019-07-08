@@ -27,12 +27,12 @@ double calc_R_lw(double t, double R0, double r0, double a0, double theta, double
 	double R_lw_zap;
 	/* численный расчёта запаздывающего момента */
 	*pt_zap = calc_tzap(t, R0, r0, a0, theta);
-	DBG_INFO("theta = %f t_zap = %f ", theta, t_zap);
+	DBG_INFO("theta = %f t_zap = %f ", theta, *pt_zap);
 	/* Запаздывающий радиус в зависимости от текущего момента */
 	*pr_zap = get_r(*pt_zap, r0, a0); /* расстояние от заряда до центра сферы в запаздывающий момент времени */
 	*pR_zap = get_R(R0, *pr_zap, theta); /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
-	DBG_INFO("r_zap = %f ", r_zap);
-	DBG_INFO("R_zap = %f ", R_zap);
+	DBG_INFO("r_zap = %f ", *pr_zap);
+	DBG_INFO("R_zap = %f ", *pR_zap);
 	/* Радиус Лиенара Вихерта */
 	R_lw_zap = get_R(R0, *pr_zap, theta) - (get_v(*pt_zap, a0) / c) * (R0 * cos(theta) - *pr_zap);
 	DBG_INFO("R_lw_zap = %f ", R_lw_zap);
@@ -231,7 +231,9 @@ double integral_phi_and_E(double q, double t, double R0, double r0, double a0, d
 			phi                    += dS_dtheta * dtheta / R_lw_zap ;
 			*pE_minus_grad_phi_R0  += dS_dtheta * dtheta * E_minus_grad_varphi_R0;
 			*pE_minus_1_c_dA_dt_R0 += dS_dtheta * dtheta * E_minus_1_c_dA_dt_R0;
-			DBG_INFO("result = %f ", result);
+			DBG_INFO("phi = %f ", phi);
+			DBG_INFO("E1 = %f ", *pE_minus_grad_phi_R0);
+			DBG_INFO("E2 = %f ", *pE_minus_1_c_dA_dt_R0);
 		}
 		else
 		{

@@ -1,0 +1,870 @@
+> 
+;
+> 
+;
+> clear; restart;
+> 
+;
+# Задача найти густоту изоповерхностей запаздывающего момента
+# 
+# Пусть заряд движется вдоль оси z со скоростью v Расчёт делаем для текущего момента t
+# 
+# Для изоповерхности запаздывающего момента t__z; вводим сферическую систем координат, с центром в запаздывающей координате  0, 0, v*t__z;
+# 
+> x__a := c*(t-t__z)*sin(theta)*cos(varphi);
+              c (t - t__z) sin(theta) cos(varphi)
+;
+# 
+> y__a := c*(t-t__z)*sin(theta)*sin(varphi);
+              c (t - t__z) sin(theta) sin(varphi)
+;
+> xy__a := c*(t-t__z)*sin(theta);
+# 
+                    c (t - t__z) sin(theta)
+;
+# При смещении (вместе с зарядом) центра запаздывающей сферической системы координат по оси z на величину v*t__z; получаем смещённую координату z для изоповерхности запаздывающего момента в системе координат, связанной с неподвижным наблюдателем. Остальные же координаты при этом не изменяются.
+# 
+> z__a := c*(t-t__z)*cos(theta)+v*t__z;
+                c (t - t__z) cos(theta) + v t__z
+;
+# Уравнение сферы с центром (a,b,c) и радиусом R имеет вид
+# 
+> (x-a)^2+(y-b)^2+(z-c)^2-R^2 = 0;
+                   2          2          2    2    
+            (x - a)  + (y - b)  + (z - c)  - R  = 0
+;
+# 
+# В нашем случае уравнение сферы
+# 
+> M := proc (x, y, z, v, c, t, t__z) options operator, arrow; x^2+y^2+(z-v*t__z)^2-c^2*(t-t__z)^2 end proc;
+                                   2    2               2
+      (x, y, z, v, c, t, t__z) -> x  + y  + (z - v t__z) 
+
+            2           2
+         - c  (t - t__z) 
+;
+# 
+> (x+0)^2+(y+0)^2+(-t__z*v+z)^2-(c*(t-t__z))^2 = 0;
+          2    2                2    2           2    
+         x  + y  + (-t__z v + z)  - c  (t - t__z)  = 0
+;
+# 
+> simplify((x+0)^2+(y+0)^2+(-t__z*v+z)^2-(c*(t-t__z))^2 = 0);
+  2  2      2           2     2       2  2                 2    2
+-c  t  + 2 c  t t__z - c  t__z  + t__z  v  - 2 t__z v z + x  + y 
+
+      2    
+   + z  = 0
+;
+# 
+# Выберем на изоповерхности запаздывающего момента t__z; точку theta = theta__0, varphi = varphi__0; и построим в этой точке вектор нормали к данной поверхности
+# 
+> x__0 := subs(theta = theta__0, varphi = varphi__0, x__a);
+           c (t - t__z) sin(theta__0) cos(varphi__0)
+;
+# 
+> y__0 := subs(theta = theta__0, varphi = varphi__0, y__a);
+           c (t - t__z) sin(theta__0) sin(varphi__0)
+;
+> xy__0 := subs(theta = theta__0, varphi = varphi__0, xy__a);
+                   c (t - t__z) sin(theta__0)
+;
+> z__0 := subs(theta = theta__0, varphi = varphi__0, z__a);
+              c (t - t__z) cos(theta__0) + v t__z
+;
+> diff(M(x, y, z, v, c, t, t__z), x);
+                              2 x
+;
+# 
+> diff(M(x, y, z, v, c, t, t__z), y);
+                              2 y
+;
+> diff(M(x, y, z, v, c, t, t__z), z);
+                        -2 t__z v + 2 z
+;
+# Каноническое уравнение нормали
+# 
+> (x-x__0)/subs(x = x__0, diff(M(x, y, z, v, c, t, t__z), x));
+         x - c (t - t__z) sin(theta__0) cos(varphi__0)
+         ---------------------------------------------
+          2 c (t - t__z) sin(theta__0) cos(varphi__0) 
+;
+# 
+> (y-y__0)/subs(y = y__0, diff(M(x, y, z, v, c, t, t__z), y));
+         y - c (t - t__z) sin(theta__0) sin(varphi__0)
+         ---------------------------------------------
+          2 c (t - t__z) sin(theta__0) sin(varphi__0) 
+;
+> (z-z__0)/subs(z = z__0, diff(M(x, y, z, v, c, t, t__z), z));
+            z - c (t - t__z) cos(theta__0) - v t__z
+            ---------------------------------------
+                 2 c (t - t__z) cos(theta__0)      
+;
+# 
+# 
+# 
+# (x-x__0)/subs(x = x__0, diff(M(x, y, z, v, c, t, t__z), x)) = (y-y__0)/subs(y = y__0, diff(M(x, y, z, v, c, t, t__z), y)) and (y-y__0)/subs(y = y__0, diff(M(x, y, z, v, c, t, t__z), y)) = (z-z__0)/subs(z = z__0, diff(M(x, y, z, v, c, t, t__z), z));
+# 
+# 
+> x_izo_tzap_normal := proc (p) options operator, arrow; x__0+p*subs(x = x__0, diff(M(x, y, z, v, c, t, t__z), x)) end proc;
+                  /           d                           \
+p -> x__0 + p subs|x = x__0, --- M(x, y, z, v, c, t, t__z)|
+                  \           dx                          /
+;
+# 
+# 
+> y_izo_tzap_normal := proc (p) options operator, arrow; y__0+p*subs(y = y__0, diff(M(x, y, z, v, c, t, t__z), y)) end proc;
+                  /           d                           \
+p -> y__0 + p subs|y = y__0, --- M(x, y, z, v, c, t, t__z)|
+                  \           dy                          /
+;
+# 
+# 
+# 
+> z_izo_tzap_normal := proc (p) options operator, arrow; z__0+p*subs(z = z__0, diff(M(x, y, z, v, c, t, t__z), z)) end proc;
+                  /           d                           \
+p -> z__0 + p subs|z = z__0, --- M(x, y, z, v, c, t, t__z)|
+                  \           dz                          /
+;
+# 
+> izo_tzap_normal := subs(c = 1, t = 5, v = .5, [x__0+p*subs(x = x__0, diff(M(x, y, z, v, c, t, t__z), x)), y__0+p*subs(y = y__0, diff(M(x, y, z, v, c, t, t__z), y)), z__0+p*subs(z = z__0, diff(M(x, y, z, v, c, t, t__z), z))]);
+[(5 - t__z) sin(theta__0) cos(varphi__0)
+
+   + 2 p (5 - t__z) sin(theta__0) cos(varphi__0), (5 - t__z) sin(
+
+  theta__0) sin(varphi__0)
+
+   + 2 p (5 - t__z) sin(theta__0) sin(varphi__0), (5 - t__z) cos(
+
+  theta__0) + 0.5 t__z + 2 p (5 - t__z) cos(theta__0)]
+;
+# 
+> with(plots);
+> 
+;
+> spacecurve([subs(t__z = 0, theta__0 = 0, varphi__0 = 0, izo_tzap_normal), subs(t__z = 0, theta__0 = (1/4)*Pi, varphi__0 = 0, izo_tzap_normal), subs(t__z = 0, theta__0 = (1/2)*Pi, varphi__0 = 0, izo_tzap_normal), subs(t__z = 0, theta__0 = 3*((1/4)*Pi), varphi__0 = 0, izo_tzap_normal)], p = -1 .. 1, thickness = 1, numpoints = 100, color = red);
+
+# 
+# теперь найдём точку пересечения этой нормали с изоповерхностью запаздывающего момента t__z+dt__z;
+# 
+> M(x, y, z, v, c, t, t__z);
+            2    2                2    2           2
+           x  + y  + (-t__z v + z)  - c  (t - t__z) 
+;
+# 
+> M(x, y, z, v, c, t, t__z+dt__z);
+    2    2                         2    2                   2
+   x  + y  + (z - v (t__z + dt__z))  - c  (t - t__z - dt__z) 
+;
+# 
+# 
+> [x_izo_tzap_normal(p), y_izo_tzap_normal(p), z_izo_tzap_normal(p)];
+[c (t - t__z) sin(theta__0) cos(varphi__0)
+
+   + 2 p c (t - t__z) sin(theta__0) cos(varphi__0), c (t - t__z) 
+
+  sin(theta__0) sin(varphi__0)
+
+   + 2 p c (t - t__z) sin(theta__0) sin(varphi__0), c (t - t__z) 
+
+  cos(theta__0) + v t__z + 2 p c (t - t__z) cos(theta__0)]
+;
+# Для этого в уравнение сферы изоповерхности запаздывающего момента t__z+dt__z; подставляем уравнения нормали к поверхности сферы запаздывающего момента t__z;
+# 
+> M(x_izo_tzap_normal(p), y_izo_tzap_normal(p), z_izo_tzap_normal(p), v, c, t, t__z+dt__z);
+ (c (t - t__z) sin(theta__0) cos(varphi__0)
+
+    + 2 p c (t - t__z) sin(theta__0) cos(varphi__0))^2 + (c (t
+
+    - t__z) sin(theta__0) sin(varphi__0)
+
+    + 2 p c (t - t__z) sin(theta__0) sin(varphi__0))^2 + (c (t
+
+    - t__z) cos(theta__0) + v t__z
+
+    + 2 p c (t - t__z) cos(theta__0) - v (t__z + dt__z))^2
+
+       2                   2
+    - c  (t - t__z - dt__z) 
+;
+# 
+# решаем полученное уравнение относительно независимого параметра
+> p_t__z2 := solve(M(x_izo_tzap_normal(p), y_izo_tzap_normal(p), z_izo_tzap_normal(p), v, c, t, t__z2), p);
+      1        /                                                 
+-------------- \-2 cos(theta__0) t__z v + 2 cos(theta__0) t__z2 v
+4 c (t - t__z)                                                   
+
+                          /             2     2  2
+   - 2 c t + 2 c t__z + 2 \cos(theta__0)  t__z  v 
+
+                    2             2                2      2  2
+   - 2 cos(theta__0)  t__z t__z2 v  + cos(theta__0)  t__z2  v 
+
+      2  2      2            2      2       2  2
+   + c  t  - 2 c  t t__z2 + c  t__z2  - t__z  v 
+
+                   2        2  2\      \        1        /
+   + 2 t__z t__z2 v  - t__z2  v /^(1/2)/, -------------- \
+                                          4 c (t - t__z)  
+-2 cos(theta__0) t__z v + 2 cos(theta__0) t__z2 v - 2 c t
+
+                  /             2     2  2
+   + 2 c t__z - 2 \cos(theta__0)  t__z  v 
+
+                    2             2                2      2  2
+   - 2 cos(theta__0)  t__z t__z2 v  + cos(theta__0)  t__z2  v 
+
+      2  2      2            2      2       2  2
+   + c  t  - 2 c  t t__z2 + c  t__z2  - t__z  v 
+
+                   2        2  2\      \
+   + 2 t__z t__z2 v  - t__z2  v /^(1/2)/
+;
+# 
+# 
+> p_dt__z := solve(M(x_izo_tzap_normal(p), y_izo_tzap_normal(p), z_izo_tzap_normal(p), v, c, t, t__z+dt__z), p);
+      1        /                                               
+-------------- \2 cos(theta__0) dt__z v - 2 c t + 2 c t__z + 2 
+4 c (t - t__z)                                                 
+
+  /             2      2  2    2      2      2        
+  \cos(theta__0)  dt__z  v  + c  dt__z  - 2 c  dt__z t
+
+        2               2  2      2           2     2        2  2
+   + 2 c  dt__z t__z + c  t  - 2 c  t t__z + c  t__z  - dt__z  v 
+
+  \      \        1        /                               
+  /^(1/2)/, -------------- \2 cos(theta__0) dt__z v - 2 c t
+            4 c (t - t__z)                                 
+
+                  /             2      2  2    2      2
+   + 2 c t__z - 2 \cos(theta__0)  dt__z  v  + c  dt__z 
+
+        2              2               2  2      2       
+   - 2 c  dt__z t + 2 c  dt__z t__z + c  t  - 2 c  t t__z
+
+      2     2        2  2\      \
+   + c  t__z  - dt__z  v /^(1/2)/
+;
+# 
+# подставляем полученное решение в уравнение нормали и последовательно находим выражение для всех трёх координат точки пересечения нормали со сферой изоповерхности запаздывающего момента увеличенного на dt__z;
+> x_izo_dtz := proc (dt__z) options operator, arrow; simplify(x_izo_tzap_normal(p_dt__z)) end proc;
+> simplify(x_izo_dtz(dt__z));
+                             /                        /
+sin(theta__0) cos(varphi__0) \cos(theta__0) dt__z v + \
+
+               2      2  2                                       
+  cos(theta__0)  dt__z  v  + ((t - t__z - dt__z) c - dt__z v) ((t
+
+                               \      \
+   - t__z - dt__z) c + dt__z v)/^(1/2)/
+;
+> y_izo_dtz := proc (dt__z) options operator, arrow; simplify(y_izo_tzap_normal(p_dt__z)) end proc;
+> simplify(y_izo_dtz(dt__z));
+                             /                        /
+sin(theta__0) sin(varphi__0) \cos(theta__0) dt__z v + \
+
+               2      2  2                                       
+  cos(theta__0)  dt__z  v  + ((t - t__z - dt__z) c - dt__z v) ((t
+
+                               \      \
+   - t__z - dt__z) c + dt__z v)/^(1/2)/
+;
+> z_izo_dtz := proc (dt__z) options operator, arrow; simplify(z_izo_tzap_normal(p_dt__z)) end proc;
+> simplify(z_izo_dtz(dt__z));
+              /             2      2  2                        
+cos(theta__0) \cos(theta__0)  dt__z  v  + ((t - t__z - dt__z) c
+
+                                              \      
+   - dt__z v) ((t - t__z - dt__z) c + dt__z v)/^(1/2)
+
+       /                   2       \
+   + v \dt__z cos(theta__0)  + t__z/
+;
+# 
+> simplify(sqrt(x_izo_dtz(dt__z)^2+y_izo_dtz(dt__z)^2));
+/             2 /                        /             2      2 
+\sin(theta__0)  \cos(theta__0) dt__z v + \cos(theta__0)  dt__z  
+
+   2                                                         
+  v  + ((t - t__z - dt__z) c - dt__z v) ((t - t__z - dt__z) c
+
+             \      \  \      
+   + dt__z v)/^(1/2)/^2/^(1/2)
+;
+# 
+# 
+# 
+# Взяв предел отношения изменения координат пересечения нормали с поверхностями соседних запаздывающих моментов к изменению запаздывающего момента находим таким образом производную координаты кривой нормали к запаздывающему моменту
+# 
+# 
+> limit((x_izo_dtz(dt__z)-x__0)/dt__z, dt__z = 0);
+     /  1   /                             /                        
+limit|----- \sin(theta__0) cos(varphi__0) \cos(theta__0) dt__z v + 
+     \dt__z                                                        
+
+  /             2      2  2    2      2      2        
+  \cos(theta__0)  dt__z  v  + c  dt__z  - 2 c  dt__z t
+
+        2               2  2      2           2     2        2  2
+   + 2 c  dt__z t__z + c  t  - 2 c  t t__z + c  t__z  - dt__z  v 
+
+  \      \                                            \           
+  /^(1/2)/ - c (t - t__z) sin(theta__0) cos(varphi__0)/, dt__z = 0
+
+  \
+  |
+  /
+;
+# 
+> limit((y_izo_dtz(dt__z)-y__0)/dt__z, dt__z = 0);
+     /  1   /                             /                        
+limit|----- \sin(theta__0) sin(varphi__0) \cos(theta__0) dt__z v + 
+     \dt__z                                                        
+
+  /             2      2  2    2      2      2        
+  \cos(theta__0)  dt__z  v  + c  dt__z  - 2 c  dt__z t
+
+        2               2  2      2           2     2        2  2
+   + 2 c  dt__z t__z + c  t  - 2 c  t t__z + c  t__z  - dt__z  v 
+
+  \      \                                            \           
+  /^(1/2)/ - c (t - t__z) sin(theta__0) sin(varphi__0)/, dt__z = 0
+
+  \
+  |
+  /
+;
+# 
+> limit((z_izo_dtz(dt__z)-z__0)/dt__z, dt__z = 0);
+     /  1   /             2                         /
+limit|----- \cos(theta__0)  dt__z v + cos(theta__0) \
+     \dt__z                                          
+
+               2      2  2    2      2      2        
+  cos(theta__0)  dt__z  v  + c  dt__z  - 2 c  dt__z t
+
+        2               2  2      2           2     2        2  2
+   + 2 c  dt__z t__z + c  t  - 2 c  t t__z + c  t__z  - dt__z  v 
+
+  \                                   \           \
+  /^(1/2) - c (t - t__z) cos(theta__0)/, dt__z = 0|
+                                                  /
+;
+# 
+# 
+# Строим графики производной координат кривой нормали к запаздывающему моменту в зависимости от угловой координаты начальной точки проведения нормальной кривой 
+# 
+# 
+> evalf(subs(c = 1, v = .5, t = 5, varphi__0 = 0, limit((x_izo_dtz(dt__z)-x__0)/dt__z, dt__z = 0)));
+     /  1   /                     /                          /     
+limit|----- \sin(theta__0) cos(0) \0.5 cos(theta__0) dt__z + \0.25 
+     \dt__z                                                        
+
+               2      2             2                          
+  cos(theta__0)  dt__z  + 0.75 dt__z  - 10 dt__z + 2 dt__z t__z
+
+                        2\      \
+   + 25 - 10 t__z + t__z /^(1/2)/
+
+                                    \           \
+   - (5 - t__z) sin(theta__0) cos(0)/, dt__z = 0|
+                                                /
+;
+# 
+# 
+> plot(subs(c = 1, v = .5, t = 5, t__z = 0, varphi__0 = 0, limit((x_izo_dtz(dt__z)-x__0)/dt__z, dt__z = 0)), theta__0 = 0 .. Pi);
+
+# 
+> plot(subs(c = 1, v = .5, t = 5, t__z = 0, varphi__0 = (1/2)*Pi, limit((y_izo_dtz(dt__z)-y__0)/dt__z, dt__z = 0)), theta__0 = 0 .. Pi);
+
+> plot(subs(c = 1, v = .5, t = 5, t__z = 0, limit((z_izo_dtz(dt__z)-z__0)/dt__z, dt__z = 0)), theta__0 = 0 .. Pi);
+
+# 
+# 
+# 
+> xy_izo_dtz := proc (dt__z) options operator, arrow; simplify(sqrt(x_izo_dtz(dt__z)^2+y_izo_dtz(dt__z)^2)) end proc;
+                 /    /                2                   2\\
+dt__z -> simplify\sqrt\x_izo_dtz(dt__z)  + y_izo_dtz(dt__z) //
+;
+> 
+;
+# 
+# Отношение координаты пересечения нормальной кривой со сферой запаздывающего момента к радиусу этой сферы даёт в итоге синус или косинус координатного угла
+# 
+# 
+# 
+> simplify(limit(xy_izo_dtz(dt__z)/((t-t__z-dt__z)*c), dt__z = 0));
+                                             (1/2)
+              /             2  2           2\     
+              \sin(theta__0)  c  (t - t__z) /     
+              ------------------------------------
+                          (t - t__z) c            
+;
+> limit((z_izo_dtz(dt__z)-v*(t__z+dt__z))/((t-t__z-dt__z)*c), dt__z = 0);
+                                            (1/2)
+                            / 2           2\     
+              cos(theta__0) \c  (t - t__z) /     
+              -----------------------------------
+                         c t - c t__z            
+;
+# 
+# Но взяв предел отношения изменения синуса и косинуса координатного угла к изменению запаздывающего момента находим производную синуса и косинуса координатного угла нормальной кривой по запаздывающему моменту
+# 
+> limit((xy_izo_dtz(dt__z)/((t-t__z-dt__z)*c)-sin(theta__0))/dt__z, dt__z = 0);
+     /  1   /         1           //             2 /                        
+limit|----- |-------------------- \\sin(theta__0)  \cos(theta__0) dt__z v + 
+     \dt__z \(t - t__z - dt__z) c                                           
+
+  /             2      2  2    2      2      2        
+  \cos(theta__0)  dt__z  v  + c  dt__z  - 2 c  dt__z t
+
+        2               2  2      2           2     2        2  2
+   + 2 c  dt__z t__z + c  t  - 2 c  t t__z + c  t__z  - dt__z  v 
+
+  \      \  \      \                \           \
+  /^(1/2)/^2/^(1/2)/ - sin(theta__0)|, dt__z = 0|
+                                    /           /
+;
+# 
+> limit(((z_izo_dtz(dt__z)-v*(t__z+dt__z))/((t-t__z-dt__z)*c)-cos(theta__0))/dt__z, dt__z = 0);
+     /  1   /         1           /             2               
+limit|----- |-------------------- \cos(theta__0)  dt__z v + cos(
+     \dt__z \(t - t__z - dt__z) c                               
+
+            /             2      2  2    2      2      2        
+  theta__0) \cos(theta__0)  dt__z  v  + c  dt__z  - 2 c  dt__z t
+
+        2               2  2      2           2     2        2  2
+   + 2 c  dt__z t__z + c  t  - 2 c  t t__z + c  t__z  - dt__z  v 
+
+  \                                  \                \           
+  /^(1/2) + v t__z - v (t__z + dt__z)/ - cos(theta__0)|, dt__z = 0
+                                                      /           
+
+  \
+  |
+  /
+;
+# 
+# Строим графики производной синуса и косинуса координатного угла нормальной кривой по запаздывающему моменту в зависимости от начального координатного угла нормальной кривой 
+# 
+# 
+> plot(subs(c = 1, v = .5, t = 5, t__z = 0, limit((xy_izo_dtz(dt__z)/((t-t__z-dt__z)*c)-sin(theta__0))/dt__z, dt__z = 0)), theta__0 = 0 .. Pi);
+
+> plot(subs(c = 1, v = .5, t = 5, t__z = 0, limit(((z_izo_dtz(dt__z)-v*(t__z+dt__z))/((t-t__z-dt__z)*c)-cos(theta__0))/dt__z, dt__z = 0)), theta__0 = 0 .. Pi);
+
+# 
+# Далее имея выражения для производных координат кривой нормали к запаздывающему моменту мы можем построить интеграл этой производной 
+# 
+# 
+> sin_theta := sin(theta__0)+int(subs(c = 1, v = .5, t = 5, limit((xy_izo_dtz(dt__z)/((t-t__z-dt__z)*c)-sin(theta__0))/dt__z, dt__z = 0)), t__z = 0 .. tzap);
+                /   /     /  1   /       1         //
+sin(theta__0) + |int|limit|----- |---------------- \\
+                \   \     \dt__z \5 - t__z - dt__z   
+
+               2 /                          /                  2 
+  sin(theta__0)  \0.5 cos(theta__0) dt__z + \0.25 cos(theta__0)  
+
+       2             2                                         
+  dt__z  + 0.75 dt__z  - 10 dt__z + 2 dt__z t__z + 25 - 10 t__z
+
+         2\      \  \      \                \           \  
+   + t__z /^(1/2)/^2/^(1/2)/ - sin(theta__0)|, dt__z = 0|, 
+                                            /           /  
+
+                  \\
+  t__z = 0 .. tzap||
+                  //
+;
+# 
+# 
+> cos_theta := cos(theta__0)+int(subs(c = 1, v = .5, t = 5, limit(((z_izo_dtz(dt__z)-v*(t__z+dt__z))/((t-t__z-dt__z)*c)-cos(theta__0))/dt__z, dt__z = 0)), t__z = 0 .. tzap);
+                /   /     /  1   /       1         /    
+cos(theta__0) + |int|limit|----- |---------------- \0.5 
+                \   \     \dt__z \5 - t__z - dt__z      
+
+               2                       /                  2 
+  cos(theta__0)  dt__z + cos(theta__0) \0.25 cos(theta__0)  
+
+       2             2                                         
+  dt__z  + 0.75 dt__z  - 10 dt__z + 2 dt__z t__z + 25 - 10 t__z
+
+         2\                  \                \           \  
+   + t__z /^(1/2) - 0.5 dt__z/ - cos(theta__0)|, dt__z = 0|, 
+                                              /           /  
+
+                  \\
+  t__z = 0 .. tzap||
+                  //
+;
+# 
+# 
+> plot([subs(theta__0 = (1/4)*Pi, cos_theta), subs(theta__0 = (1/3)*Pi, cos_theta)], tzap);
+
+# Зная зависимость косинуса полярного угла от запаздывающего момента по формулам 
+# xy__a := c*(t-t__z)*sin(theta);
+> # и z__a := c*(t-t__z)*cos(theta)+v*t__z;  рассчитываем траекторию кривой нормали к поверхности запаздывающего потенциала
+# 
+> xn := sin_theta*(t-tzap)*c;
+/                /   /     /  1   /       1         //
+|sin(theta__0) + |int|limit|----- |---------------- \\
+\                \   \     \dt__z \5 - t__z - dt__z   
+
+               2 /                          /                  2 
+  sin(theta__0)  \0.5 cos(theta__0) dt__z + \0.25 cos(theta__0)  
+
+       2             2                                         
+  dt__z  + 0.75 dt__z  - 10 dt__z + 2 dt__z t__z + 25 - 10 t__z
+
+         2\      \  \      \                \           \  
+   + t__z /^(1/2)/^2/^(1/2)/ - sin(theta__0)|, dt__z = 0|, 
+                                            /           /  
+
+                  \\\             
+  t__z = 0 .. tzap||| (t - tzap) c
+                  ///             
+;
+# 
+# 
+> zn := cos_theta*(t-tzap)*c+v*tzap;
+/                /   /     /  1   /       1         /    
+|cos(theta__0) + |int|limit|----- |---------------- \0.5 
+\                \   \     \dt__z \5 - t__z - dt__z      
+
+               2                       /                  2 
+  cos(theta__0)  dt__z + cos(theta__0) \0.25 cos(theta__0)  
+
+       2             2                                         
+  dt__z  + 0.75 dt__z  - 10 dt__z + 2 dt__z t__z + 25 - 10 t__z
+
+         2\                  \                \           \  
+   + t__z /^(1/2) - 0.5 dt__z/ - cos(theta__0)|, dt__z = 0|, 
+                                              /           /  
+
+                  \\\                      
+  t__z = 0 .. tzap||| (t - tzap) c + v tzap
+                  ///                      
+;
+# 
+# 
+> izo_tzap := evalf(subs(c = 1, v = .5, t = 5, [xn, zn, tzap = 0 .. 5]));
+[/                /   /     /  1   /       1         //
+[|sin(theta__0) + |int|limit|----- |---------------- \\
+[\                \   \     \dt__z \5 - t__z - dt__z   
+
+               2 /                          /                  2 
+  sin(theta__0)  \0.5 cos(theta__0) dt__z + \0.25 cos(theta__0)  
+
+       2             2                                         
+  dt__z  + 0.75 dt__z  - 10 dt__z + 2 dt__z t__z + 25 - 10 t__z
+
+         2\      \  \      \                \           \  
+   + t__z /^(1/2)/^2/^(1/2)/ - sin(theta__0)|, dt__z = 0|, 
+                                            /           /  
+
+                   \\\                 /                /   /
+  t__z = 0. .. tzap||| (5. - 1. tzap), |cos(theta__0) + |int|
+                   ///                 \                \   \
+
+       /  1   /       1         /                 2             
+  limit|----- |---------------- \0.5 cos(theta__0)  dt__z + cos(
+       \dt__z \5 - t__z - dt__z                                 
+
+            /                  2      2             2           
+  theta__0) \0.25 cos(theta__0)  dt__z  + 0.75 dt__z  - 10 dt__z
+
+                                       2\                  \
+   + 2 dt__z t__z + 25 - 10 t__z + t__z /^(1/2) - 0.5 dt__z/
+
+                  \           \                   \\\    
+   - cos(theta__0)|, dt__z = 0|, t__z = 0. .. tzap||| (5.
+                  /           /                   ///    
+
+                                         ]
+   - 1. tzap) + 0.5 tzap, tzap = 0. .. 5.]
+                                         ]
+;
+# 
+# 
+> plot([subs(theta__0 = 0, izo_tzap), subs(theta__0 = (1/8)*Pi, izo_tzap), subs(theta__0 = 2*Pi*(1/8), izo_tzap), subs(theta__0 = 3*Pi*(1/8), izo_tzap), subs(theta__0 = (1/2)*Pi, izo_tzap), subs(theta__0 = 5*Pi*(1/8), izo_tzap), subs(theta__0 = 6*Pi*(1/8), izo_tzap), subs(theta__0 = 7*Pi*(1/8), izo_tzap), subs(theta__0 = 8*Pi*(1/8), izo_tzap)]);
+
+# 
+# 
+# 
+> izo_tzap2 := evalf(subs(c = 1, v = .5, t = 5, [xn, zn]));
+[/                /   /     /  1   /       1         //
+[|sin(theta__0) + |int|limit|----- |---------------- \\
+[\                \   \     \dt__z \5 - t__z - dt__z   
+
+               2 /                          /                  2 
+  sin(theta__0)  \0.5 cos(theta__0) dt__z + \0.25 cos(theta__0)  
+
+       2             2                                         
+  dt__z  + 0.75 dt__z  - 10 dt__z + 2 dt__z t__z + 25 - 10 t__z
+
+         2\      \  \      \                \           \  
+   + t__z /^(1/2)/^2/^(1/2)/ - sin(theta__0)|, dt__z = 0|, 
+                                            /           /  
+
+                   \\\                 /                /   /
+  t__z = 0. .. tzap||| (5. - 1. tzap), |cos(theta__0) + |int|
+                   ///                 \                \   \
+
+       /  1   /       1         /                 2             
+  limit|----- |---------------- \0.5 cos(theta__0)  dt__z + cos(
+       \dt__z \5 - t__z - dt__z                                 
+
+            /                  2      2             2           
+  theta__0) \0.25 cos(theta__0)  dt__z  + 0.75 dt__z  - 10 dt__z
+
+                                       2\                  \
+   + 2 dt__z t__z + 25 - 10 t__z + t__z /^(1/2) - 0.5 dt__z/
+
+                  \           \                   \\\    
+   - cos(theta__0)|, dt__z = 0|, t__z = 0. .. tzap||| (5.
+                  /           /                   ///    
+
+                        ]
+   - 1. tzap) + 0.5 tzap]
+                        ]
+;
+# 
+# 
+> plot([subs(theta__0 = 0, izo_tzap2), subs(theta__0 = (1/8)*Pi, izo_tzap2), subs(theta__0 = 2*Pi*(1/8), izo_tzap2), subs(theta__0 = 3*Pi*(1/8), izo_tzap2), subs(theta__0 = (1/2)*Pi, izo_tzap2), subs(theta__0 = 5*Pi*(1/8), izo_tzap2), subs(theta__0 = 6*Pi*(1/8), izo_tzap2), subs(theta__0 = 7*Pi*(1/8), izo_tzap2), subs(theta__0 = 8*Pi*(1/8), izo_tzap2)], tzap = 0 .. 5);
+
+# 
+# 
+# plot([evalf(subs(c = 1, v = .5, t = 5, theta__0 = (1/3)*Pi, varphi__0 = 0, xn)), evalf(subs(c = 1, v = .5, t = 5, theta__0 = (1/3)*Pi, varphi__0 = 0, zn)), tzap = 0 .. 5]);
+# 
+# 
+# 
+# 
+# 
+# 
+> int_x := int(limit((x_izo_dtz(dt__z)-x__0)/dt__z, dt__z = 0), t__z = 0 .. tzap);
+   /     /  1   /                             /                        
+int|limit|----- \sin(theta__0) cos(varphi__0) \cos(theta__0) dt__z v + 
+   \     \dt__z                                                        
+
+  /             2      2  2    2      2      2        
+  \cos(theta__0)  dt__z  v  + c  dt__z  - 2 c  dt__z t
+
+        2               2  2      2           2     2        2  2
+   + 2 c  dt__z t__z + c  t  - 2 c  t t__z + c  t__z  - dt__z  v 
+
+  \      \                                            \           
+  /^(1/2)/ - c (t - t__z) sin(theta__0) cos(varphi__0)/, dt__z = 0
+
+  \                  \
+  |, t__z = 0 .. tzap|
+  /                  /
+;
+# 
+> int_z := int(limit((z_izo_dtz(dt__z)-z__0)/dt__z, dt__z = 0), t__z = 0 .. tzap);
+   /     /  1   /             2                         /
+int|limit|----- \cos(theta__0)  dt__z v + cos(theta__0) \
+   \     \dt__z                                          
+
+               2      2  2    2      2      2        
+  cos(theta__0)  dt__z  v  + c  dt__z  - 2 c  dt__z t
+
+        2               2  2      2           2     2        2  2
+   + 2 c  dt__z t__z + c  t  - 2 c  t t__z + c  t__z  - dt__z  v 
+
+  \                                   \           \  
+  /^(1/2) - c (t - t__z) cos(theta__0)/, dt__z = 0|, 
+                                                  /  
+
+                  \
+  t__z = 0 .. tzap|
+                  /
+;
+# 
+# 
+> plot([evalf(subs(c = 1, v = .5, t = 5, theta__0 = (1/3)*Pi, varphi__0 = 0, int_x)), evalf(subs(c = 1, v = .5, t = 5, theta__0 = (1/3)*Pi, varphi__0 = 0, int_z)), tzap = 0 .. 5]);
+
+# 
+# 
+> int(evalf(subs(c = 1, v = .5, t = 5, varphi__0 = 0, int_x)), t__z = 0 .. t__2);
+   /   /     /  1   /                     /                          
+int|int|limit|----- \sin(theta__0) cos(0) \0.5 cos(theta__0) dt__z + 
+   \   \     \dt__z                                                  
+
+  /                  2      2             2           
+  \0.25 cos(theta__0)  dt__z  + 0.75 dt__z  - 10 dt__z
+
+                                       2\      \
+   + 2 dt__z t__z + 25 - 10 t__z + t__z /^(1/2)/
+
+                                    \           \  
+   - (5 - t__z) sin(theta__0) cos(0)/, dt__z = 0|, 
+                                                /  
+
+                   \                  \
+  t__z = 0. .. tzap|, t__z = 0 .. t__2|
+                   /                  /
+;
+> int(evalf(subs(c = 1, v = .5, t = 5, int_z)), t__z = 0 .. t__2);
+   /   /     /  1   /                 2                       
+int|int|limit|----- \0.5 cos(theta__0)  dt__z + cos(theta__0) 
+   \   \     \dt__z                                           
+
+  /                  2      2             2           
+  \0.25 cos(theta__0)  dt__z  + 0.75 dt__z  - 10 dt__z
+
+                                       2\      
+   + 2 dt__z t__z + 25 - 10 t__z + t__z /^(1/2)
+
+                             \           \                   \  
+   - (5 - t__z) cos(theta__0)/, dt__z = 0|, t__z = 0. .. tzap|, 
+                                         /                   /  
+
+                  \
+  t__z = 0 .. t__2|
+                  /
+;
+# 
+# 
+> plot([subs()], t__2 = 0 .. 2);
+Error, invalid input: subs expects 1 or more arguments, but received 0
+;
+# 
+# 
+# 
+# 
+# 
+# 
+> simplify((x_izo_dtz(dt__z)-x__0)/dt__z);
+  1   //                                        /             2 
+----- \\cos(theta__0) dt__z v + (-t + t__z) c + \cos(theta__0)  
+dt__z                                                           
+
+       2  2                                                      
+  dt__z  v  + ((t - t__z - dt__z) c + dt__z v) ((t - t__z - dt__z
+
+                \      \                             \
+  ) c - dt__z v)/^(1/2)/ cos(varphi__0) sin(theta__0)/
+;
+# 
+> simplify((y_izo_dtz(dt__z)-y__0)/dt__z);
+  1   //                                        /             2 
+----- \\cos(theta__0) dt__z v + (-t + t__z) c + \cos(theta__0)  
+dt__z                                                           
+
+       2  2                                                      
+  dt__z  v  + ((t - t__z - dt__z) c + dt__z v) ((t - t__z - dt__z
+
+                \      \                             \
+  ) c - dt__z v)/^(1/2)/ sin(varphi__0) sin(theta__0)/
+;
+# 
+> simplify((z_izo_dtz(dt__z)-z__0)/dt__z);
+  1   //                                        /             2 
+----- \\cos(theta__0) dt__z v + (-t + t__z) c + \cos(theta__0)  
+dt__z                                                           
+
+       2  2                                                      
+  dt__z  v  + ((t - t__z - dt__z) c + dt__z v) ((t - t__z - dt__z
+
+                \      \              \
+  ) c - dt__z v)/^(1/2)/ cos(theta__0)/
+;
+> simplify((xy_izo_dtz(dt__z)-xy__0)/dt__z);
+  1   //             2 /                        /             2 
+----- \\sin(theta__0)  \cos(theta__0) dt__z v + \cos(theta__0)  
+dt__z                                                           
+
+       2  2                                                      
+  dt__z  v  + ((t - t__z - dt__z) c + dt__z v) ((t - t__z - dt__z
+
+                \      \  \                                    \
+  ) c - dt__z v)/^(1/2)/^2/^(1/2) + (-t + t__z) c sin(theta__0)/
+;
+# 
+# 
+# 
+> 
+;
+# 
+# 
+> 
+;
+# 
+# 
+# 
+> simplify(x_izo_tzap_normal(p_t__z2));
+               // 2               2              2
+cos(varphi__0) \\v  (t__z - t__z2)  cos(theta__0) 
+
+     / 2    2\      2   /    2             2\          2  2
+   + \c  - v / t__z2  + \-2 c  t + 2 t__z v / t__z2 + c  t 
+
+         2  2\                                       \           
+   - t__z  v /^(1/2) - v cos(theta__0) (t__z - t__z2)/ sin(theta\
+
+  __0)
+;
+# 
+> simplify(y_izo_tzap_normal(p_t__z2));
+               // 2               2              2
+sin(varphi__0) \\v  (t__z - t__z2)  cos(theta__0) 
+
+     / 2    2\      2   /    2             2\          2  2
+   + \c  - v / t__z2  + \-2 c  t + 2 t__z v / t__z2 + c  t 
+
+         2  2\                                       \           
+   - t__z  v /^(1/2) - v cos(theta__0) (t__z - t__z2)/ sin(theta\
+
+  __0)
+;
+# 
+> simplify(z_izo_tzap_normal(p_t__z2));
+/ 2               2              2   / 2    2\      2
+\v  (t__z - t__z2)  cos(theta__0)  + \c  - v / t__z2 
+
+     /    2             2\          2  2       2  2\           
+   + \-2 c  t + 2 t__z v / t__z2 + c  t  - t__z  v /^(1/2) cos(
+
+                /                            2       \
+  theta__0) - v \(t__z - t__z2) cos(theta__0)  - t__z/
+;
+# 
+# 
+# 
+> spacecurve([subs(c = 1, t = 5, v = .5, theta = (1/8)*Pi, varphi = 0, [x__z, y__z, z__z]), subs(c = 1, t = 5, v = .5, theta = (1/10)*Pi, varphi = 0, [x__z, y__z, z__z])], t__z = 0 .. 5, thickness = 1, numpoints = 100, color = black);
+Warning, unable to evaluate the functions to numeric values in the region; see the plotting command's help page to ensure the calling sequence is correct
+
+;
+> 
+;
+> 
+;
+> 
+;
+> plot(subs(c = 1, t = 5, v = .5, theta = (1/2)*Pi, [xy__z, z__z, t__z = 0 .. t]));
+Warning, expecting only range variable t__z in expressions [xy__z, z__z] to be plotted but found names [xy__z, z__z]
+
+;
+> 6*d;
+                              6 d
+;
+> animate(plot, [[cos(t), sin(t), t = 0 .. A]], A = 0 .. 2*Pi, scaling = constrained, frames = 50);
+
+> 
+;
+> plot([exp(-0.1e-2*t)*sin(t), exp(-0.1e-2*t)*cos(t), t = 0 .. 200*Pi]);
+
+> 
+;
+> 
+;
+> opts := thickness = 5, numpoints = 100, color = black;
+> 
+;
+> spacecurve([cos(t), sin(t), (2+sin(1))*t], t = 0 .. 20, opts);
+
+> animate(spacecurve, [[cos(t), sin(t), (2+sin(A))*t], t = 0 .. 20, opts], A = 0 .. 20*Pi);
+
+> 
+;

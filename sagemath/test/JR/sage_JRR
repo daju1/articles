@@ -1,0 +1,58 @@
+ sage
+┌────────────────────────────────────────────────────────────────────┐
+│ SageMath version 7.5.1, Release Date: 2017-01-15                   │
+│ Type "notebook()" for the browser-based notebook interface.        │
+│ Type "help()" for help.                                            │
+└────────────────────────────────────────────────────────────────────┘
+sage: r = var("r")
+sage: R0 = var("R0")
+sage: theta=var("theta")
+sage: v = var("v")
+sage: c = var("c")
+sage: assume(v > 0, c > 0, v < c)
+sage: assume(R1>0,R0>0,R0>r)
+
+sage: R(R0,r,theta)=sqrt(R0*R0-2*R0*r*cos(theta)+r*r)
+sage: K(R0,r,theta,v,c)=R(R0,r,theta)-(v/c)*(R0*cos(theta)-r)
+
+
+sage: v0(r0) = alpha_T*(r0/Ri)*vT(m,T)
+sage: a0(r0) = (delta_T/delta_t)*alpha_T*(r0/Ri)*derivative(vT(m,T),T)
+
+sage: v(r0, t_zap) = v0(r0) + a(r0)*t_zap
+sage: r(r0, t_zap) = r0 + v0(r0)*t_zap + a(r0)*(t_zap^2)/2
+
+sage: cos_alpha=(R0-r*cos(theta))/R(R0,r,theta)
+
+sage: cos_alpha_zap=(R0-r_zap*cos(theta))/R_zap(R0,r,theta)
+
+sage: fi(R0,r,v,c,q)=(q/2)*integral(sin(theta)/K(R0,r,theta,v,c),theta,0,pi)
+sage: plot(fi(R0,1,0,3,+1)+fi(R0,2,0,3,-1), R0)
+
+
+sage: ER(R0,R1,theta)=cos_alpha(R0,R1,theta)/(R1*R1+R0*R0-2*R1*R0*cos(theta))
+sage: ERR(R0,R1,theta)=derivative(ER(R0,R1,theta),R1)
+
+
+sage: JR(R0,R1)=integral(ERR(R0,R1,theta)*2*pi*R1*sin(theta)*R1,theta,0,pi, algorithm='maxima')
+sage: JR2(R0,R1)=integral(ERR(R0,R1,theta)*2*pi*R1*sin(theta)*R1,theta,0,pi, algorithm='sympy')#UNSOLVED
+sage: ERRR(R0,R1,theta)=derivative(ERR(R0,R1,theta),R1)
+
+sage: ERR_i(R0,R1,theta)  = ERR (R0,R1,theta)*2*pi*R1*sin(theta)*R1
+sage: ERRR_i(R0,R1,theta) = ERRR(R0,R1,theta)*2*pi*R1*sin(theta)*R1
+
+sage: JRR(R0,R1)=integral(ERRR(R0,R1,theta)*2*pi*R1*sin(theta)*R1,theta,0,pi) #UNSOLVED
+
+sage: numerical_integral(ERR_i(2,1,theta), 0, pi)
+sage: numerical_integral(ERRR_i(2,1,theta), 0, pi)
+
+sage: plot(R(2,1,theta), theta,0,pi)
+sage: plot(cos_alpha(2,1,theta),theta,0,pi) 
+sage: plot(cos_beta(2,1,theta),theta,0,pi) 
+sage: plot(ER(2,1,theta),theta,0,pi) 
+sage: plot(ERR(2,1,theta),theta,0,pi) 
+
+plot(JR(R0,1), R0, 1.5,3) 
+
+
+

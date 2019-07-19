@@ -151,3 +151,42 @@ p.save(pname)
 #                                                             /   2             \
 #                                                    dt_zap*v*\cot (theta_0) + 1/
 
+import numpy as np
+from sage.plot.circle import Circle
+g = Graphics()
+
+R0 = 1
+theta0 = 15*pi/160
+dtzap = 0.1
+zq = 0
+za = 0
+xa = 0
+vv = 0.5
+cc = 1
+theta = theta0.n()
+r = R0
+tt = 0
+plot_data = []
+for i in range (0, 100000):
+    tt -= dtzap
+    #print "\ntt theta", tt, theta
+    _x1 = X_1(theta, r, dtzap, vv, cc)
+    _z1 = Z_1(theta, r, dtzap, vv, cc)
+    #print "\ntheta, _x1, _z1", theta, _x1, _z1
+    theta1 = arctan2(_x1, _z1 + vv*dtzap)
+    theta = theta1
+    za = _z1 + zq
+    xa = _x1
+    zq -= dtzap*vv
+    r=sqrt(_x1^2+_z1^2)
+    #print "\nza, xa, zq, r", za, xa, zq, r
+    plot_data += [(xa, za)]
+    if (0 == i % 100):
+        g += circle((0,zq), r, rgbcolor=hue(r/1000))
+
+g.show()
+p = list_plot(plot_data)
+p += g
+pname = "results/_" + ".png"
+print pname
+p.save(pname)

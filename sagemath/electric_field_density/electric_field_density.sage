@@ -83,8 +83,6 @@ def theta_1(theta_0, r0, dt_zap, v, c):
 #def theta_1(theta_0, r0, dt_zap, v, c):
 #    return arccot(cot(theta_0) + (v*dt_zap) / X_1(theta_0, r0, dt_zap, v, c))
 
-def theta_2(theta_0, v):
-    return theta_1(theta_0, 0.1, 0.01, v, 1)
 
 def theta_5(theta_0, v):
     return theta_1(theta_0, 0.1, 0.5, v, 1)#/theta_0
@@ -132,9 +130,6 @@ p = plot( [
 pname = "results/theta_1_depending_on_v_" + "_r0=0.1_dt_zap=0.5" + ".png"
 p.save(pname)
 
-
-#plot( theta_2(theta_0, 0.5), (theta_0, 0.001, pi-0.001) ).show()
-
 p = contour_plot( theta_1(theta_0, 0.1, 0.5, v, 1), (theta_0, 0.001, pi-0.001), (v,0,0.999) )
 pname = "results/contour_plot_of_theta_1_depending_on_v_and_theta_0" + "_r0=0.1_dt_zap=0.5" + ".png"
 p.save(pname)
@@ -154,39 +149,44 @@ p.save(pname)
 import numpy as np
 from sage.plot.circle import Circle
 g = Graphics()
+min_theta_0 = 5*pi/180
+max_theta_0=176*pi/180
+step_theta_0=10*pi/180
 
-R0 = 1
-theta0 = 15*pi/160
+R0 = 100
 dtzap = 0.1
-zq = 0
-za = 0
-xa = 0
-vv = 0.5
-cc = 1
-theta = theta0.n()
-r = R0
-tt = 0
-plot_data = []
-for i in range (0, 100000):
-    tt -= dtzap
-    #print "\ntt theta", tt, theta
-    _x1 = X_1(theta, r, dtzap, vv, cc)
-    _z1 = Z_1(theta, r, dtzap, vv, cc)
-    #print "\ntheta, _x1, _z1", theta, _x1, _z1
-    theta1 = arctan2(_x1, _z1 + vv*dtzap)
-    theta = theta1
-    za = _z1 + zq
-    xa = _x1
-    zq -= dtzap*vv
-    r=sqrt(_x1^2+_z1^2)
-    #print "\nza, xa, zq, r", za, xa, zq, r
-    plot_data += [(xa, za)]
-    if (0 == i % 100):
-        g += circle((0,zq), r, rgbcolor=hue(r/1000))
+for theta0 in np.arange (min_theta_0, max_theta_0, step_theta_0):
+    zq = 0
+    za = 0
+    xa = 0
+    vv = 0.8
+    cc = 1
+    theta = theta0.n()
+    r = R0
+    tt = 0
+    plot_data = []
+    for i in range (0, 1001):
+        tt += dtzap
+        _x1 = X_1(theta, r, dtzap, vv, cc)
+        _z1 = Z_1(theta, r, dtzap, vv, cc)
+        theta1 = arctan2(_x1, _z1 + vv*dtzap)
+        theta = theta1
+        za = _z1 - zq
+        xa = _x1
+        zq += dtzap*vv
+        r = R0 + cc * tt
+        # print "\ntt theta r rr _x1 _z1 xa za zq", tt, theta, r, rr, _x1, _z1, xa, za, zq
+        rr = sqrt(_x1^2 + _z1^2)
 
-g.show()
-p = list_plot(plot_data)
-p += g
-pname = "results/_" + ".png"
+        if (0 == i % 100 and theta0 == min_theta_0):
+	    g += circle((0, -zq), rr, rgbcolor=hue(r/500))
+
+        plot_data += [(xa, za)]
+
+    print "theta0 = ", theta0
+
+    g += list_plot(plot_data)
+
+pname = "results/normals" + ".png"
 print pname
-p.save(pname)
+g.save(pname)

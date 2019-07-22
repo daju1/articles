@@ -8,6 +8,7 @@ v = var("v")
 c = var("c")
 z = var("z")
 r0 = var("r0")
+dR = var("dR")
 dt_zap = var("dt_zap")
 
 x_1 = solve(x^2 + (x*cot(theta_0) + v*dt_zap)^2 - (r0 + c*dt_zap)^2, x)
@@ -16,16 +17,11 @@ z_1 = solve((z*tan(theta_0))^2  + (z + v*dt_zap)^2 - (r0 + c*dt_zap)^2, z)
 print "\nx_1 =", x_1
 print "\nz_1 =", z_1
 
+
 # x_1 = [
 # x == -(dt_zap*v*cot(theta_0) + sqrt(c^2*dt_zap^2 - dt_zap^2*v^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*cot(theta_0)^2 + r0^2))/(cot(theta_0)^2 + 1),
 # x == -(dt_zap*v*cot(theta_0) - sqrt(c^2*dt_zap^2 - dt_zap^2*v^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*cot(theta_0)^2 + r0^2))/(cot(theta_0)^2 + 1)
 # ]
-
-def X_1_old(theta_0, r0, dt_zap, v, c):
-    if (theta_0 > pi/2):
-        return (dt_zap*v*cot(theta_0) + sqrt(c^2*dt_zap^2 - dt_zap^2*v^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*cot(theta_0)^2 + r0^2))/(cot(theta_0)^2 + 1)
-    return    -(dt_zap*v*cot(theta_0) - sqrt(c^2*dt_zap^2 - dt_zap^2*v^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*cot(theta_0)^2 + r0^2))/(cot(theta_0)^2 + 1)
-
 
 #  /                            __________________________________________________________________________________________________\  #
 #  |                           /  2       2                         2  2     2   / 2       2                     2\    2          |  #
@@ -34,11 +30,6 @@ def X_1_old(theta_0, r0, dt_zap, v, c):
 #                                                             2                                                                      #
 #                                                          cot (theta_0) + 1                                                         #
 
-
-p = plot( X_1_old(theta_0, 0.1, 0.5, 0.5, 1), (theta_0, 0.001, pi-0.001) )
-pname = "results/plot_of_x_1_old_depending_on_theta_0" + "_r0=0.1_dt_zap=0.5_v=0.5" + ".png"
-p.save(pname)
-
 # z_1 = [
 # z == -(dt_zap*v + sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1),
 # z == -(dt_zap*v - sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
@@ -46,10 +37,7 @@ p.save(pname)
 
 def Z_1(theta_0, r0, dt_zap, v, c):
     if (theta_0 > pi/2):
-        zz   =   (dt_zap*v - sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
-        z1   =  -(dt_zap*v + sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
-        #print theta_0, z1, zz
-        return z1
+        return  -(dt_zap*v + sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
     return      -(dt_zap*v - sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
 
 
@@ -59,6 +47,33 @@ def Z_1(theta_0, r0, dt_zap, v, c):
 # ----------------------------------------------------------------------------------------------------------------------------------- #
 #                                                             2                                                                       #
 #                                                          tan (theta_0) + 1                                                          #
+
+dR  = solve((r0 + dR)^2 + 2*(r0 + dR) * v * dt_zap * cos(theta_0) + (v * dt_zap)^2 - (r0 + c*dt_zap)^2, dR)
+print "\ndR =", dR
+
+# dR = [
+# dR == -dt_zap*v*cos(theta_0) - r0 - sqrt(c^2*dt_zap^2 + 2*c*dt_zap*r0 + (dt_zap^2*cos(theta_0)^2 - dt_zap^2)*v^2 + r0^2),
+# dR == -dt_zap*v*cos(theta_0) - r0 + sqrt(c^2*dt_zap^2 + 2*c*dt_zap*r0 + (dt_zap^2*cos(theta_0)^2 - dt_zap^2)*v^2 + r0^2)
+# ]
+
+dR1 = -dt_zap*v*cos(theta_0) - r0 - sqrt(c^2*dt_zap^2 + 2*c*dt_zap*r0 + (dt_zap^2*cos(theta_0)^2 - dt_zap^2)*v^2 + r0^2)
+dR2 = -dt_zap*v*cos(theta_0) - r0 + sqrt(c^2*dt_zap^2 + 2*c*dt_zap*r0 + (dt_zap^2*cos(theta_0)^2 - dt_zap^2)*v^2 + r0^2)
+
+dR1_dt = derivative (dR1, dt_zap)
+dR2_dt = derivative (dR2, dt_zap)
+
+print "\ndR1_dt =", dR1_dt
+print "\ndR2_dt =", dR2_dt
+
+# dR1_dt = -v*cos(theta_0) - (c^2*dt_zap + (dt_zap*cos(theta_0)^2 - dt_zap)*v^2 + c*r0)/sqrt(c^2*dt_zap^2 + 2*c*dt_zap*r0 + (dt_zap^2*cos(theta_0)^2 - dt_zap^2)*v^2 + r0^2)
+# dR2_dt = -v*cos(theta_0) + (c^2*dt_zap + (dt_zap*cos(theta_0)^2 - dt_zap)*v^2 + c*r0)/sqrt(c^2*dt_zap^2 + 2*c*dt_zap*r0 + (dt_zap^2*cos(theta_0)^2 - dt_zap^2)*v^2 + r0^2)
+
+print simplify(limit (dR1_dt, dt_zap = 0))
+print simplify(limit (dR2_dt, dt_zap = 0))
+
+# -(sqrt(r0^2)*v*cos(theta_0) + c*r0)/sqrt(r0^2)
+# -(sqrt(r0^2)*v*cos(theta_0) - c*r0)/sqrt(r0^2)
+
 
 def Z_1_0(theta_0, r0, dt_zap, v, c):
     return  -(dt_zap*v + sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
@@ -186,14 +201,11 @@ dtzap = 0.1
 
 z_plot_data = []
 x_plot_data = []
-x_old_plot_data = []
 for theta0 in np.arange (min_theta_0, max_theta_0, step_theta_0):
     z1=Z_1(theta0, R0, dtzap, 0.5, 1)
     x1=X_1(theta0, R0, dtzap, 0.5, 1)
-    x1_old=X_1_old(theta0, R0, dtzap, 0.5, 1)
     z_plot_data += [(theta0, z1)]
     x_plot_data += [(theta0, x1)]
-    x_old_plot_data += [(theta0, x1_old)]
 
 p = list_plot( z_plot_data )
 pname = "results/list_plot_of_z_1_depending_on_theta_0" + "_r0=100_dt_zap=0.5_v=0.5" + ".png"
@@ -201,10 +213,6 @@ p.save(pname)
 
 p = list_plot( x_plot_data )
 pname = "results/list_plot_of_x_1_depending_on_theta_0" + "_r0=100_dt_zap=0.5_v=0.5" + ".png"
-p.save(pname)
-
-p = list_plot( x_old_plot_data )
-pname = "results/list_plot_of_x_1_old_depending_on_theta_0" + "_r0=100_dt_zap=0.5_v=0.5" + ".png"
 p.save(pname)
 
 for theta0 in np.arange (min_theta_0, max_theta_0, step_theta_0):
@@ -242,3 +250,4 @@ for theta0 in np.arange (min_theta_0, max_theta_0, step_theta_0):
 pname = "results/normals" + ".png"
 print pname
 g.save(pname)
+# g.show()

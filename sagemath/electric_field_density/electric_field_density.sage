@@ -21,7 +21,7 @@ print "\nz_1 =", z_1
 # x == -(dt_zap*v*cot(theta_0) - sqrt(c^2*dt_zap^2 - dt_zap^2*v^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*cot(theta_0)^2 + r0^2))/(cot(theta_0)^2 + 1)
 # ]
 
-def X_1(theta_0, r0, dt_zap, v, c):
+def X_1_old(theta_0, r0, dt_zap, v, c):
     if (theta_0 > pi/2):
         return (dt_zap*v*cot(theta_0) + sqrt(c^2*dt_zap^2 - dt_zap^2*v^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*cot(theta_0)^2 + r0^2))/(cot(theta_0)^2 + 1)
     return    -(dt_zap*v*cot(theta_0) - sqrt(c^2*dt_zap^2 - dt_zap^2*v^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*cot(theta_0)^2 + r0^2))/(cot(theta_0)^2 + 1)
@@ -35,6 +35,10 @@ def X_1(theta_0, r0, dt_zap, v, c):
 #                                                          cot (theta_0) + 1                                                         #
 
 
+p = plot( X_1_old(theta_0, 0.1, 0.5, 0.5, 1), (theta_0, 0.001, pi-0.001) )
+pname = "results/plot_of_x_1_old_depending_on_theta_0" + "_r0=0.1_dt_zap=0.5_v=0.5" + ".png"
+p.save(pname)
+
 # z_1 = [
 # z == -(dt_zap*v + sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1),
 # z == -(dt_zap*v - sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
@@ -42,8 +46,10 @@ def X_1(theta_0, r0, dt_zap, v, c):
 
 def Z_1(theta_0, r0, dt_zap, v, c):
     if (theta_0 > pi/2):
-         return  (dt_zap*v - sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
-    #    return -(dt_zap*v + sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
+        zz   =   (dt_zap*v - sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
+        z1   =  -(dt_zap*v + sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
+        #print theta_0, z1, zz
+        return z1
     return      -(dt_zap*v - sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
 
 
@@ -53,6 +59,28 @@ def Z_1(theta_0, r0, dt_zap, v, c):
 # ----------------------------------------------------------------------------------------------------------------------------------- #
 #                                                             2                                                                       #
 #                                                          tan (theta_0) + 1                                                          #
+
+def Z_1_0(theta_0, r0, dt_zap, v, c):
+    return  -(dt_zap*v + sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
+
+def Z_1_1(theta_0, r0, dt_zap, v, c):
+    return  -(dt_zap*v - sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)
+
+
+def X_1(theta_0, r0, dt_zap, v, c):
+    return tan(theta_0) * Z_1(theta_0, r0, dt_zap, v, c)
+
+p = plot( Z_1_0(theta_0, 0.1, 0.1, 0.5, 1), (theta_0, 0.001, pi-0.001) )
+pname = "results/plot_of_z_1_0_depending_on_theta_0" + "_r0=0.1_dt_zap=0.5_v=0.5" + ".png"
+p.save(pname)
+
+p = plot( Z_1_1(theta_0, 0.1, 0.1, 0.5, 1), (theta_0, 0.001, pi-0.001) )
+pname = "results/plot_of_z_1_1_depending_on_theta_0" + "_r0=0.1_dt_zap=0.5_v=0.5" + ".png"
+p.save(pname)
+
+p = plot( Z_1(theta_0, 0.1, 0.1, 0.5, 1), (theta_0, 0.001, pi-0.001) )
+pname = "results/plot_of_z_1_depending_on_theta_0" + "_r0=0.1_dt_zap=0.5_v=0.5" + ".png"
+p.save(pname)
 
 # DOTO: these need to be reworked and tested
 x1 = piecewise([((0,pi/2), x_1[0]), ([pi/2,pi], x_1[1])], var=theta_0);  x1
@@ -155,6 +183,30 @@ step_theta_0=10*pi/180
 
 R0 = 100
 dtzap = 0.1
+
+z_plot_data = []
+x_plot_data = []
+x_old_plot_data = []
+for theta0 in np.arange (min_theta_0, max_theta_0, step_theta_0):
+    z1=Z_1(theta0, R0, dtzap, 0.5, 1)
+    x1=X_1(theta0, R0, dtzap, 0.5, 1)
+    x1_old=X_1_old(theta0, R0, dtzap, 0.5, 1)
+    z_plot_data += [(theta0, z1)]
+    x_plot_data += [(theta0, x1)]
+    x_old_plot_data += [(theta0, x1_old)]
+
+p = list_plot( z_plot_data )
+pname = "results/list_plot_of_z_1_depending_on_theta_0" + "_r0=100_dt_zap=0.5_v=0.5" + ".png"
+p.save(pname)
+
+p = list_plot( x_plot_data )
+pname = "results/list_plot_of_x_1_depending_on_theta_0" + "_r0=100_dt_zap=0.5_v=0.5" + ".png"
+p.save(pname)
+
+p = list_plot( x_old_plot_data )
+pname = "results/list_plot_of_x_1_old_depending_on_theta_0" + "_r0=100_dt_zap=0.5_v=0.5" + ".png"
+p.save(pname)
+
 for theta0 in np.arange (min_theta_0, max_theta_0, step_theta_0):
     zq = 0
     za = 0

@@ -85,6 +85,63 @@ def Z_1_1(theta_0, r0, dt_zap, v, c):
 def X_1(theta_0, r0, dt_zap, v, c):
     return tan(theta_0) * Z_1(theta_0, r0, dt_zap, v, c)
 
+def X_0(theta_0, r0, dt_zap, v, c):
+    return r0 * sin(theta_0)
+
+def Z_0(theta_0, r0, dt_zap, v, c):
+    return r0 * cos(theta_0)
+
+theta = var("theta")
+d_theta = var("d_theta")
+S_theta = 1/2*(
+    (X_0(theta - d_theta, r0, dt_zap, v, c) - X_0(theta + d_theta, r0, dt_zap, v, c)) * (Z_0(theta - d_theta, r0, dt_zap, v, c) + Z_0(theta + d_theta, r0, dt_zap, v, c)) + 
+    (X_0(theta + d_theta, r0, dt_zap, v, c) - X_1(theta + d_theta, r0, dt_zap, v, c)) * (Z_0(theta + d_theta, r0, dt_zap, v, c) + Z_1(theta + d_theta, r0, dt_zap, v, c)) + 
+    (X_1(theta + d_theta, r0, dt_zap, v, c) - X_1(theta - d_theta, r0, dt_zap, v, c)) * (Z_1(theta + d_theta, r0, dt_zap, v, c) + Z_1(theta - d_theta, r0, dt_zap, v, c)) + 
+    (X_1(theta - d_theta, r0, dt_zap, v, c) - X_0(theta - d_theta, r0, dt_zap, v, c)) * (Z_1(theta - d_theta, r0, dt_zap, v, c) + Z_0(theta - d_theta, r0, dt_zap, v, c)) )
+
+print "\nS_theta =", S_theta
+
+# -1/2*(r0*cos(d_theta + theta) + r0*cos(-d_theta + theta))*(r0*sin(d_theta + theta) - r0*sin(-d_theta + theta)) + 1/2*(r0*cos(d_theta + theta) - (dt_zap*v - sqrt(-dt_zap^2*v^2*tan(d_theta + theta)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(d_theta + theta)^2 + r0^2))/(tan(d_theta + theta)^2 + 1))*(r0*sin(d_theta + theta) + (dt_zap*v - sqrt(-dt_zap^2*v^2*tan(d_theta + theta)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(d_theta + theta)^2 + r0^2))*tan(d_theta + theta)/(tan(d_theta + theta)^2 + 1)) - 1/2*(r0*cos(-d_theta + theta) - (dt_zap*v - sqrt(-dt_zap^2*v^2*tan(-d_theta + theta)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(-d_theta + theta)^2 + r0^2))/(tan(-d_theta + theta)^2 + 1))*(r0*sin(-d_theta + theta) + (dt_zap*v - sqrt(-dt_zap^2*v^2*tan(-d_theta + theta)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(-d_theta + theta)^2 + r0^2))*tan(-d_theta + theta)/(tan(-d_theta + theta)^2 + 1)) + 1/2*((dt_zap*v - sqrt(-dt_zap^2*v^2*tan(d_theta + theta)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(d_theta + theta)^2 + r0^2))*tan(d_theta + theta)/(tan(d_theta + theta)^2 + 1) - (dt_zap*v - sqrt(-dt_zap^2*v^2*tan(-d_theta + theta)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(-d_theta + theta)^2 + r0^2))*tan(-d_theta + theta)/(tan(-d_theta + theta)^2 + 1))*((dt_zap*v - sqrt(-dt_zap^2*v^2*tan(d_theta + theta)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(d_theta + theta)^2 + r0^2))/(tan(d_theta + theta)^2 + 1) + (dt_zap*v - sqrt(-dt_zap^2*v^2*tan(-d_theta + theta)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(-d_theta + theta)^2 + r0^2))/(tan(-d_theta + theta)^2 + 1))
+
+dS_dt = derivative (S_theta, dt_zap)
+dS_dtheta = derivative (S_theta, d_theta)
+d2S_dt_dtheta = derivative (S_theta, d_theta, dt_zap)
+
+print "\ndS_dt =", dS_dt
+print "\ndS_dtheta =", dS_dtheta
+print "\nd2S_dt_dtheta =", d2S_dt_dtheta
+
+dS_dt0     = limit (dS_dt,     dt_zap = 0)
+dS_dtheta0 = limit (dS_dtheta, d_theta = 0)
+
+print "\ndS_dt0 =", dS_dt0
+print "\ndS_dtheta0 =", dS_dtheta0
+
+ddS_dtheta0_dt = derivative (dS_dtheta0, dt_zap)
+ddS_dt0_dtheta = derivative (dS_dt0, d_theta)
+
+print "\nddS_dtheta0_dt =", ddS_dtheta0_dt
+print "\nddS_dt0_dtheta =", ddS_dt0_dtheta
+
+ddS_dtheta0_dt0 = limit (ddS_dtheta0_dt, dt_zap = 0)
+ddS_dt0_dtheta0 = limit (ddS_dt0_dtheta, d_theta = 0)
+
+print "\nddS_dtheta0_dt0 =", ddS_dtheta0_dt0
+print "\nddS_dt0_dtheta0 =", ddS_dt0_dtheta0
+
+# too long time
+# d2S_dt0_dtheta = limit (d2S_dt_dtheta, dt_zap = 0)
+# d2S_dt_dtheta0 = limit (d2S_dt_dtheta, d_theta = 0)
+
+# print "\nd2S_dt0_dtheta =", d2S_dt0_dtheta
+# print "\nd2S_dt_dtheta0 =", d2S_dt_dtheta0
+
+# d2S_dt0_dtheta_0 = limit (d2S_dt0_dtheta, d_theta = 0)
+# d2S_dt_dtheta0_0 = limit (d2S_dt_dtheta0, dt_zap = 0)
+
+# print "\nd2S_dt0_dtheta_0 =", d2S_dt0_dtheta_0
+# print "\nd2S_dt_dtheta0_0 =", d2S_dt_dtheta0_0
+
 p = plot( Z_1_0(theta_0, 0.1, 0.1, 0.5, 1), (theta_0, 0.001, pi-0.001) )
 pname = "results/plot_of_z_1_0_depending_on_theta_0" + "_r0=0.1_dt_zap=0.5_v=0.5" + ".png"
 p.save(pname)
@@ -196,7 +253,7 @@ min_theta_0 = 5*pi/180
 max_theta_0=176*pi/180
 step_theta_0=10*pi/180
 
-R0 = 100
+R0 = 10
 dtzap = 0.1
 
 z_plot_data = []
@@ -221,21 +278,21 @@ for theta0 in np.arange (min_theta_0, max_theta_0, step_theta_0):
     xa = 0
     vv = 0.8
     cc = 1
-    theta = theta0.n()
+    theta_num = theta0.n()
     r = R0
     tt = 0
     plot_data = []
     for i in range (0, 1001):
         tt += dtzap
-        _x1 = X_1(theta, r, dtzap, vv, cc)
-        _z1 = Z_1(theta, r, dtzap, vv, cc)
-        theta1 = arctan2(_x1, _z1 + vv*dtzap)
-        theta = theta1
+        _x1 = X_1(theta_num, r, dtzap, vv, cc)
+        _z1 = Z_1(theta_num, r, dtzap, vv, cc)
+        theta1_num = arctan2(_x1, _z1 + vv*dtzap)
+        theta_num = theta1_num
         za = _z1 - zq
         xa = _x1
         zq += dtzap*vv
         r = R0 + cc * tt
-        # print "\ntt theta r rr _x1 _z1 xa za zq", tt, theta, r, rr, _x1, _z1, xa, za, zq
+        # print "\ntt theta_num r rr _x1 _z1 xa za zq", tt, theta_num, r, rr, _x1, _z1, xa, za, zq
         rr = sqrt(_x1^2 + _z1^2)
 
         if (0 == i % 100 and theta0 == min_theta_0):
@@ -245,9 +302,22 @@ for theta0 in np.arange (min_theta_0, max_theta_0, step_theta_0):
 
     print "theta0 = ", theta0
 
-    g += list_plot(plot_data)
+    g += list_plot(plot_data,size=2)
 
 pname = "results/normals" + ".png"
 print pname
 g.save(pname)
-# g.show()
+
+#verbose 0 (163: primitive.py, options) WARNING: Ignoring option 'thickness'=2
+#verbose 0 (163: primitive.py, options)
+#The allowed options for Point set defined by 1001 point(s) are:
+#    alpha          How transparent the point is.
+#    faceted        If True color the edge of the point. (only for 2D plots)
+#    hue            The color given as a hue.
+#    legend_color   The color of the legend text
+#    legend_label   The label for this item in the legend.
+#    marker         the marker symbol for 2D plots only (see documentation of plot() for details)
+#    markeredgecolorthe color of the marker edge (only for 2D plots)
+#    rgbcolor       The color as an RGB tuple.
+#    size           How big the point is (i.e., area in points^2=(1/72 inch)^2).
+#    zorder         The layer level in which to draw

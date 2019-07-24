@@ -74,6 +74,14 @@ print simplify(limit (dR2_dt, dt_zap = 0))
 # -(sqrt(r0^2)*v*cos(theta_0) + c*r0)/sqrt(r0^2)
 # -(sqrt(r0^2)*v*cos(theta_0) - c*r0)/sqrt(r0^2)
 
+dR1_dtheta = derivative (dR1, theta_0)
+dR2_dtheta = derivative (dR2, theta_0)
+
+print "\ndR1_dtheta =", dR1_dtheta
+print "\ndR2_dtheta =", dR2_dtheta
+
+# dR1_dtheta =  dt_zap^2*v^2*cos(theta_0)*sin(theta_0)/sqrt(c^2*dt_zap^2 + 2*c*dt_zap*r0 + (dt_zap^2*cos(theta_0)^2 - dt_zap^2)*v^2 + r0^2) + dt_zap*v*sin(theta_0)
+# dR2_dtheta = -dt_zap^2*v^2*cos(theta_0)*sin(theta_0)/sqrt(c^2*dt_zap^2 + 2*c*dt_zap*r0 + (dt_zap^2*cos(theta_0)^2 - dt_zap^2)*v^2 + r0^2) + dt_zap*v*sin(theta_0)
 
 def Z_1_0(theta_0, r0, dt_zap, v, c):
     return  -(dt_zap*v + sqrt(-dt_zap^2*v^2*tan(theta_0)^2 + c^2*dt_zap^2 + 2*c*dt_zap*r0 + (c^2*dt_zap^2 + 2*c*dt_zap*r0 + r0^2)*tan(theta_0)^2 + r0^2))/(tan(theta_0)^2 + 1)

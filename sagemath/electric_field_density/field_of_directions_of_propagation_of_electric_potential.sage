@@ -104,7 +104,22 @@ print "\ndz2_dtheta_1 = ", dz2_dtheta_1
 # dz2_dtheta_1 =  -(c*tt2 + r0)*(tan(1/2*theta_1)^2 + 1)*((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)/(((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1) + (((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 - 1)*(c*tt2 + r0)*(tan(1/2*theta_1)^2 + 1)*((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)/(((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)^2
 
 J = dx2_dtt2 * dz2_dtheta_1 - dx2_dtheta_1 * dz2_dtt2
-
 print "\nJ = ", J
 
 # J =  -2*(2*(c*tt1 + r0)*v*((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c - 1)*((c*tt1 + r0)/(c*tt2 + r0))^(v/c)*tan(1/2*theta_1)^3/((((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)^2*(c*tt2 + r0)) - (c*tt1 + r0)*v*((c*tt1 + r0)/(c*tt2 + r0))^(v/c - 1)*tan(1/2*theta_1)/((((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)*(c*tt2 + r0)) + c*((c*tt1 + r0)/(c*tt2 + r0))^(v/c)*tan(1/2*theta_1)/(((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1))*((c*tt2 + r0)*(tan(1/2*theta_1)^2 + 1)*((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)/(((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1) - (((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 - 1)*(c*tt2 + r0)*(tan(1/2*theta_1)^2 + 1)*((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)/(((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)^2) + (2*(c*tt2 + r0)*(tan(1/2*theta_1)^2 + 1)*((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*((c*tt1 + r0)/(c*tt2 + r0))^(v/c)*tan(1/2*theta_1)^2/(((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)^2 - (c*tt2 + r0)*(tan(1/2*theta_1)^2 + 1)*((c*tt1 + r0)/(c*tt2 + r0))^(v/c)/(((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1))*(2*(c*tt1 + r0)*v*((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c - 1)*tan(1/2*theta_1)^2/((((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)*(c*tt2 + r0)) - 2*(((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 - 1)*(c*tt1 + r0)*v*((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c - 1)*tan(1/2*theta_1)^2/((((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)^2*(c*tt2 + r0)) - (((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 - 1)*c/(((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1) - v
+
+J0 = J.limit(tt2 = tt1)
+print "\nJ0 = ", J0
+
+# J0 =  -(c*r0*tan(1/2*theta_1)^2 + c*r0 + (c^2*tan(1/2*theta_1)^2 + c^2)*tt1 + (r0*tan(1/2*theta_1)^2 + (c*tan(1/2*theta_1)^2 - c)*tt1 - r0)*v)/(tan(1/2*theta_1)^2 + 1)
+
+# sage: %display ascii_art
+# sage: J0
+#
+# /        2/theta_1\              / 2    2/theta_1\    2\     /      2/theta_1\            /     2/theta_1\    \\\ 
+#-|c*r0*tan |-------| + c*r0 + tt1*|c *tan |-------| + c | + v*|r0*tan |-------| - r0 + tt1*|c*tan |-------| - c||| 
+# \         \   2   /              \       \   2   /     /     \       \   2   /            \      \   2   /    /// 
+#-------------------------------------------------------------------------------------------------------------------
+#                                                    2/theta_1\                                                     
+#                                                 tan |-------| + 1                                                 
+#                                                     \   2   /              

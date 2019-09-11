@@ -2,6 +2,9 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+import numpy as np
+attach("../spherical_oscillator/float_formatting.sage")
+
 v = var("v")
 c = var("c")
 x = var("x")
@@ -123,3 +126,35 @@ print "\nJ0 = ", J0
 #                                                    2/theta_1\                                                     
 #                                                 tan |-------| + 1                                                 
 #                                                     \   2   /              
+
+from sage.plot.circle import Circle
+g = Graphics()
+
+dt = 0.2
+r0 = 0.2
+c = 1
+v = 1.7
+tt1 = 5
+
+g += circle((0, 0), r0, rgbcolor=hue(r0/500))
+
+for theta_i in np.arange(0, 360, 15):
+    theta_1 = theta_i * pi / 180.0
+    plot_data = []
+    for tt_i in np.arange(0, tt1-r0/c+dt, dt):
+        tt2 = tt_i
+        x2 =  2*(c*tt2 + r0)*((c*tt1 + r0)/(c*tt2 + r0))^(v/c)*tan(1/2*theta_1)/(((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)
+        z2 =  -tt2*v - (((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 - 1)*(c*tt2 + r0)/(((c*tt1 + r0)/(c*tt2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)
+        
+        plot_data += [(x2, z2)]
+        
+        if (dt/2 > (tt2+r0/c) % 1 and theta_i == 0):
+            zq = tt2*v
+            rr = c*tt2 + r0
+            g += circle((0, -zq), rr, rgbcolor=hue(rr/5))
+        
+    g += list_plot(plot_data,size=2)
+
+pname = "results/field_of_directions_of_propagation_of_electric_potential.png"
+print pname
+g.save(pname)

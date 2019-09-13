@@ -160,7 +160,48 @@ print "\nJ0 = ", J0
 
 # J0 = - (r0+c*tau1) * (c - v * cos(theta_1)
 
-#
+
+# метрический тензор
+# x_1 = tau
+# x_2 = theta_1
+
+g11 = dx2_dtau2    * dx2_dtau2    + dz2_dtau2    * dz2_dtau2
+g22 = dx2_dtheta_1 * dx2_dtheta_1 + dz2_dtheta_1 * dz2_dtheta_1
+
+g12 = dx2_dtau2    * dx2_dtheta_1 + dz2_dtau2    * dz2_dtheta_1
+g21 = dx2_dtheta_1 * dx2_dtau2    + dz2_dtheta_1 * dz2_dtau2
+
+print "\ng11 = ", g11
+print "\ng22 = ", g22
+print "\ng12 = ", g12
+print "\ng21 = ", g21
+
+g11 = g11.substitute(tan(1/2*theta_1) == sqrt((1-cos(theta_1))/(1+cos(theta_1))) ).full_simplify()
+g22 = g22.substitute(tan(1/2*theta_1) == sqrt((1-cos(theta_1))/(1+cos(theta_1))) ).full_simplify()
+g12 = g12.substitute(tan(1/2*theta_1) == sqrt((1-cos(theta_1))/(1+cos(theta_1))) ).full_simplify()
+g21 = g21.substitute(tan(1/2*theta_1) == sqrt((1-cos(theta_1))/(1+cos(theta_1))) ).full_simplify()
+
+print "\ng11 = ", g11
+print "\ng22 = ", g22
+print "\ng12 = ", g12
+print "\ng21 = ", g21
+
+# g11 =  (2*c^2*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*sin(theta_1)^2 - c^2*sin(theta_1)^2 - (2*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*sin(theta_1)^2 + (sin(theta_1)^2 + 2*cos(theta_1) - 2)*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c) + sin(theta_1)^2 - 2*cos(theta_1) - 2)*v^2 + 2*c^2*cos(theta_1) + 2*c^2 + 2*(c*sin(theta_1)^2 - (c*sin(theta_1)^2 + 2*c*cos(theta_1) - 2*c)*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c) - 2*c*cos(theta_1) - 2*c)*v - (c^2*sin(theta_1)^2 + 2*c^2*cos(theta_1) - 2*c^2)*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c))/(2*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*sin(theta_1)^2 - (sin(theta_1)^2 + 2*cos(theta_1) - 2)*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c) - sin(theta_1)^2 + 2*cos(theta_1) + 2)
+
+# g22 =  4*(c^2*tau2^2 + 2*c*r0*tau2 + r0^2)*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)/(2*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*sin(theta_1)^2 - (sin(theta_1)^2 + 2*cos(theta_1) - 2)*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c) - sin(theta_1)^2 + 2*cos(theta_1) + 2)
+
+# g12 =  -8*(((c*tau2 + (c*tau2 + r0)*cos(theta_1) + r0)*(-(cos(theta_1) - 1)/(cos(theta_1) + 1))^(3/2) - (c*tau2 - (c*tau2 + r0)*cos(theta_1) + r0)*sqrt(-(cos(theta_1) - 1)/(cos(theta_1) + 1)))*((c*tau1 + r0)/(c*tau2 + r0))^(6*v/c)*sin(theta_1)^2 + (((3*c*tau2 + (c*tau2 + r0)*cos(theta_1) + 3*r0)*(-(cos(theta_1) - 1)/(cos(theta_1) + 1))^(3/2) + (c*tau2 + (c*tau2 + r0)*cos(theta_1) + r0)*sqrt(-(cos(theta_1) - 1)/(cos(theta_1) + 1)))*sin(theta_1)^2 - 4*(c*tau2 + (c*tau2 + r0)*cos(theta_1) + r0)*(-(cos(theta_1) - 1)/(cos(theta_1) + 1))^(3/2))*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c))*v/(6*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c)*sin(theta_1)^4 + sin(theta_1)^4 - 4*(cos(theta_1) + 2)*sin(theta_1)^2 + (sin(theta_1)^4 + 4*(cos(theta_1) - 2)*sin(theta_1)^2 - 8*cos(theta_1) + 8)*((c*tau1 + r0)/(c*tau2 + r0))^(8*v/c) - 4*(sin(theta_1)^4 + 2*(cos(theta_1) - 1)*sin(theta_1)^2)*((c*tau1 + r0)/(c*tau2 + r0))^(6*v/c) - 4*(sin(theta_1)^4 - 2*(cos(theta_1) + 1)*sin(theta_1)^2)*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c) + 8*cos(theta_1) + 8)
+
+# g21 =  -8*(((c*tau2 + (c*tau2 + r0)*cos(theta_1) + r0)*(-(cos(theta_1) - 1)/(cos(theta_1) + 1))^(3/2) - (c*tau2 - (c*tau2 + r0)*cos(theta_1) + r0)*sqrt(-(cos(theta_1) - 1)/(cos(theta_1) + 1)))*((c*tau1 + r0)/(c*tau2 + r0))^(6*v/c)*sin(theta_1)^2 + (((3*c*tau2 + (c*tau2 + r0)*cos(theta_1) + 3*r0)*(-(cos(theta_1) - 1)/(cos(theta_1) + 1))^(3/2) + (c*tau2 + (c*tau2 + r0)*cos(theta_1) + r0)*sqrt(-(cos(theta_1) - 1)/(cos(theta_1) + 1)))*sin(theta_1)^2 - 4*(c*tau2 + (c*tau2 + r0)*cos(theta_1) + r0)*(-(cos(theta_1) - 1)/(cos(theta_1) + 1))^(3/2))*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c))*v/(6*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c)*sin(theta_1)^4 + sin(theta_1)^4 - 4*(cos(theta_1) + 2)*sin(theta_1)^2 + (sin(theta_1)^4 + 4*(cos(theta_1) - 2)*sin(theta_1)^2 - 8*cos(theta_1) + 8)*((c*tau1 + r0)/(c*tau2 + r0))^(8*v/c) - 4*(sin(theta_1)^4 + 2*(cos(theta_1) - 1)*sin(theta_1)^2)*((c*tau1 + r0)/(c*tau2 + r0))^(6*v/c) - 4*(sin(theta_1)^4 - 2*(cos(theta_1) + 1)*sin(theta_1)^2)*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c) + 8*cos(theta_1) + 8)
+
+# длина дуги координатной кривой tau2 в пределах theta_1 от theta_min до theta_max
+L = integral( sqrt(g22), (theta_1, theta_min, theta_max) )
+print "\nL = ", L
+
+# L =  2*c*tau2*arctan((c*tau1 + r0)^(v/c)*sin(theta_max)/((c*tau2 + r0)^(v/c)*(cos(theta_max) + 1))) - 2*c*tau2*arctan((c*tau1 + r0)^(v/c)*sin(theta_min)/((c*tau2 + r0)^(v/c)*(cos(theta_min) + 1))) + 2*r0*arctan((c*tau1 + r0)^(v/c)*sin(theta_max)/((c*tau2 + r0)^(v/c)*(cos(theta_max) + 1))) - 2*r0*arctan((c*tau1 + r0)^(v/c)*sin(theta_min)/((c*tau2 + r0)^(v/c)*(cos(theta_min) + 1)))
+
+
+# вычисление площади криволинейной клетки образованной координатными кривыми
 theta_min = var("theta_min")
 theta_max = var("theta_max")
 

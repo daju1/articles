@@ -39,6 +39,9 @@ assume(theta_0<pi)
 assume(theta_1>0)
 #assume(theta_1<pi)
 
+assume((c*tau1+r0)>0)
+assume((c*tau2+r0)>0)
+
 #theta_z = function('theta_z')(tau)
 #de = diff(theta_z, tau) - (v / (r0 + c*tau)) / (sin(theta_z) + ((cos(theta_z))^2) / sin(theta_z))
 #desolve(de, theta_z)
@@ -118,7 +121,16 @@ print "\nJ = ", J
 
 # J =  -2*(2*(c*tau1 + r0)*v*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c - 1)*((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*tan(1/2*theta_1)^3/((((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)^2*(c*tau2 + r0)) - (c*tau1 + r0)*v*((c*tau1 + r0)/(c*tau2 + r0))^(v/c - 1)*tan(1/2*theta_1)/((((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)*(c*tau2 + r0)) + c*((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*tan(1/2*theta_1)/(((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1))*((c*tau2 + r0)*(tan(1/2*theta_1)^2 + 1)*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)/(((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1) - (((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 - 1)*(c*tau2 + r0)*(tan(1/2*theta_1)^2 + 1)*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)/(((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)^2) + (2*(c*tau2 + r0)*(tan(1/2*theta_1)^2 + 1)*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*tan(1/2*theta_1)^2/(((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)^2 - (c*tau2 + r0)*(tan(1/2*theta_1)^2 + 1)*((c*tau1 + r0)/(c*tau2 + r0))^(v/c)/(((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1))*(2*(c*tau1 + r0)*v*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c - 1)*tan(1/2*theta_1)^2/((((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)*(c*tau2 + r0)) - 2*(((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 - 1)*(c*tau1 + r0)*v*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c - 1)*tan(1/2*theta_1)^2/((((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1)^2*(c*tau2 + r0)) - (((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 - 1)*c/(((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*tan(1/2*theta_1)^2 + 1) - v
 
-# предел якобиана
+J = J.substitute(tan(1/2*theta_1) == sqrt((1-cos(theta_1))/(1+cos(theta_1))) ).full_simplify()
+print "\nJ = ", J
+
+# J =  -2*(((c*tau2 - (c*tau2 + r0)*cos(theta_1) + r0)*((c*tau1 + r0)/(c*tau2 + r0))^(3*v/c) - (c*tau2 + (c*tau2 + r0)*cos(theta_1) + r0)*((c*tau1 + r0)/(c*tau2 + r0))^(v/c))*v + (c^2*tau2 + c*r0 - (c^2*tau2 + c*r0)*cos(theta_1))*((c*tau1 + r0)/(c*tau2 + r0))^(3*v/c) + (c^2*tau2 + c*r0 + (c^2*tau2 + c*r0)*cos(theta_1))*((c*tau1 + r0)/(c*tau2 + r0))^(v/c))/(2*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c)*sin(theta_1)^2 - (sin(theta_1)^2 + 2*cos(theta_1) - 2)*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c) - sin(theta_1)^2 + 2*cos(theta_1) + 2)
+
+
+
+
+# предел якобиана при устремлении разности текущего момента и запаздывающего момента в точке наблюдения (tau2 = t - t_zap_2)
+# к разности текущего момента и момента начала движения заряда (tau1 = t - t_zap_1)
 J0 = J.limit(tau2 = tau1)
 print "\nJ0 = ", J0
 
@@ -135,6 +147,19 @@ print "\nJ0 = ", J0
 #                                                 tan |-------| + 1                                                 
 #                                                     \   2   /              
 
+J0 = J0.substitute(tan(1/2*theta_1) == sqrt((1-cos(theta_1))/(1+cos(theta_1))) ).full_simplify()
+print "\nJ0 = ", J0
+# J0 =  -c^2*tau1 + (c*tau1 + r0)*v*cos(theta_1) - c*r0
+
+J0 = J0.collect(r0+c*tau1)
+print "\nJ0 = ", J0
+
+R_zap_1 = var("R_zap_1")
+J0 = J0.substitute((c*tau1 + r0)==R_zap_1)
+print "\nJ0 = ", J0
+
+# J0 = - (r0+c*tau1) * (c - v * cos(theta_1)
+
 #
 theta_min = var("theta_min")
 theta_max = var("theta_max")
@@ -142,10 +167,37 @@ theta_max = var("theta_max")
 tau_min = var("tau_min")
 tau_max = var("tau_max")
 
-L = integral( J, (theta_1, theta_min, theta_max) )
-print "\nL = ", L
-S = integral (L, (tau2, tau_min, tau_max) )
-print "\nS = ", S
+assume(tau_max-tau_min>0)
+assume(theta_max-theta_min>0)
+assume(pi-theta_max>0)
+
+from sage.symbolic.integration.integral import definite_integral
+A = definite_integral(J, tau2, tau_min, tau_max)
+print "\nA = ", A
+
+from sage.symbolic.integration.integral import indefinite_integral
+A = indefinite_integral(J, tau2)
+print "\nA = ", A
+
+A = integral (J, (tau2, tau_min, tau_max) )
+print "\nA = ", A
+
+T = integral( J, (theta_1, theta_min, theta_max) )
+print "\nT = ", T
+
+# T =  -2*((2*c^2*tau2 - (c^2*tau2 + c*r0)*sin(theta_max)^2 + 2*c*r0 + 2*(c^2*tau2 + c*r0)*cos(theta_max))*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1))*cos(theta_min)^2 + 2*(2*c^2*tau2 - (c^2*tau2 + c*r0)*sin(theta_max)^2 + 2*c*r0 + 2*(c^2*tau2 + c*r0)*cos(theta_max))*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1))*cos(theta_min) - (((c*tau2 + (c*tau2 + r0)*cos(theta_max) + r0)*sin(theta_max)*sin(theta_min)^2 - ((c*tau2 + r0)*cos(theta_min)*sin(theta_max)^2 + (c*tau2 + r0)*sin(theta_max)^2)*sin(theta_min))*((c*tau1 + r0)/(c*tau2 + r0))^(3*v/c) + ((c*tau2 + (c*tau2 + r0)*cos(theta_max) + r0)*cos(theta_min)^2*sin(theta_max) + 2*(c*tau2 + (c*tau2 + r0)*cos(theta_max) + r0)*cos(theta_min)*sin(theta_max) + (c*tau2 + (c*tau2 + r0)*cos(theta_max) + r0)*sin(theta_max) - ((c*tau2 + r0)*cos(theta_max)^2 + c*tau2 + 2*(c*tau2 + r0)*cos(theta_max) + ((c*tau2 + r0)*cos(theta_max)^2 + c*tau2 + 2*(c*tau2 + r0)*cos(theta_max) + r0)*cos(theta_min) + r0)*sin(theta_min))*((c*tau1 + r0)/(c*tau2 + r0))^(v/c))*v + ((c^2*tau2 + c*r0)*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1))*sin(theta_max)^2*sin(theta_min)^2 - (c^2*tau2 + c*r0)*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_min)/(cos(theta_min) + 1))*sin(theta_max)^2*sin(theta_min)^2)*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c) + ((c^2*tau2 + c*r0)*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1))*cos(theta_min)^2*sin(theta_max)^2 + 2*(c^2*tau2 + c*r0)*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1))*cos(theta_min)*sin(theta_max)^2 + (c^2*tau2 + c*r0)*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1))*sin(theta_max)^2 + (2*c^2*tau2 - (c^2*tau2 + c*r0)*sin(theta_max)^2 + 2*c*r0 + 2*(c^2*tau2 + c*r0)*cos(theta_max))*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1))*sin(theta_min)^2 - (2*(c^2*tau2 + c*r0)*cos(theta_min)*sin(theta_max)^2 + 2*(c^2*tau2 + c*r0)*sin(theta_max)^2 + (c^2*tau2 + (c^2*tau2 + c*r0)*cos(theta_max)^2 - (c^2*tau2 + c*r0)*sin(theta_max)^2 + c*r0 + 2*(c^2*tau2 + c*r0)*cos(theta_max))*sin(theta_min)^2)*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_min)/(cos(theta_min) + 1)))*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c) + (2*c^2*tau2 - (c^2*tau2 + c*r0)*sin(theta_max)^2 + 2*c*r0 + 2*(c^2*tau2 + c*r0)*cos(theta_max))*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1)) - (2*c^2*tau2 + 2*(c^2*tau2 + c*r0)*cos(theta_max)^2 - (c^2*tau2 + (c^2*tau2 + c*r0)*cos(theta_max)^2 + c*r0 + 2*(c^2*tau2 + c*r0)*cos(theta_max))*sin(theta_min)^2 + 2*c*r0 + 4*(c^2*tau2 + c*r0)*cos(theta_max) + 2*(c^2*tau2 + (c^2*tau2 + c*r0)*cos(theta_max)^2 + c*r0 + 2*(c^2*tau2 + c*r0)*cos(theta_max))*cos(theta_min))*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_min)/(cos(theta_min) + 1)))/(((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c)*sin(theta_max)^2*sin(theta_min)^2 + (cos(theta_max)^2 + 2*cos(theta_max) + 1)*cos(theta_min)^2 + (cos(theta_min)^2*sin(theta_max)^2 + 2*cos(theta_min)*sin(theta_max)^2 + (cos(theta_max)^2 + 2*cos(theta_max) + 1)*sin(theta_min)^2 + sin(theta_max)^2)*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c) + cos(theta_max)^2 + 2*(cos(theta_max)^2 + 2*cos(theta_max) + 1)*cos(theta_min) + 2*cos(theta_max) + 1)
+
+T = T.full_simplify()
+print "\nT = ", T
+
+# T =  2*((2*c^2*tau2 - (c^2*tau2 + c*r0)*sin(theta_max)^2 + 2*c*r0 + 2*(c^2*tau2 + c*r0)*cos(theta_max))*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1))*sin(theta_min)^2 - 2*(2*c^2*tau2 - (c^2*tau2 + c*r0)*sin(theta_max)^2 + 2*c*r0 + 2*(c^2*tau2 + c*r0)*cos(theta_max))*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1))*cos(theta_min) + (((c*tau2 + (c*tau2 + r0)*cos(theta_max) + r0)*sin(theta_max)*sin(theta_min)^2 - ((c*tau2 + r0)*cos(theta_min)*sin(theta_max)^2 + (c*tau2 + r0)*sin(theta_max)^2)*sin(theta_min))*((c*tau1 + r0)/(c*tau2 + r0))^(3*v/c) - ((c*tau2 + (c*tau2 + r0)*cos(theta_max) + r0)*sin(theta_max)*sin(theta_min)^2 - 2*(c*tau2 + (c*tau2 + r0)*cos(theta_max) + r0)*cos(theta_min)*sin(theta_max) - 2*(c*tau2 + (c*tau2 + r0)*cos(theta_max) + r0)*sin(theta_max) - ((c*tau2 + r0)*sin(theta_max)^2 - 2*c*tau2 - 2*(c*tau2 + r0)*cos(theta_max) + ((c*tau2 + r0)*sin(theta_max)^2 - 2*c*tau2 - 2*(c*tau2 + r0)*cos(theta_max) - 2*r0)*cos(theta_min) - 2*r0)*sin(theta_min))*((c*tau1 + r0)/(c*tau2 + r0))^(v/c))*v - ((c^2*tau2 + c*r0)*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1))*sin(theta_max)^2*sin(theta_min)^2 - (c^2*tau2 + c*r0)*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_min)/(cos(theta_min) + 1))*sin(theta_max)^2*sin(theta_min)^2)*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c) - 2*((c^2*tau2 + c*r0)*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1))*cos(theta_min)*sin(theta_max)^2 + (c^2*tau2 + c*r0)*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1))*sin(theta_max)^2 + (c^2*tau2 - (c^2*tau2 + c*r0)*sin(theta_max)^2 + c*r0 + (c^2*tau2 + c*r0)*cos(theta_max))*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1))*sin(theta_min)^2 - ((c^2*tau2 + c*r0)*cos(theta_min)*sin(theta_max)^2 + (c^2*tau2 + c*r0)*sin(theta_max)^2 + (c^2*tau2 - (c^2*tau2 + c*r0)*sin(theta_max)^2 + c*r0 + (c^2*tau2 + c*r0)*cos(theta_max))*sin(theta_min)^2)*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_min)/(cos(theta_min) + 1)))*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c) - 2*(2*c^2*tau2 - (c^2*tau2 + c*r0)*sin(theta_max)^2 + 2*c*r0 + 2*(c^2*tau2 + c*r0)*cos(theta_max))*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_max)/(cos(theta_max) + 1)) + (4*c^2*tau2 - 2*(c^2*tau2 + c*r0)*sin(theta_max)^2 - (2*c^2*tau2 - (c^2*tau2 + c*r0)*sin(theta_max)^2 + 2*c*r0 + 2*(c^2*tau2 + c*r0)*cos(theta_max))*sin(theta_min)^2 + 4*c*r0 + 4*(c^2*tau2 + c*r0)*cos(theta_max) + 2*(2*c^2*tau2 - (c^2*tau2 + c*r0)*sin(theta_max)^2 + 2*c*r0 + 2*(c^2*tau2 + c*r0)*cos(theta_max))*cos(theta_min))*arctan(((c*tau1 + r0)/(c*tau2 + r0))^(v/c)*sin(theta_min)/(cos(theta_min) + 1)))/(((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c)*sin(theta_max)^2*sin(theta_min)^2 + (cos(theta_max)^2 + 2*cos(theta_max) + 1)*cos(theta_min)^2 + (cos(theta_min)^2*sin(theta_max)^2 + 2*cos(theta_min)*sin(theta_max)^2 + (cos(theta_max)^2 + 2*cos(theta_max) + 1)*sin(theta_min)^2 + sin(theta_max)^2)*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c) + cos(theta_max)^2 + 2*(cos(theta_max)^2 + 2*cos(theta_max) + 1)*cos(theta_min) + 2*cos(theta_max) + 1)
+
+#S = integral (T, tau2 )
+#print "\nS = ", S
+
+
+#S = integral (T, (tau2, tau_min, tau_max) )
+#print "\nS = ", S
 
 
 # график кривых распространения электрического потенциала движущегося заряда и изоповерхностей запаздывающего момента

@@ -195,22 +195,36 @@ print "\ng21 = ", g21
 # g21 =  -8*(((c*tau2 + (c*tau2 + r0)*cos(theta_1) + r0)*(-(cos(theta_1) - 1)/(cos(theta_1) + 1))^(3/2) - (c*tau2 - (c*tau2 + r0)*cos(theta_1) + r0)*sqrt(-(cos(theta_1) - 1)/(cos(theta_1) + 1)))*((c*tau1 + r0)/(c*tau2 + r0))^(6*v/c)*sin(theta_1)^2 + (((3*c*tau2 + (c*tau2 + r0)*cos(theta_1) + 3*r0)*(-(cos(theta_1) - 1)/(cos(theta_1) + 1))^(3/2) + (c*tau2 + (c*tau2 + r0)*cos(theta_1) + r0)*sqrt(-(cos(theta_1) - 1)/(cos(theta_1) + 1)))*sin(theta_1)^2 - 4*(c*tau2 + (c*tau2 + r0)*cos(theta_1) + r0)*(-(cos(theta_1) - 1)/(cos(theta_1) + 1))^(3/2))*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c))*v/(6*((c*tau1 + r0)/(c*tau2 + r0))^(4*v/c)*sin(theta_1)^4 + sin(theta_1)^4 - 4*(cos(theta_1) + 2)*sin(theta_1)^2 + (sin(theta_1)^4 + 4*(cos(theta_1) - 2)*sin(theta_1)^2 - 8*cos(theta_1) + 8)*((c*tau1 + r0)/(c*tau2 + r0))^(8*v/c) - 4*(sin(theta_1)^4 + 2*(cos(theta_1) - 1)*sin(theta_1)^2)*((c*tau1 + r0)/(c*tau2 + r0))^(6*v/c) - 4*(sin(theta_1)^4 - 2*(cos(theta_1) + 1)*sin(theta_1)^2)*((c*tau1 + r0)/(c*tau2 + r0))^(2*v/c) + 8*cos(theta_1) + 8)
 
 # длина дуги координатной кривой tau2 в пределах theta_1 от theta_min до theta_max
+theta_min = var("theta_min")
+theta_max = var("theta_max")
+assume(theta_max-theta_min>0)
+assume(pi-theta_max>0)
+
 L = integral( sqrt(g22), (theta_1, theta_min, theta_max) )
 print "\nL = ", L
 
 # L =  2*c*tau2*arctan((c*tau1 + r0)^(v/c)*sin(theta_max)/((c*tau2 + r0)^(v/c)*(cos(theta_max) + 1))) - 2*c*tau2*arctan((c*tau1 + r0)^(v/c)*sin(theta_min)/((c*tau2 + r0)^(v/c)*(cos(theta_min) + 1))) + 2*r0*arctan((c*tau1 + r0)^(v/c)*sin(theta_max)/((c*tau2 + r0)^(v/c)*(cos(theta_max) + 1))) - 2*r0*arctan((c*tau1 + r0)^(v/c)*sin(theta_min)/((c*tau2 + r0)^(v/c)*(cos(theta_min) + 1)))
 
+# отношение длины дуги координатной кривой tau2 в пределах theta_1 от theta_min до theta_max к запаздывающему радиусу и к разности коррдинатных углов (theta_max-theta_min)
+p = L/((c*tau2 + r0)*(theta_max-theta_min))
+print "\np = ", p
+
+# p =  2*(c*tau2*arctan((c*tau1 + r0)^(v/c)*sin(theta_max)/((c*tau2 + r0)^(v/c)*(cos(theta_max) + 1))) - c*tau2*arctan((c*tau1 + r0)^(v/c)*sin(theta_min)/((c*tau2 + r0)^(v/c)*(cos(theta_min) + 1))) + r0*arctan((c*tau1 + r0)^(v/c)*sin(theta_max)/((c*tau2 + r0)^(v/c)*(cos(theta_max) + 1))) - r0*arctan((c*tau1 + r0)^(v/c)*sin(theta_min)/((c*tau2 + r0)^(v/c)*(cos(theta_min) + 1))))/((c*tau2 + r0)*(theta_max - theta_min))
+
+p = p.full_simplify()
+print "\np = ", p
+
+# p =  2*(arctan((c*tau1 + r0)^(v/c)*sin(theta_max)/((c*tau2 + r0)^(v/c)*(cos(theta_max) + 1))) - arctan((c*tau1 + r0)^(v/c)*sin(theta_min)/((c*tau2 + r0)^(v/c)*(cos(theta_min) + 1))))/(theta_max - theta_min)
+
 
 # вычисление площади криволинейной клетки образованной координатными кривыми
-theta_min = var("theta_min")
-theta_max = var("theta_max")
+
 
 tau_min = var("tau_min")
 tau_max = var("tau_max")
 
 assume(tau_max-tau_min>0)
-assume(theta_max-theta_min>0)
-assume(pi-theta_max>0)
+
 
 from sage.symbolic.integration.integral import definite_integral
 A = definite_integral(J, tau2, tau_min, tau_max)
@@ -273,4 +287,33 @@ for theta_i in np.arange(0, 360, 15):
 pname = "results/field_of_directions_of_propagation_of_electric_potential.png"
 print pname
 g.save(pname)
+
+
+# график отношения длины дуги координатной кривой tau2 в пределах theta_1 от theta_min до theta_max к запаздывающему радиусу и к разности коррдинатных углов (theta_max-theta_min)
+g2 = Graphics()
+
+theta_min = 0
+for theta_i in np.arange(5, 180-5, 5):
+    theta_max = theta_i * pi / 180.0
+    plot_data = []
+    for tau_i in np.arange(0, tau1-r0/c+dt, dt):
+        tau2 = tau_i
+        print "\ntau2 = ", tau2
+        print "\ntheta_min = ", theta_min
+        print "\ntheta_max = ", theta_max
+
+        p =  2*(arctan((c*tau1 + r0)^(v/c)*sin(theta_max)/((c*tau2 + r0)^(v/c)*(cos(theta_max) + 1))) - arctan((c*tau1 + r0)^(v/c)*sin(theta_min)/((c*tau2 + r0)^(v/c)*(cos(theta_min) + 1))))/(theta_max - theta_min)
+        print "\np = ", p
+        p = p.n()
+        print "\np = ", p
+
+        plot_data += [(tau2, p)]
+
+    g2 += list_plot(plot_data,size=2)
+    theta_min = theta_max
+
+pname = "results/relation_L_per_R_and_delta_theta.png"
+print pname
+g2.save(pname)
+
 

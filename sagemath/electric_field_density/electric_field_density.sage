@@ -304,7 +304,7 @@ for theta0 in np.arange (min_theta_0, max_theta_0, step_theta_0):
         rr = sqrt(_x1^2 + _z1^2)
 
         if (0 == i % 100 and theta0 == min_theta_0):
-	    g += circle((0, -zq), rr, rgbcolor=hue(r/500))
+            g += circle((0, -zq), rr, rgbcolor=hue(r/500))
 
         plot_data += [(xa, za)]
 

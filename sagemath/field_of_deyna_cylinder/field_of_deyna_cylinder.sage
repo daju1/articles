@@ -45,8 +45,8 @@ print "Iphi =", Iphi
 #   /          2            2 
 # \/  (ra - rj)  + (za - zj)  
 
-dIphi_dza = Iphi.diff(za)
-print "dIphi_dza =", dIphi_dza
+# dIphi_dza = Iphi.diff(za)
+# print "dIphi_dza =", dIphi_dza
 # dIphi_dza = -4*(za - zj)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2))/((ra - rj)^2 + (za - zj)^2)^(3/2) + 4*((4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)))*(za - zj)/(((ra - rj)^2 + (za - zj)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1))
 
 #             //        4*ra*rj            \  /       -4*ra*rj        \    /       -4*ra*rj        \\                /       -4*ra*rj        \
@@ -60,8 +60,8 @@ print "dIphi_dza =", dIphi_dza
 #                      |         2            2    |                            
 #                      \(ra - rj)  + (za - zj)     /                            
 
-dIphi_dra = Iphi.diff(ra)
-print "dIphi_dra =", dIphi_dra
+# dIphi_dra = Iphi.diff(ra)
+# print "dIphi_dra =", dIphi_dra
 # dIphi_dra = -4*(ra - rj)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2))/((ra - rj)^2 + (za - zj)^2)^(3/2) + 2*sqrt((ra - rj)^2 + (za - zj)^2)*((4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)))*(2*(ra - rj)*ra*rj/((ra - rj)^2 + (za - zj)^2)^2 - rj/((ra - rj)^2 + (za - zj)^2))/(ra*(4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1)*rj)
 
                                                                                 
@@ -131,28 +131,28 @@ print "Iphi_jv_rj =", Iphi_jv_rj
 
 # As = integrate(Iphi_js_rj, zj, algorithm="giac")
 
-As = integrate(Iphi_js_rj, (zj, z1, z2), algorithm="giac")
-print "As =", As
+# As = integrate(Iphi_js_rj, (zj, z1, z2), algorithm="giac")
+# print "As =", As
 # As = integrate(4*rj*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2))/sqrt((ra - rj)^2 + (za - zj)^2), zj)
 
-At = integrate(Iphi_js_rj, (rj, r1, r2), algorithm="giac")
-print "At =", At
+# At = integrate(Iphi_js_rj, (rj, r1, r2), algorithm="giac")
+# print "At =", At
 # At = integrate(4*cI0*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2))/sqrt((ra - rj)^2 + (za - zj)^2), rj, r1, r2)
 
-Av = integrate(integrate(Iphi_jv_rj, (zj, z1, z2), algorithm="giac"), (rj, r1, r2), algorithm="giac")
-print "Av =", Av
+# Av = integrate(integrate(Iphi_jv_rj, (zj, z1, z2), algorithm="giac"), (rj, r1, r2), algorithm="giac")
+# print "Av =", Av
 # Av = 0
 
 # AT = At.substitute_expression(zj==z1) - At.substitute_expression(zj==z2)
 # RuntimeError: Encountered operator mismatch in maxima-to-sr translation
 
-AT = integrate(Iphi_js_rj.substitute(zj==z1), (rj, r1, r2), algorithm="giac") - integrate(Iphi_js_rj.substitute(zj==z2), (rj, r1, r2), algorithm="giac")
-print "AT =", AT
+# AT = integrate(Iphi_js_rj.substitute(zj==z1), (rj, r1, r2), algorithm="giac") - integrate(Iphi_js_rj.substitute(zj==z2), (rj, r1, r2), algorithm="giac")
+# print "AT =", AT
 # AT = integrate(4*cI0*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2))/sqrt((ra - rj)^2 + (z1 - za)^2), rj, r1, r2) - integrate(4*cI0*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2))/sqrt((ra - rj)^2 + (z2 - za)^2), rj, r1, r2)
 
 # AS = - As.substitute_expression(rj==r1) + As.substitute_expression(rj==r2)
-AS =  - integrate(Iphi_js_rj.substitute(rj==r1), (zj, z1, z2), algorithm="giac") + integrate(Iphi_js_rj.substitute(rj==r2), (zj, z1, z2), algorithm="giac")
-print "AS =", AS
+# AS =  - integrate(Iphi_js_rj.substitute(rj==r1), (zj, z1, z2), algorithm="giac") + integrate(Iphi_js_rj.substitute(rj==r2), (zj, z1, z2), algorithm="giac")
+# print "AS =", AS
 # AS = -integrate(4*cI0*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2))/sqrt((r1 - ra)^2 + (za - zj)^2), zj, z1, z2) + integrate(4*cI0*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2))/sqrt((r2 - ra)^2 + (za - zj)^2), zj, z1, z2)
 
 # H_phi = AT.diff(za) - (AS - Av).diff(ra)
@@ -162,8 +162,8 @@ At_diff_za = Iphi_js_rj.diff(za) .substitute(zj==z1) - Iphi_js_rj.diff(za) .subs
 print "At_diff_za =", At_diff_za
 # At_diff_za = 4*cI0*(z1 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2))/((ra - rj)^2 + (z1 - za)^2)^(3/2) - 4*cI0*(z2 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2))/((ra - rj)^2 + (z2 - za)^2)^(3/2) - 4*((4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)))*cI0*(z1 - za)/(((ra - rj)^2 + (z1 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)) + 4*((4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)))*cI0*(z2 - za)/(((ra - rj)^2 + (z2 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1))
 
-AT_diff_za = integrate(At_diff_za, (rj, r1, r2), algorithm="giac")
-print "AT_diff_za =", AT_diff_za
+# AT_diff_za = integrate(At_diff_za, (rj, r1, r2), algorithm="giac")
+# print "AT_diff_za =", AT_diff_za
 # AT_diff_za = integrate(4*cI0*(z1 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2))/((ra - rj)^2 + (z1 - za)^2)^(3/2) - 4*cI0*(z2 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2))/((ra - rj)^2 + (z2 - za)^2)^(3/2) - 4*((4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)))*cI0*(z1 - za)/(((ra - rj)^2 + (z1 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)) + 4*((4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)))*cI0*(z2 - za)/(((ra - rj)^2 + (z2 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1)), rj, r1, r2)
 
 # AT_diff_za = integrate(Iphi_js_rj.diff(za) .substitute(zj==z1), (rj, r1, r2), algorithm="giac") - integrate(Iphi_js_rj.diff(za) .substitute(zj==z2), (rj, r1, r2), algorithm="giac")
@@ -173,60 +173,42 @@ As_diff_ra  =  - Iphi_js_rj.diff(ra).substitute(rj==r1) + Iphi_js_rj.diff(ra).su
 print "As_diff_ra  =", As_diff_ra
 # As_diff_ra  = -4*cI0*(r1 - ra)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2))/((r1 - ra)^2 + (za - zj)^2)^(3/2) + 4*cI0*(r2 - ra)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2))/((r2 - ra)^2 + (za - zj)^2)^(3/2) + 2*sqrt((r1 - ra)^2 + (za - zj)^2)*((4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)))*cI0*(2*(r1 - ra)*r1*ra/((r1 - ra)^2 + (za - zj)^2)^2 + r1/((r1 - ra)^2 + (za - zj)^2))/(r1*(4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*ra) - 2*sqrt((r2 - ra)^2 + (za - zj)^2)*((4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)))*cI0*(2*(r2 - ra)*r2*ra/((r2 - ra)^2 + (za - zj)^2)^2 + r2/((r2 - ra)^2 + (za - zj)^2))/(r2*(4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*ra)
 
-AS_diff_ra  =  integrate(As_diff_ra, (zj, z1, z2), algorithm="giac")
-print "AS_diff_ra  =", AS_diff_ra
+# AS_diff_ra  =  integrate(As_diff_ra, (zj, z1, z2), algorithm="giac")
+# print "AS_diff_ra  =", AS_diff_ra
 # AS_diff_ra  = integrate(-4*cI0*(r1 - ra)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2))/((r1 - ra)^2 + (za - zj)^2)^(3/2) + 4*cI0*(r2 - ra)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2))/((r2 - ra)^2 + (za - zj)^2)^(3/2) + 2*sqrt((r1 - ra)^2 + (za - zj)^2)*((4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)))*cI0*(2*(r1 - ra)*r1*ra/((r1 - ra)^2 + (za - zj)^2)^2 + r1/((r1 - ra)^2 + (za - zj)^2))/(r1*(4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*ra) - 2*sqrt((r2 - ra)^2 + (za - zj)^2)*((4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)))*cI0*(2*(r2 - ra)*r2*ra/((r2 - ra)^2 + (za - zj)^2)^2 + r2/((r2 - ra)^2 + (za - zj)^2))/(r2*(4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*ra), zj, z1, z2)
 
 # AS_diff_ra  =  - integrate(Iphi_js_rj.diff(ra).substitute(rj==r1), (zj, z1, z2), algorithm="giac") + integrate(Iphi_js_rj.diff(ra).substitute(rj==r2), (zj, z1, z2), algorithm="giac")
 # AS_diff_ra  = -integrate(4*cI0*(r1 - ra)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2))/((r1 - ra)^2 + (za - zj)^2)^(3/2) - 2*sqrt((r1 - ra)^2 + (za - zj)^2)*((4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)))*cI0*(2*(r1 - ra)*r1*ra/((r1 - ra)^2 + (za - zj)^2)^2 + r1/((r1 - ra)^2 + (za - zj)^2))/(r1*(4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*ra), zj, z1, z2) + integrate(4*cI0*(r2 - ra)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2))/((r2 - ra)^2 + (za - zj)^2)^(3/2) - 2*sqrt((r2 - ra)^2 + (za - zj)^2)*((4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)))*cI0*(2*(r2 - ra)*r2*ra/((r2 - ra)^2 + (za - zj)^2)^2 + r2/((r2 - ra)^2 + (za - zj)^2))/(r2*(4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*ra), zj, z1, z2)
 
-Av_diff_ra = integrate(integrate(Iphi_jv_rj.diff(ra), (zj, z1, z2), algorithm="giac"), (rj, r1, r2), algorithm="giac")
-print "Av_diff_ra  =", Av_diff_ra
-# Av_diff_ra  = 0
+# Av_diff_ra = integrate(integrate(Iphi_jv_rj.diff(ra), (zj, z1, z2), algorithm="giac"), (rj, r1, r2), algorithm="giac")
+# print "Av_diff_ra  =", Av_diff_ra
+Av_diff_ra  = 0
 
 #H_phi = AT_diff_za - (AS_diff_ra - Av_diff_ra)
 #print "H_phi  =", H_phi
 # H_phi  = integrate(4*cI0*(r1 - ra)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2))/((r1 - ra)^2 + (za - zj)^2)^(3/2) - 2*sqrt((r1 - ra)^2 + (za - zj)^2)*((4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)))*cI0*(2*(r1 - ra)*r1*ra/((r1 - ra)^2 + (za - zj)^2)^2 + r1/((r1 - ra)^2 + (za - zj)^2))/(r1*(4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*ra), zj, z1, z2) - integrate(4*cI0*(r2 - ra)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2))/((r2 - ra)^2 + (za - zj)^2)^(3/2) - 2*sqrt((r2 - ra)^2 + (za - zj)^2)*((4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)))*cI0*(2*(r2 - ra)*r2*ra/((r2 - ra)^2 + (za - zj)^2)^2 + r2/((r2 - ra)^2 + (za - zj)^2))/(r2*(4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*ra), zj, z1, z2) + integrate(4*cI0*(z1 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2))/((ra - rj)^2 + (z1 - za)^2)^(3/2) - 4*((4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)))*cI0*(z1 - za)/(((ra - rj)^2 + (z1 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)), rj, r1, r2) - integrate(4*cI0*(z2 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2))/((ra - rj)^2 + (z2 - za)^2)^(3/2) - 4*((4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)))*cI0*(z2 - za)/(((ra - rj)^2 + (z2 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1)), rj, r1, r2)
 
-# H_phi.substitute(r1==1)
-#RuntimeError: Encountered operator mismatch in maxima-to-sr translation
-
-# H_phi.substitute(r1==1, algorithm="giac")
-#TypeError: no canonical coercion from <type 'str'> to Symbolic Ring
-
-# H_phi_str = 'integrate(4*cI0*(r1 - ra)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2))/((r1 - ra)^2 + (za - zj)^2)^(3/2) - 2*sqrt((r1 - ra)^2 + (za - zj)^2)*((4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)))*cI0*(2*(r1 - ra)*r1*ra/((r1 - ra)^2 + (za - zj)^2)^2 + r1/((r1 - ra)^2 + (za - zj)^2))/(r1*(4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*ra), (zj, z1, z2), algorithm="giac") - integrate(4*cI0*(r2 - ra)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2))/((r2 - ra)^2 + (za - zj)^2)^(3/2) - 2*sqrt((r2 - ra)^2 + (za - zj)^2)*((4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)))*cI0*(2*(r2 - ra)*r2*ra/((r2 - ra)^2 + (za - zj)^2)^2 + r2/((r2 - ra)^2 + (za - zj)^2))/(r2*(4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*ra), (zj, z1, z2), algorithm="giac") + integrate(4*cI0*(z1 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2))/((ra - rj)^2 + (z1 - za)^2)^(3/2) - 4*((4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)))*cI0*(z1 - za)/(((ra - rj)^2 + (z1 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)), (rj, r1, r2), algorithm="giac") - integrate(4*cI0*(z2 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2))/((ra - rj)^2 + (z2 - za)^2)^(3/2) - 4*((4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)))*cI0*(z2 - za)/(((ra - rj)^2 + (z2 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1)), (rj, r1, r2), algorithm="giac")'
-
-# print "H_phi_str  =", H_phi_str
-# print "type(H_phi_str)  =", type(H_phi_str)
-
-# H_phi_str = H_phi_str.replace("cI0", "1")
-# H_phi_str = H_phi_str.replace("r1", "1")
-# H_phi_str = H_phi_str.replace("r2", "2")
-
-# H_phi_str = H_phi_str.replace("z1", "(-1)")
-# H_phi_str = H_phi_str.replace("z2", "1")
-
-# print "H_phi_str  =", H_phi_str
-
-# H_phi_eval = sage_eval(H_phi_str, locals={'ra':ra, 'za':za, 'zj':zj, 'rj':rj})
-# print "H_phi_eval  =", H_phi_eval
-
-At_diff_za_substituted = At_diff_za.substitute(cI0==1, z1==-1, z2==+1)
+Z1 = -1
+Z2 = 1
+R1 = 1
+R2 = 2
+At_diff_za_substituted = At_diff_za.substitute(cI0==1, z1==Z1, z2==Z2)
 print "At_diff_za_substituted =", At_diff_za_substituted
 
-As_diff_ra_substituted = As_diff_ra.substitute(cI0==1, r1==+1, r2==+2)
+As_diff_ra_substituted = As_diff_ra.substitute(cI0==1, r1==R1, r2==R2)
 print "As_diff_ra_substituted =", As_diff_ra_substituted
 
-
-At_diff_za_substituted2 = At_diff_za_substituted.substitute(za==-2, ra==+1.5)
+Za = -2
+Ra = +1.5
+At_diff_za_substituted2 = At_diff_za_substituted.substitute(za==Za, ra==Ra)
 print "At_diff_za_substituted2 =", At_diff_za_substituted2
-As_diff_ra_substituted2 = As_diff_ra_substituted.substitute(za==-2, ra==+1.5)
+As_diff_ra_substituted2 = As_diff_ra_substituted.substitute(za==Za, ra==Ra)
 print "As_diff_ra_substituted2 =", As_diff_ra_substituted2
 
-At_diff_za_num_int = At_diff_za_substituted2.nintegral(rj,1,2)
+At_diff_za_num_int = At_diff_za_substituted2.nintegral(rj, R1, R2)
 print "At_diff_za_num_int  =", At_diff_za_num_int
 
-As_v_diff_ra_num_int = (As_diff_ra_substituted2 - Av_diff_ra  ).nintegral(zj,-1,1)
+As_v_diff_ra_num_int = (As_diff_ra_substituted2 - Av_diff_ra  ).nintegral(zj, Z1, Z2)
 print "As_v_diff_ra_num_int  =", As_v_diff_ra_num_int
 
 H_phi = At_diff_za_num_int[0] - As_v_diff_ra_num_int[0]
@@ -235,6 +217,46 @@ print "H_phi  =", H_phi
 #At_diff_za_num_int  = (0.892985470996911, 9.91413030556511e-15, 21, 0)
 #As_v_diff_ra_num_int  = (0.7922729550346237, 1.915043453188808e-14, 21, 0)
 #H_phi  = 0.100712515962
+
+import numpy as np
+
+step_Ra = 0.5
+min_Ra = -2.5
+max_Ra = 2.5
+
+step_Za = 0.5
+min_Za = -5
+max_Za = 5
+
+plot_data = []
+for Ra in np.arange(min_Ra, max_Ra, step_Ra):
+    for Za in np.arange(min_Za, max_Za, step_Za):
+        try:
+            At_diff_za_substituted2 = At_diff_za_substituted.substitute(za==Za, ra==Ra)
+            #print "At_diff_za_substituted2 =", At_diff_za_substituted2
+            As_diff_ra_substituted2 = As_diff_ra_substituted.substitute(za==Za, ra==Ra)
+            #print "As_diff_ra_substituted2 =", As_diff_ra_substituted2
+
+            At_diff_za_num_int = At_diff_za_substituted2.nintegral(rj, R1, R2)
+            #print "At_diff_za_num_int  =", At_diff_za_num_int
+
+            As_v_diff_ra_num_int = (As_diff_ra_substituted2 - Av_diff_ra  ).nintegral(zj, Z1, Z2)
+            #print "As_v_diff_ra_num_int  =", As_v_diff_ra_num_int
+
+            H_phi = At_diff_za_num_int[0] - As_v_diff_ra_num_int[0]
+            print "Ra  =", Ra, "Za  =", Za, "H_phi  =", H_phi
+
+            plot_data.append((Za, Ra, H_phi))
+        except:
+            pass
+
+print plot_data
+
+g = list_plot3d(plot_data)
+pname = "../articles/sagemath/field_of_deyna_cylinder/results/H_phi" + ".png"
+print pname
+g.save(pname)
+
 
 
 

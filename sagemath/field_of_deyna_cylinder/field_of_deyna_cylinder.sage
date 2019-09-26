@@ -224,12 +224,22 @@ step_Ra = 0.5
 min_Ra = -2.5
 max_Ra = 2.5
 
+ra_range = [min_Ra, max_Ra]
+n_ra = int((max_Ra-min_Ra)/step_Ra)
+
 step_Za = 0.5
 min_Za = -5
 max_Za = 5
 
+za_range = [min_Za, max_Za]
+n_za = int((max_Za-min_Za)/step_Za)
+
+
+
 plot_data = []
+m = []
 for Ra in np.arange(min_Ra, max_Ra, step_Ra):
+    h = []
     for Za in np.arange(min_Za, max_Za, step_Za):
         try:
             At_diff_za_substituted2 = At_diff_za_substituted.substitute(za==Za, ra==Ra)
@@ -247,13 +257,32 @@ for Ra in np.arange(min_Ra, max_Ra, step_Ra):
             print "Ra  =", Ra, "Za  =", Za, "H_phi  =", H_phi
 
             plot_data.append((Za, Ra, H_phi))
+            h.append(H_phi)
         except:
             pass
+    m.append(h)
+
+results_folder = "../articles/sagemath/field_of_deyna_cylinder/results/"
+results_folder = "./results/"
 
 print plot_data
+print m
 
-g = list_plot3d(plot_data)
-pname = "../articles/sagemath/field_of_deyna_cylinder/results/H_phi" + ".png"
+from sage.plot.contour_plot import ContourPlot
+p = ContourPlot(m, za_range, ra_range, options={})
+g = Graphics()
+g += p
+
+#g = contour_plot(m, za_range, ra_range)
+pname = results_folder + "H_phi_contour" + ".png"
+print pname
+g.save(pname)
+
+
+g = list_plot3d(plot_data, frame_aspect_ratio=[1, 1, 1/3])
+
+
+pname = results_folder + "H_phi" + ".png"
 print pname
 g.save(pname)
 

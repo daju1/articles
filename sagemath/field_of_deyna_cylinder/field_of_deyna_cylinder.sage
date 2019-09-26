@@ -225,14 +225,14 @@ min_Ra = -2.5
 max_Ra = 2.5
 
 ra_range = [min_Ra, max_Ra]
-n_ra = int((max_Ra-min_Ra)/step_Ra)
+n_ra = int((max_Ra-min_Ra)/step_Ra) + 1
 
 step_Za = 0.5
 min_Za = -5
 max_Za = 5
 
 za_range = [min_Za, max_Za]
-n_za = int((max_Za-min_Za)/step_Za)
+n_za = int((max_Za-min_Za)/step_Za) + 1
 
 
 
@@ -263,17 +263,17 @@ for Ra in np.arange(min_Ra, max_Ra, step_Ra):
     m.append(h)
 
 results_folder = "../articles/sagemath/field_of_deyna_cylinder/results/"
-results_folder = "./results/"
+#results_folder = "./results/"
 
 print plot_data
 print m
+_data = np.array(m, dtype = np.float64, copy = False, subok=True, ndmin = 0)
 
 from sage.plot.contour_plot import ContourPlot
-p = ContourPlot(m, za_range, ra_range, options={})
+p = ContourPlot(m, za_range, ra_range, options=dict(fill=False, contours=[-1,0,1]))
 g = Graphics()
-g += p
+g.add_primitive(p)
 
-#g = contour_plot(m, za_range, ra_range)
 pname = results_folder + "H_phi_contour" + ".png"
 print pname
 g.save(pname)

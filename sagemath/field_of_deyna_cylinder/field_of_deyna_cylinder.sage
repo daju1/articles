@@ -188,10 +188,10 @@ Av_diff_ra  = 0
 #print "H_phi  =", H_phi
 # H_phi  = integrate(4*cI0*(r1 - ra)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2))/((r1 - ra)^2 + (za - zj)^2)^(3/2) - 2*sqrt((r1 - ra)^2 + (za - zj)^2)*((4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)))*cI0*(2*(r1 - ra)*r1*ra/((r1 - ra)^2 + (za - zj)^2)^2 + r1/((r1 - ra)^2 + (za - zj)^2))/(r1*(4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*ra), zj, z1, z2) - integrate(4*cI0*(r2 - ra)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2))/((r2 - ra)^2 + (za - zj)^2)^(3/2) - 2*sqrt((r2 - ra)^2 + (za - zj)^2)*((4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)))*cI0*(2*(r2 - ra)*r2*ra/((r2 - ra)^2 + (za - zj)^2)^2 + r2/((r2 - ra)^2 + (za - zj)^2))/(r2*(4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*ra), zj, z1, z2) + integrate(4*cI0*(z1 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2))/((ra - rj)^2 + (z1 - za)^2)^(3/2) - 4*((4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)))*cI0*(z1 - za)/(((ra - rj)^2 + (z1 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)), rj, r1, r2) - integrate(4*cI0*(z2 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2))/((ra - rj)^2 + (z2 - za)^2)^(3/2) - 4*((4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)))*cI0*(z2 - za)/(((ra - rj)^2 + (z2 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1)), rj, r1, r2)
 
-Z1 = -1
-Z2 = 1
-R1 = 1
-R2 = 2
+Z1 = -3
+Z2 = 3
+R1 = 0.5
+R2 = 1
 At_diff_za_substituted = At_diff_za.substitute(cI0==1, z1==Z1, z2==Z2)
 print "At_diff_za_substituted =", At_diff_za_substituted
 
@@ -220,27 +220,31 @@ print "H_phi  =", H_phi
 
 import numpy as np
 
-step_Ra = 0.5
-min_Ra = -2.5
-max_Ra = 2.5
+step_Ra = 0.1
+min_Ra = step_Ra
+max_Ra = 1.5
 
 ra_range = [min_Ra, max_Ra]
 n_ra = int((max_Ra-min_Ra)/step_Ra) + 1
+print "n_ra =", n_ra
 
-step_Za = 0.5
+step_Za = 0.1
 min_Za = -5
 max_Za = 5
 
 za_range = [min_Za, max_Za]
 n_za = int((max_Za-min_Za)/step_Za) + 1
-
+print "n_za =", n_za
 
 
 plot_data = []
-m = []
-for Ra in np.arange(min_Ra, max_Ra, step_Ra):
+arr_H = np.zeros((n_ra, n_za))
+nr = 0
+for Ra in np.arange(min_Ra, max_Ra + step_Ra, step_Ra):
+    n_nan = 0
     h = []
-    for Za in np.arange(min_Za, max_Za, step_Za):
+    nz = 0
+    for Za in np.arange(min_Za, max_Za + step_Za, step_Za):
         try:
             At_diff_za_substituted2 = At_diff_za_substituted.substitute(za==Za, ra==Ra)
             #print "At_diff_za_substituted2 =", At_diff_za_substituted2
@@ -258,21 +262,48 @@ for Ra in np.arange(min_Ra, max_Ra, step_Ra):
 
             plot_data.append((Za, Ra, H_phi))
             h.append(H_phi)
+            arr_H[nr,nz] = H_phi
         except:
+            n_nan = n_nan + 1
             pass
-    m.append(h)
+        nz = nz + 1
+    nr = nr + 1
+    print "len(h)=", len(h)
+    print "n_nan=", n_nan
+
+print "nr=", nr
+print "nz=", nz
 
 results_folder = "../articles/sagemath/field_of_deyna_cylinder/results/"
-#results_folder = "./results/"
+results_folder = "./results/"
 
 print plot_data
-print m
-_data = np.array(m, dtype = np.float64, copy = False, subok=True, ndmin = 0)
+print arr_H
 
 from sage.plot.contour_plot import ContourPlot
-p = ContourPlot(m, za_range, ra_range, options=dict(fill=False, contours=[-1,0,1]))
+p = ContourPlot(arr_H, za_range, ra_range, options=dict(fill=True, contours=np.arange(-10, 10, 0.5)))
 g = Graphics()
 g.add_primitive(p)
+
+from sage.plot.line import Line
+from sage.plot.arrow import Arrow
+
+L = Line([-5,5],[0,0],{'alpha':1,'thickness':1,'rgbcolor':(0,1,1),'legend_label':''})
+g.add_primitive(L)
+
+A = Arrow(Z2,R1,Z1,R1,{'width':1,'head':1,'rgbcolor':(1,0,0),'linestyle':'dashed','zorder':8,'legend_label':''})
+g.add_primitive(A)
+
+A = Arrow(Z1,R2,Z2,R2,{'width':1,'head':1,'rgbcolor':(1,0,0),'linestyle':'dashed','zorder':8,'legend_label':''})
+g.add_primitive(A)
+
+A = Arrow(Z1,R1,Z1,R2,{'width':1,'head':1,'rgbcolor':(1,0,0),'linestyle':'dashed','zorder':8,'legend_label':''})
+g.add_primitive(A)
+
+A = Arrow(Z2,R2,Z2,R1,{'width':1,'head':1,'rgbcolor':(1,0,0),'linestyle':'dashed','zorder':8,'legend_label':''})
+g.add_primitive(A)
+
+
 
 pname = results_folder + "H_phi_contour" + ".png"
 print pname

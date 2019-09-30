@@ -220,20 +220,20 @@ print "H_phi  =", H_phi
 
 import numpy as np
 
-step_Ra = 0.1
-min_Ra = step_Ra
-max_Ra = 1.5
+step_Ra = 0.01
+min_Ra = 0.005
+max_Ra = 1.555
 
 ra_range = [min_Ra, max_Ra]
-n_ra = int((max_Ra-min_Ra)/step_Ra) + 1
+n_ra = round((max_Ra-min_Ra)/step_Ra) + 1
 print "n_ra =", n_ra
 
-step_Za = 0.1
-min_Za = -5
-max_Za = 5
+step_Za = 0.01
+min_Za = -5.005
+max_Za = 5.005
 
 za_range = [min_Za, max_Za]
-n_za = int((max_Za-min_Za)/step_Za) + 1
+n_za = round((max_Za-min_Za)/step_Za) + 1
 print "n_za =", n_za
 
 
@@ -262,10 +262,12 @@ for Ra in np.arange(min_Ra, max_Ra + step_Ra, step_Ra):
 
             plot_data.append((Za, Ra, H_phi))
             h.append(H_phi)
-            arr_H[nr,nz] = H_phi
         except:
+            H_phi = np.nan
             n_nan = n_nan + 1
-            pass
+        print "nr=", nr
+        print "nz=", nz
+        arr_H[nr,nz] = H_phi
         nz = nz + 1
     nr = nr + 1
     print "len(h)=", len(h)
@@ -305,7 +307,7 @@ g.add_primitive(A)
 
 
 
-pname = results_folder + "H_phi_contour" + ".png"
+pname = results_folder + "H_phi_contour.08" + ".png"
 print pname
 g.save(pname)
 
@@ -313,7 +315,7 @@ g.save(pname)
 g = list_plot3d(plot_data, frame_aspect_ratio=[1, 1, 1/3])
 
 
-pname = results_folder + "H_phi" + ".png"
+pname = results_folder + "H_phi.08" + ".png"
 print pname
 g.save(pname)
 

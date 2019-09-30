@@ -187,11 +187,11 @@ Av_diff_ra  = 0
 #H_phi = AT_diff_za - (AS_diff_ra - Av_diff_ra)
 #print "H_phi  =", H_phi
 # H_phi  = integrate(4*cI0*(r1 - ra)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2))/((r1 - ra)^2 + (za - zj)^2)^(3/2) - 2*sqrt((r1 - ra)^2 + (za - zj)^2)*((4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)))*cI0*(2*(r1 - ra)*r1*ra/((r1 - ra)^2 + (za - zj)^2)^2 + r1/((r1 - ra)^2 + (za - zj)^2))/(r1*(4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*ra), zj, z1, z2) - integrate(4*cI0*(r2 - ra)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2))/((r2 - ra)^2 + (za - zj)^2)^(3/2) - 2*sqrt((r2 - ra)^2 + (za - zj)^2)*((4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)))*cI0*(2*(r2 - ra)*r2*ra/((r2 - ra)^2 + (za - zj)^2)^2 + r2/((r2 - ra)^2 + (za - zj)^2))/(r2*(4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*ra), zj, z1, z2) + integrate(4*cI0*(z1 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2))/((ra - rj)^2 + (z1 - za)^2)^(3/2) - 4*((4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)))*cI0*(z1 - za)/(((ra - rj)^2 + (z1 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)), rj, r1, r2) - integrate(4*cI0*(z2 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2))/((ra - rj)^2 + (z2 - za)^2)^(3/2) - 4*((4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)))*cI0*(z2 - za)/(((ra - rj)^2 + (z2 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1)), rj, r1, r2)
-
-Z1 = -3
-Z2 = 3
-R1 = 0.5
-R2 = 1
+epsilon = 0.05
+Z1 = -3.0 + epsilon
+Z2 =  3.0 - epsilon
+R1 = 0.5 + epsilon
+R2 = 1.0  - epsilon
 At_diff_za_substituted = At_diff_za.substitute(cI0==1, z1==Z1, z2==Z2)
 print "At_diff_za_substituted =", At_diff_za_substituted
 
@@ -220,17 +220,17 @@ print "H_phi  =", H_phi
 
 import numpy as np
 
-step_Ra = 0.01
-min_Ra = 0.005
-max_Ra = 1.555
+step_Ra = 0.1
+min_Ra = 0.1
+max_Ra = 1.5
 
 ra_range = [min_Ra, max_Ra]
 n_ra = round((max_Ra-min_Ra)/step_Ra) + 1
 print "n_ra =", n_ra
 
-step_Za = 0.01
-min_Za = -5.005
-max_Za = 5.005
+step_Za = 0.1
+min_Za = -5
+max_Za = 5
 
 za_range = [min_Za, max_Za]
 n_za = round((max_Za-min_Za)/step_Za) + 1
@@ -277,7 +277,7 @@ print "nr=", nr
 print "nz=", nz
 
 results_folder = "../articles/sagemath/field_of_deyna_cylinder/results/"
-results_folder = "./results/"
+#results_folder = "./results/"
 
 print plot_data
 print arr_H

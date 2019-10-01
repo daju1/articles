@@ -225,6 +225,7 @@ min_Ra = 0.1
 max_Ra = 1.5
 
 ra_range = [min_Ra, max_Ra]
+ra_range2 = [-max_Ra, max_Ra]
 n_ra = round((max_Ra-min_Ra)/step_Ra) + 1
 print "n_ra =", n_ra
 
@@ -238,7 +239,7 @@ print "n_za =", n_za
 
 
 plot_data = []
-arr_H = np.zeros((n_ra, n_za))
+arr_H = np.zeros((n_ra*2+1, n_za))
 nr = 0
 for Ra in np.arange(min_Ra, max_Ra + step_Ra, step_Ra):
     n_nan = 0
@@ -261,6 +262,7 @@ for Ra in np.arange(min_Ra, max_Ra + step_Ra, step_Ra):
             print "Ra  =", Ra, "Za  =", Za, "H_phi  =", H_phi
 
             plot_data.append((Za, Ra, H_phi))
+            plot_data.append((Za, -Ra, -H_phi))
             h.append(H_phi)
         except:
             H_phi = np.nan
@@ -268,6 +270,7 @@ for Ra in np.arange(min_Ra, max_Ra + step_Ra, step_Ra):
         print "nr=", nr
         print "nz=", nz
         arr_H[nr,nz] = H_phi
+        arr_H[n_ra*2 - nr,nz] = - H_phi
         nz = nz + 1
     nr = nr + 1
     print "len(h)=", len(h)
@@ -277,13 +280,13 @@ print "nr=", nr
 print "nz=", nz
 
 results_folder = "../articles/sagemath/field_of_deyna_cylinder/results/"
-#results_folder = "./results/"
+results_folder = "./results/"
 
 print plot_data
 print arr_H
 
 from sage.plot.contour_plot import ContourPlot
-p = ContourPlot(arr_H, za_range, ra_range, options=dict(fill=True, contours=np.arange(-10, 10, 0.5)))
+p = ContourPlot(arr_H, za_range, ra_range2, options=dict(fill=True, contours=np.arange(-10, 10, 0.5)))
 g = Graphics()
 g.add_primitive(p)
 
@@ -307,7 +310,7 @@ g.add_primitive(A)
 
 
 
-pname = results_folder + "H_phi_contour.08" + ".png"
+pname = results_folder + "H_phi_contour.09" + ".png"
 print pname
 g.save(pname)
 
@@ -315,7 +318,7 @@ g.save(pname)
 g = list_plot3d(plot_data, frame_aspect_ratio=[1, 1, 1/3])
 
 
-pname = results_folder + "H_phi.08" + ".png"
+pname = results_folder + "H_phi.09" + ".png"
 print pname
 g.save(pname)
 

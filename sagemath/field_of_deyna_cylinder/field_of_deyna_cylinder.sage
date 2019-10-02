@@ -17,7 +17,11 @@ assume(ra>0)
 # Ivarphi__j = integral(1/sqrt(rho__j^2+rho__a^2+(z__j-z__a)^2-2*rho__j*rho__a*cos(varphi__j)), (varphi__j,0,2*pi))
 # RuntimeError: ECL says: Error executing code in Maxima:
 
+I_phi_j = integral(1/sqrt(rj^2+ra^2+(zj-za)^2-2*rj*ra*cos(phi)), phi)
+print "I_phi_j =", I_phi_j
+# I_phi_j = 1/2*log(cos(phi)^2 + sin(phi)^2 + 2*sin(phi) + 1) - 1/2*log(cos(phi)^2 + sin(phi)^2 - 2*sin(phi) + 1)
 
+'''
 
 print elliptic_kc(0.5)
 # 1.85407467730137
@@ -321,6 +325,7 @@ g = list_plot3d(plot_data, frame_aspect_ratio=[1, 1, 1/3])
 pname = results_folder + "H_phi.09" + ".png"
 print pname
 g.save(pname)
+'''
 
 
 

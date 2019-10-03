@@ -19,9 +19,55 @@ assume(ra>0)
 
 I_phi_j = integral(1/sqrt(rj^2+ra^2+(zj-za)^2-2*rj*ra*cos(phi)), phi)
 print "I_phi_j =", I_phi_j
-# I_phi_j = 1/2*log(cos(phi)^2 + sin(phi)^2 + 2*sin(phi) + 1) - 1/2*log(cos(phi)^2 + sin(phi)^2 - 2*sin(phi) + 1)
 
-'''
+rja2 = (rj-ra)^2+(zj-za)^2
+module = - 4*rj*ra / rja2
+
+I_phi_j = 2 * elliptic_f(phi/2, module) / sqrt(rja2)
+print "I_phi_j =", I_phi_j
+I_phi_j_diff_phi = I_phi_j.diff(phi)
+print "I_phi_j_diff_phi =", I_phi_j_diff_phi
+# I_phi_j.diff(phi) = 1/(sqrt(4*ra*rj*sin(1/2*phi)^2/((ra - rj)^2 + (za - zj)^2) + 1)*sqrt((ra - rj)^2 + (za - zj)^2))
+# sage: I_phi_j.diff(phi)
+#                                 1                                
+# -----------------------------------------------------------------
+#        _____________________________                             
+#       /               2/phi\                                     
+#      /     4*ra*rj*sin |---|            _________________________
+#     /                  \ 2 /           /          2            2 
+#    /    ----------------------- + 1 *\/  (ra - rj)  + (za - zj)  
+#   /              2            2                                  
+# \/      (ra - rj)  + (za - zj)                                   
+
+# I_phi_j.diff(phi) = 1/(sqrt(4*ra*rj*sin(1/2*phi)^2/((ra - rj)^2 + (za - zj)^2) + 1)*sqrt((ra - rj)^2 + (za - zj)^2))
+
+I_phi_j_diff_phi_substituted = I_phi_j_diff_phi.substitute((sin(1/2*phi)^2)==(1-cos(phi))/2)
+print "I_phi_j_diff_phi_substituted =", I_phi_j_diff_phi_substituted
+# I_phi_j.diff(phi) = 1/(sqrt(4*ra*rj*sin(1/2*phi)^2/((ra - rj)^2 + (za - zj)^2) + 1)*sqrt((ra - rj)^2 + (za - zj)^2))
+# sage: (I_phi_j.diff(phi).substitute((sin(1/2*phi)^2)==(1-cos(phi))/2))
+#                                 1                                
+# -----------------------------------------------------------------
+#      _______________________________    _________________________
+#     /    2*ra*rj*(cos(phi) - 1)        /          2            2 
+#    /  - ----------------------- + 1 *\/  (ra - rj)  + (za - zj)  
+#   /              2            2                                  
+# \/      (ra - rj)  + (za - zj)                                   
+
+print "I_phi_j_diff_phi_substituted.full_simplify() =", I_phi_j_diff_phi_substituted.full_simplify()
+# I_phi_j_diff_phi_substituted.full_simplify() = 1/(sqrt(ra^2 - 2*ra*rj + rj^2 + za^2 - 2*za*zj + zj^2)*sqrt(-(2*ra*rj*cos(phi) - ra^2 - rj^2 - za^2 + 2*za*zj - zj^2)/(ra^2 - 2*ra*rj + rj^2 + za^2 - 2*za*zj + zj^2)))
+
+print "sqrt(I_phi_j_diff_phi_substituted^2) =", sqrt(I_phi_j_diff_phi_substituted^2)
+# sqrt(I_phi_j_diff_phi_substituted^2) = sqrt(-1/(((ra - rj)^2 + (za - zj)^2)*(2*ra*rj*(cos(phi) - 1)/((ra - rj)^2 + (za - zj)^2) - 1)))
+
+print "sqrt(I_phi_j_diff_phi_substituted^2).full_simplify() =", sqrt(I_phi_j_diff_phi_substituted^2).full_simplify()
+# sqrt(I_phi_j_diff_phi_substituted^2).full_simplify() = sqrt(-1/(2*ra*rj*cos(phi) - ra^2 - rj^2 - za^2 + 2*za*zj - zj^2))
+# sage: sqrt(I_phi_j_diff_phi_substituted^2).full_simplify()
+#     ______________________________________________________
+#    /                         -1                           
+#   /  ---------------------------------------------------- 
+#  /       2                        2     2               2 
+#\/    - ra  + 2*ra*rj*cos(phi) - rj  - za  + 2*za*zj - zj  
+
 
 print elliptic_kc(0.5)
 # 1.85407467730137
@@ -33,9 +79,8 @@ m = var("m")
 print elliptic_kc(m).diff(m)
 # -1/2*((m - 1)*elliptic_kc(m) + elliptic_ec(m))/((m - 1)*m)
 
-rja2 = (rj-ra)^2+(zj-za)^2
-module = - 4*rj*ra / rja2
-Iphi=4*elliptic_kc(module)/sqrt(rja2)
+
+Iphi=4*elliptic_kc(module) / sqrt(rja2)
 print "Iphi =", Iphi
 # Iphi = 4*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2))/sqrt((ra - rj)^2 + (za - zj)^2)
 # sage: %display ascii_art
@@ -49,6 +94,10 @@ print "Iphi =", Iphi
 #   /          2            2 
 # \/  (ra - rj)  + (za - zj)  
 
+
+
+
+'''
 # dIphi_dza = Iphi.diff(za)
 # print "dIphi_dza =", dIphi_dza
 # dIphi_dza = -4*(za - zj)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2))/((ra - rj)^2 + (za - zj)^2)^(3/2) + 4*((4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)))*(za - zj)/(((ra - rj)^2 + (za - zj)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1))

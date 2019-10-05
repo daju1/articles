@@ -65,7 +65,9 @@ double get_r(double t_zap, double r0, double a0)
 /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
 double get_R(double R0, double r, double theta)
 {
-	double R = sqrt(R0*R0 - 2*R0*r*cos(theta) + r*r);
+	double RR = R0*R0 - 2 * R0*r*cos(theta) + r*r;
+	assert(RR >= 0.0);
+	double R = sqrt(RR);
 	return R;
 }
 

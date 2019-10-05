@@ -137,7 +137,7 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 	int i;
 	double theta, 
 		t_zap, r_zap, R_zap, 
-		R_lw_zap, r, dS_dtheta;
+		R_lw_zap/*, r*/, dS_dtheta;
 	int N = 1000;
 	double dtheta = Pi / N;
 	double result = 0.0;
@@ -152,9 +152,9 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 
 		R_lw_zap = calc_R_lw(t, R0, r0, a0, theta, &t_zap, &r_zap, &R_zap);
 
-		r = get_r(t, r0, a0);
-		DBG_INFO("r = %f ", r);
-		dS_dtheta = get_dS_dtheta(r, theta);
+		//r = get_r(t, r0, a0);
+		//DBG_INFO("r = %f ", r);
+		dS_dtheta = get_dS_dtheta(r0, theta);
 		DBG_INFO("dS_dtheta = %f ", dS_dtheta);
 		if (0.0 != R_lw_zap){
 			result += dS_dtheta / R_lw_zap * dtheta;
@@ -166,7 +166,7 @@ double integral_phi(double q, double t, double R0, double r0, double a0)
 			DBG_INFO("ommited_S = %e ", ommited_S);
 		}
 
-		DBG_INFO("\n", 0);
+		DBG_INFO("\n");
 	}
 	DBG_INFO("result = %f\n", result);
 	DBG_INFO("sigma = %f\n", sigma);
@@ -186,7 +186,7 @@ double integral_phi_and_E(double q, double t, double R0, double r0, double a0, d
 	int i;
 	double theta, 
 		t_zap, r_zap, R_zap, 
-		R_lw_zap, r, dS_dtheta;
+		R_lw_zap/*, r*/, dS_dtheta;
 
 	double v_zap;
 	double a_zap;
@@ -223,9 +223,9 @@ double integral_phi_and_E(double q, double t, double R0, double r0, double a0, d
 		E_minus_grad_varphi_R0 = get_E_minus_grad_phi_R0 (r0, theta, v_zap, R_zap, aR_zap, R_lw_zap, cos_alpha_zap);
 		E_minus_1_c_dA_dt_R0   = get_E_minus_1_c_dA_dt_R0(r0, theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap);
 
-		r = get_r(t, r0, a0);
-		DBG_INFO("r = %f ", r);
-		dS_dtheta = get_dS_dtheta(r, theta);
+		//r = get_r(t, r0, a0);
+		//DBG_INFO("r = %f ", r);
+		dS_dtheta = get_dS_dtheta(r0, theta);
 		DBG_INFO("dS_dtheta = %f ", dS_dtheta);
 		if (0.0 != R_lw_zap){
 			phi                    += dS_dtheta * dtheta / R_lw_zap ;
@@ -241,7 +241,7 @@ double integral_phi_and_E(double q, double t, double R0, double r0, double a0, d
 			DBG_INFO("ommited_S = %e ", ommited_S);
 		}
 
-		DBG_INFO("\n", 0);
+		DBG_INFO("\n");
 	}
 	DBG_INFO("phi = %f E1 = %f E2 = %f\n", phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0);
 	DBG_INFO("sigma = %f\n", sigma);
@@ -345,6 +345,10 @@ int main()
 	/* Заряд сферы */
 	double q = 1.0;
 	double t_zap;
+
+	get_R(1.5, 1.499999999999999, 0.0);
+	get_R(1.5, 1.4999999979313956, 0.0);
+	
 #if 0
 	/* численный расчёта запаздывающего момента */
 	t_zap = calc_tzap(t, R0, r0, a0, theta);

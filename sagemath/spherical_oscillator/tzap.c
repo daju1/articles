@@ -66,8 +66,11 @@ double get_r(double t_zap, double r0, double a0)
 double get_R(double R0, double r, double theta)
 {
 	double RR = R0*R0 - 2 * R0*r*cos(theta) + r*r;
-	assert(RR >= 0.0);
-	double R = sqrt(RR);
+	double RR2 = R0*R0*cos(theta) - 2 * R0*r*cos(theta) + r*r*cos(theta) + R0*R0*(1 - cos(theta)) + r*r*(1 - cos(theta));
+	double RR3 = (R0 - r)*(R0 - r)*cos(theta) + (R0*R0 + r*r)*(1 - cos(theta));
+	DBG_INFO("RR=%f, RR2 = %f, RR3 = %f, R0=%f, r0=%f, a0=%f, theta=%f)\n", RR, RR2, RR3, R0, r, theta);
+	assert(RR3 >= 0.0);
+	double R = sqrt(RR3);
 	return R;
 }
 

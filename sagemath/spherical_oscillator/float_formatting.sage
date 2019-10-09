@@ -3,10 +3,10 @@ def float_formatting(float_value):
     if 0 == decimal_part:
         digits_after_point = 1
     else:
-        print "decimal_part=", decimal_part
-        print "log(decimal_part)/log(10.0)=", log(decimal_part)/log(10.0)
+        #print "decimal_part=", decimal_part
+        #print "log(decimal_part)/log(10.0)=", log(decimal_part)/log(10.0)
         digits_after_point = 1 - floor(log(decimal_part)/log(10.0))
-        print "digits_after_point=", digits_after_point
+        #print "digits_after_point=", digits_after_point
     format_string_float_value = "str_float_value = '%1." + str(digits_after_point) + "f' % (" + str(float_value) + ")"
     #format_string_float_value = "str_float_value = {:1." + str(digits_after_point) + "f}.format(" + str(float_value) + ")"
     exec(format_string_float_value)

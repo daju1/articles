@@ -3,7 +3,7 @@
 #include <math.h>
 #define Pi M_PI
 #include "tzap.h"
-
+#include <assert.h>
 //#define USE_DEBUG
 #include "dbg_info.h"
 
@@ -30,6 +30,7 @@ double calc_R_lw(double t, double R0, double r0, double v0, double a0, double th
 	DBG_INFO("theta = %f t_zap = %f ", theta, *pt_zap);
 	/* Запаздывающий радиус в зависимости от текущего момента */
 	*pr_zap = get_r(*pt_zap, r0, v0, a0); /* расстояние от заряда до центра сферы в запаздывающий момент времени */
+	assert(*pr_zap >= 0);
 	*pR_zap = get_R(R0, *pr_zap, theta); /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
 	DBG_INFO("r_zap = %f ", *pr_zap);
 	DBG_INFO("R_zap = %f ", *pR_zap);
@@ -151,6 +152,7 @@ double integral_phi(double q, double t, double R0, double r0, double v0, double 
 		theta = (i * dtheta);
 
 		R_lw_zap = calc_R_lw(t, R0, r0, v0, a0, theta, &t_zap, &r_zap, &R_zap);
+		printf("%d %f R_lw_zap = %f\n", i, theta, R_lw_zap);
 
 		//r = get_r(t, r0, v0, a0);
 		//DBG_INFO("r = %f ", r);
@@ -361,6 +363,7 @@ int main()
 	*/
 	phi_lw = integral_phi(-1, 5.5, 2.8421709430404007e-13, 2, 0, -0.150000000000000);
 	printf("phi_lw = %f\n", phi_lw);
+	return 0;
 	phi_lw = integral_phi(-1, 6.0, 2.8421709430404007e-13, 2, 0, -0.150000000000000);
 	printf("phi_lw = %f\n", phi_lw);
 	phi_lw = integral_phi(-1, 6.5, 2.8421709430404007e-13, 2, 0, -0.150000000000000);

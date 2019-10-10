@@ -33,7 +33,7 @@ double get_v(double t_zap, double v0, double a0)
 	t_max = t_start + v_max / a0;
 	if (t_zap >= t_max)
 		return v_max;
-	return v0 + a0*t_zap;
+	return v0 + a0*(t_zap-t_start);
 }
 /* перемещение заряда */
 double get_s(double t_zap, double v0, double a0)
@@ -41,10 +41,12 @@ double get_s(double t_zap, double v0, double a0)
 	assert(v0 < v_max);
 	double dt_start, dt_max;
 	double t_max;
+	double s;
 	if (t_zap < t_start)
 	{
-		/*DBG_INFO("get_s t_zap=%f a0=%f returns 0\n", t_zap, a0);*/
-		return v0*(t_zap - t_start);
+		s = v0*(t_zap - t_start);
+		printf("get_s1 t_zap=%f a0=%f returns %f\n", t_zap, a0, s);
+		return s;
 	}
 
 	if (a0 > 0.0)
@@ -60,14 +62,19 @@ double get_s(double t_zap, double v0, double a0)
 
 	if (a0 != 0.0 && t_zap >= t_max)
 	{
+		DBG_INFO("get_s t_max %f\n", t_max);
+	
 		dt_start = (t_max - t_start);
 		dt_max = (t_zap - t_max);
-		return v0 * dt_start + a0*dt_start*dt_start/2 + dt_max*v_max;
+		s = v0 * dt_start + a0*dt_start*dt_start/2 + dt_max*v_max;
+		DBG_INFO("get_s2 t_zap=%f a0=%f returns %f\n", t_zap, a0, s);
+		return s;
 	}
 
 	dt_start = (t_zap - t_start);
-	/*DBG_INFO("get_s t_zap=%f a0=%f returns %f\n", t_zap, a0, a0*t_zap*t_zap/2);*/
-	return v0 * dt_start + a0*dt_start*dt_start/2;
+	s = v0 * dt_start + a0*dt_start*dt_start/2;
+	DBG_INFO("get_s t_zap=%f a0=%f dt_start=%f returns %f\n", t_zap, a0, dt_start, s);
+	return s;
 }
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
@@ -116,6 +123,7 @@ double calc_tzap(double t, double R0, double r0, double v0, double a0, double th
 	{
 		t1 = t2;                 /* итерационный "текущий" момент времени - на первой итерации текущее время наблюдения */
 		r = get_r(t1, r0, v0, a0);   /* итерационная координата заряда                                                      */
+		assert(r >= 0.0);
 		R = get_R(R0, r, theta); /* итерационный радиус - на первой итерации текущий радиус                             */
 		t2 = t - R / c;          /* время прохождения сигнала от итерационной координаты в точку наблюдения             */
 		                         /* итерационный "запаздывающий" момент времени t2                                      */

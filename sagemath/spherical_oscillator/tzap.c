@@ -45,7 +45,7 @@ double get_s(double t_zap, double v0, double a0)
 	if (t_zap < t_start)
 	{
 		s = v0*(t_zap - t_start);
-		printf("get_s1 t_zap=%f a0=%f returns %f\n", t_zap, a0, s);
+		DBG_INFO("get_s1 t_zap=%f a0=%f returns %f\n", t_zap, a0, s);
 		return s;
 	}
 
@@ -78,25 +78,32 @@ double get_s(double t_zap, double v0, double a0)
 }
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-double get_r(double t_zap, double r0, double v0, double a0)
+double get_r(double t_zap, double r0, double v0, double a0, double r_min)
 {
-	return r0 + get_s(t_zap, v0, a0);
+	double r = r0 + get_s(t_zap, v0, a0);
+	if (r < r_min)
+	{
+		DBG_INFO("Warning: r %f < r_min %f\n", r, r_min);
+		r = r_min;
+	}
+	assert(r > 0.0);
+	return r;
 }
 
 /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
 double get_R(double R0, double r, double theta)
 {
-	double RR = R0*R0 - 2 * R0*r*cos(theta) + r*r;
-	double RR2 = R0*R0*cos(theta) - 2 * R0*r*cos(theta) + r*r*cos(theta) + R0*R0*(1 - cos(theta)) + r*r*(1 - cos(theta));
+	//double RR = R0*R0 - 2 * R0*r*cos(theta) + r*r;
+	//double RR2 = R0*R0*cos(theta) - 2 * R0*r*cos(theta) + r*r*cos(theta) + R0*R0*(1 - cos(theta)) + r*r*(1 - cos(theta));
 	double RR3 = (R0 - r)*(R0 - r)*cos(theta) + (R0*R0 + r*r)*(1 - cos(theta));
-	DBG_INFO("RR=%f, RR2 = %f, RR3 = %f, R0=%f, r=%f, theta=%f)\n", RR, RR2, RR3, R0, r, theta);
+	//DBG_INFO("RR=%f, RR2 = %f, RR3 = %f, R0=%f, r=%f, theta=%f)\n", RR, RR2, RR3, R0, r, theta);
 	assert(RR3 >= 0.0);
 	double R = sqrt(RR3);
 	return R;
 }
 
 /* численный расчёта запаздывающего момента */
-double calc_tzap(double t, double R0, double r0, double v0, double a0, double theta)
+double calc_tzap(double t, double R0, double r0, double v0, double a0, double theta, double r_min)
 {
 	double epsilon = 1.0e-15;
 	double t1;
@@ -122,7 +129,7 @@ double calc_tzap(double t, double R0, double r0, double v0, double a0, double th
 	do
 	{
 		t1 = t2;                 /* итерационный "текущий" момент времени - на первой итерации текущее время наблюдения */
-		r = get_r(t1, r0, v0, a0);   /* итерационная координата заряда                                                      */
+		r = get_r(t1, r0, v0, a0, r_min);   /* итерационная координата заряда                                                      */
 		assert(r >= 0.0);
 		R = get_R(R0, r, theta); /* итерационный радиус - на первой итерации текущий радиус                             */
 		t2 = t - R / c;          /* время прохождения сигнала от итерационной координаты в точку наблюдения             */
@@ -134,7 +141,7 @@ double calc_tzap(double t, double R0, double r0, double v0, double a0, double th
 		DBG_INFO("t2=%f t1=%f t=%f v1 = %f, v2 = %f, v = %f, R=%f dR=%e dR_pre=%e ", t2, t1, t, v1, v2, v, R, dR, dR_pre);
 		assert(v1 < c);
 		assert(v2 < c);
-#if 1
+#if 0
 		if (i > 1 && fabs(dR) - fabs(dR_pre) < 1.0e-3)
 		{
 			int j = 0;

@@ -1,23 +1,20 @@
 cdef extern from "tzap.c":
-    double calc_tzap(double t, double R0, double r0, double v0, double a0, double theta)
+    double calc_tzap(double t, double R0, double r0, double v0, double a0, double theta, double r_min)
 
 cdef extern from "testtzap.c":
-    double integral_phi(double q, double t, double R0, double r0, double v0, double a0)
+    double integral_phi(double q, double t, double R0, double r0, double v0, double a0, double r_min)
 
 cdef extern from "testtzap.c":
-    double integral_phi_and_E(double q, double t, double R0, double r0, double v0, double a0, double * pE_minus_grad_phi_R0, double *pE_minus_1_c_dA_dt_R0)
+    double integral_phi_and_E(double q, double t, double R0, double r0, double v0, double a0, double * pE_minus_grad_phi_R0, double *pE_minus_1_c_dA_dt_R0, double r_min)
 
-#cdef extern from "tzap.c":
-#    float calc_tzap_float(float t, float R0, float r0, float v0, float a0, float theta)
+def tzap(t, R0, r0, v0, a0, theta, r_min):
+    return calc_tzap(t, R0, r0, v0, a0, theta, r_min)
 
-def tzap(t, R0, r0, v0, a0, theta):
-    return calc_tzap(t, R0, r0, v0, a0, theta)
+def phi_lw(q, t, R0, r0, v0, a0, r_min):
+    return integral_phi(q, t, R0, r0, v0, a0, r_min)
 
-def phi_lw(q, t, R0, r0, v0, a0):
-    return integral_phi(q, t, R0, r0, v0, a0)
-
-def phi_and_E_lw(q, t, R0, r0, v0, a0):
+def phi_and_E_lw(q, t, R0, r0, v0, a0, r_min):
     cdef double E1
     cdef double E2
-    cdef phi = integral_phi_and_E(q, t, R0, r0, v0, a0, &E1, &E2)
+    cdef phi = integral_phi_and_E(q, t, R0, r0, v0, a0, &E1, &E2, r_min)
     return (phi, E1, E2)

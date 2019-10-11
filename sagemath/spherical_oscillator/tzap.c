@@ -78,16 +78,18 @@ double get_s(double t_zap, double v0, double a0)
 }
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-double get_r(double t_zap, double r0, double v0, double a0, double r_min)
+int get_r(double t_zap, double r0, double v0, double a0, double r_min, double * r)
 {
-	double r = r0 + get_s(t_zap, v0, a0);
-	if (r < r_min)
+	int error = 0;
+	*r = r0 + get_s(t_zap, v0, a0);
+	if (*r < r_min)
 	{
-		DBG_INFO("Warning: r %f < r_min %f\n", r, r_min);
-		r = r_min;
+		DBG_INFO("Warning: r %f < r_min %f\n", *r, r_min);
+		*r = r_min;
+		error = 1;
 	}
-	assert(r > 0.0);
-	return r;
+	assert(*r > 0.0);
+	return error;
 }
 
 /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
@@ -103,11 +105,12 @@ double get_R(double R0, double r, double theta)
 }
 
 /* численный расчёта запаздывающего момента */
-double calc_tzap(double t, double R0, double r0, double v0, double a0, double theta, double r_min)
+int calc_tzap(double t, double R0, double r0, double v0, double a0, double theta, double r_min, double * t2)
 {
+	int err, error = 0;
 	double epsilon = 1.0e-15;
 	double t1;
-	double t2 = t;
+	* t2 = t;
 	double dt;
 	double v1,v2,v;
 	double r, R, R_pre = DBL_MAX;
@@ -128,17 +131,21 @@ double calc_tzap(double t, double R0, double r0, double v0, double a0, double th
 
 	do
 	{
-		t1 = t2;                 /* итерационный "текущий" момент времени - на первой итерации текущее время наблюдения */
-		r = get_r(t1, r0, v0, a0, r_min);   /* итерационная координата заряда                                                      */
+		t1 = *t2;                 /* итерационный "текущий" момент времени - на первой итерации текущее время наблюдения */
+		err = get_r(t1, r0, v0, a0, r_min, &r);   /* итерационная координата заряда                                                      */
+		if (0 != err)
+		{
+			error += 1;
+		}
 		assert(r >= 0.0);
 		R = get_R(R0, r, theta); /* итерационный радиус - на первой итерации текущий радиус                             */
-		t2 = t - R / c;          /* время прохождения сигнала от итерационной координаты в точку наблюдения             */
+		*t2 = t - R / c;          /* время прохождения сигнала от итерационной координаты в точку наблюдения             */
 		                         /* итерационный "запаздывающий" момент времени t2                                      */
 		dR = c*(t-t1) - R;       /**/
 		v1 = get_v(t1, v0, a0);      /* скорость заряда в итерационный "текущий" момент времени t1                          */
-		v2 = get_v(t2, v0, a0);      /* скорость заряда в итерационный "запаздывающий" момент времени t2                    */
+		v2 = get_v(*t2, v0, a0);      /* скорость заряда в итерационный "запаздывающий" момент времени t2                    */
 
-		DBG_INFO("t2=%f t1=%f t=%f v1 = %f, v2 = %f, v = %f, R=%f dR=%e dR_pre=%e ", t2, t1, t, v1, v2, v, R, dR, dR_pre);
+		DBG_INFO("t2=%f t1=%f t=%f v1 = %f, v2 = %f, v = %f, R=%f dR=%e dR_pre=%e ", *t2, t1, t, v1, v2, v, R, dR, dR_pre);
 		assert(v1 < c);
 		assert(v2 < c);
 #if 0
@@ -151,9 +158,9 @@ double calc_tzap(double t, double R0, double r0, double v0, double a0, double th
 				R_tmp = R_pre + n * (R - R_pre);
 				DBG_INFO("R_tmp = R_pre + n * (R - R_pre);= %f ", R_tmp);
 
-				t2 = t -  R_tmp / c;
+				*t2 = t -  R_tmp / c;
 				dR = c*(t-t1) - R_tmp;
-				DBG_INFO("t2 = %f ", t2);
+				DBG_INFO("t2 = %f ", *t2);
 
 				n *= 0.9;
 				DBG_INFO("n = %f ", n);
@@ -164,7 +171,7 @@ double calc_tzap(double t, double R0, double r0, double v0, double a0, double th
 			R = R_tmp;
 		}
 #endif
-		dt = t1 - t2;
+		dt = t1 - *t2;
 		DBG_INFO("dt=%e \n", dt);
 		dR_pre = dR;
 		R_pre = R;
@@ -174,8 +181,8 @@ double calc_tzap(double t, double R0, double r0, double v0, double a0, double th
 	}
 	while (fabs(dt) > epsilon);
 	 
-	DBG_INFO("fabs(t1 - t2) = %e fabs(t - t2) = %e calc_tzap() result=%f\n", fabs(t1 - t2), fabs(t - t2), t2); 
-	return t2;
+	DBG_INFO("fabs(t1 - t2) = %e fabs(t - t2) = %e calc_tzap() result=%f\n", fabs(t1 - *t2), fabs(t - *t2), *t2); 
+	return error;
 }
  
 /*float calc_tzap_float(float t, float R0, float r0, float v0, float a0, float theta)

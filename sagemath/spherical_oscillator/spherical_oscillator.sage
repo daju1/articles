@@ -22,10 +22,10 @@ r_min = 0.1
 attach("tzap.spyx")
 attach("float_formatting.sage")
 
-philw = phi_lw(q, t, R0, r0, v0, 0)
+philw = phi_lw(q, t, R0, r0, v0, 0, r_min)
 print "philw =", philw
 
-philw = phi_lw(q, t, R0, r0, v0, a0)
+philw = phi_lw(q, t, R0, r0, v0, a0, r_min)
 print "philw =", philw
 
 # Data for plotting of t_zap

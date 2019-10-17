@@ -148,7 +148,7 @@ int calc_tzap(double t, double R0, double r0, double v0, double a0, double theta
 		DBG_INFO("t2=%f t1=%f t=%f v1 = %f, v2 = %f, v = %f, R=%f dR=%e dR_pre=%e ", *t2, t1, t, v1, v2, v, R, dR, dR_pre);
 		assert(v1 < c);
 		assert(v2 < c);
-#if 0
+#if 1
 		if (i > 1 && fabs(dR) - fabs(dR_pre) < 1.0e-3)
 		{
 			int j = 0;

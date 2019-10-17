@@ -146,16 +146,14 @@ double get_E_minus_1_c_dA_dt_R0(double theta, double v_zap, double a_zap, double
 varphi := proc (q, t, r__0, v__0, a__0, R__0) options operator, arrow; 
 int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*sigma(q, r__0)/K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta), theta = 0 .. Pi) end proc;
 */
-int integral_phi(double q, double t, double R0, double r0, double v0, double a0, double r_min, double * result)
+int integral_phi(double q, double t, double R0, double r0, double v0, double a0, double r_min, double * result, double * r)
 {
 	int err, error = 0;
 	int i;
 	double theta, 
 		t_zap, r_zap, R_zap, 
 		R_lw_zap, dS_dtheta;
-#ifdef OLD_DS_THETA_ALG
-	double r;
-#endif
+
 	int N = 1000;
 	double dtheta = Pi / N;
 	*result = 0.0;
@@ -177,14 +175,15 @@ int integral_phi(double q, double t, double R0, double r0, double v0, double a0,
 		if (i % 100 == 0)
 			printf("%d %f R_lw_zap = %f\n", i, theta, R_lw_zap);
 
-#ifdef OLD_DS_THETA_ALG
-		err = get_r(t, r0, v0, a0, r_min, &r);
+		err = get_r(t, r0, v0, a0, r_min, r);
 		if (0 != err)
 		{
 			error += 1;
 		}
-		//printf("r = %f err = %d ", r, err);
-		dS_dtheta = get_dS_dtheta(r, theta);
+		//printf("r = %f err = %d ", *r, err);
+
+#ifdef OLD_DS_THETA_ALG
+		dS_dtheta = get_dS_dtheta(*r, theta);
 		//printf("dS_dtheta = %f ", dS_dtheta);
 #else
 		dS_dtheta = get_dS_dtheta(r0, theta);
@@ -206,29 +205,28 @@ int integral_phi(double q, double t, double R0, double r0, double v0, double a0,
 		DBG_INFO("\n");
 	}
 	DBG_INFO("result = %f\n", *result);
-	//DBG_INFO("sigma = %f\n", sigma);
 	printf("S = %f ommited_S = %f S0 = %f\n", S, ommited_S, S0);
 	if (0.0 != ommited_S)
 	{
 		S -= ommited_S;
-		//DBG_INFO("corrected sigma = %f\n", sigma);
+		DBG_INFO("corrected S = %f\n", S);
 	}
 	double sigma = q / S;
+	DBG_INFO("sigma0 = %f\n", sigma0);
+	DBG_INFO("sigma = %f\n", sigma);
 	*result *= sigma;
 	DBG_INFO("result = %f\n", *result);
 	return error;
 }
 
-int integral_phi_and_E(double q, double t, double R0, double r0, double v0, double a0, double * pE_minus_grad_phi_R0, double *pE_minus_1_c_dA_dt_R0, double r_min, double *phi)
+int integral_phi_and_E(double q, double t, double R0, double r0, double v0, double a0, double * pE_minus_grad_phi_R0, double *pE_minus_1_c_dA_dt_R0, double r_min, double *phi, double *r)
 {
 	int err, error = 0;
 	int i;
 	double theta, 
 		t_zap, r_zap, R_zap, 
 		R_lw_zap, dS_dtheta;
-#ifdef OLD_DS_THETA_ALG
-	double r;
-#endif
+
 	double v_zap;
 	double a_zap;
 	double aR_zap;
@@ -269,14 +267,15 @@ int integral_phi_and_E(double q, double t, double R0, double r0, double v0, doub
 		DBG_INFO("cos_alpha_zap = %f ", cos_alpha_zap);
 		E_minus_grad_varphi_R0 = get_E_minus_grad_phi_R0 (theta, v_zap, R_zap, aR_zap, R_lw_zap, cos_alpha_zap);
 		E_minus_1_c_dA_dt_R0   = get_E_minus_1_c_dA_dt_R0(theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap);
-#ifdef OLD_DS_THETA_ALG
-		err = get_r(t, r0, v0, a0, r_min, &r);
+
+		err = get_r(t, r0, v0, a0, r_min, r);
 		if (0 != err)
 		{
 			error += 1;
 		}
-		//printf("r = %f err = %d ", r, err);
-		dS_dtheta = get_dS_dtheta(r, theta);
+		//printf("r = %f err = %d ", *r, err);
+#ifdef OLD_DS_THETA_ALG
+		dS_dtheta = get_dS_dtheta(*r, theta);
 		//printf("dS_dtheta = %f ", dS_dtheta);
 #else
 		dS_dtheta = get_dS_dtheta(r0, theta);
@@ -302,15 +301,15 @@ int integral_phi_and_E(double q, double t, double R0, double r0, double v0, doub
 		DBG_INFO("\n");
 	}
 	DBG_INFO("phi = %f E1 = %f E2 = %f\n", *phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0);
-	DBG_INFO("sigma = %f\n", sigma);
+	DBG_INFO("sigma0 = %f\n", sigma0);
 	printf("S = %f ommited_S = %f S0 = %f\n", S, ommited_S, S0);
 	if (0.0 != ommited_S)
 	{
 		S -= ommited_S;
-
-		DBG_INFO("corrected sigma = %f\n", sigma);
+		DBG_INFO("corrected S = %f\n", S);
 	}
 	double sigma = q / S;
+	DBG_INFO("sigma = %f\n", sigma);
 	*phi                   *= sigma;
 	*pE_minus_grad_phi_R0  *= sigma;
 	*pE_minus_1_c_dA_dt_R0 *= sigma;
@@ -410,6 +409,7 @@ int main()
 	/* Заряд сферы */
 	double q = 1.0;
 	double t_zap;
+	double r;
 
 	/*
         cdef res = integral_phi(q, t, R0, r0, v0, a0)
@@ -422,22 +422,22 @@ int main()
 	(-1186.1298919436645, -1, 7.0, 2.8421709430404007e-13, 2, 0, -0.150000000000000)
 	(-921.0452564374108, -1, 7.5, 2.8421709430404007e-13, 2, 0, -0.150000000000000)
 	*/
-	error = integral_phi(-1, 5.5, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw);
+	error = integral_phi(-1, 5.5, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw, &r);
 	printf("phi_lw = %f error = %d\n", phi_lw, error);
 	return 0;
 	for (double t = 0; t < 8.0; t += 0.1)
 	{
-		error = integral_phi(-1, t, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw);
+		error = integral_phi(-1, t, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw, &r);
 		printf("t = %f phi_lw = %f error = %d\n", t, phi_lw, error);
 	}
 
-	error = integral_phi(-1, 6.0, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw);
+	error = integral_phi(-1, 6.0, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw, &r);
 	printf("phi_lw = %f\n", phi_lw);
-	error = integral_phi(-1, 6.5, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw);
+	error = integral_phi(-1, 6.5, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw, &r);
 	printf("phi_lw = %f\n", phi_lw);
-	error = integral_phi(-1, 7.0, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw);
+	error = integral_phi(-1, 7.0, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw, &r);
 	printf("phi_lw = %f\n", phi_lw);
-	error = integral_phi(-1, 7.5, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw);
+	error = integral_phi(-1, 7.5, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw, &r);
 	printf("phi_lw = %f\n", phi_lw);
 
 	get_R(1.5, 1.499999999999999, 0.0);
@@ -448,15 +448,15 @@ int main()
 	/* скалярный потенциал Лиенара Вихерта зарядов равномерно распределённых по сферической поверхности радиуса r0 и движущихся из центра.  */
 	/* varphi := proc (q, t, r__0, v__0, a__0, R__0) options operator, arrow; 
 	int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*sigma(q, r__0)/K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta), theta = 0 .. Pi) end proc;*/
-	error = integral_phi(q, t, R0, r0, v0, a0, r_min, &phi_lw);
+	error = integral_phi(q, t, R0, r0, v0, a0, r_min, &phi_lw, &r);
 	printf("phi_lw = %f\n", phi_lw);
-	error = integral_phi_and_E(q, t, R0, r0, v0, a0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw);
+	error = integral_phi_and_E(q, t, R0, r0, v0, a0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &r);
 	printf("phi_lw = %f E1=%f E2 = %f\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	/*infinity error result*/
-	error = integral_phi(q, t, -1.0000000000000142, 1, 0, 0, r_min, &phi_lw);
+	error = integral_phi(q, t, -1.0000000000000142, 1, 0, 0, r_min, &phi_lw, &r);
 	printf("phi_lw = %f\n", phi_lw);
-	phi_lw = integral_phi_and_E(q, t, -1.0000000000000142, 1, 0, 0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw);
+	phi_lw = integral_phi_and_E(q, t, -1.0000000000000142, 1, 0, 0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &r);
 	printf("phi_lw = %f E1=%f E2 = %f\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	/*hung
@@ -476,9 +476,9 @@ int main()
 	t2=0.999333 t1=1.000667 t=5.000000 R=4.000667 dR=-1.333710e-03 dR_pre=1.333710e-03 
 	*/
 
-	error = integral_phi(-q, 5.0, -1.5, 2.0, 0.0, 1.0, r_min, &phi_lw);
+	error = integral_phi(-q, 5.0, -1.5, 2.0, 0.0, 1.0, r_min, &phi_lw, &r);
 	printf("phi_lw = %f\n", phi_lw);
-	error = integral_phi_and_E(-q, 5.0, -1.5, 2.0, 0.0, 1.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw);
+	error = integral_phi_and_E(-q, 5.0, -1.5, 2.0, 0.0, 1.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &r);
 	printf("phi_lw = %f E1=%f E2 = %f\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	{
@@ -498,8 +498,8 @@ int main()
 			{
 				printf("ti=%03.1f R0_i=%03.1f ", ti, R0_i);
 
-				error = integral_phi_and_E(+q, ti, R0_i, r0, v0_p, a0_p, &E1_p, &E2_p, r_min, &phi_p);
-				error = integral_phi_and_E(-q, ti, R0_i, r0, v0_n, a0_n, &E1_n, &E2_n, r_min, &phi_n);
+				error = integral_phi_and_E(+q, ti, R0_i, r0, v0_p, a0_p, &E1_p, &E2_p, r_min, &phi_p, &r);
+				error = integral_phi_and_E(-q, ti, R0_i, r0, v0_n, a0_n, &E1_n, &E2_n, r_min, &phi_n, &r);
 				//printf("phi_p = %f ", phi_p);
 				//printf("phi_n = %f ", phi_n);
 
@@ -527,10 +527,10 @@ int main()
 			}
 			printf("\n");
 		}
-		error = integral_phi_and_E(q, t, R0, r0, 0.0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw);
+		error = integral_phi_and_E(q, t, R0, r0, 0.0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &r);
 		printf("phi_lw = %f E1=%f E2 = %f\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
-		error = integral_phi_and_E(-q, t, R0, r0, 0.0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw);
+		error = integral_phi_and_E(-q, t, R0, r0, 0.0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &r);
 		printf("phi_lw = %f E1=%f E2 = %f\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	}

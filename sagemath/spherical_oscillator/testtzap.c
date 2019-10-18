@@ -302,7 +302,7 @@ int integral_phi_and_E(double q, double t, double R0, double r0, double v0, doub
 	}
 	DBG_INFO("phi = %f E1 = %f E2 = %f\n", *phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0);
 	DBG_INFO("sigma0 = %f\n", sigma0);
-	printf("S = %f ommited_S = %f S0 = %f\n", S, ommited_S, S0);
+	//printf("S = %f ommited_S = %f S0 = %f\n", S, ommited_S, S0);
 	if (0.0 != ommited_S)
 	{
 		S -= ommited_S;
@@ -314,7 +314,7 @@ int integral_phi_and_E(double q, double t, double R0, double r0, double v0, doub
 	*pE_minus_grad_phi_R0  *= sigma;
 	*pE_minus_1_c_dA_dt_R0 *= sigma;
 
-	printf("phi = %f E1 = %f E2 = %f\n", *phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0);
+	//printf("phi = %f E1 = %f E2 = %f\n", *phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0);
 	return error;
 }
 

@@ -143,6 +143,16 @@ pname = "results/spherical_explosion_all_E_t.png"
 print pname
 p.save(pname)
 
+p = list_plot(all_plot_data_E_p)
+pname = "results/spherical_explosion_all_E_p_t.png"
+print pname
+p.save(pname)
+
+p = list_plot(all_plot_data_E_n)
+pname = "results/spherical_explosion_all_E_n_t.png"
+print pname
+p.save(pname)
+
 p = list_plot(all_plot_data_EE)
 pname = "results/spherical_explosion_all_EE_t.png"
 print pname
@@ -153,8 +163,28 @@ pname = "results/spherical_explosion_all_E1_t.png"
 print pname
 p.save(pname)
 
+p = list_plot(all_plot_data_E1_p)
+pname = "results/spherical_explosion_all_E1_p_t.png"
+print pname
+p.save(pname)
+
+p = list_plot(all_plot_data_E1_n)
+pname = "results/spherical_explosion_all_E1_n_t.png"
+print pname
+p.save(pname)
+
 p = list_plot(all_plot_data_E2)
 pname = "results/spherical_explosion_all_E2_t.png"
+print pname
+p.save(pname)
+
+p = list_plot(all_plot_data_E2_p)
+pname = "results/spherical_explosion_all_E2_p_t.png"
+print pname
+p.save(pname)
+
+p = list_plot(all_plot_data_E2_n)
+pname = "results/spherical_explosion_all_E2_n_t.png"
 print pname
 p.save(pname)
 
@@ -170,14 +200,26 @@ dt_all = 2.0
 
 
 all_plot_data_E = []
+all_plot_data_E_p = []
+all_plot_data_E_n = []
 all_plot_data_EE = []
 all_plot_data_E1 = []
+all_plot_data_E1_p = []
+all_plot_data_E1_n = []
 all_plot_data_E2 = []
+all_plot_data_E2_p = []
+all_plot_data_E2_n = []
 for t_i in np.arange(t1, t2, dt):
     plot_data_E = []
+    plot_data_E_p = []
+    plot_data_E_n = []
     plot_data_EE = []
     plot_data_E1 = []
+    plot_data_E1_p = []
+    plot_data_E1_n = []
     plot_data_E2 = []
+    plot_data_E2_p = []
+    plot_data_E2_n = []
     for R0_i in np.arange(min_R0, max_R0, step_R0):
         (phi_p, E1_p, E2_p, error_p, r_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
         (phi_n, E1_n, E2_n, error_n, r_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
@@ -185,18 +227,42 @@ for t_i in np.arange(t1, t2, dt):
         print (phi_n, E1_n, E2_n, error_n, r_n)
         if r_n < R0_i - step_R0:
             plot_data_E += [(R0_i, E1_p + E2_p + E1_n + E2_n)]
+            plot_data_E_p += [(R0_i, E1_p + E2_p)]
+            plot_data_E_n += [(R0_i, E1_n + E2_n)]
             plot_data_EE += [(R0_i, E1_p - E2_p + E1_n - E2_n)]
             plot_data_E1 += [(R0_i, E1_p + E1_n)]
+            plot_data_E1_p += [(R0_i, E1_p)]
+            plot_data_E1_n += [(R0_i, E1_n)]
             plot_data_E2 += [(R0_i, E2_p + E2_n)]
+            plot_data_E2_p += [(R0_i, E2_p)]
+            plot_data_E2_n += [(R0_i, E2_n)]
     if abs(t_i/dt_all) > dt/2:
         all_plot_data_E += plot_data_E
+        all_plot_data_E_p += plot_data_E_p
+        all_plot_data_E_n += plot_data_E_n
         all_plot_data_EE += plot_data_EE
         all_plot_data_E1 += plot_data_E1
+        all_plot_data_E1_p += plot_data_E1_p
+        all_plot_data_E1_n += plot_data_E1_n
         all_plot_data_E2 += plot_data_E2
+        all_plot_data_E2_p += plot_data_E2_p
+        all_plot_data_E2_n += plot_data_E2_n
 
     if len(plot_data_E) > 0:
         p = list_plot(plot_data_E)
         pname = "results/spherical_explosion_E_R0" + "_t=" + float_formatting(t_i) + ".png"
+        print pname
+        p.save(pname)
+
+    if len(plot_data_E_p) > 0:
+        p = list_plot(plot_data_E_p)
+        pname = "results/spherical_explosion_E_p_R0" + "_t=" + float_formatting(t_i) + ".png"
+        print pname
+        p.save(pname)
+
+    if len(plot_data_E_n) > 0:
+        p = list_plot(plot_data_E_n)
+        pname = "results/spherical_explosion_E_n_R0" + "_t=" + float_formatting(t_i) + ".png"
         print pname
         p.save(pname)
 
@@ -212,14 +278,48 @@ for t_i in np.arange(t1, t2, dt):
         print pname
         p.save(pname)
 
+    if len(plot_data_E1_p) > 0:
+        p = list_plot(plot_data_E1_p)
+        pname = "results/spherical_explosion_E1_p_R0" + "_t=" + float_formatting(t_i) + ".png"
+        print pname
+        p.save(pname)
+
+    if len(plot_data_E1_n) > 0:
+        p = list_plot(plot_data_E1_n)
+        pname = "results/spherical_explosion_E1_n_R0" + "_t=" + float_formatting(t_i) + ".png"
+        print pname
+        p.save(pname)
+
     if len(plot_data_E2) > 0:
         p = list_plot(plot_data_E2)
         pname = "results/spherical_explosion_E2_R0" + "_t=" + float_formatting(t_i) + ".png"
         print pname
         p.save(pname)
 
+    if len(plot_data_E2_p) > 0:
+        p = list_plot(plot_data_E2_p)
+        pname = "results/spherical_explosion_E2_p_R0" + "_t=" + float_formatting(t_i) + ".png"
+        print pname
+        p.save(pname)
+
+    if len(plot_data_E2_n) > 0:
+        p = list_plot(plot_data_E2_n)
+        pname = "results/spherical_explosion_E2_n_R0" + "_t=" + float_formatting(t_i) + ".png"
+        print pname
+        p.save(pname)
+
 p = list_plot(all_plot_data_E)
 pname = "results/spherical_explosion_all_E_R0.png"
+print pname
+p.save(pname)
+
+p = list_plot(all_plot_data_E_p)
+pname = "results/spherical_explosion_all_E_p_R0.png"
+print pname
+p.save(pname)
+
+p = list_plot(all_plot_data_E_n)
+pname = "results/spherical_explosion_all_E_n_R0.png"
 print pname
 p.save(pname)
 
@@ -233,7 +333,27 @@ pname = "results/spherical_explosion_all_E1_R0.png"
 print pname
 p.save(pname)
 
+p = list_plot(all_plot_data_E1_p)
+pname = "results/spherical_explosion_all_E1_p_R0.png"
+print pname
+p.save(pname)
+
+p = list_plot(all_plot_data_E1_n)
+pname = "results/spherical_explosion_all_E1_n_R0.png"
+print pname
+p.save(pname)
+
 p = list_plot(all_plot_data_E2)
 pname = "results/spherical_explosion_all_E2_R0.png"
+print pname
+p.save(pname)
+
+p = list_plot(all_plot_data_E2_p)
+pname = "results/spherical_explosion_all_E2_p_R0.png"
+print pname
+p.save(pname)
+
+p = list_plot(all_plot_data_E2_n)
+pname = "results/spherical_explosion_all_E2_n_R0.png"
 print pname
 p.save(pname)

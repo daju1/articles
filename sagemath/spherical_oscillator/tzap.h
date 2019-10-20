@@ -1,3 +1,6 @@
+//#define CALC_LW_WITHOUT_LAGGING
+
+#define c 3.0
 
 /* ускорение заряда */
 double get_a(double t_zap, double a0);

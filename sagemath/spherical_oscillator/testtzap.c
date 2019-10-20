@@ -7,7 +7,7 @@
 //#define USE_DEBUG
 #include "dbg_info.h"
 
-extern double c;
+//extern double c;
 
 double get_sigma(double q, double r)
 {
@@ -172,8 +172,8 @@ int integral_phi(double q, double t, double R0, double r0, double v0, double a0,
 		{
 			error += 1;
 		}
-		if (i % 100 == 0)
-			printf("%d %f R_lw_zap = %f\n", i, theta, R_lw_zap);
+		//if (i % 100 == 0)
+		//	printf("%d %f R_lw_zap = %f\n", i, theta, R_lw_zap);
 
 		err = get_r(t, r0, v0, a0, r_min, r);
 		if (0 != err)
@@ -205,7 +205,7 @@ int integral_phi(double q, double t, double R0, double r0, double v0, double a0,
 		DBG_INFO("\n");
 	}
 	DBG_INFO("result = %f\n", *result);
-	printf("S = %f ommited_S = %f S0 = %f\n", S, ommited_S, S0);
+	//printf("S = %f ommited_S = %f S0 = %f\n", S, ommited_S, S0);
 	if (0.0 != ommited_S)
 	{
 		S -= ommited_S;
@@ -411,6 +411,56 @@ int main()
 	double t_zap;
 	double r;
 
+	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/2.0, /*r0*/2.0, /*v0*/c/3.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw, &r);
+	printf("\nphi_lw = %0.10f error = %d r = %f\n", phi_lw, error, r);
+	#ifdef CALC_LW_WITHOUT_LAGGING
+	printf ("should be -0.4315231087\n\n");
+	#else
+	printf ("should be -0.5198603854\n\n");
+	#endif
+
+	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/2.0, /*r0*/2.0, /*v0*/0.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw, &r);
+	printf("\nphi_lw = %0.10f error = %d r = %f\n", phi_lw, error, r);
+	#ifdef CALC_LW_WITHOUT_LAGGING
+	printf ("should be -0.5\n\n");
+	#else
+	printf ("should be -0.5\n\n");
+	#endif
+
+	error = calc_tzap(/*t*/0.0, /*R0*/0.0, /*r0*/2.0, /*v0*/1.0, /*a0*/0.0, /*theta*/0.0, r_min, &t_zap);
+	printf("t_zap = %f\n", t_zap);
+
+	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/0.0, /*r0*/2.0, /*v0*/c/3.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw, &r);
+	printf("\nphi_lw = %0.10f error = %d r = %f\n", phi_lw, error, r);
+	#ifdef CALC_LW_WITHOUT_LAGGING
+	printf ("should be -0.375\n\n");
+	#else
+	printf ("should be -0.5\n\n");
+	#endif
+
+	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/1.0, /*r0*/2.0, /*v0*/c/3.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw, &r);
+	printf("\nphi_lw = %0.10f error = %d r = %f\n", phi_lw, error, r);
+	#ifdef CALC_LW_WITHOUT_LAGGING
+	printf ("should be -0.38348\n\n");
+	#else
+	printf ("should be -0.5047083549\n\n");
+	#endif
+
+	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/3.0, /*r0*/2.0, /*v0*/c/3.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw, &r);
+	printf("\nphi_lw = %0.10f error = %d r = %f\n", phi_lw, error, r);
+	#ifdef CALC_LW_WITHOUT_LAGGING
+	printf ("should be -0.31720\n\n");
+	#else
+	printf ("should be -0.3465735903\n\n");
+	#endif
+
+	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/0.0, /*r0*/1.0, /*v0*/0.0, /*a0*/0.1, /*r_min*/0.1, &phi_lw, &r);
+	printf("\nphi_lw = %0.10f error = %d r = %f\n", phi_lw, error, r);
+	#ifndef CALC_LW_WITHOUT_LAGGING
+	printf ("should be 0.005649896848\n\n");
+	#endif
+
+return 0;
 	/*
         cdef res = integral_phi(q, t, R0, r0, v0, a0)
         if res < -500:
@@ -424,7 +474,7 @@ int main()
 	*/
 	error = integral_phi(-1, 5.5, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw, &r);
 	printf("phi_lw = %f error = %d\n", phi_lw, error);
-	return 0;
+
 	for (double t = 0; t < 8.0; t += 0.1)
 	{
 		error = integral_phi(-1, t, 2.8421709430404007e-13, 2, 0, -0.150000000000000, r_min, &phi_lw, &r);
@@ -462,8 +512,7 @@ int main()
 	/*hung
 	calc_tzap(t=5.000000, R0=-1.500000, r0=2.000000, v0=0.0, a0=1.000000, theta=0.000000
 	*/
-
-	error = calc_tzap(5.0, -1.5, 2.0, 0.0, 1.0, 0.0, r_min, &t_zap);
+	error = calc_tzap(/*t*/5.0, /*R0*/-1.5, /*r0*/2.0, /*v0*/0.0, /*a0*/1.0, /*theta*/0.0, r_min, &t_zap);
 	printf("t_zap = %f\n", t_zap);
 
 	/*hung

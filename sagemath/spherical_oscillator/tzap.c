@@ -5,11 +5,12 @@
 #include <assert.h>
 #include "tzap.h"
 #include "dbg_info.h"
- 
+
+
 
 double t_start = 0; // момент включения ускорения
-double c = 1.0;
-double v_max = 0.999;
+
+double v_max = 0.999 * c;
 	
 /* ускорение заряда */
 double get_a(double t_zap, double a0)
@@ -108,6 +109,9 @@ double get_R(double R0, double r, double theta)
 int calc_tzap(double t, double R0, double r0, double v0, double a0, double theta, double r_min, double * t2)
 {
 	int err, error = 0;
+#ifdef CALC_LW_WITHOUT_LAGGING
+	*t2 = t_start;
+#else
 	double epsilon = 1.0e-15;
 	double t1;
 	* t2 = t;
@@ -181,7 +185,8 @@ int calc_tzap(double t, double R0, double r0, double v0, double a0, double theta
 	}
 	while (fabs(dt) > epsilon);
 	 
-	DBG_INFO("fabs(t1 - t2) = %e fabs(t - t2) = %e calc_tzap() result=%f\n", fabs(t1 - *t2), fabs(t - *t2), *t2); 
+	DBG_INFO("fabs(t1 - t2) = %e fabs(t - t2) = %e calc_tzap() result=%f\n", fabs(t1 - *t2), fabs(t - *t2), *t2);
+#endif
 	return error;
 }
  

@@ -7,6 +7,7 @@ import numpy as np
 attach("tzap.spyx")
 attach("float_formatting.sage")
 
+c = get_light_veloncity()
 q = 1
 t = 5
 R0 = 2

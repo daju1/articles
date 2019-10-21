@@ -6,6 +6,8 @@
 #define c 3.0
 #endif
 
+double get_c();
+
 /* ускорение заряда */
 double get_a(double t_zap, double a0);
 

@@ -11,6 +11,11 @@
 double t_start = 0; // момент включения ускорения
 
 double v_max = 0.999 * c;
+
+double get_c()
+{
+	return c;
+}
 	
 /* ускорение заряда */
 double get_a(double t_zap, double a0)

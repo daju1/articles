@@ -1,6 +1,10 @@
 //#define CALC_LW_WITHOUT_LAGGING
-
+#define SI
+#ifdef SI
+#define c 299792458.0
+#else
 #define c 3.0
+#endif
 
 /* ускорение заряда */
 double get_a(double t_zap, double a0);

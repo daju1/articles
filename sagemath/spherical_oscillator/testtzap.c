@@ -102,6 +102,9 @@ double get_E_minus_grad_phi_R0(double theta, double v_zap, double R_zap, double 
 			- v_zap*cos(theta) / c
 		)
 		/ (R_lw_zap * R_lw_zap);
+#ifdef SI
+	E_minus_grad_phi_R0 *= (c*c)/(10000000.0);
+#endif
 	DBG_INFO("E_minus_grad_phi_R0 = %f ", E_minus_grad_phi_R0);
 	return E_minus_grad_phi_R0;
 }
@@ -136,6 +139,9 @@ double get_E_minus_1_c_dA_dt_R0(double theta, double v_zap, double a_zap, double
 		/
 		(R_lw_zap * R_lw_zap);
 	DBG_INFO("E_minus_1_c_dA_dt_R0 = %f ", E_minus_1_c_dA_dt_R0);
+#ifdef SI
+	E_minus_1_c_dA_dt_R0 *= (c*c)/(10000000.0);
+#endif
 	return E_minus_1_c_dA_dt_R0;
 }
 

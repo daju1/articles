@@ -5,33 +5,174 @@
 #include <assert.h>
 #include "tzap.h"
 #include "dbg_info.h"
+#include "stdlib.h"
+
+#define T_START 0
+#define T_FINISH 100
+#define DT 0.0001
 
 
 
-double t_start = 0; // момент включения ускорения
+static const double t_start = T_START;    // момент включения ускорения
+static const double dt = DT;              // шаг времени
+static const double t_finish = T_FINISH; // момент времени окончания расчёта
 
-double v_max = 0.999 * c;
+// одномерные массивы для сохранения истории при интегрировании только лишь по времени
+// без учёта эволючии объёмного распределения заряда - упрощённый случай сферического конденсатора
+// сохраняется только лишь история положительной обкладки и отрицательной обкладки
+static const int v_Nt = ((T_FINISH - T_START) / DT);
+static int v_n = 0; // итератор полноты заполнения одномерных
+static double epsilon_n = 1e-8;
+static double * v_t;
 
+static double * v_a_pos;
+static double * v_v_pos;
+static double * v_s_pos;
+static double * v_r_pos;
+
+static double * v_a_neg;
+static double * v_v_neg;
+static double * v_s_neg;
+static double * v_r_neg;
+
+// двумерные массивы для сохранения истории при интегрировани как по времени так и по r0 
+// с учётом эволючии объёмного распределения заряда - случай объёмного взрыва плазмы
+// сохраняется история положительного и отрицательного облака заряженных частиц
+
+//static int v_N_t; // размер двумерного массива по координате времени
+//static int v_N_r0; // размер двумерного массива по коодинате начального радиуса
+static int v_n_t = 0; // итератор полноты заполения двумерных массивов по координате времени
+
+static double ** vv_a_pos;
+static double ** vv_v_pos;
+static double ** vv_s_pos;
+static double ** vv_r_pos;
+
+static double ** vv_a_neg;
+static double ** vv_v_neg;
+static double ** vv_s_neg;
+static double ** vv_r_neg;
+
+static double v_max = 0.999 * c;
+
+void init_array_1(double a0_pos, double v0_pos, double r0_pos, double a0_neg, double v0_neg, double r0_neg)
+{
+	v_t = malloc(v_Nt * sizeof(double *));
+
+	v_a_pos = malloc(v_Nt * sizeof(double *));
+	v_v_pos = malloc(v_Nt * sizeof(double *));
+	v_s_pos = malloc(v_Nt * sizeof(double *));
+	v_r_pos = malloc(v_Nt * sizeof(double *));
+
+	v_a_neg = malloc(v_Nt * sizeof(double *));
+	v_v_neg = malloc(v_Nt * sizeof(double *));
+	v_s_neg = malloc(v_Nt * sizeof(double *));
+	v_r_neg = malloc(v_Nt * sizeof(double *));
+
+	v_a_pos[0] = a0_pos;
+	v_v_pos[0] = v0_pos;
+	v_s_pos[0] = 0.0;
+	v_r_pos[0] = r0_pos;
+
+	v_a_neg[0] = a0_neg;
+	v_v_neg[0] = v0_neg;
+	v_s_neg[0] = 0.0;
+	v_r_neg[0] = r0_neg;
+}
+
+
+void init_array_2(int v_N_r0, int v_N_t, double a0_pos, double v0_pos, double r0_pos, double a0_neg, double v0_neg, double r0_neg)
+{
+	v_t = malloc(v_Nt * sizeof(double *));
+
+	vv_a_pos = malloc(v_N_r0 * sizeof(double **));
+	vv_v_pos = malloc(v_N_r0 * sizeof(double **));
+	vv_s_pos = malloc(v_N_r0 * sizeof(double **));
+	vv_r_pos = malloc(v_N_r0 * sizeof(double **));
+
+	vv_a_neg = malloc(v_N_r0 * sizeof(double **));
+	vv_v_neg = malloc(v_N_r0 * sizeof(double **));
+	vv_s_neg = malloc(v_N_r0 * sizeof(double **));
+	vv_r_neg = malloc(v_N_r0 * sizeof(double **));
+
+	for (int i = 0; i < v_N_r0; ++i)
+	{
+		vv_a_pos[i] = malloc(v_N_t * sizeof(double *));
+		vv_v_pos[i] = malloc(v_N_t * sizeof(double *));
+		vv_s_pos[i] = malloc(v_N_t * sizeof(double *));
+		vv_r_pos[i] = malloc(v_N_t * sizeof(double *));
+
+		vv_a_pos[i] = malloc(v_N_t * sizeof(double *));
+		vv_v_pos[i] = malloc(v_N_t * sizeof(double *));
+		vv_s_pos[i] = malloc(v_N_t * sizeof(double *));
+		vv_r_pos[i] = malloc(v_N_t * sizeof(double *));
+
+		// TODO: rework initialization
+		vv_a_pos[i][0] = a0_pos;
+		vv_v_pos[i][0] = v0_pos;
+		vv_s_pos[i][0] = 0.0;
+		vv_r_pos[i][0] = r0_pos;
+
+		vv_a_neg[i][0] = a0_neg;
+		vv_v_neg[i][0] = v0_neg;
+		vv_s_neg[i][0] = 0.0;
+		vv_r_neg[i][0] = r0_neg;
+	}
+}
 double get_c()
 {
 	return c;
 }
 	
 /* ускорение заряда 
-    a0   - ускорение сообщаемое заряду силами неэлектрического происхождения, например ускорение теплового разгона
-    t_a0 - время действия сил неэлектрического происхождения
-    E    - электрическое поле
+	a0   - ускорение сообщаемое заряду силами неэлектрического происхождения, например ускорение теплового разгона
+	t_a0 - время действия сил неэлектрического происхождения
+	E    - электрическое поле
 	m    - масса заряда q
 
 	для вычисления ускорения заряда вызванного электрическими силами
-    F = m * a
-    F = E * q
-    m * a = E * q
-    a = E * q / m
+	F = m * a
+	F = E * q
+	m * a = E * q
+	a = E * q / m
 */
-double get_a_ex(double t_zap, double a0, double t_a0, double E double q, double m)
+double get_a_ex1(double t_zap, double a0, double t_a0, double E, double q, double m)
 {
-	return 0.0;
+	double t_max;
+	if (t_zap < t_start)
+		return 0;
+	// t_max = t_start + v_max / a0;
+	// if (t_zap >= t_max)
+	//     return 0;
+
+	double n = (t_zap - t_start) / dt;
+	double * v_a = q > 0 ? v_a_pos : v_a_neg;
+	if (n <= (double)v_n)
+	{
+		// результат может быть взят с помощью линейной интерполяции ранее рассчитнных значений
+		int n1 = floor(n);
+		int n2 = ceil(n);
+		double part = n - n1;
+
+		double a = v_a[n1] + part * (v_a[n2] - v_a[n1]);
+		return a;
+	}
+
+	if (n - v_n > 1.0 + epsilon_n)
+	{
+		assert(0);
+	}
+
+	double a = E * q / m;
+	if (t_zap <= t_a0)
+	{
+		a += a0;
+	}
+
+	double part = n - v_n;
+	double da = (a - v_a[v_n]) / part;
+	v_a[v_n + 1] = v_a[v_n] + da;
+	return a;
 }
 
 double get_a(double t_zap, double a0)

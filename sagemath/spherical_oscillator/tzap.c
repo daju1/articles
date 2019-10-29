@@ -175,6 +175,90 @@ double get_a_ex1(double t_zap, double a0, double t_a0, double E, double q, doubl
 	return a;
 }
 
+double get_v_ex1(double t_zap, double v0, double a0, double t_a0, double E, double q, double m)
+{
+	assert(v0 < v_max);
+	double t_max;
+	if (t_zap < t_start)
+		return v0;
+
+	double n = (t_zap - t_start) / dt;
+	double * v_v = q > 0 ? v_v_pos : v_v_neg;
+	if (n <= (double)v_n)
+	{
+		// результат может быть взят с помощью линейной интерполяции ранее рассчитнных значений
+		int n1 = floor(n);
+		int n2 = ceil(n);
+		double part = n - n1;
+
+		double a = v_v[n1] + part * (v_v[n2] - v_v[n1]);
+		return a;
+	}
+
+	if (n - v_n > 1.0 + epsilon_n)
+	{
+		assert(0);
+	}
+
+	double a = get_a_ex1(t_zap, a0, t_a0, E, q, m);
+	double v = v_v[v_n];
+	// a = dv / dt
+	// dv = a * dt
+	double dv = a * dt;
+	v += dv;
+
+	double part = n - v_n;
+	double dv_out = (v - v_v[v_n]) / part;
+	v_v[v_n + 1] = v_v[v_n] + dv_out;
+	return v;
+}
+
+double get_s_ex1(double t_zap, double v0, double a0, double t_a0, double E, double q, double m)
+{
+	assert(v0 < v_max);
+	double dt_start, dt_max;
+	double t_max;
+	double s;
+	if (t_zap < t_start)
+	{
+		s = v0*(t_zap - t_start);
+		DBG_INFO("get_s1 t_zap=%f a0=%f returns %f\n", t_zap, a0, s);
+		return s;
+	}
+
+	double n = (t_zap - t_start) / dt;
+	double * v_s = q > 0 ? v_s_pos : v_s_neg;
+	if (n <= (double)v_n)
+	{
+		// результат может быть взят с помощью линейной интерполяции ранее рассчитнных значений
+		int n1 = floor(n);
+		int n2 = ceil(n);
+		double part = n - n1;
+
+		double s = v_s[n1] + part * (v_s[n2] - v_s[n1]);
+		return s;
+	}
+
+	if (n - v_n > 1.0 + epsilon_n)
+	{
+		assert(0);
+	}
+
+	double a = get_a_ex1(t_zap, a0, t_a0, E, q, m);
+	double v = get_v_ex1(t_zap, v0, a0, t_a0, E, q, m);
+	s = v_s[v_n];
+	// v = ds / dt
+	double ds = v * dt;// + a * dt * dt ?????
+	s + ds;
+
+	double part = n - v_n;
+	double ds_out = (s - v_s[v_n]) / part;
+	v_s[v_n + 1] = v_s[v_n] + ds_out;
+
+	return s;
+}
+
+
 double get_a(double t_zap, double a0)
 {
 	double t_max;

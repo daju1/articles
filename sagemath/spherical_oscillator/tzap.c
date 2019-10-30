@@ -21,7 +21,7 @@ static const double t_finish = T_FINISH; // момент времени окон
 // без учёта эволючии объёмного распределения заряда - упрощённый случай сферического конденсатора
 // сохраняется только лишь история положительной обкладки и отрицательной обкладки
 static const int v_Nt = ((T_FINISH - T_START) / DT);
-static int v_n = 0; // итератор полноты заполнения одномерных
+static int v_n = 0; // итератор полноты заполнения одномерных массивов по оси времени
 static double epsilon_n = 1e-8;
 static double * v_t;
 
@@ -34,6 +34,10 @@ static double * v_a_neg;
 static double * v_v_neg;
 static double * v_s_neg;
 static double * v_r_neg;
+
+static double ** v_E1;
+static double ** v_E2;
+static double ** v_E;
 
 // двумерные массивы для сохранения истории при интегрировани как по времени так и по r0 
 // с учётом эволючии объёмного распределения заряда - случай объёмного взрыва плазмы
@@ -53,9 +57,13 @@ static double ** vv_v_neg;
 static double ** vv_s_neg;
 static double ** vv_r_neg;
 
+static double ** vv_E1;
+static double ** vv_E2;
+static double ** vv_E;
+
 static double v_max = 0.999 * c;
 
-void init_array_1(double a0_pos, double v0_pos, double r0_pos, double a0_neg, double v0_neg, double r0_neg)
+void init_array_1(int v_Nr0, int v_Nt, double a0_pos, double v0_pos, double r0_pos, double a0_neg, double v0_neg, double r0_neg)
 {
 	v_t = malloc(v_Nt * sizeof(double *));
 
@@ -69,6 +77,10 @@ void init_array_1(double a0_pos, double v0_pos, double r0_pos, double a0_neg, do
 	v_s_neg = malloc(v_Nt * sizeof(double *));
 	v_r_neg = malloc(v_Nt * sizeof(double *));
 
+	v_E1 = malloc(v_Nr0 * sizeof(double **));
+	v_E2 = malloc(v_Nr0 * sizeof(double **));
+	v_E  = malloc(v_Nr0 * sizeof(double **));
+
 	v_a_pos[0] = a0_pos;
 	v_v_pos[0] = v0_pos;
 	v_s_pos[0] = 0.0;
@@ -78,10 +90,22 @@ void init_array_1(double a0_pos, double v0_pos, double r0_pos, double a0_neg, do
 	v_v_neg[0] = v0_neg;
 	v_s_neg[0] = 0.0;
 	v_r_neg[0] = r0_neg;
+
+	for (int i_r0 = 0; i_r0 < v_Nr0; ++i_r0)
+	{
+		vv_E1[i_r0] = malloc(v_Nt * sizeof(double *));
+		vv_E2[i_r0] = malloc(v_Nt * sizeof(double *));
+		vv_E [i_r0] = malloc(v_Nt * sizeof(double *));
+
+		// initialization
+		vv_E1[i_r0][0] = 0.0;
+		vv_E2[i_r0][0] = 0.0;
+		vv_E [i_r0][0] = 0.0;
+	}
 }
 
 
-void init_array_2(int v_N_r0, int v_N_t, double a0_pos, double v0_pos, double r0_pos, double a0_neg, double v0_neg, double r0_neg)
+void init_array_2(int v_N_r0, int v_N_t, double * a0_pos, double * v0_pos, double * r0_pos, double * a0_neg, double * v0_neg, double * r0_neg)
 {
 	v_t = malloc(v_Nt * sizeof(double *));
 
@@ -95,28 +119,40 @@ void init_array_2(int v_N_r0, int v_N_t, double a0_pos, double v0_pos, double r0
 	vv_s_neg = malloc(v_N_r0 * sizeof(double **));
 	vv_r_neg = malloc(v_N_r0 * sizeof(double **));
 
-	for (int i = 0; i < v_N_r0; ++i)
+	vv_E1 = malloc(v_N_r0 * sizeof(double **));
+	vv_E2 = malloc(v_N_r0 * sizeof(double **));
+	vv_E  = malloc(v_N_r0 * sizeof(double **));
+
+	for (int i_r0 = 0; i_r0 < v_N_r0; ++i_r0)
 	{
-		vv_a_pos[i] = malloc(v_N_t * sizeof(double *));
-		vv_v_pos[i] = malloc(v_N_t * sizeof(double *));
-		vv_s_pos[i] = malloc(v_N_t * sizeof(double *));
-		vv_r_pos[i] = malloc(v_N_t * sizeof(double *));
+		vv_a_pos[i_r0] = malloc(v_N_t * sizeof(double *));
+		vv_v_pos[i_r0] = malloc(v_N_t * sizeof(double *));
+		vv_s_pos[i_r0] = malloc(v_N_t * sizeof(double *));
+		vv_r_pos[i_r0] = malloc(v_N_t * sizeof(double *));
 
-		vv_a_pos[i] = malloc(v_N_t * sizeof(double *));
-		vv_v_pos[i] = malloc(v_N_t * sizeof(double *));
-		vv_s_pos[i] = malloc(v_N_t * sizeof(double *));
-		vv_r_pos[i] = malloc(v_N_t * sizeof(double *));
+		vv_a_pos[i_r0] = malloc(v_N_t * sizeof(double *));
+		vv_v_pos[i_r0] = malloc(v_N_t * sizeof(double *));
+		vv_s_pos[i_r0] = malloc(v_N_t * sizeof(double *));
+		vv_r_pos[i_r0] = malloc(v_N_t * sizeof(double *));
 
-		// TODO: rework initialization
-		vv_a_pos[i][0] = a0_pos;
-		vv_v_pos[i][0] = v0_pos;
-		vv_s_pos[i][0] = 0.0;
-		vv_r_pos[i][0] = r0_pos;
+		vv_E1[i_r0] = malloc(v_N_t * sizeof(double *));
+		vv_E2[i_r0] = malloc(v_N_t * sizeof(double *));
+		vv_E [i_r0] = malloc(v_N_t * sizeof(double *));
 
-		vv_a_neg[i][0] = a0_neg;
-		vv_v_neg[i][0] = v0_neg;
-		vv_s_neg[i][0] = 0.0;
-		vv_r_neg[i][0] = r0_neg;
+		// initialization
+		vv_a_pos[i_r0][0] = a0_pos[i_r0];
+		vv_v_pos[i_r0][0] = v0_pos[i_r0];
+		vv_s_pos[i_r0][0] = 0.0;
+		vv_r_pos[i_r0][0] = r0_pos[i_r0];
+
+		vv_a_neg[i_r0][0] = a0_neg[i_r0];
+		vv_v_neg[i_r0][0] = v0_neg[i_r0];
+		vv_s_neg[i_r0][0] = 0.0;
+		vv_r_neg[i_r0][0] = r0_neg[i_r0];
+
+		vv_E1[i_r0][0] = 0.0;
+		vv_E2[i_r0][0] = 0.0;
+		vv_E [i_r0][0] = 0.0;
 	}
 }
 double get_c()
@@ -136,7 +172,7 @@ double get_c()
 	m * a = E * q
 	a = E * q / m
 */
-double get_a_ex1(double t_zap, double a0, double t_a0, double E, double q, double m)
+double get_a_ex1(double t_zap, double a0, double t_a0, double q, double m)
 {
 	double t_max;
 	if (t_zap < t_start)
@@ -158,10 +194,19 @@ double get_a_ex1(double t_zap, double a0, double t_a0, double E, double q, doubl
 		return a;
 	}
 
+	assert(0);
+}
+/*
+double set_a_ex1(double t_zap, double a0, double t_a0, double q, double m)
+{
+	double n = (t_zap - t_start) / dt;
+	double * v_a = q > 0 ? v_a_pos : v_a_neg;
 	if (n - v_n > 1.0 + epsilon_n)
 	{
 		assert(0);
 	}
+
+	double E = v_E[i_r0][v_n];
 
 	double a = E * q / m;
 	if (t_zap <= t_a0)
@@ -174,8 +219,8 @@ double get_a_ex1(double t_zap, double a0, double t_a0, double E, double q, doubl
 	v_a[v_n + 1] = v_a[v_n] + da;
 	return a;
 }
-
-double get_v_ex1(double t_zap, double v0, double a0, double t_a0, double E, double q, double m)
+*/
+double get_v_ex1(double t_zap, double v0, double a0, double t_a0, double q, double m)
 {
 	assert(v0 < v_max);
 	double t_max;
@@ -200,7 +245,7 @@ double get_v_ex1(double t_zap, double v0, double a0, double t_a0, double E, doub
 		assert(0);
 	}
 
-	double a = get_a_ex1(t_zap, a0, t_a0, E, q, m);
+	double a = get_a_ex1(t_zap, a0, t_a0, q, m);
 	double v = v_v[v_n];
 	// a = dv / dt
 	// dv = a * dt
@@ -213,7 +258,7 @@ double get_v_ex1(double t_zap, double v0, double a0, double t_a0, double E, doub
 	return v;
 }
 
-double get_s_ex1(double t_zap, double v0, double a0, double t_a0, double E, double q, double m)
+double get_s_ex1(double t_zap, double v0, double a0, double t_a0, double q, double m)
 {
 	assert(v0 < v_max);
 	double dt_start, dt_max;
@@ -244,11 +289,11 @@ double get_s_ex1(double t_zap, double v0, double a0, double t_a0, double E, doub
 		assert(0);
 	}
 
-	double a = get_a_ex1(t_zap, a0, t_a0, E, q, m);
-	double v = get_v_ex1(t_zap, v0, a0, t_a0, E, q, m);
+	double a = get_a_ex1(t_zap, a0, t_a0, q, m);
+	double v = get_v_ex1(t_zap, v0, a0, t_a0, q, m);
 	s = v_s[v_n];
 	// v = ds / dt
-	double ds = v * dt;// + a * dt * dt ?????
+	double ds = v * dt + a * dt * dt / 2;
 	s + ds;
 
 	double part = n - v_n;
@@ -258,6 +303,21 @@ double get_s_ex1(double t_zap, double v0, double a0, double t_a0, double E, doub
 	return s;
 }
 
+
+/* расстояние от заряда до центра сферы в запаздывающий момент времени */
+int get_r_ex1(double t_zap, double r0, double v0, double a0, double t_a0, double q, double m, double r_min, double * r)
+{
+	int error = 0;
+	*r = r0 + get_s_ex1(t_zap, v0, a0, t_a0, q, m);
+	if (*r < r_min)
+	{
+		DBG_INFO("Warning: r %f < r_min %f\n", *r, r_min);
+		*r = r_min;
+		error = 1;
+	}
+	assert(*r > 0.0);
+	return error;
+}
 
 double get_a(double t_zap, double a0)
 {
@@ -369,9 +429,11 @@ int calc_tzap(double t, double R0, double r0, double v0, double a0, double theta
 
 	int i = 0;
 	double n = 0.9;
+#if 0
 	v = get_v(t, v0, a0);      /* скорость заряда в текущий момент времени t                          */
 
 	DBG_INFO("calc_tzap(t=%f, v = %f, R0=%f, r0=%f, v0=%f, a0=%f, theta=%f)\n", t, v, R0, r0, v0, a0, theta);
+#endif
 	assert(v < c);
 	/*
 	DBG_INFO("epsilon=%e\n", epsilon);

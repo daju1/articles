@@ -10,6 +10,7 @@
 #define T_START 0
 #define T_FINISH 100
 #define DT 0.0001
+#define DR 0.0001
 
 
 
@@ -17,12 +18,15 @@ static const double t_start = T_START;    // момент включения у�
 static const double dt = DT;              // шаг времени
 static const double t_finish = T_FINISH; // момент времени окончания расчёта
 
+static const double dr = DR;              // шаг координаты
+
 // одномерные массивы для сохранения истории при интегрировании только лишь по времени
 // без учёта эволючии объёмного распределения заряда - упрощённый случай сферического конденсатора
 // сохраняется только лишь история положительной обкладки и отрицательной обкладки
 static const int v_Nt = ((T_FINISH - T_START) / DT);
 static int v_n = 0; // итератор полноты заполнения одномерных массивов по оси времени
 static double epsilon_n = 1e-8;
+static double epsilon_r = 1e-8;
 static double * v_t;
 
 static double * v_a_pos;
@@ -63,7 +67,7 @@ static double ** vv_E;
 
 static double v_max = 0.999 * c;
 
-void init_array_1(int v_Nr0, int v_Nt, double a0_pos, double v0_pos, double r0_pos, double a0_neg, double v0_neg, double r0_neg)
+void init_array_1(int v_Nr0, int v_Nt, double a0_pos, velocity v0_pos, double r0_pos, double a0_neg, velocity v0_neg, double r0_neg)
 {
 	v_t = malloc(v_Nt * sizeof(double *));
 
@@ -93,19 +97,19 @@ void init_array_1(int v_Nr0, int v_Nt, double a0_pos, double v0_pos, double r0_p
 
 	for (int i_r0 = 0; i_r0 < v_Nr0; ++i_r0)
 	{
-		vv_E1[i_r0] = malloc(v_Nt * sizeof(double *));
-		vv_E2[i_r0] = malloc(v_Nt * sizeof(double *));
-		vv_E [i_r0] = malloc(v_Nt * sizeof(double *));
+		v_E1[i_r0] = malloc(v_Nt * sizeof(double *));
+		v_E2[i_r0] = malloc(v_Nt * sizeof(double *));
+		v_E [i_r0] = malloc(v_Nt * sizeof(double *));
 
 		// initialization
-		vv_E1[i_r0][0] = 0.0;
-		vv_E2[i_r0][0] = 0.0;
-		vv_E [i_r0][0] = 0.0;
+		v_E1[i_r0][0] = 0.0;
+		v_E2[i_r0][0] = 0.0;
+		v_E [i_r0][0] = 0.0;
 	}
 }
 
 
-void init_array_2(int v_N_r0, int v_N_t, double * a0_pos, double * v0_pos, double * r0_pos, double * a0_neg, double * v0_neg, double * r0_neg)
+void init_array_2(int v_N_r0, int v_N_t, double * a0_pos, velocity * v0_pos, double * r0_pos, double * a0_neg, velocity * v0_neg, double * r0_neg)
 {
 	v_t = malloc(v_Nt * sizeof(double *));
 
@@ -172,7 +176,7 @@ double get_c()
 	m * a = E * q
 	a = E * q / m
 */
-double get_a_ex1(double t_zap, double a0, double t_a0, double q, double m)
+double get_a_ex1(time t_zap, double q)
 {
 	double t_max;
 	if (t_zap < t_start)
@@ -196,20 +200,45 @@ double get_a_ex1(double t_zap, double a0, double t_a0, double q, double m)
 
 	assert(0);
 }
-/*
-double set_a_ex1(double t_zap, double a0, double t_a0, double q, double m)
+
+double set_E_ex1(time t, double r, double E)
 {
-	double n = (t_zap - t_start) / dt;
+	double n = (t - t_start) / dt;
+	if (n - v_n > 1.0 + epsilon_n)
+	{
+		assert(0);
+	}
+
+	double n_r = r / dr;
+	int i_r = round(n_r);
+	if (fabs(n_r - i_r) > epsilon_r)
+	{
+		assert(0);
+	}
+
+	v_E[i_r][v_n] = E;
+}
+
+
+double set_a_ex1(time t, double r, acceleration a0, time t_a0, double q, double m)
+{
+	double n = (t - t_start) / dt;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
 	if (n - v_n > 1.0 + epsilon_n)
 	{
 		assert(0);
 	}
 
-	double E = v_E[i_r0][v_n];
+	double n_r = r / dr;
+	int i_r = round(n_r);
+	if (fabs(n_r - i_r) > epsilon_r)
+	{
+		assert(0);
+	}
 
+	double E = v_E[i_r][v_n];
 	double a = E * q / m;
-	if (t_zap <= t_a0)
+	if (t <= t_a0)
 	{
 		a += a0;
 	}
@@ -219,8 +248,8 @@ double set_a_ex1(double t_zap, double a0, double t_a0, double q, double m)
 	v_a[v_n + 1] = v_a[v_n] + da;
 	return a;
 }
-*/
-double get_v_ex1(double t_zap, double v0, double a0, double t_a0, double q, double m)
+
+double get_v_ex1(time t_zap, velocity v0, double q)
 {
 	assert(v0 < v_max);
 	double t_max;
@@ -240,12 +269,19 @@ double get_v_ex1(double t_zap, double v0, double a0, double t_a0, double q, doub
 		return a;
 	}
 
+	assert(0);
+}
+
+double set_v_ex1(time t_zap, double v0, acceleration a0, time t_a0, double q, double m)
+{
+	double n = (t_zap - t_start) / dt;
+	double * v_v = q > 0 ? v_v_pos : v_v_neg;
 	if (n - v_n > 1.0 + epsilon_n)
 	{
 		assert(0);
 	}
 
-	double a = get_a_ex1(t_zap, a0, t_a0, q, m);
+	double a = get_a_ex1(t_zap, q);
 	double v = v_v[v_n];
 	// a = dv / dt
 	// dv = a * dt
@@ -258,7 +294,7 @@ double get_v_ex1(double t_zap, double v0, double a0, double t_a0, double q, doub
 	return v;
 }
 
-double get_s_ex1(double t_zap, double v0, double a0, double t_a0, double q, double m)
+double get_s_ex1(time t_zap, double v0, double q)
 {
 	assert(v0 < v_max);
 	double dt_start, dt_max;
@@ -267,7 +303,7 @@ double get_s_ex1(double t_zap, double v0, double a0, double t_a0, double q, doub
 	if (t_zap < t_start)
 	{
 		s = v0*(t_zap - t_start);
-		DBG_INFO("get_s1 t_zap=%f a0=%f returns %f\n", t_zap, a0, s);
+		DBG_INFO("get_s1 t_zap=%f returns %f\n", t_zap, s);
 		return s;
 	}
 
@@ -283,15 +319,22 @@ double get_s_ex1(double t_zap, double v0, double a0, double t_a0, double q, doub
 		double s = v_s[n1] + part * (v_s[n2] - v_s[n1]);
 		return s;
 	}
+	assert(0);
+}
+
+double set_s_ex1(time t_zap, double v0, double q)
+{
+	double n = (t_zap - t_start) / dt;
+	double * v_s = q > 0 ? v_s_pos : v_s_neg;
 
 	if (n - v_n > 1.0 + epsilon_n)
 	{
 		assert(0);
 	}
 
-	double a = get_a_ex1(t_zap, a0, t_a0, q, m);
-	double v = get_v_ex1(t_zap, v0, a0, t_a0, q, m);
-	s = v_s[v_n];
+	double a = get_a_ex1(t_zap, q);
+	double v = get_v_ex1(t_zap, v0, q);
+	double s = v_s[v_n];
 	// v = ds / dt
 	double ds = v * dt + a * dt * dt / 2;
 	s + ds;
@@ -305,10 +348,10 @@ double get_s_ex1(double t_zap, double v0, double a0, double t_a0, double q, doub
 
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-int get_r_ex1(double t_zap, double r0, double v0, double a0, double t_a0, double q, double m, double r_min, double * r)
+int get_r_ex1(time t_zap, double r0, double v0, double q, double r_min, double * r)
 {
 	int error = 0;
-	*r = r0 + get_s_ex1(t_zap, v0, a0, t_a0, q, m);
+	*r = r0 + get_s_ex1(t_zap, v0, q);
 	if (*r < r_min)
 	{
 		DBG_INFO("Warning: r %f < r_min %f\n", *r, r_min);
@@ -319,7 +362,7 @@ int get_r_ex1(double t_zap, double r0, double v0, double a0, double t_a0, double
 	return error;
 }
 
-double get_a(double t_zap, double a0)
+double get_a(time t_zap, acceleration a0)
 {
 	double t_max;
 	if (t_zap < t_start)
@@ -331,7 +374,8 @@ double get_a(double t_zap, double a0)
 }
 
 /* радиальная скорость заряда */
-double get_v(double t_zap, double v0, double a0)
+
+double get_v(time t_zap, double v0, acceleration a0)
 {
 	assert(v0 < v_max);
 	double t_max;
@@ -343,7 +387,7 @@ double get_v(double t_zap, double v0, double a0)
 	return v0 + a0*(t_zap-t_start);
 }
 /* перемещение заряда */
-double get_s(double t_zap, double v0, double a0)
+double get_s(time t_zap, double v0, acceleration a0)
 {
 	assert(v0 < v_max);
 	double dt_start, dt_max;
@@ -385,7 +429,8 @@ double get_s(double t_zap, double v0, double a0)
 }
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-int get_r(double t_zap, double r0, double v0, double a0, double r_min, double * r)
+//int get_r_ex1(double t_zap, double r0, double v0, double a0, double q, double r_min, double * r);
+int get_r(time t_zap, double r0, double v0, acceleration a0, double q, double r_min, double * r)
 {
 	int error = 0;
 	*r = r0 + get_s(t_zap, v0, a0);
@@ -412,7 +457,7 @@ double get_R(double R0, double r, double theta)
 }
 
 /* численный расчёта запаздывающего момента */
-int calc_tzap(double t, double R0, double r0, double v0, double a0, double theta, double r_min, double * t2)
+int calc_tzap(time t, double R0, double r0, double v0, acceleration a0, double theta, double r_min, double * t2)
 {
 	int err, error = 0;
 #ifdef CALC_LW_WITHOUT_LAGGING
@@ -444,7 +489,7 @@ int calc_tzap(double t, double R0, double r0, double v0, double a0, double theta
 	do
 	{
 		t1 = *t2;                 /* итерационный "текущий" момент времени - на первой итерации текущее время наблюдения */
-		err = get_r(t1, r0, v0, a0, r_min, &r);   /* итерационная координата заряда                                                      */
+		err = get_r(t1, r0, v0, a0, q, r_min, &r);   /* итерационная координата заряда                                                      */
 		if (0 != err)
 		{
 			error += 1;

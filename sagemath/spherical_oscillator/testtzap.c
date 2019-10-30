@@ -22,20 +22,20 @@ double get_dS_dtheta(double r, double theta)
 }
 
 /* Радиус Лиенара Вихерта */
-int calc_R_lw(double t, double R0, double r0, double v0, double a0, double theta, double * pt_zap, double * pr_zap, double * pR_zap, double r_min, double * R_lw_zap)
+int calc_R_lw(double q, double t, double R0, double r0, double v0, double a0, double theta, double * pt_zap, double * pr_zap, double * pR_zap, double r_min, double * R_lw_zap)
 {
 //#define DBG_INFO printf
 	int err, error = 0;
 
 	/* численный расчёта запаздывающего момента */
-	err = calc_tzap(t, R0, r0, v0, a0, theta, r_min, pt_zap);
+	err = calc_tzap(q, t, R0, r0, v0, a0, theta, r_min, pt_zap);
 	if (0 != err)
 	{
 		error += 1;
 	}
 	DBG_INFO("theta = %f t_zap = %f ", theta, *pt_zap);
 	/* Запаздывающий радиус в зависимости от текущего момента */
-	err = get_r(*pt_zap, r0, v0, a0, r_min, pr_zap); /* расстояние от заряда до центра сферы в запаздывающий момент времени */
+	err = get_r(q, *pt_zap, r0, v0, a0, r_min, pr_zap); /* расстояние от заряда до центра сферы в запаздывающий момент времени */
 	if (0 != err)
 	{
 		error += 1;
@@ -173,15 +173,15 @@ int integral_phi(double q, double t, double R0, double r0, double v0, double a0,
 	{
 		theta = (i * dtheta);
 
-		err = calc_R_lw(t, R0, r0, v0, a0, theta, &t_zap, &r_zap, &R_zap, r_min, &R_lw_zap);
+		err = calc_R_lw(q, t, R0, r0, v0, a0, theta, &t_zap, &r_zap, &R_zap, r_min, &R_lw_zap);
 		if (0 != err)
 		{
 			error += 1;
 		}
-		//if (i % 100 == 0)
-		//	printf("%d %f R_lw_zap = %f\n", i, theta, R_lw_zap);
+		if (i % 100 == 0)
+			printf("%d %f R_lw_zap = %f\n", i, theta, R_lw_zap);
 
-		err = get_r(t, r0, v0, a0, r_min, r);
+		err = get_r(q, t, r0, v0, a0, r_min, r);
 		if (0 != err)
 		{
 			error += 1;
@@ -257,7 +257,7 @@ int integral_phi_and_E(double q, double t, double R0, double r0, double v0, doub
 	{
 		theta = (i * dtheta);
 
-		err = calc_R_lw(t, R0, r0, v0, a0, theta, &t_zap, &r_zap, &R_zap, r_min, &R_lw_zap);
+		err = calc_R_lw(q, t, R0, r0, v0, a0, theta, &t_zap, &r_zap, &R_zap, r_min, &R_lw_zap);
 		if (0 != err)
 		{
 			error += 1;
@@ -274,7 +274,7 @@ int integral_phi_and_E(double q, double t, double R0, double r0, double v0, doub
 		E_minus_grad_varphi_R0 = get_E_minus_grad_phi_R0 (theta, v_zap, R_zap, aR_zap, R_lw_zap, cos_alpha_zap);
 		E_minus_1_c_dA_dt_R0   = get_E_minus_1_c_dA_dt_R0(theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap);
 
-		err = get_r(t, r0, v0, a0, r_min, r);
+		err = get_r(q, t, r0, v0, a0, r_min, r);
 		if (0 != err)
 		{
 			error += 1;
@@ -433,7 +433,7 @@ int main()
 	printf ("should be -0.5\n\n");
 	#endif
 
-	error = calc_tzap(/*t*/0.0, /*R0*/0.0, /*r0*/2.0, /*v0*/1.0, /*a0*/0.0, /*theta*/0.0, r_min, &t_zap);
+	error = calc_tzap(q, /*t*/0.0, /*R0*/0.0, /*r0*/2.0, /*v0*/1.0, /*a0*/0.0, /*theta*/0.0, r_min, &t_zap);
 	printf("t_zap = %f\n", t_zap);
 
 	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/0.0, /*r0*/2.0, /*v0*/c/3.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw, &r);
@@ -499,7 +499,7 @@ return 0;
 	get_R(1.5, 1.499999999999999, 0.0);
 	get_R(1.5, 1.4999999979313956, 0.0);
 	
-	error = calc_R_lw(t, R0, r0, v0, a0, theta, &t_zap, &r_zap, &R_zap, r_min, &R_lw_zap);
+	error = calc_R_lw(q, t, R0, r0, v0, a0, theta, &t_zap, &r_zap, &R_zap, r_min, &R_lw_zap);
 
 	/* скалярный потенциал Лиенара Вихерта зарядов равномерно распределённых по сферической поверхности радиуса r0 и движущихся из центра.  */
 	/* varphi := proc (q, t, r__0, v__0, a__0, R__0) options operator, arrow; 
@@ -518,7 +518,7 @@ return 0;
 	/*hung
 	calc_tzap(t=5.000000, R0=-1.500000, r0=2.000000, v0=0.0, a0=1.000000, theta=0.000000
 	*/
-	error = calc_tzap(/*t*/5.0, /*R0*/-1.5, /*r0*/2.0, /*v0*/0.0, /*a0*/1.0, /*theta*/0.0, r_min, &t_zap);
+	error = calc_tzap(q, /*t*/5.0, /*R0*/-1.5, /*r0*/2.0, /*v0*/0.0, /*a0*/1.0, /*theta*/0.0, r_min, &t_zap);
 	printf("t_zap = %f\n", t_zap);
 
 	/*hung

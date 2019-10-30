@@ -23,11 +23,11 @@ double get_v(time t_zap, velocity v0, acceleration a0);
 double get_s(time t_zap, velocity v0, acceleration a0);
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-int get_r(time t_zap, double r0, velocity v0, acceleration a0, double q, double r_min, double * r);
+int get_r(double q, time t_zap, double r0, velocity v0, acceleration a0, double r_min, double * r);
 
 /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
 double get_R(double R0, double r, double theta);
 
 /* численный расчёта запаздывающего момента */
-int calc_tzap(time t, double R0, double r0, velocity v0, acceleration a0, double theta, double r_min, double * t2);
+int calc_tzap(double q, time t, double R0, double r0, velocity v0, acceleration a0, double theta, double r_min, double * t2);
 

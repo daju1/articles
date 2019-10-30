@@ -348,7 +348,7 @@ double set_s_ex1(time t_zap, double v0, double q)
 
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-int get_r_ex1(time t_zap, double r0, double v0, double q, double r_min, double * r)
+int get_r_ex1(double q, time t_zap, double r0, double v0, double r_min, double * r)
 {
 	int error = 0;
 	*r = r0 + get_s_ex1(t_zap, v0, q);
@@ -429,8 +429,7 @@ double get_s(time t_zap, double v0, acceleration a0)
 }
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-//int get_r_ex1(double t_zap, double r0, double v0, double a0, double q, double r_min, double * r);
-int get_r(time t_zap, double r0, double v0, acceleration a0, double q, double r_min, double * r)
+int get_r(double q, time t_zap, double r0, double v0, acceleration a0, double r_min, double * r)
 {
 	int error = 0;
 	*r = r0 + get_s(t_zap, v0, a0);
@@ -457,7 +456,7 @@ double get_R(double R0, double r, double theta)
 }
 
 /* численный расчёта запаздывающего момента */
-int calc_tzap(time t, double R0, double r0, double v0, acceleration a0, double theta, double r_min, double * t2)
+int calc_tzap(double q, time t, double R0, double r0, double v0, acceleration a0, double theta, double r_min, double * t2)
 {
 	int err, error = 0;
 #ifdef CALC_LW_WITHOUT_LAGGING
@@ -478,8 +477,9 @@ int calc_tzap(time t, double R0, double r0, double v0, acceleration a0, double t
 	v = get_v(t, v0, a0);      /* скорость заряда в текущий момент времени t                          */
 
 	DBG_INFO("calc_tzap(t=%f, v = %f, R0=%f, r0=%f, v0=%f, a0=%f, theta=%f)\n", t, v, R0, r0, v0, a0, theta);
-#endif
 	assert(v < c);
+#endif
+
 	/*
 	DBG_INFO("epsilon=%e\n", epsilon);
 	DBG_INFO("t1=%f\n", t1);
@@ -489,7 +489,7 @@ int calc_tzap(time t, double R0, double r0, double v0, acceleration a0, double t
 	do
 	{
 		t1 = *t2;                 /* итерационный "текущий" момент времени - на первой итерации текущее время наблюдения */
-		err = get_r(t1, r0, v0, a0, q, r_min, &r);   /* итерационная координата заряда                                                      */
+		err = get_r(q, t1, r0, v0, a0, r_min, &r);   /* итерационная координата заряда                                                      */
 		if (0 != err)
 		{
 			error += 1;
@@ -542,8 +542,4 @@ int calc_tzap(time t, double R0, double r0, double v0, acceleration a0, double t
 #endif
 	return error;
 }
- 
-/*float calc_tzap_float(float t, float R0, float r0, float v0, float a0, float theta)
-{
-	return calc_tzap(t, R0, r0, v0, a0, theta);
-}*/
+

@@ -179,7 +179,7 @@ int integral_phi(double q, double t, double R0, double r0, double v0, double a0,
 			error += 1;
 		}
 		if (i % 100 == 0)
-			printf("%d %f R_lw_zap = %f\n", i, theta, R_lw_zap);
+			printf("%d %f R_lw_zap = %f t_zap = %e\n", i, theta, R_lw_zap, t_zap);
 
 		err = get_r(q, t, r0, v0, a0, r_min, r);
 		if (0 != err)
@@ -460,11 +460,37 @@ int main()
 	printf ("should be -0.3465735903\n\n");
 	#endif
 
-	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/0.0, /*r0*/1.0, /*v0*/0.0, /*a0*/0.1, /*r_min*/0.1, &phi_lw, &r);
+
+	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/0.0, /*r0*/2.0, /*v0*/1.0*c/3.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw, &r);
+	printf("\nphi_lw = %0.10f error = %d r = %f\n", phi_lw, error, r);
+#ifndef CALC_LW_WITHOUT_LAGGING
+	printf("should be -0.5\n\n");
+#endif
+
+	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/0.0, /*r0*/2.0*c/3.0, /*v0*/0.0, /*a0*/0.1*c/3.0, /*r_min*/0.1, &phi_lw, &r);
 	printf("\nphi_lw = %0.10f error = %d r = %f\n", phi_lw, error, r);
 	#ifndef CALC_LW_WITHOUT_LAGGING
-	printf ("should be 0.005649896848\n\n");
+	printf ("should be -0.50576 tzap should be -0.67424\n\n");
 	#endif
+
+	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/0.0, /*r0*/1.0*c / 3.0, /*v0*/0.0, /*a0*/0.1*c / 3.0, /*r_min*/0.1, &phi_lw, &r);
+	printf("\nphi_lw = %0.10f error = %d r = %f\n", phi_lw, error, r);
+#ifndef CALC_LW_WITHOUT_LAGGING
+	printf("should be -1.0057 tzap should be -0.33521\n\n");
+#endif
+
+	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/1.0*c/3.0, /*r0*/1.0*c / 3.0, /*v0*/0.0, /*a0*/0.1*c / 3.0, /*r_min*/0.1, &phi_lw, &r);
+	printf("\nphi_lw = %0.10f error = %d r = %f\n", phi_lw, error, r);
+#ifndef CALC_LW_WITHOUT_LAGGING
+	printf("should be -0.98892 tzap should be 2.*sqrt(445.+5.*cos(theta)-5.*sqrt(cos(theta)^2+180.*cos(theta)+7919.))\n\n");
+#endif
+
+	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/2.0*c / 3.0, /*r0*/1.0*c / 3.0, /*v0*/0.0, /*a0*/0.1*c / 3.0, /*r_min*/0.1, &phi_lw, &r);
+	printf("\nphi_lw = %0.10f error = %d r = %f\n", phi_lw, error, r);
+#ifndef CALC_LW_WITHOUT_LAGGING
+	printf("should be -0.49443 tzap should be 2.*sqrt(445.+10.*cos(theta)-10.*sqrt(cos(theta)^2+90.*cos(theta)+1979.))\n\n");
+#endif
+
 
 return 0;
 	/*

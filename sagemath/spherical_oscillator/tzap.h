@@ -1,5 +1,5 @@
 //#define CALC_LW_WITHOUT_LAGGING
-#define SI
+//#define SI
 #ifdef SI
 #define c 299792458.0
 #else

@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I. -DUSE_DEBUG
+CFLAGS=-I. # -DUSE_DEBUG
 DEPS = hellomake.h
 OBJ = testtzap.o tzap.o
 

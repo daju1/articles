@@ -365,8 +365,10 @@ int get_r_ex1(double q, time t_zap, double r0, double v0, double r_min, double *
 double get_a(time t_zap, acceleration a0)
 {
 	double t_max;
+#ifdef WITHOUT_ACCELERATION_BEFORE_TSTART
 	if (t_zap < t_start)
 		return 0;
+#endif
 	t_max = t_start + v_max / a0;
 	if (t_zap >= t_max)
 		return 0;
@@ -379,8 +381,10 @@ double get_v(time t_zap, double v0, acceleration a0)
 {
 	assert(v0 < v_max);
 	double t_max;
+#ifdef WITHOUT_ACCELERATION_BEFORE_TSTART
 	if (t_zap < t_start)
 		return v0;
+#endif
 	t_max = t_start + v_max / a0;
 	if (t_zap >= t_max)
 		return v_max;
@@ -393,13 +397,14 @@ double get_s(time t_zap, double v0, acceleration a0)
 	double dt_start, dt_max;
 	double t_max;
 	double s;
+#ifdef WITHOUT_ACCELERATION_BEFORE_TSTART
 	if (t_zap < t_start)
 	{
 		s = v0*(t_zap - t_start);
 		DBG_INFO("get_s1 t_zap=%f a0=%f returns %f\n", t_zap, a0, s);
 		return s;
 	}
-
+#endif
 	if (a0 > 0.0)
 	{
 		t_max = t_start + (v_max - v0) / a0;

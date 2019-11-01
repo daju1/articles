@@ -455,6 +455,19 @@ double get_R(double R0, double r, double theta)
 	return R;
 }
 
+/*
+tzap2(t, r__0, v__0, a__0, R__0, theta) = solve(c^2*(t-t__zap)^2 = R__0^2-2*R__0*r(t__zap, r__0, v__0, a__0)*cos(theta)+r(t__zap, r__0, v__0, a__0)^2, t__zap);
+
+RootOf(a__0^2*_Z^4+4*v__0*_Z^3*a__0+(-4*R__0*a__0*cos(theta)+4*a__0*r__0+4*v__0^2-36)*_Z^2+(-8*R__0*v__0*cos(theta)+8*r__0*v__0+72*t)*_Z-8*R__0*cos(theta)*r__0+4*R__0^2+4*r__0^2-36*t^2);
+
+allvalues(subs(t = 0, v__0 = 0, tzap2(t, r__0, v__0, a__0, R__0, theta)));
+
+sqrt(2)*sqrt(R__0*a__0*cos(theta)-a__0*r__0+sqrt(cos(theta)^2*R__0^2*a__0^2-R__0^2*a__0^2+18*R__0*a__0*cos(theta)-18*a__0*r__0+81)+9)/a__0,
+-sqrt(2)*sqrt(R__0*a__0*cos(theta)-a__0*r__0+sqrt(cos(theta)^2*R__0^2*a__0^2-R__0^2*a__0^2+18*R__0*a__0*cos(theta)-18*a__0*r__0+81)+9)/a__0,
+sqrt(2*R__0*a__0*cos(theta)-2*a__0*r__0-2*sqrt(cos(theta)^2*R__0^2*a__0^2-R__0^2*a__0^2+18*R__0*a__0*cos(theta)-18*a__0*r__0+81)+18)/a__0,
+-sqrt(2*R__0*a__0*cos(theta)-2*a__0*r__0-2*sqrt(cos(theta)^2*R__0^2*a__0^2-R__0^2*a__0^2+18*R__0*a__0*cos(theta)-18*a__0*r__0+81)+18)/a__0;
+*/
+
 /* численный расчёта запаздывающего момента */
 int calc_tzap(double q, time t, double R0, double r0, double v0, acceleration a0, double theta, double r_min, double * t2)
 {

@@ -1,5 +1,7 @@
 //#define CALC_LW_WITHOUT_LAGGING
 //#define WITHOUT_ACCELERATION_BEFORE_TSTART
+//#define USE_MINIMAL_RADIUS
+
 //#define SI
 #ifdef SI
 #define c 299792458.0

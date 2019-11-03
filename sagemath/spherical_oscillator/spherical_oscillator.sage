@@ -20,7 +20,7 @@ def plot_spherical_capascitor_tzap_theta(q, t, min_R0, max_R0, step_R0, r0, v0, 
 
 # Data for plotting of t_zap
 def plot_spherical_capascitor_tzap_R0(q, t, min_R0, max_R0, step_R0, r0, v0, a0):
-    npoints = 6
+    npoints = 2
     thetas = np.arange(0*pi/npoints, npoints*pi/npoints + 1*pi/npoints, 1*pi/npoints)
     t_zap_data = [ (R0_i, tzap(q, t, R0_i, r0, v0, a0, theta_i, r_min)) for theta_i in thetas for R0_i in np.arange(min_R0, max_R0, step_R0)]
 

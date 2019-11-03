@@ -438,12 +438,14 @@ int get_r(double q, timevalue t_zap, double r0, double v0, acceleration a0, doub
 {
 	int error = 0;
 	*r = r0 + get_s(t_zap, v0, a0);
+#ifdef USE_MINIMAL_RADIUS
 	if (*r < r_min)
 	{
 		DBG_INFO("Warning: r %f < r_min %f\n", *r, r_min);
 		*r = r_min;
 		error = 1;
 	}
+#endif
 	assert(*r > 0.0);
 	return error;
 }

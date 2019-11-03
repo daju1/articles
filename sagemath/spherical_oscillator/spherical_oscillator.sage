@@ -8,6 +8,26 @@ attach("tzap.spyx")
 attach("float_formatting.sage")
 c = get_light_veloncity()
 
+
+# Data for plotting of t_zap
+def plot_spherical_capascitor_tzap_theta(q, t, min_R0, max_R0, step_R0, r0, v0, a0):
+    npoints = 180
+    thetas = np.arange(0*pi/npoints, npoints*pi/npoints + 1*pi/npoints, 1*pi/npoints)
+    t_zap_data = [ (theta_i, tzap(q, t, R0_i, r0, v0, a0, theta_i, r_min)) for theta_i in thetas for R0_i in np.arange(min_R0, max_R0, step_R0)]
+
+    p = list_plot (t_zap_data)
+    p.save("results/spherical_oscillator_tzap_theta" + suffix(t, r0, a0) + ".png")
+
+# Data for plotting of t_zap
+def plot_spherical_capascitor_tzap_R0(q, t, min_R0, max_R0, step_R0, r0, v0, a0):
+    npoints = 6
+    thetas = np.arange(0*pi/npoints, npoints*pi/npoints + 1*pi/npoints, 1*pi/npoints)
+    t_zap_data = [ (R0_i, tzap(q, t, R0_i, r0, v0, a0, theta_i, r_min)) for theta_i in thetas for R0_i in np.arange(min_R0, max_R0, step_R0)]
+
+    p = list_plot (t_zap_data)
+    p.save("results/spherical_oscillator_tzap_R0" + suffix(t, r0, a0) + ".png")
+
+
 def plot_spherical_capascitor_phi_R0(q, t, min_R0, max_R0, step_R0):
     phi_lw_data = [ (R0_i, phi_lw(-q, t, R0_i, Rneg, 0, 0, r_min) + phi_lw(q, t, R0_i, Rpos, 0, 0, r_min)) for R0_i  in np.arange(min_R0, max_R0, step_R0) ]
     p = list_plot (phi_lw_data)
@@ -43,12 +63,12 @@ def plots_spherical_oscillator_phi_R0(q, t1, t2, dt, min_R0, max_R0, step_R0, Rn
 
 q = 1
 r_min = 0.1
-t = 0.2
+t = 0
 
 # Data for plotting of phi_lw of unmoved spherical capacitor
 min_R0 = -5.0/3.0*c
 max_R0 = 5.0/3.0*c
-step_R0 = 0.1/3.0*c
+step_R0 = 0.25/3.0*c
 Rneg=2.0/3.0*c
 Rpos=1.0/3.0*c
 
@@ -62,6 +82,9 @@ v0neg = 0
 a0pos = 0.05*c
 a0neg = -0.15*c
 plot_spherical_oscillator_phi_R0(q, t, min_R0, max_R0, step_R0, Rneg, v0neg, a0neg, r_min, Rpos, v0pos, a0pos, r_min )
+plot_spherical_capascitor_tzap_theta(q, t, min_R0, max_R0, step_R0, Rpos, v0pos, a0pos)
+step_R0 = 0.1/3.0*c
+plot_spherical_capascitor_tzap_R0(q, t, min_R0, max_R0, step_R0, Rpos, v0pos, a0pos)
 
 t1 = 0.0
 dt = 1.0

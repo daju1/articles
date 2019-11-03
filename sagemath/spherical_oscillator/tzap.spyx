@@ -2,7 +2,7 @@ cdef extern from "tzap.c":
     double get_c()
 
 cdef extern from "tzap.c":
-    int calc_tzap(double t, double R0, double r0, double v0, double a0, double theta, double r_min, double * t2)
+    int calc_tzap(double q, double t, double R0, double r0, double v0, double a0, double theta, double r_min, double * t2)
 
 cdef extern from "testtzap.c":
     int integral_phi(double q, double t, double R0, double r0, double v0, double a0, double r_min, double * result, double * r)
@@ -14,9 +14,9 @@ def get_light_veloncity():
     cdef double c = get_c()
     return c
 
-def tzap(t, R0, r0, v0, a0, theta, r_min):
+def tzap(q, t, R0, r0, v0, a0, theta, r_min):
     cdef double t2;
-    cdef error = calc_tzap(t, R0, r0, v0, a0, theta, r_min, &t2)
+    cdef error = calc_tzap(q, t, R0, r0, v0, a0, theta, r_min, &t2)
     return t2
 
 def phi_lw(q, t, R0, r0, v0, a0, r_min):

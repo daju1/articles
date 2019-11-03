@@ -176,7 +176,7 @@ double get_c()
 	m * a = E * q
 	a = E * q / m
 */
-double get_a_ex1(time t_zap, double q)
+double get_a_ex1(timevalue t_zap, double q)
 {
 	double t_max;
 	if (t_zap < t_start)
@@ -201,7 +201,7 @@ double get_a_ex1(time t_zap, double q)
 	assert(0);
 }
 
-double set_E_ex1(time t, double r, double E)
+double set_E_ex1(timevalue t, double r, double E)
 {
 	double n = (t - t_start) / dt;
 	if (n - v_n > 1.0 + epsilon_n)
@@ -220,7 +220,7 @@ double set_E_ex1(time t, double r, double E)
 }
 
 
-double set_a_ex1(time t, double r, acceleration a0, time t_a0, double q, double m)
+double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double q, double m)
 {
 	double n = (t - t_start) / dt;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
@@ -249,7 +249,7 @@ double set_a_ex1(time t, double r, acceleration a0, time t_a0, double q, double 
 	return a;
 }
 
-double get_v_ex1(time t_zap, velocity v0, double q)
+double get_v_ex1(timevalue t_zap, velocity v0, double q)
 {
 	assert(v0 < v_max);
 	double t_max;
@@ -272,7 +272,7 @@ double get_v_ex1(time t_zap, velocity v0, double q)
 	assert(0);
 }
 
-double set_v_ex1(time t_zap, double v0, acceleration a0, time t_a0, double q, double m)
+double set_v_ex1(timevalue t_zap, double v0, acceleration a0, timevalue t_a0, double q, double m)
 {
 	double n = (t_zap - t_start) / dt;
 	double * v_v = q > 0 ? v_v_pos : v_v_neg;
@@ -294,7 +294,7 @@ double set_v_ex1(time t_zap, double v0, acceleration a0, time t_a0, double q, do
 	return v;
 }
 
-double get_s_ex1(time t_zap, double v0, double q)
+double get_s_ex1(timevalue t_zap, double v0, double q)
 {
 	assert(v0 < v_max);
 	double dt_start, dt_max;
@@ -322,7 +322,7 @@ double get_s_ex1(time t_zap, double v0, double q)
 	assert(0);
 }
 
-double set_s_ex1(time t_zap, double v0, double q)
+double set_s_ex1(timevalue t_zap, double v0, double q)
 {
 	double n = (t_zap - t_start) / dt;
 	double * v_s = q > 0 ? v_s_pos : v_s_neg;
@@ -348,7 +348,7 @@ double set_s_ex1(time t_zap, double v0, double q)
 
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-int get_r_ex1(double q, time t_zap, double r0, double v0, double r_min, double * r)
+int get_r_ex1(double q, timevalue t_zap, double r0, double v0, double r_min, double * r)
 {
 	int error = 0;
 	*r = r0 + get_s_ex1(t_zap, v0, q);
@@ -362,7 +362,7 @@ int get_r_ex1(double q, time t_zap, double r0, double v0, double r_min, double *
 	return error;
 }
 
-double get_a(time t_zap, acceleration a0)
+double get_a(timevalue t_zap, acceleration a0)
 {
 	double t_max;
 #ifdef WITHOUT_ACCELERATION_BEFORE_TSTART
@@ -377,7 +377,7 @@ double get_a(time t_zap, acceleration a0)
 
 /* радиальная скорость заряда */
 
-double get_v(time t_zap, double v0, acceleration a0)
+double get_v(timevalue t_zap, double v0, acceleration a0)
 {
 	assert(v0 < v_max);
 	double t_max;
@@ -391,7 +391,7 @@ double get_v(time t_zap, double v0, acceleration a0)
 	return v0 + a0*(t_zap-t_start);
 }
 /* перемещение заряда */
-double get_s(time t_zap, double v0, acceleration a0)
+double get_s(timevalue t_zap, double v0, acceleration a0)
 {
 	assert(v0 < v_max);
 	double dt_start, dt_max;
@@ -434,7 +434,7 @@ double get_s(time t_zap, double v0, acceleration a0)
 }
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-int get_r(double q, time t_zap, double r0, double v0, acceleration a0, double r_min, double * r)
+int get_r(double q, timevalue t_zap, double r0, double v0, acceleration a0, double r_min, double * r)
 {
 	int error = 0;
 	*r = r0 + get_s(t_zap, v0, a0);
@@ -474,7 +474,7 @@ sqrt(2*R__0*a__0*cos(theta)-2*a__0*r__0-2*sqrt(cos(theta)^2*R__0^2*a__0^2-R__0^2
 */
 
 /* численный расчёта запаздывающего момента */
-int calc_tzap(double q, time t, double R0, double r0, double v0, acceleration a0, double theta, double r_min, double * t2)
+int calc_tzap(double q, timevalue t, double R0, double r0, double v0, acceleration a0, double theta, double r_min, double * t2)
 {
 	int err, error = 0;
 #ifdef CALC_LW_WITHOUT_LAGGING

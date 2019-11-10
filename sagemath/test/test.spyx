@@ -7,4 +7,3 @@ cdef extern from "test.c":
 
 def test(n):
     return add_one(n)
-	

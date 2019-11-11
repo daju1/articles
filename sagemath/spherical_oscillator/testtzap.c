@@ -292,7 +292,7 @@ int integral_phi_and_E(double q, double t, double R0, double r0, double v0, doub
 	{
 		error += 1;
 	}
-	printf("r = %f err = %d ", *r, err);
+	printf("r = %0.15f err = %d ", *r, err);
 
 	for (i = 0; i <= N; ++i)
 	{
@@ -733,21 +733,19 @@ int test_v1()
 		if (v_n_t < get_nt() - 1)
 		{
 			double t1 = (v_n_t + 1) * get_dt();
-			for (int v_n_r = 0; v_n_r < get_nr(); ++v_n_r)
-			{
-				double R0 = v_n_r * dr;
-				error = get_r_ex1(+q, t, r0_pos, v0_pos, r_min, &r_pos);
-				error = get_r_ex1(-q, t, r0_neg, v0_neg, r_min, &r_neg);
 
-				set_a_ex1(t1, r_pos, a0_pos, t_a0, +q, m_pos);
-				set_a_ex1(t1, r_neg, a0_neg, t_a0, -q, m_neg);
+			error = get_r_ex1(+q, t, r0_pos, v0_pos, r_min, &r_pos);
+			error = get_r_ex1(-q, t, r0_neg, v0_neg, r_min, &r_neg);
 
-				set_v_ex1(t1, v0_pos, a0_pos, t_a0, +q, m_pos);
-				set_v_ex1(t1, v0_neg, a0_neg, t_a0, -q, m_neg);
+			set_a_ex1(t1, r_pos, a0_pos, t_a0, +q, m_pos);
+			set_a_ex1(t1, r_neg, a0_neg, t_a0, -q, m_neg);
 
-				set_s_ex1(t1, v0_pos, +q);
-				set_s_ex1(t1, v0_neg, -q);
-			}
+			set_v_ex1(t1, v0_pos, a0_pos, t_a0, +q, m_pos);
+			set_v_ex1(t1, v0_neg, a0_neg, t_a0, -q, m_neg);
+
+			set_s_ex1(t1, v0_pos, +q);
+			set_s_ex1(t1, v0_neg, -q);
+
 		}
 	}
 }

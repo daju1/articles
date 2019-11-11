@@ -232,7 +232,7 @@ double get_a_ex1(timevalue t_zap, double q)
 void set_E_ex1(timevalue t, double R0, double E)
 {
 	double n_t = (t - t_start) / dt;
-	if (n_t - v_n_t > 1.0 + epsilon_n)
+	if (fabs(n_t - v_n_t) > epsilon_n)
 	{
 		assert(0);
 	}
@@ -253,34 +253,39 @@ void set_E_ex_1(int v_n_t, int v_n_r, double E)
 }
 
 /* установить значение ускорения слоя исходя из его текущего радиуса и значения поля в текущий момент на этом радиусе*/
-void set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double q, double m)
+double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double q, double m)
 {
 	double n_t = (t - t_start) / dt;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
-	if (n_t - v_n_t > 1.0 + epsilon_n)
+	if (fabs(n_t - v_n_t - 1.0) > epsilon_n)
 	{
 		assert(0);
 	}
 
 	double n_r = r / dr;
-	int i_r = (int)round(n_r);
-	if (fabs(n_r - i_r) > epsilon_r)
+	int n_r1 = (int)floor(n_r);
+	int n_r2 = (int)ceil(n_r);
+	if (n_r2 >= v_Nr)
 	{
+		printf("r = %0.15f n_r = %0.15f\n", r, n_r);
 		assert(0);
 	}
 
-	// TODO: receive E via interpolation
+	double E1 = v_E[n_r1][v_n_t];
+	double E2 = v_E[n_r2][v_n_t];
 
-	double E = v_E[i_r][v_n_t];
+	double part_r = (n_r - n_r1) / (n_r2 - n_r1);
+	double E = E1 + part_r * (E2 - E1);
+
 	double a = E * q / m;
 	if (t <= t_a0)
 	{
 		a += a0;
 	}
 
-	double part = n_t - v_n_t;
-	assert(part != 0.0);
-	double da = (a - v_a[v_n_t]) / part;
+	double part_t = n_t - v_n_t;
+	assert(part_t != 0.0);
+	double da = (a - v_a[v_n_t]) / part_t;
 	v_a[v_n_t + 1] = v_a[v_n_t] + da;
 	return a;
 }
@@ -308,12 +313,12 @@ double get_v_ex1(timevalue t_zap, velocity v0, double q)
 	assert(0);
 }
 
-void set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double q, double m)
+double set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double q, double m)
 {
 	double n_t = (t - t_start) / dt;
 	double * v_v = q > 0 ? v_v_pos : v_v_neg;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
-	if (n_t - v_n_t > 1.0 + epsilon_n)
+	if (fabs(n_t - v_n_t - 1.0) > epsilon_n)
 	{
 		assert(0);
 	}
@@ -359,14 +364,14 @@ double get_s_ex1(timevalue t_zap, double v0, double q)
 	assert(0);
 }
 
-void set_s_ex1(timevalue t, double v0, double q)
+double set_s_ex1(timevalue t, double v0, double q)
 {
 	double n_t = (t - t_start) / dt;
 	double * v_s = q > 0 ? v_s_pos : v_s_neg;
 	double * v_v = q > 0 ? v_v_pos : v_v_neg;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
 
-	if (n_t - v_n_t > 1.0 + epsilon_n)
+	if (fabs(n_t - v_n_t - 1.0) > epsilon_n)
 	{
 		assert(0);
 	}

@@ -50,9 +50,9 @@ int get_r_ex1(double q, timevalue t_zap, double r0, double v0, double r_min, dou
 void set_E_ex1(timevalue t, double R0, double E);
 void set_E_ex_1(int v_n_t, int v_n_r, double E);
 
-void set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double q, double m);
-void set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double q, double m);
-void set_s_ex1(timevalue t, double v0, double q);
+double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double q, double m);
+double set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double q, double m);
+double set_s_ex1(timevalue t, double v0, double q);
 #endif /*ALGORITHM_VERSION_1*/
 
 /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */

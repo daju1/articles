@@ -713,7 +713,7 @@ int test_v1()
 		for (int v_n_r = 0; v_n_r < get_nr(); ++v_n_r)
 		{
 			double R0 = v_n_r * dr;
-			printf ("R0 = %f v_n_r = %d dr = %f\n", R0, v_n_r, dr);
+			printf("R0 = %f v_n_r = %d dr = %f\n", R0, v_n_r, dr);
 
 			error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, a0_pos, &E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos, r_min, &phi_lw_pos, &r_pos);
 			printf("pos err = %d phi_lw = %f E1=%f E2 = %f\n", error, phi_lw_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos);
@@ -730,20 +730,24 @@ int test_v1()
 			set_E_ex_1(v_n_t, v_n_r, E);
 		}
 
-		for (int v_n_r = 0; v_n_r < get_nr(); ++v_n_r)
+		if (v_n_t < get_nt() - 1)
 		{
-			double R0 = v_n_r * dr;
-			error = get_r_ex1(+q, t, r0_pos, v0_pos, r_min, &r_pos);
-			error = get_r_ex1(-q, t, r0_neg, v0_neg, r_min, &r_neg);
+			double t1 = (v_n_t + 1) * get_dt();
+			for (int v_n_r = 0; v_n_r < get_nr(); ++v_n_r)
+			{
+				double R0 = v_n_r * dr;
+				error = get_r_ex1(+q, t, r0_pos, v0_pos, r_min, &r_pos);
+				error = get_r_ex1(-q, t, r0_neg, v0_neg, r_min, &r_neg);
 
-			set_a_ex1(t, r_pos, a0_pos, t_a0, +q, m_pos);
-			set_a_ex1(t, r_neg, a0_neg, t_a0, -q, m_neg);
+				set_a_ex1(t1, r_pos, a0_pos, t_a0, +q, m_pos);
+				set_a_ex1(t1, r_neg, a0_neg, t_a0, -q, m_neg);
 
-			set_v_ex1(t, v0_pos, a0_pos, t_a0, +q, m_pos);
-			set_v_ex1(t, v0_neg, a0_neg, t_a0, -q, m_neg);
+				set_v_ex1(t1, v0_pos, a0_pos, t_a0, +q, m_pos);
+				set_v_ex1(t1, v0_neg, a0_neg, t_a0, -q, m_neg);
 
-			set_s_ex1(t, v0_pos, +q);
-			set_s_ex1(t, v0_neg, -q);
+				set_s_ex1(t1, v0_pos, +q);
+				set_s_ex1(t1, v0_neg, -q);
+			}
 		}
 	}
 }

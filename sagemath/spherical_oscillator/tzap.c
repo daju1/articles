@@ -20,7 +20,7 @@ static const double dr = DR;              // шаг координаты
 // одномерные массивы для сохранения истории при интегрировании только лишь по времени
 // без учёта эволючии объёмного распределения заряда - упрощённый случай сферического конденсатора
 // сохраняется только лишь история положительной обкладки и отрицательной обкладки
-static const int v_Nt = ((T_FINISH - T_START) / DT);
+static const int v_Nt = (int)((T_FINISH - T_START) / DT);
 static const int v_Nr = 1000;
 
 double get_dt()
@@ -206,7 +206,6 @@ double get_c()
 */
 double get_a_ex1(timevalue t_zap, double q)
 {
-	double t_max;
 	if (t_zap < t_start)
 		return 0;
 	// t_max = t_start + v_max / a0;
@@ -218,8 +217,8 @@ double get_a_ex1(timevalue t_zap, double q)
 	if (n_t <= (double)v_n_t)
 	{
 		// результат может быть взят с помощью линейной интерполяции ранее рассчитнных значений
-		int n1 = floor(n_t);
-		int n2 = ceil(n_t);
+		int n1 = (int)floor(n_t);
+		int n2 = (int)ceil(n_t);
 		double part = n_t - n1;
 
 		double a = v_a[n1] + part * (v_a[n2] - v_a[n1]);
@@ -230,7 +229,7 @@ double get_a_ex1(timevalue t_zap, double q)
 }
 
 /* установить значение поля в точке наблюдения R0 в момент t */
-double set_E_ex1(timevalue t, double R0, double E)
+void set_E_ex1(timevalue t, double R0, double E)
 {
 	double n_t = (t - t_start) / dt;
 	if (n_t - v_n_t > 1.0 + epsilon_n)
@@ -239,7 +238,7 @@ double set_E_ex1(timevalue t, double R0, double E)
 	}
 
 	double n_r = R0 / dr;
-	int i_r = round(n_r);
+	int i_r = (int)round(n_r);
 	if (fabs(n_r - i_r) > epsilon_r)
 	{
 		assert(0);
@@ -248,13 +247,13 @@ double set_E_ex1(timevalue t, double R0, double E)
 	v_E[i_r][v_n_t] = E;
 }
 
-double set_E_ex_1(int v_n_t, int v_n_r, double E)
+void set_E_ex_1(int v_n_t, int v_n_r, double E)
 {
 	v_E[v_n_r][v_n_t] = E;
 }
 
 /* установить значение ускорения слоя исходя из его текущего радиуса и значения поля в текущий момент на этом радиусе*/
-double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double q, double m)
+void set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double q, double m)
 {
 	double n_t = (t - t_start) / dt;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
@@ -264,7 +263,7 @@ double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double 
 	}
 
 	double n_r = r / dr;
-	int i_r = round(n_r);
+	int i_r = (int)round(n_r);
 	if (fabs(n_r - i_r) > epsilon_r)
 	{
 		assert(0);
@@ -280,6 +279,7 @@ double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double 
 	}
 
 	double part = n_t - v_n_t;
+	assert(part != 0.0);
 	double da = (a - v_a[v_n_t]) / part;
 	v_a[v_n_t + 1] = v_a[v_n_t] + da;
 	return a;
@@ -288,7 +288,7 @@ double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double 
 double get_v_ex1(timevalue t_zap, velocity v0, double q)
 {
 	assert(v0 < v_max);
-	double t_max;
+
 	if (t_zap < t_start)
 		return v0;
 
@@ -297,8 +297,8 @@ double get_v_ex1(timevalue t_zap, velocity v0, double q)
 	if (n_t <= (double)v_n_t)
 	{
 		// результат может быть взят с помощью линейной интерполяции ранее рассчитнных значений
-		int n1 = floor(n_t);
-		int n2 = ceil(n_t);
+		int n1 = (int)floor(n_t);
+		int n2 = (int)ceil(n_t);
 		double part = n_t - n1;
 
 		double a = v_v[n1] + part * (v_v[n2] - v_v[n1]);
@@ -308,16 +308,18 @@ double get_v_ex1(timevalue t_zap, velocity v0, double q)
 	assert(0);
 }
 
-double set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double q, double m)
+void set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double q, double m)
 {
 	double n_t = (t - t_start) / dt;
 	double * v_v = q > 0 ? v_v_pos : v_v_neg;
+	double * v_a = q > 0 ? v_a_pos : v_a_neg;
 	if (n_t - v_n_t > 1.0 + epsilon_n)
 	{
 		assert(0);
 	}
 
-	double a = get_a_ex1(t, q);
+	//double a = get_a_ex1(t - dt, q);
+	double a = v_a[v_n_t];
 	double v = v_v[v_n_t];
 	// a = dv / dt
 	// dv = a * dt
@@ -325,6 +327,7 @@ double set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double
 	v += dv;
 
 	double part = n_t - v_n_t;
+	assert(part != 0.0);
 	double dv_out = (v - v_v[v_n_t]) / part;
 	v_v[v_n_t + 1] = v_v[v_n_t] + dv_out;
 	return v;
@@ -333,8 +336,6 @@ double set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double
 double get_s_ex1(timevalue t_zap, double v0, double q)
 {
 	assert(v0 < v_max);
-	double dt_start, dt_max;
-	double t_max;
 	double s;
 	if (t_zap < t_start)
 	{
@@ -348,8 +349,8 @@ double get_s_ex1(timevalue t_zap, double v0, double q)
 	if (n_t <= (double)v_n_t)
 	{
 		// результат может быть взят с помощью линейной интерполяции ранее рассчитнных значений
-		int n1 = floor(n_t);
-		int n2 = ceil(n_t);
+		int n1 = (int)floor(n_t);
+		int n2 = (int)ceil(n_t);
 		double part = n_t - n1;
 
 		double s = v_s[n1] + part * (v_s[n2] - v_s[n1]);
@@ -358,24 +359,29 @@ double get_s_ex1(timevalue t_zap, double v0, double q)
 	assert(0);
 }
 
-double set_s_ex1(timevalue t, double v0, double q)
+void set_s_ex1(timevalue t, double v0, double q)
 {
 	double n_t = (t - t_start) / dt;
 	double * v_s = q > 0 ? v_s_pos : v_s_neg;
+	double * v_v = q > 0 ? v_v_pos : v_v_neg;
+	double * v_a = q > 0 ? v_a_pos : v_a_neg;
 
 	if (n_t - v_n_t > 1.0 + epsilon_n)
 	{
 		assert(0);
 	}
 
-	double a = get_a_ex1(t, q);
-	double v = get_v_ex1(t, v0, q);
+	//double a = get_a_ex1(t-dt, q);
+	//double v = get_v_ex1(t-dt, v0, q);
+	double a = v_a[v_n_t];
+	double v = v_v[v_n_t];
 	double s = v_s[v_n_t];
 	// v = ds / dt
 	double ds = v * dt + a * dt * dt / 2;
-	s + ds;
+	s += ds;
 
 	double part = n_t - v_n_t;
+	assert(part != 0.0);
 	double ds_out = (s - v_s[v_n_t]) / part;
 	v_s[v_n_t + 1] = v_s[v_n_t] + ds_out;
 
@@ -525,7 +531,7 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 	double t1;
 	* t2 = t;
 	double dt;
-	double v1,v2,v;
+	double v1,v2;
 	double r, R, R_pre = DBL_MAX;
 	double dR, dR_pre = DBL_MAX;
 	double R_tmp;
@@ -533,6 +539,7 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 	int i = 0;
 	double n = 0.9;
 #if 0
+	double v;
 	v = get_v(t, v0, a0);      /* скорость заряда в текущий момент времени t                          */
 
 	DBG_INFO("calc_tzap(t=%f, v = %f, R0=%f, r0=%f, v0=%f, a0=%f, theta=%f)\n", t, v, R0, r0, v0, a0, theta);

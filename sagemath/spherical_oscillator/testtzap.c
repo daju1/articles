@@ -274,7 +274,7 @@ int integral_phi_and_E(double q, double t, double R0, double r0, double v0, doub
 	double ommited_S = 0.0;
 	double S0 = 4*Pi*r0*r0;
 	double S = 0.0;
-	printf("integral_phi_and_E(q=%f t=%f, R0=%f, r0=%f, v0=%f, a0=%f)\n", q, t, R0, r0, v0, a0);
+	DBG_INFO("integral_phi_and_E(q=%f t=%f, R0=%f, r0=%f, v0=%f, a0=%f)\n", q, t, R0, r0, v0, a0);
 
 	*pE_minus_grad_phi_R0 = 0.0;
 	*pE_minus_1_c_dA_dt_R0 = 0.0;
@@ -292,7 +292,7 @@ int integral_phi_and_E(double q, double t, double R0, double r0, double v0, doub
 	{
 		error += 1;
 	}
-	printf("r = %0.15f err = %d ", *r, err);
+	//printf("r = %0.15f err = %d ", *r, err);
 
 	for (i = 0; i <= N; ++i)
 	{
@@ -701,35 +701,39 @@ int test_v1()
 	double dr = get_dr();
 	double dt = get_dt();
 	printf ("dr = %f ", dr);
-	printf ("dt = %f ", dt);
+	printf ("dt = %f\n", dt);
 
-	double t_a0 = dt * get_dt() / 2;
-
+	double t_a0 = dt * get_dt() / 10;
+#ifdef ALGORITHM_VERSION_1
 	init_array_1(a0_pos, v0_pos, r0_pos, a0_neg, v0_neg, r0_neg);
-
+#endif
 	for (v_n_t = 0; v_n_t < get_nt(); ++v_n_t)
 	{
 		double t = v_n_t * get_dt();
 		for (int v_n_r = 0; v_n_r < get_nr(); ++v_n_r)
 		{
 			double R0 = v_n_r * dr;
-			printf("R0 = %f v_n_r = %d dr = %f\n", R0, v_n_r, dr);
+			//printf("R0 = %f v_n_r = %d dr = %f\n", R0, v_n_r, dr);
 
 			error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, a0_pos, &E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos, r_min, &phi_lw_pos, &r_pos);
-			printf("pos err = %d phi_lw = %f E1=%f E2 = %f\n", error, phi_lw_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos);
+			//printf("pos err = %d phi_lw = %f E1=%f E2 = %0.20f\n", error, phi_lw_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos);
 
 			error = integral_phi_and_E(-q, t, R0, r0_neg, v0_neg, a0_neg, &E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg, r_min, &phi_lw_neg, &r_neg);
-			printf("neg err = %d phi_lw = %f E1=%f E2 = %f\n", error, phi_lw_neg, E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg);
+			//printf("neg err = %d phi_lw = %f E1=%f E2 = %0.20f\n", error, phi_lw_neg, E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg);
 
 			E1 = E_minus_grad_phi_R0_pos + E_minus_grad_phi_R0_neg;
 			E2 = E_minus_1_c_dA_dt_R0_pos + E_minus_1_c_dA_dt_R0_neg;
 
 			E = E1 + E2;
-
+			if (fabs(E) > 1e-20)
+				printf("R0 = %f t = %f E = %.20f E1 = %0.20f E2 = %0.20f r_pos = %f, r_neg = %f\n", R0, t, E, E1, E2, r_pos, r_neg);
+#ifdef ALGORITHM_VERSION_1
 			set_E_ex1(t, R0, E);
 			set_E_ex_1(v_n_t, v_n_r, E);
+#endif
 		}
-
+		printf("\n");
+#ifdef ALGORITHM_VERSION_1
 		if (v_n_t < get_nt() - 1)
 		{
 			double t1 = (v_n_t + 1) * get_dt();
@@ -745,14 +749,15 @@ int test_v1()
 
 			set_s_ex1(t1, v0_pos, +q);
 			set_s_ex1(t1, v0_neg, -q);
-
 		}
+#endif
 	}
 }
 
 int main()
 {
 #ifdef ALGORITHM_VERSION_0
+	return test_v1();
 	return test_v0();
 #endif
 #ifdef ALGORITHM_VERSION_1

@@ -10,7 +10,7 @@
 #define T_START 0
 #define T_FINISH 10
 #define DT 0.001
-#define DR 0.01
+#define DR 0.001
 
 static const double t_start = T_START;    // момент включения ускорения
 static const double dt = DT;              // шаг времени
@@ -21,7 +21,7 @@ static const double dr = DR;              // шаг координаты
 // без учёта эволючии объёмного распределения заряда - упрощённый случай сферического конденсатора
 // сохраняется только лишь история положительной обкладки и отрицательной обкладки
 static const int v_Nt = (int)((T_FINISH - T_START) / DT);
-static const int v_Nr = 1000;
+static const int v_Nr = 10000;
 
 double get_dt()
 {
@@ -262,20 +262,36 @@ double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double 
 		assert(0);
 	}
 
+	double E;
+
 	double n_r = r / dr;
 	int n_r1 = (int)floor(n_r);
 	int n_r2 = (int)ceil(n_r);
-	if (n_r2 >= v_Nr)
+	if (n_r1 != n_r2)
 	{
-		printf("r = %0.15f n_r = %0.15f\n", r, n_r);
-		assert(0);
+		if (n_r2 >= v_Nr)
+		{
+			printf("r = %0.15f n_r = %0.15f\n", r, n_r);
+			assert(0);
+		}
+
+		double E1 = v_E[n_r1][v_n_t];
+		double E2 = v_E[n_r2][v_n_t];
+
+		double part_r = (n_r - n_r1) / (n_r2 - n_r1);
+		assert(!isnan(part_r));
+		E = E1 + part_r * (E2 - E1);
 	}
-
-	double E1 = v_E[n_r1][v_n_t];
-	double E2 = v_E[n_r2][v_n_t];
-
-	double part_r = (n_r - n_r1) / (n_r2 - n_r1);
-	double E = E1 + part_r * (E2 - E1);
+	else
+	{
+		if (n_r1 >= v_Nr)
+		{
+			printf("r = %0.15f n_r = %0.15f\n", r, n_r);
+			assert(0);
+		}
+		E = v_E[n_r1][v_n_t];
+	}
+	assert(!isnan(E));
 
 	double a = E * q / m;
 	if (t <= t_a0)
@@ -286,6 +302,7 @@ double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double 
 	double part_t = n_t - v_n_t;
 	assert(part_t != 0.0);
 	double da = (a - v_a[v_n_t]) / part_t;
+	assert(!isnan(da));
 	v_a[v_n_t + 1] = v_a[v_n_t] + da;
 	return a;
 }
@@ -307,6 +324,7 @@ double get_v_ex1(timevalue t_zap, velocity v0, double q)
 		double part = n_t - n1;
 
 		double a = v_v[n1] + part * (v_v[n2] - v_v[n1]);
+		assert(!isnan(a));
 		return a;
 	}
 
@@ -334,6 +352,7 @@ double set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double
 	double part = n_t - v_n_t;
 	assert(part != 0.0);
 	double dv_out = (v - v_v[v_n_t]) / part;
+	assert(!isnan(dv_out));
 	v_v[v_n_t + 1] = v_v[v_n_t] + dv_out;
 	return v;
 }
@@ -359,6 +378,7 @@ double get_s_ex1(timevalue t_zap, double v0, double q)
 		double part = n_t - n1;
 
 		double s = v_s[n1] + part * (v_s[n2] - v_s[n1]);
+		assert(!isnan(s));
 		return s;
 	}
 	assert(0);
@@ -405,6 +425,7 @@ int get_r_ex1(double q, timevalue t_zap, double r0, double v0, double r_min, dou
 		DBG_INFO("Warning: r %f < r_min %f\n", *r, r_min);
 		*r = r_min;
 		error = 1;
+		assert(0);
 	}
 	assert(*r > 0.0);
 	return error;

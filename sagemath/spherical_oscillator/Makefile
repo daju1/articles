@@ -1,7 +1,7 @@
 CC=gcc
-CFLAGS=-I. # -DUSE_DEBUG
+CFLAGS=-I. -O0 -g # -DUSE_DEBUG
 DEPS = hellomake.h
-OBJ = testtzap.o tzap.o
+OBJ = testtzap.o tzap.o backtrace.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)

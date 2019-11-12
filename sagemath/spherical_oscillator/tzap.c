@@ -9,8 +9,8 @@
 
 #define T_START 0
 #define T_FINISH 10
-#define DT 0.001
-#define DR 0.001
+#define DT 0.01
+#define DR 0.01
 
 static const double t_start = T_START;    // момент включения ускорения
 static const double dt = DT;              // шаг времени
@@ -21,7 +21,7 @@ static const double dr = DR;              // шаг координаты
 // без учёта эволючии объёмного распределения заряда - упрощённый случай сферического конденсатора
 // сохраняется только лишь история положительной обкладки и отрицательной обкладки
 static const int v_Nt = (int)((T_FINISH - T_START) / DT);
-static const int v_Nr = 10000;
+static const int v_Nr = 1000;
 
 double get_dt()
 {
@@ -225,6 +225,14 @@ double get_a_ex1(timevalue t_zap, double q)
 		return a;
 	}
 
+	if (n_t <= (double)v_n_t + epsilon_n && (double)v_n_t <= n_t)
+	{
+		int n = v_n_t;
+		double a = v_a[n];
+		assert(!isnan(a));
+		return a;
+	}
+
 	assert(0);
 }
 
@@ -323,9 +331,17 @@ double get_v_ex1(timevalue t_zap, velocity v0, double q)
 		int n2 = (int)ceil(n_t);
 		double part = n_t - n1;
 
-		double a = v_v[n1] + part * (v_v[n2] - v_v[n1]);
-		assert(!isnan(a));
-		return a;
+		double v = v_v[n1] + part * (v_v[n2] - v_v[n1]);
+		assert(!isnan(v));
+		return v;
+	}
+
+	if (n_t <= (double)v_n_t + epsilon_n && (double)v_n_t <= n_t)
+	{
+		int n = v_n_t;
+		double v = v_v[n];
+		assert(!isnan(v));
+		return v;
 	}
 
 	assert(0);
@@ -381,6 +397,16 @@ double get_s_ex1(timevalue t_zap, double v0, double q)
 		assert(!isnan(s));
 		return s;
 	}
+
+	if (n_t <= (double)v_n_t + epsilon_n && (double)v_n_t <= n_t)
+	{
+		int n = v_n_t;
+		double s = v_s[n];
+		assert(!isnan(s));
+		return s;
+	}
+
+	printf("n_t = %0.20f v_n_t = %d t_zap = %0.20f\n", n_t, v_n_t, t_zap);
 	assert(0);
 }
 

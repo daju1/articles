@@ -6,6 +6,7 @@
 #include <assert.h>
 //#define USE_DEBUG
 #include "dbg_info.h"
+#include <backtrace.h>
 
 double get_sigma(double q, double r)
 {
@@ -700,6 +701,10 @@ int test_v1()
 
 	double dr = get_dr();
 	double dt = get_dt();
+	int nr = get_nr();
+	int nt = get_nt();
+	printf ("nr = %d ", nr);
+	printf ("nt = %d\n", nt);
 	printf ("dr = %f ", dr);
 	printf ("dt = %f\n", dt);
 
@@ -710,6 +715,7 @@ int test_v1()
 	for (v_n_t = 0; v_n_t < get_nt(); ++v_n_t)
 	{
 		double t = v_n_t * get_dt();
+		printf("t = %f v_n_t = %d\n", t, v_n_t);
 		for (int v_n_r = 0; v_n_r < get_nr(); ++v_n_r)
 		{
 			double R0 = v_n_r * dr;
@@ -738,6 +744,8 @@ int test_v1()
 		{
 			double t1 = (v_n_t + 1) * get_dt();
 
+			printf("t = %f t1 = %f v_n_t = %d\n", t, t1, v_n_t);
+
 			error = get_r_ex1(+q, t, r0_pos, v0_pos, r_min, &r_pos);
 			error = get_r_ex1(-q, t, r0_neg, v0_neg, r_min, &r_neg);
 
@@ -756,6 +764,8 @@ int test_v1()
 
 int main()
 {
+	signal(SIGSEGV, catch_signal);
+	signal(SIGBUS, catch_signal);
 #ifdef ALGORITHM_VERSION_0
 	return test_v1();
 	return test_v0();

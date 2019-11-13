@@ -674,7 +674,8 @@ int test_v1()
 	double r0_neg = 1.0;
 
 	/* минимально возможный радиус заряженной сферы (из соображений упругости) в момент более ранний чем t=t_start */
-	double r_min = 0.1;
+	double r_min_pos = 0.1;
+	double r_min_neg = 0.1;
 
 	/* скорость в момент t_start*/
 	velocity v0_pos = 0.0;
@@ -690,15 +691,6 @@ int test_v1()
 	/* Заряд сферы */
 	double q = 1.0;
 
-	int error = 0;
-	double phi_lw_pos;
-	double phi_lw_neg;
-	double E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos;
-	double E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg;
-	double r_pos;
-	double r_neg;
-	double E1, E2, E;
-
 	double dr = get_dr();
 	double dt = get_dt();
 	int nr = get_nr();
@@ -708,7 +700,19 @@ int test_v1()
 	printf ("dr = %f ", dr);
 	printf ("dt = %f\n", dt);
 
-	double t_a0 = dt * get_dt() / 10;
+	/* время действия ускорения вызванного причинами неэлектрического характера, например вледствие подвода энергии извне */
+	double t_a0 = nt * get_dt() / 10;
+	printf("t_a0 = %f\n", t_a0);
+
+	int error = 0;
+	double phi_lw_pos;
+	double phi_lw_neg;
+	double E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos;
+	double E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg;
+	double r_pos;
+	double r_neg;
+	double E1, E2, E;
+
 #ifdef ALGORITHM_VERSION_1
 	init_array_1(a0_pos, v0_pos, r0_pos, a0_neg, v0_neg, r0_neg);
 #endif
@@ -721,10 +725,10 @@ int test_v1()
 			double R0 = v_n_r * dr;
 			//printf("R0 = %f v_n_r = %d dr = %f\n", R0, v_n_r, dr);
 
-			error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, a0_pos, &E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos, r_min, &phi_lw_pos, &r_pos);
+			error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, a0_pos, &E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos, r_min_pos, &phi_lw_pos, &r_pos);
 			//printf("pos err = %d phi_lw = %f E1=%f E2 = %0.20f\n", error, phi_lw_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos);
 
-			error = integral_phi_and_E(-q, t, R0, r0_neg, v0_neg, a0_neg, &E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg, r_min, &phi_lw_neg, &r_neg);
+			error = integral_phi_and_E(-q, t, R0, r0_neg, v0_neg, a0_neg, &E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg, r_min_neg, &phi_lw_neg, &r_neg);
 			//printf("neg err = %d phi_lw = %f E1=%f E2 = %0.20f\n", error, phi_lw_neg, E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg);
 
 			E1 = E_minus_grad_phi_R0_pos + E_minus_grad_phi_R0_neg;
@@ -732,7 +736,7 @@ int test_v1()
 
 			E = E1 + E2;
 			if (fabs(E) > 1e-20)
-				printf("R0 = %f t = %f E = %.20f E1 = %0.20f E2 = %0.20f r_pos = %f, r_neg = %f\n", R0, t, E, E1, E2, r_pos, r_neg);
+				printf("R0 = %f t = %f E = % 0.20f E1 = % 0.20f E2 = % 0.20f r_pos = %f, r_neg = %f\n", R0, t, E, E1, E2, r_pos, r_neg);
 #ifdef ALGORITHM_VERSION_1
 			set_E_ex1(t, R0, E);
 			set_E_ex_1(v_n_t, v_n_r, E);
@@ -746,8 +750,8 @@ int test_v1()
 
 			printf("t = %f t1 = %f v_n_t = %d\n", t, t1, v_n_t);
 
-			error = get_r_ex1(+q, t, r0_pos, v0_pos, r_min, &r_pos);
-			error = get_r_ex1(-q, t, r0_neg, v0_neg, r_min, &r_neg);
+			error = get_r_ex1(+q, t, r0_pos, v0_pos, r_min_pos, &r_pos);
+			error = get_r_ex1(-q, t, r0_neg, v0_neg, r_min_neg, &r_neg);
 
 			set_a_ex1(t1, r_pos, a0_pos, t_a0, +q, m_pos);
 			set_a_ex1(t1, r_neg, a0_neg, t_a0, -q, m_neg);

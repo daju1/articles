@@ -6,7 +6,7 @@
 #include <assert.h>
 //#define USE_DEBUG
 #include "dbg_info.h"
-#include <backtrace.h>
+#include "backtrace.h"
 
 double get_sigma(double q, double r)
 {
@@ -769,7 +769,9 @@ int test_v1()
 int main()
 {
 	signal(SIGSEGV, catch_signal);
+#ifndef _MSC_VER
 	signal(SIGBUS, catch_signal);
+#endif
 #ifdef ALGORITHM_VERSION_0
 	return test_v1();
 	return test_v0();

@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <backtrace.h>
+#include "backtrace.h"
 
 #define ARR_SIZE 50
 #define BACKTRACE_SIZ 64
 
 void show_backtrace(void)
 {
+#ifndef _MSC_VER
     void    *array[BACKTRACE_SIZ];
     size_t   size, i;
     char   **strings;
@@ -19,6 +20,7 @@ void show_backtrace(void)
     }
 
     free(strings);  // malloced by backtrace_symbols
+#endif
 }
 
 void catch_signal(int sig)

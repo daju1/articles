@@ -6,7 +6,9 @@
 #include <assert.h>
 //#define USE_DEBUG
 #include "dbg_info.h"
-#include "backtrace.h"
+
+int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_neg, velocity v0_pos, velocity v0_neg, double a0_pos, double a0_neg, double r_min_pos, double r_min_neg);
+
 
 double get_sigma(double q, double r)
 {
@@ -682,8 +684,9 @@ int test_v1()
 	velocity v0_neg = 0.0;
 
 	/* ускорение вызванное причинами неэлектрического характера, например вледствие подвода энергии извне */
-	double a0_neg = 1.0*c;
 	double a0_pos = 0.1*c;
+	double a0_neg = 1.0*c;
+
 
 	double m_pos = 10.0;
 	double m_neg = 1.0;
@@ -691,6 +694,12 @@ int test_v1()
 	/* Заряд сферы */
 	double q = 1.0;
 
+	return do_v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, r_min_pos, r_min_neg);
+
+}
+
+int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_neg, velocity v0_pos, velocity v0_neg, double a0_pos, double a0_neg, double r_min_pos, double r_min_neg)
+{
 	double dr = get_dr();
 	double dt = get_dt();
 	int nr = get_nr();
@@ -766,19 +775,5 @@ int test_v1()
 	}
 }
 
-int main()
-{
-	signal(SIGSEGV, catch_signal);
-#ifndef _MSC_VER
-	signal(SIGBUS, catch_signal);
-#endif
-#ifdef ALGORITHM_VERSION_0
-	return test_v1();
-	return test_v0();
-#endif
-#ifdef ALGORITHM_VERSION_1
-	return test_v1();
-#endif
-}
 
 

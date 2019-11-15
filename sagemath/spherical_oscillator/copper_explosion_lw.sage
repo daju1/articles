@@ -315,6 +315,16 @@ print "should be 0.433908765869441e-3*r0/(sqrt(T/m)*m)"
 # print r(t, r__0, R__i, m, T)
 
 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+
+import numpy as np
+
+attach("tzap.spyx")
+v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, r_min_pos, r_min_neg)
+
+
 
 
 

@@ -322,6 +322,24 @@ sys.setdefaultencoding('utf8')
 import numpy as np
 
 attach("tzap.spyx")
+
+q = N__i * q__e
+print "q = ", q.n(), "кулон"
+
+m_pos = m__Cu
+m_neg = m__e
+r0_pos = R__i
+r0_neg = R__i
+v0_pos = 0
+v0_neg = 0
+a0_pos = a__0r(R__i / 2, R__i, m_pos, 0.5 * (T__i + T__e))
+a0_neg = a__0r(R__i / 2, R__i, m_pos, 0.5 * (T__i + T__e))
+
+r_min_pos = R__i / 10
+r_min_neg = R__i / 10
+
+print "a0_pos = ", a0_pos
+print "a0_neg = ", a0_neg
 v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, r_min_pos, r_min_neg)
 
 

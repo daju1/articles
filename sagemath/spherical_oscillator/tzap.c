@@ -7,30 +7,58 @@
 #include "dbg_info.h"
 #include "stdlib.h"
 
-#define T_START 0
-#define T_FINISH 10
+#define T_START 0.0
+#define T_FINISH 10.0
 #define DT 0.01
+#define R_START 0.0
+#define R_FINISH 10.0
 #define DR 0.01
 
-static const double t_start = T_START;    // момент включения ускорения
-static const double dt = DT;              // шаг времени
-static const double t_finish = T_FINISH;  // момент времени окончания расчёта
-static const double dr = DR;              // шаг координаты
+static double g_t_start = T_START;    // момент включения ускорения
+static double g_dt = DT;              // шаг времени
+static double g_t_finish = T_FINISH;  // момент времени окончания расчёта
+static double g_dr = DR;              // шаг координаты
 
 // одномерные массивы для сохранения истории при интегрировании только лишь по времени
 // без учёта эволючии объёмного распределения заряда - упрощённый случай сферического конденсатора
 // сохраняется только лишь история положительной обкладки и отрицательной обкладки
-static const int v_Nt = (int)((T_FINISH - T_START) / DT);
-static const int v_Nr = 1000;
+static double g_r_start = R_START;
+static double g_r_finish = R_FINISH;
+static int v_Nt = (int)((T_FINISH - T_START) / DT);
+static int v_Nr = (int)((R_FINISH - R_START) / DR);
 
 double get_dt()
 {
-	return dt;
+	return g_dt;
+}
+
+void set_dt(double dt)
+{
+	g_dt = dt;
+	v_Nt = (int)((g_t_finish - g_t_start) / g_dt);
+}
+
+void set_t_finish(double t_finish)
+{
+	g_t_finish = t_finish;
+	v_Nt = (int)((g_t_finish - g_t_start) / g_dt);
 }
 
 double get_dr()
 {
-	return dr;
+	return g_dr;
+}
+
+void set_dr(double dr)
+{
+	g_dr = dr;
+	v_Nr = (int)((g_r_finish - g_r_start) / g_dr);
+}
+
+void set_r_finish(double r_finish)
+{
+	g_r_finish = r_finish;
+	v_Nr = (int)((g_r_finish - g_r_start) / g_dr);
 }
 
 int get_nt()
@@ -206,13 +234,13 @@ double get_c()
 */
 double get_a_ex1(timevalue t_zap, double q)
 {
-	if (t_zap < t_start)
+	if (t_zap < g_t_start)
 		return 0;
-	// t_max = t_start + v_max / a0;
+	// t_max = g_t_start + v_max / a0;
 	// if (t_zap >= t_max)
 	//     return 0;
 
-	double n_t = (t_zap - t_start) / dt;
+	double n_t = (t_zap - g_t_start) / g_dt;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
 	if (n_t <= (double)v_n_t)
 	{
@@ -239,13 +267,13 @@ double get_a_ex1(timevalue t_zap, double q)
 /* установить значение поля в точке наблюдения R0 в момент t */
 void set_E_ex1(timevalue t, double R0, double E)
 {
-	double n_t = (t - t_start) / dt;
+	double n_t = (t - g_t_start) / g_dt;
 	if (fabs(n_t - v_n_t) > epsilon_n)
 	{
 		assert(0);
 	}
 
-	double n_r = R0 / dr;
+	double n_r = R0 / g_dr;
 	int i_r = (int)round(n_r);
 	if (fabs(n_r - i_r) > epsilon_r)
 	{
@@ -261,18 +289,16 @@ void set_E_ex_1(int v_n_t, int v_n_r, double E)
 }
 
 /* установить значение ускорения слоя исходя из его текущего радиуса и значения поля в текущий момент на этом радиусе*/
-double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double q, double m)
+double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double q, double m, double * E)
 {
-	double n_t = (t - t_start) / dt;
+	double n_t = (t - g_t_start) / g_dt;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
 	if (fabs(n_t - v_n_t - 1.0) > epsilon_n)
 	{
 		assert(0);
 	}
 
-	double E;
-
-	double n_r = r / dr;
+	double n_r = r / g_dr;
 	int n_r1 = (int)floor(n_r);
 	int n_r2 = (int)ceil(n_r);
 	if (n_r1 != n_r2)
@@ -288,7 +314,7 @@ double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double 
 
 		double part_r = (n_r - n_r1) / (n_r2 - n_r1);
 		assert(!isnan(part_r));
-		E = E1 + part_r * (E2 - E1);
+		*E = E1 + part_r * (E2 - E1);
 	}
 	else
 	{
@@ -297,11 +323,11 @@ double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double 
 			printf("r = %0.15f n_r = %0.15f\n", r, n_r);
 			assert(0);
 		}
-		E = v_E[n_r1][v_n_t];
+		*E = v_E[n_r1][v_n_t];
 	}
-	assert(!isnan(E));
+	assert(!isnan(*E));
 
-	double a = E * q / m;
+	double a = (*E) * q / m;
 	if (t <= t_a0)
 	{
 		a += a0;
@@ -319,10 +345,10 @@ double get_v_ex1(timevalue t_zap, velocity v0, double q)
 {
 	assert(v0 < v_max);
 
-	if (t_zap < t_start)
+	if (t_zap < g_t_start)
 		return v0;
 
-	double n_t = (t_zap - t_start) / dt;
+	double n_t = (t_zap - g_t_start) / g_dt;
 	double * v_v = q > 0 ? v_v_pos : v_v_neg;
 	if (n_t <= (double)v_n_t)
 	{
@@ -349,7 +375,7 @@ double get_v_ex1(timevalue t_zap, velocity v0, double q)
 
 double set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double q, double m)
 {
-	double n_t = (t - t_start) / dt;
+	double n_t = (t - g_t_start) / g_dt;
 	double * v_v = q > 0 ? v_v_pos : v_v_neg;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
 	if (fabs(n_t - v_n_t - 1.0) > epsilon_n)
@@ -362,7 +388,7 @@ double set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double
 	double v = v_v[v_n_t];
 	// a = dv / dt
 	// dv = a * dt
-	double dv = a * dt;
+	double dv = a * g_dt;
 	v += dv;
 
 	double part = n_t - v_n_t;
@@ -377,14 +403,14 @@ double get_s_ex1(timevalue t_zap, double v0, double q)
 {
 	assert(v0 < v_max);
 	double s;
-	if (t_zap < t_start)
+	if (t_zap < g_t_start)
 	{
-		s = v0*(t_zap - t_start);
+		s = v0*(t_zap - g_t_start);
 		DBG_INFO("get_s1 t_zap=%f returns %f\n", t_zap, s);
 		return s;
 	}
 
-	double n_t = (t_zap - t_start) / dt;
+	double n_t = (t_zap - g_t_start) / g_dt;
 	double * v_s = q > 0 ? v_s_pos : v_s_neg;
 	if (n_t <= (double)v_n_t)
 	{
@@ -410,9 +436,9 @@ double get_s_ex1(timevalue t_zap, double v0, double q)
 	assert(0);
 }
 
-double set_s_ex1(timevalue t, double v0, double q)
+double set_s_ex1(timevalue t, double r0, double v0, double r_min, double q)
 {
-	double n_t = (t - t_start) / dt;
+	double n_t = (t - g_t_start) / g_dt;
 	double * v_s = q > 0 ? v_s_pos : v_s_neg;
 	double * v_v = q > 0 ? v_v_pos : v_v_neg;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
@@ -422,20 +448,39 @@ double set_s_ex1(timevalue t, double v0, double q)
 		assert(0);
 	}
 
-	//double a = get_a_ex1(t-dt, q);
-	//double v = get_v_ex1(t-dt, v0, q);
+	//double a = get_a_ex1(t-g_dt, q);
+	//double v = get_v_ex1(t-g_dt, v0, q);
 	double a = v_a[v_n_t];
 	double v = v_v[v_n_t];
 	double s = v_s[v_n_t];
-	// v = ds / dt
-	double ds = v * dt + a * dt * dt / 2;
+	// v = ds / g_dt
+	double ds = v * g_dt + a * g_dt * g_dt / 2;
 	s += ds;
+
+	if (r0 + s < r_min)
+	{
+		printf("Warning: r %0.20f < r_min %0.20f\n", r0 + s, r_min);
+		//r0 + s = r_min; // ???????
+		int* v = 0;
+		*v += 1;
+		assert(0);
+
+	}
 
 	double part = n_t - v_n_t;
 	assert(part != 0.0);
 	double ds_out = (s - v_s[v_n_t]) / part;
 	v_s[v_n_t + 1] = v_s[v_n_t] + ds_out;
 
+	if (r0 + v_s[v_n_t + 1] < r_min)
+	{
+		printf("Warning: r %0.20f < r_min %0.20f\n", r0 + v_s[v_n_t + 1], r_min);
+		//r0 + s = r_min; // ???????
+		int* v = 0;
+		*v += 1;
+		assert(0);
+
+	}
 	return s;
 }
 
@@ -448,9 +493,11 @@ int get_r_ex1(double q, timevalue t_zap, double r0, double v0, double r_min, dou
 	*r = r0 + s;
 	if (*r < r_min)
 	{
-		DBG_INFO("Warning: r %f < r_min %f\n", *r, r_min);
+		printf("Warning: r %0.20f < r_min %0.20f\n", *r, r_min);
 		*r = r_min;
 		error = 1;
+		int* v = 0;
+		*v += 1;
 		assert(0);
 	}
 	assert(*r > 0.0);
@@ -463,10 +510,10 @@ double get_a(timevalue t_zap, acceleration a0)
 {
 	double t_max;
 #ifdef WITHOUT_ACCELERATION_BEFORE_TSTART
-	if (t_zap < t_start)
+	if (t_zap < g_t_start)
 		return 0;
 #endif
-	t_max = t_start + v_max / a0;
+	t_max = g_t_start + v_max / a0;
 	if (t_zap >= t_max)
 		return 0;
 	return a0;
@@ -479,13 +526,13 @@ double get_v(timevalue t_zap, double v0, acceleration a0)
 	assert(v0 < v_max);
 	double t_max;
 #ifdef WITHOUT_ACCELERATION_BEFORE_TSTART
-	if (t_zap < t_start)
+	if (t_zap < g_t_start)
 		return v0;
 #endif
-	t_max = t_start + v_max / a0;
+	t_max = g_t_start + v_max / a0;
 	if (t_zap >= t_max)
 		return v_max;
-	return v0 + a0*(t_zap-t_start);
+	return v0 + a0*(t_zap-g_t_start);
 }
 /* перемещение заряда */
 double get_s(timevalue t_zap, double v0, acceleration a0)
@@ -495,36 +542,36 @@ double get_s(timevalue t_zap, double v0, acceleration a0)
 	double t_max;
 	double s;
 #ifdef WITHOUT_ACCELERATION_BEFORE_TSTART
-	if (t_zap < t_start)
+	if (t_zap < g_t_start)
 	{
-		s = v0*(t_zap - t_start);
+		s = v0*(t_zap - g_t_start);
 		DBG_INFO("get_s1 t_zap=%f a0=%f returns %f\n", t_zap, a0, s);
 		return s;
 	}
 #endif
 	if (a0 > 0.0)
 	{
-		t_max = t_start + (v_max - v0) / a0;
-		assert(t_max > t_start);
+		t_max = g_t_start + (v_max - v0) / a0;
+		assert(t_max > g_t_start);
 	}
 	else if (a0 < 0.0)
 	{
-		t_max = t_start + (-v_max + v0) / a0;
-		assert(t_max > t_start);
+		t_max = g_t_start + (-v_max + v0) / a0;
+		assert(t_max > g_t_start);
 	}
 
 	if (a0 != 0.0 && t_zap >= t_max)
 	{
 		DBG_INFO("get_s t_max %f\n", t_max);
 
-		dt_start = (t_max - t_start);
+		dt_start = (t_max - g_t_start);
 		dt_max = (t_zap - t_max);
 		s = v0 * dt_start + a0*dt_start*dt_start/2 + dt_max*v_max;
 		DBG_INFO("get_s2 t_zap=%f a0=%f returns %f\n", t_zap, a0, s);
 		return s;
 	}
 
-	dt_start = (t_zap - t_start);
+	dt_start = (t_zap - g_t_start);
 	s = v0 * dt_start + a0*dt_start*dt_start/2;
 	DBG_INFO("get_s t_zap=%f a0=%f dt_start=%f returns %f\n", t_zap, a0, dt_start, s);
 	return s;
@@ -577,7 +624,7 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 {
 	int err, error = 0;
 #ifdef CALC_LW_WITHOUT_LAGGING
-	*t2 = t_start;
+	*t2 = g_t_start;
 #else
 	double epsilon = 1.0e-15;
 	double t1;

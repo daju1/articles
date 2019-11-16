@@ -17,6 +17,7 @@ int main()
 	return test_v0();
 #endif
 #ifdef ALGORITHM_VERSION_1
+	return copper_explosion_lw_v1();
 	return test_v1();
 #endif
 }

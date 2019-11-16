@@ -7,8 +7,7 @@
 //#define USE_DEBUG
 #include "dbg_info.h"
 
-int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_neg, velocity v0_pos, velocity v0_neg, double a0_pos, double a0_neg, double r_min_pos, double r_min_neg);
-
+int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_neg, velocity v0_pos, velocity v0_neg, double a0_pos, double a0_neg, double t_a0, double r_min_pos, double r_min_neg);
 
 double get_sigma(double q, double r)
 {
@@ -694,44 +693,152 @@ int test_v1()
 	/* Заряд сферы */
 	double q = 1.0;
 
-	return do_v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, r_min_pos, r_min_neg);
+	/* время действия ускорения вызванного причинами неэлектрического характера, например вледствие подвода энергии извне */
+	double t_a0 = get_nt() * get_dt() / 10;
 
+	return do_v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0 , r_min_pos, r_min_neg);
 }
 
-int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_neg, velocity v0_pos, velocity v0_neg, double a0_pos, double a0_neg, double r_min_pos, double r_min_neg)
+/*
+sage: attach("copper_explosion_lw.sage")
+M__Cu_sgs =  0.00140115032350105
+should be 0.001401150324
+a(2567) =  1.06780733067000
+should be 1.067807331
+c__p =  [(300, 385.000000000000), (400, 397.700000000000), (500, 408.000000000000), (600, 416.900000000000), (700, 425.100000000000), (800, 432.900000000000), (900, 441.700000000000), (1000, 451.400000000000), (1100, 464.300000000000), (1200, 480.800000000000), (1300, 506.600000000000), (1357.60000000000, 525.200000000000)]
+Q__nagrev_do_T_pl =  466024.203987
+should be 466024.2040
+c__p(1357)=  525.001217859
+should be 525.001217859185
+c__p_exptrapotation=  33.3617273900798
+should be 33.3617273900798
+0.652969964175658
+should be .6529699644
+V__Cu_sgs__crit =  0.000718538627436435
+should be 0.7185386277e-3
+R__i =  0.000555631898340631
+should be 0.5556318983e-3
+Q__pl =  0.286911910827956
+should be .2869119109
+Q__isp =  6.71624317090642
+should be 6.716243174
+Q__nagrev =  4.99696901906082
+should be 4.99696902105744
+Q__ionization =  16.4267930476864
+should be 16.42679305
+V__Cu_1atm =  0.0000130035233983192
+should be 0.1300352340e-4
+V__Cu_450atm =  2.88967186629317e-8
+should be 2.889671867*10^(-8)
+V__Cu__crit =  7.18538627436435e-10
+should be 7.185386277*10^(-10)
+A =  12.7480190448392
+should be 12.74801905
+Delta_E =  93.8250638066792
+should be 93.8250637789426
+Delta_t =  0.000347500236321034
+should be 0.347500236218306e-3
+Delta_T =  127548.050829933
+should be 1.27548050741264*10^5
+T__e =  134641.050829933
+should be 1.34641050741264*10^5
+11.6024640799239
+should be 11.6024640725366
+7.18538627436435e-10
+should be 7.185386277*10^(-10)
+7.18538627436435e-10
+should be 7.185386273*10^(-10)
+n__i =  1.84797988858465e28
+463689.588837354
+should be 4.636895888*10^5
+2.02023137307735e6
+should be 2.02023137241212*10^6
+1357.55450752652
+should be 1357.554508
+5914.67713054400
+should be 5914.67712890453
+(2.36433873744671e-12)*r__0*sqrt(T/m)
+(2.41093551366813e-7)*r__0/(R_init*m*sqrt(T/m))
+0.000433908766013665*r0/(m*sqrt(T/m))
+should be 0.433908765869441e-3*r0/(sqrt(T/m)*m)
+Compiling ./tzap.spyx...
+q =  2.12744210611535 кулон
+a0_pos =  3.81193295102697e-7
+a0_neg =  0.000130201300422018
+nr = 10000 nt = 10000
+dr = 0.00000027781594917032 dt = 0.00000017375011816052
+t_a0 = 0.00034750023632103418
+m_pos = 0.00000141116074503615 m_neg = 0.00000000001209584880
+r0_pos = 0.00027781594917031547 r0_neg = 0.00027781594917031547
+v0_pos = 0.00000000000000000000 v0_neg = 0.00000000000000000000
+a0_pos = 0.00000038119329510270 a0_neg = 0.00013020130042201811
+sage:
+*/
+
+int copper_explosion_lw_v1()
 {
-	double dr = get_dr();
-	double dt = get_dt();
-	int nr = get_nr();
-	int nt = get_nt();
-	printf ("nr = %d ", nr);
-	printf ("nt = %d\n", nt);
-	printf ("dr = %f ", dr);
-	printf ("dt = %f\n", dt);
+	double q = 2.12744210611535; // кулон
+	double a0_pos = 3.81193295102697e-7;
+	double a0_neg = 0.000130201300422018;
+	int nr = 10000, nt = 10000;
+	double dr = 0.00000027781594917032, dt = 0.00000017375011816052;
+	double t_a0 = 0.00034750023632103418;
+	double m_pos = 0.00000141116074503615, m_neg = 0.00000000001209584880;
+	double r0_pos = 0.00027781594917031547, r0_neg = 0.00027781594917031547;
+	double v0_pos = 0.00000000000000000000, v0_neg = 0.00000000000000000000;
+	//double a0_pos = 0.00000038119329510270, a0_neg = 0.00013020130042201811;
+	double r_min_pos = dr;
+	double r_min_neg = dr;
 
-	/* время действия ускорения вызванного причинами неэлектрического характера, например вледствие подвода энергии извне */
-	double t_a0 = nt * get_dt() / 10;
-	printf("t_a0 = %f\n", t_a0);
+	double t_finish = t_a0 * 5;
+	dt = t_finish / 10000;
 
-	int error = 0;
-	double phi_lw_pos;
-	double phi_lw_neg;
-	double E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos;
-	double E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg;
-	double r_pos;
-	double r_neg;
-	double E1, E2, E;
+	set_dt(dt);
+	set_t_finish(t_finish);
+
+	double r_finish = r0_pos * 10;
+	dr = r_finish / 10000;
+
+	set_dr(dr);
+	set_r_finish(r_finish);
+
+	return do_v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0 , r_min_pos, r_min_neg);
+}
+
+
+int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_neg, velocity v0_pos, velocity v0_neg, double a0_pos, double a0_neg, double t_a0, double r_min_pos, double r_min_neg)
+{
+	printf ("nr = %d ", get_nr());
+	printf ("nt = %d\n", get_nt());
+	printf ("dr = %0.20f ", get_dr());
+	printf ("dt = %0.20f\n", get_dt());
+
+	printf("t_a0 = %0.20f\n", t_a0);
+	printf("m_pos = %0.20f m_neg = %0.20f\n", m_pos, m_neg);
+	printf("r0_pos = %0.20f r0_neg = %0.20f\n", r0_pos, r0_neg);
+	printf("v0_pos = %0.20f v0_neg = %0.20f\n", v0_pos, v0_neg);
+	printf("a0_pos = %0.20f a0_neg = %0.20f\n", a0_pos, a0_neg);
 
 #ifdef ALGORITHM_VERSION_1
 	init_array_1(a0_pos, v0_pos, r0_pos, a0_neg, v0_neg, r0_neg);
 #endif
-	for (v_n_t = 0; v_n_t < get_nt(); ++v_n_t)
+	for (v_n_t = 0; v_n_t < 3/*get_nt()*/; ++v_n_t)
 	{
+
+		int error = 0, err;
+		double phi_lw_pos;
+		double phi_lw_neg;
+		double E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos;
+		double E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg;
+		double r_pos;
+		double r_neg;
+		double E1, E2, E;
+
 		double t = v_n_t * get_dt();
 		printf("t = %f v_n_t = %d\n", t, v_n_t);
 		for (int v_n_r = 0; v_n_r < get_nr(); ++v_n_r)
 		{
-			double R0 = v_n_r * dr;
+			double R0 = v_n_r * get_dr();
 			//printf("R0 = %f v_n_r = %d dr = %f\n", R0, v_n_r, dr);
 
 			error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, a0_pos, &E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos, r_min_pos, &phi_lw_pos, &r_pos);
@@ -744,15 +851,66 @@ int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_ne
 			E2 = E_minus_1_c_dA_dt_R0_pos + E_minus_1_c_dA_dt_R0_neg;
 
 			E = E1 + E2;
-			if (fabs(E) > 1e-20)
-				printf("R0 = %f t = %f E = % 0.20f E1 = % 0.20f E2 = % 0.20f r_pos = %f, r_neg = %f\n", R0, t, E, E1, E2, r_pos, r_neg);
+			if (fabs(E) > 1e-20){
+				#if 0
+				printf(
+					"R0 = %f t = %f "
+					"E = % 0.20f E1 = % 0.20f E2 = % 0.20f "
+					"phi_lw_pos = %f phi_lw_neg = %f\n"
+					, R0, t
+					, E
+					, E1, E2
+					, phi_lw_pos, phi_lw_neg);
+				#endif
+
+				printf(
+					"R0 = %0.10f t = %0.10f "
+					"E1_pos % 0.20f "
+					"E1_neg % 0.20f "
+					"phi_lw_pos = %f phi_lw_neg = %f "
+					//"E2_pos % 0.20f "
+					//"E2_neg % 0.20f "
+					"\n"
+					, R0, t
+					, E_minus_grad_phi_R0_pos
+					, E_minus_grad_phi_R0_neg
+					//, E_minus_1_c_dA_dt_R0_pos
+					//, E_minus_1_c_dA_dt_R0_neg
+					, phi_lw_pos, phi_lw_neg
+					);
+			}
 #ifdef ALGORITHM_VERSION_1
 			set_E_ex1(t, R0, E);
 			set_E_ex_1(v_n_t, v_n_r, E);
 #endif
 		}
 		printf("\n");
+
 #ifdef ALGORITHM_VERSION_1
+		double a_pos = get_a_ex1(t, +q);
+		double a_neg = get_a_ex1(t, -q);
+
+		double v_pos = get_v_ex1(t, v0_pos, +q);
+		double v_neg = get_v_ex1(t, v0_neg, -q);
+
+		double s_pos = get_s_ex1(t, v0_pos, +q);
+		double s_neg = get_s_ex1(t, v0_neg, -q);
+
+		err = get_r_ex1(+q, t, r0_pos, v0_pos, r_min_pos, &r_pos);
+		err = get_r_ex1(-q, t, r0_neg, v0_neg, r_min_neg, &r_neg);
+
+		printf("t = %f\n"
+			"a_pos = % 0.20f, a_neg = % 0.20f\n"
+			"v_pos = % 0.20f, v_neg = % 0.20f\n"
+			"s_pos = % 0.20f, s_neg = % 0.20f\n"
+			"r_pos = % 0.20f, r_neg = % 0.20f\n"
+			, t
+			, a_pos, a_neg
+			, v_pos, v_neg
+			, s_pos, s_neg
+			, r_pos, r_neg
+			);
+
 		if (v_n_t < get_nt() - 1)
 		{
 			double t1 = (v_n_t + 1) * get_dt();
@@ -762,14 +920,19 @@ int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_ne
 			error = get_r_ex1(+q, t, r0_pos, v0_pos, r_min_pos, &r_pos);
 			error = get_r_ex1(-q, t, r0_neg, v0_neg, r_min_neg, &r_neg);
 
-			set_a_ex1(t1, r_pos, a0_pos, t_a0, +q, m_pos);
-			set_a_ex1(t1, r_neg, a0_neg, t_a0, -q, m_neg);
+			double E_pos, E_neg;
 
+			set_a_ex1(t1, r_pos, a0_pos, t_a0, +q, m_pos, &E_pos);
+			set_a_ex1(t1, r_neg, a0_neg, t_a0, -q, m_neg, &E_neg);
+			printf(
+				"E_pos = % 0.20f, E_neg = % 0.20f\n"
+				, E_pos, E_neg
+				);
 			set_v_ex1(t1, v0_pos, a0_pos, t_a0, +q, m_pos);
 			set_v_ex1(t1, v0_neg, a0_neg, t_a0, -q, m_neg);
 
-			set_s_ex1(t1, v0_pos, +q);
-			set_s_ex1(t1, v0_neg, -q);
+			set_s_ex1(t1, r0_pos, v0_pos, r_min_pos, +q);
+			set_s_ex1(t1, r0_neg, v0_neg, r_min_neg, -q);
 		}
 #endif
 	}

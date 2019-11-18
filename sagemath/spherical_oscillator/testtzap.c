@@ -262,12 +262,10 @@ int integral_phi_and_E(double q, double t, double R0, double r0, double v0, doub
 	double ommited_S = 0.0;
 	double S0 = 4*Pi*r0*r0;
 	double S = 0.0;
-	DBG_INFO("integral_phi_and_E(q=%f t=%f, R0=%f, r0=%0.10f, v0=%0.10f, a0=%0.10f)\n", q, t, R0, r0, v0, a0);
+	printf("integral_phi_and_E(q=%f t=%f, R0=%0.20f, r0=%0.20f, v0=%0.10f, a0=%0.10f)\n", q, t, R0, r0, v0, a0);
 
 	*pE_minus_grad_phi_R0 = 0.0;
 	*pE_minus_1_c_dA_dt_R0 = 0.0;
-
-	//printf("r = %0.15f err = %d ", *r, err);
 
 	for (i = 0; i <= N; ++i)
 	{
@@ -299,8 +297,29 @@ int integral_phi_and_E(double q, double t, double R0, double r0, double v0, doub
 		DBG_INFO("cos_alpha_zap = %f ", cos_alpha_zap);
 		E_minus_grad_varphi_R0 = get_E_minus_grad_phi_R0 (theta, v_zap, R_zap, aR_zap, R_lw_zap, cos_alpha_zap);
 		E_minus_1_c_dA_dt_R0   = get_E_minus_1_c_dA_dt_R0(theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap);
-		//if (i % 100 == 0)
-		//	printf("theta = %f r_zap = %0.6e R_zap %0.6e R_lw_zap %0.6e v_zap = %0.6e t_zap = %0.6e a_zap = %0.6e aR_zap = %0.6e E1 %f\n", theta, r_zap, R_zap, R_lw_zap, v_zap, t_zap, a_zap, aR_zap, E_minus_grad_varphi_R0);
+		if (i % 100 == 0)
+			printf("theta = %f "
+				"r_zap = %0.6e "
+				"R_zap %0.6e "
+				"R_lw_zap %0.6e "
+				"v_zap = %0.6e "
+				"t_zap = %0.6e "
+				"a_zap = %0.6e "
+				"aR_zap = %0.6e "
+				"E1 %f "
+				"E2 %0.20f "
+				"\n"
+				, theta
+				, r_zap
+				, R_zap
+				, R_lw_zap
+				, v_zap
+				, t_zap
+				, a_zap
+				, aR_zap
+				, E_minus_grad_varphi_R0
+				, E_minus_1_c_dA_dt_R0
+				);
 
 #ifdef OLD_DS_THETA_ALG
 		dS_dtheta = get_dS_dtheta(*r, theta);
@@ -836,6 +855,7 @@ int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_ne
 
 		double t = v_n_t * get_dt();
 		printf("t = %f v_n_t = %d\n", t, v_n_t);
+		#if 0
 		for (int v_n_r = 0; v_n_r < get_nr(); ++v_n_r)
 		{
 			double R0 = v_n_r * get_dr();
@@ -884,6 +904,7 @@ int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_ne
 #endif
 		}
 		printf("\n");
+		#endif
 
 #ifdef ALGORITHM_VERSION_1
 		double a_pos = get_a_ex1(t, +q);
@@ -923,21 +944,19 @@ int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_ne
 				&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
 				&E1, &E2, &E_pos);
 
-				printf(
-					"R0 = %0.10f t = %0.10f "
-					"E1_pos % 0.20f "
-					"E1_neg % 0.20f "
-					"phi_lw_pos = %f phi_lw_neg = %f "
-					//"E2_pos % 0.20f "
-					//"E2_neg % 0.20f "
-					"\n"
-					, R0, t
-					, E_minus_grad_phi_R0_pos
-					, E_minus_grad_phi_R0_neg
-					//, E_minus_1_c_dA_dt_R0_pos
-					//, E_minus_1_c_dA_dt_R0_neg
-					, phi_lw_pos, phi_lw_neg
-					);
+			printf(
+				"R0_pos = %0.10f t = %0.10f "
+				"E1_pos %f "
+				"E1_neg %f "
+				"E2_pos % 0.20f "
+				"E2_neg % 0.20f "
+				"\n"
+				, r_pos, t
+				, E_minus_grad_phi_R0_pos
+				, E_minus_grad_phi_R0_neg
+				, E_minus_1_c_dA_dt_R0_pos
+				, E_minus_1_c_dA_dt_R0_neg
+				);
 
 			calc_E(q, t, r_neg,
 				r0_pos, r0_neg,
@@ -948,6 +967,19 @@ int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_ne
 				&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
 				&E1, &E2, &E_neg);
 
+			printf(
+				"R0_neg = %0.10f t = %0.10f "
+				"E1_pos %f "
+				"E1_neg %f "
+				"E2_pos % 0.20f "
+				"E2_neg % 0.20f "
+				"\n"
+				, r_neg, t
+				, E_minus_grad_phi_R0_pos
+				, E_minus_grad_phi_R0_neg
+				, E_minus_1_c_dA_dt_R0_pos
+				, E_minus_1_c_dA_dt_R0_neg
+				);
 			printf(
 				"E_pos2 = % 0.20f, E_neg2 = % 0.20f\n"
 				, E_pos, E_neg

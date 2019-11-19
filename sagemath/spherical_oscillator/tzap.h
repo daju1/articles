@@ -7,11 +7,6 @@
 //#define ALGORITHM_VERSION_2
 
 #define SI
-#ifdef SI
-#define c 299792458.0
-#else
-#define c 3.0
-#endif
 
 typedef double timevalue;
 typedef double timespan;

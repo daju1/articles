@@ -14,6 +14,14 @@
 #define R_FINISH 10.0
 #define DR 0.01
 
+#ifdef SI
+double g_c = 299792458.0;
+static double v_max = 0.999 * 299792458.0;
+#else
+double g_c = 3.0;
+static double v_max = 0.999 * 3.0;
+#endif
+
 static double g_t_start = T_START;    // момент включения ускорения
 static double g_dt = DT;              // шаг времени
 static double g_t_finish = T_FINISH;  // момент времени окончания расчёта
@@ -118,7 +126,6 @@ static double ** vv_E2;
 static double ** vv_E;
 #endif
 
-static double v_max = 0.999 * c;
 #ifdef ALGORITHM_VERSION_1
 void init_array_1(double a0_pos, velocity v0_pos, double r0_pos, double a0_neg, velocity v0_neg, double r0_neg)
 {
@@ -216,7 +223,7 @@ int v_Nr0, int v_Nt,
 #endif /*ALGORITHM_VERSION_2*/
 double get_c()
 {
-	return c;
+	return g_c;
 }
 
 #ifdef ALGORITHM_VERSION_1
@@ -672,9 +679,9 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 
 		assert(r >= 0.0);
 		R = get_R(R0, r, theta); /* итерационный радиус - на первой итерации текущий радиус                             */
-		*t2 = t - R / c;          /* время прохождения сигнала от итерационной координаты в точку наблюдения             */
+		*t2 = t - R / g_c;          /* время прохождения сигнала от итерационной координаты в точку наблюдения             */
 		                         /* итерационный "запаздывающий" момент времени t2                                      */
-		dR = c*(t-t1) - R;       /**/
+		dR = g_c*(t-t1) - R;       /**/
 #ifdef ALGORITHM_VERSION_0
 		v1 = get_v(t1, v0, a0);      /* скорость заряда в итерационный "текущий" момент времени t1                          */
 		v2 = get_v(*t2, v0, a0);      /* скорость заряда в итерационный "запаздывающий" момент времени t2                    */
@@ -688,8 +695,8 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 		v2 = get_v_ex2(*t2, v0, q);
 #endif
 		DBG_INFO("t2=%f t1=%f t=%f v1 = %f, v2 = %f, v = %f, R=%f dR=%e dR_pre=%e ", *t2, t1, t, v1, v2, v, R, dR, dR_pre);
-		assert(v1 < c);
-		assert(v2 < c);
+		assert(v1 < g_c);
+		assert(v2 < g_c);
 #if 1
 		if (i > 1 && fabs(dR) - fabs(dR_pre) < 1.0e-3)
 		{
@@ -700,8 +707,8 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 				R_tmp = R_pre + n * (R - R_pre);
 				DBG_INFO("R_tmp = R_pre + n * (R - R_pre);= %f ", R_tmp);
 
-				*t2 = t -  R_tmp / c;
-				dR = c*(t-t1) - R_tmp;
+				*t2 = t -  R_tmp / g_c;
+				dR = g_c*(t-t1) - R_tmp;
 				DBG_INFO("t2 = %f ", *t2);
 
 				n *= 0.9;

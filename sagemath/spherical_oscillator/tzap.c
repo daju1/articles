@@ -602,7 +602,14 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 #ifdef CALC_LW_WITHOUT_LAGGING
 	*t2 = g_t_start;
 #else
+
+#ifdef SI
+	long double epsilon = 1.0e-32;
+	long double epsilon_dr = 1.0e-32;
+#else
 	long double epsilon = 1.0e-15;
+	long double epsilon_dr = 1.0e-3;
+#endif
 	timevalue t1;
 	*t2 = t;
 	timespan dt;
@@ -681,7 +688,7 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 		assert(v1 < g_c);
 		assert(v2 < g_c);
 #if 1
-		if (i > 1 && fabs(dR) - fabs(dR_pre) < 1.0e-3)
+		if (i > 1 && fabs(dR) - fabs(dR_pre) < epsilon_dr)
 		{
 			int j = 0;
 

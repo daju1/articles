@@ -934,13 +934,13 @@ int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r
 			"a_pos = % 0.20Le, a_neg = % 0.20Le\n"
 			"v_pos = % 0.20Le, v_neg = % 0.20Le\n"
 			"vcpos = % 0.20Le, vcneg = % 0.20Le\n"
-			"s_pos = % 0.20Le, s_neg = % 0.20Le\n"
+			"s_pos = % 0.20Le, s_neg = % 0.20Le s_neg - s_pos = % 0.20Le  \n"
 			"r_pos = % 0.20Le, r_neg = % 0.20Le r_neg - r_pos = % 0.20Le \n"
 			, t
 			, a_pos, a_neg
 			, v_pos, v_neg
 			, v_pos / g_c, v_neg / g_c
-			, s_pos, s_neg
+			, s_pos, s_neg, (s_neg - s_pos)
 			, r_pos, r_neg, (r_neg - r_pos)
 			);
 

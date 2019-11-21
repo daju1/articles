@@ -9,21 +9,30 @@
 
 #define T_START 0.0
 #define T_FINISH 10.0
-#define DT 0.01
+//#define DT 0.01
 #define R_START 0.0
 #define R_FINISH 10.0
 #define DR 0.01
 
 #ifdef SI
-double g_c = 299792458.0;
-static double v_max = 0.999 * 299792458.0;
+#define LIGHT_VELONCITY 299792458.0
+double multiplier_E = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000000.0;
+#ifdef MASS_IN_GRAMM
+double multiplier_a = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000.0;
 #else
-double g_c = 3.0;
-static double v_max = 0.999 * 3.0;
+double multiplier_a = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000000.0;
+#endif
+#else
+#define LIGHT_VELONCITY 3.0
+double multiplier_E = 1.0;
+double multiplier_a = 1.0;
 #endif
 
+double g_c = LIGHT_VELONCITY;
+static double v_max = 0.999 * LIGHT_VELONCITY;
+
 static double g_t_start = T_START;    // момент включения ускорения
-static double g_dt = DT;              // шаг времени
+//static double g_dt = DT;              // шаг времени
 static double g_t_finish = T_FINISH;  // момент времени окончания расчёта
 static double g_dr = DR;              // шаг координаты
 
@@ -32,25 +41,9 @@ static double g_dr = DR;              // шаг координаты
 // сохраняется только лишь история положительной обкладки и отрицательной обкладки
 static double g_r_start = R_START;
 static double g_r_finish = R_FINISH;
-static int v_Nt = (int)((T_FINISH - T_START) / DT);
+//static int v_Nt = (int)((T_FINISH - T_START) / DT);
+static int v_Nt = 10000;
 static int v_Nr = (int)((R_FINISH - R_START) / DR);
-
-double get_dt()
-{
-	return g_dt;
-}
-
-void set_dt(double dt)
-{
-	g_dt = dt;
-	v_Nt = (int)((g_t_finish - g_t_start) / g_dt);
-}
-
-void set_t_finish(double t_finish)
-{
-	g_t_finish = t_finish;
-	v_Nt = (int)((g_t_finish - g_t_start) / g_dt);
-}
 
 double get_dr()
 {
@@ -145,6 +138,8 @@ void init_array_1(double a0_pos, velocity v0_pos, double r0_pos, double a0_neg, 
 	v_E2 = malloc(v_Nr * sizeof(double *));
 	v_E  = malloc(v_Nr * sizeof(double *));
 
+	v_t[0] = T_START;
+
 	v_a_pos[0] = a0_pos;
 	v_v_pos[0] = v0_pos;
 	v_s_pos[0] = 0.0;
@@ -187,7 +182,9 @@ void init_array_2(int v_N_r0, int v_N_t, double * a0_pos, velocity * v0_pos, dou
 	vv_E1 = malloc(v_N_r0 * sizeof(double **));
 	vv_E2 = malloc(v_N_r0 * sizeof(double **));
 	vv_E  = malloc(v_N_r0 * sizeof(double **));
-int v_Nr0, int v_Nt,
+
+	v_t[0] = T_START;
+
 	for (int i_r0 = 0; i_r0 < v_N_r0; ++i_r0)
 	{
 		vv_a_pos[i_r0] = malloc(v_N_t * sizeof(double *));
@@ -227,6 +224,77 @@ double get_c()
 }
 
 #ifdef ALGORITHM_VERSION_1
+double interpolate(timevalue t_zap, double * values)
+{
+	double n_t 
+		= 0 == v_n_t 
+		? t_zap - g_t_start
+		: v_n_t * (t_zap - g_t_start) / (v_t[v_n_t] - v_t[0]);
+
+	if (n_t < (double)v_n_t)
+	{
+		// результат может быть взят с помощью линейной интерполяции ранее рассчитнных значений
+		int n1 = (int)floor(n_t);
+		int n2 = (int)ceil(n_t);
+
+		while (t_zap < v_t[n1] && n1 > 0)
+		{
+			//printf("t_zap %0.25e < v_t[%d] %0.25e\n", t_zap, n1, v_t[n1]);
+			n1 -= 1;
+			n2 -= 1;
+		}
+
+		if (t_zap < v_t[n1])
+		{
+			printf("t_zap\n%0.25e < v_t[%d]\n%0.25e\n", t_zap, n1, v_t[n1]);
+			int * p = 0;
+			*p += 1;
+		}
+
+		while (t_zap > v_t[n2] && n2 < v_n_t - 1)
+		{
+			//printf("t_zap %0.25e > v_t[%d] %0.25e\n", t_zap, n2, v_t[n2]);
+			n1 += 1;
+			n2 += 1;
+		}
+	
+		if (t_zap > v_t[n2])
+		{
+			printf("t_zap %0.25e > v_t[%d] %0.25e\n", t_zap, n2, v_t[n2]);
+			int * p = 0;
+			*p += 1;
+		}
+
+		double part = (t_zap - v_t[n1]) / (v_t[n2] - v_t[n1]);
+
+		double value = values[n1] + part * (values[n2] - values[n1]);
+
+		if (isnan(value))
+		{
+			printf("n1 %d n2 %d v_n_t %d t_zap %0.25e n_t %f\n", n1, n2, v_n_t, t_zap, n_t);
+			int * p = 0;
+			*p += 1;			
+		}
+		assert(!isnan(value));		
+		return value;
+	}
+
+	if (n_t <= (double)v_n_t + epsilon_n && (double)v_n_t <= n_t)
+	{
+		int n = v_n_t;
+		double value = values[n];
+		assert(!isnan(value));
+		return value;
+	}
+
+
+	printf("n_t = %0.20f v_n_t = %d\n", n_t, v_n_t);
+
+	int * p = 0;
+	*p+=1;
+
+	assert(0);	
+}
 /* ускорение заряда
 	a0   - ускорение сообщаемое заряду силами неэлектрического происхождения, например ускорение теплового разгона
 	t_a0 - время действия сил неэлектрического происхождения
@@ -243,52 +311,13 @@ double get_a_ex1(timevalue t_zap, double q)
 {
 	if (t_zap < g_t_start)
 		return 0;
-	// t_max = g_t_start + v_max / a0;
-	// if (t_zap >= t_max)
-	//     return 0;
 
-	double n_t = (t_zap - g_t_start) / g_dt;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
-	if (n_t <= (double)v_n_t)
-	{
-		// результат может быть взят с помощью линейной интерполяции ранее рассчитнных значений
-		int n1 = (int)floor(n_t);
-		int n2 = (int)ceil(n_t);
-		double part = n_t - n1;
-
-		double a = v_a[n1] + part * (v_a[n2] - v_a[n1]);
-		return a;
-	}
-
-	if (n_t <= (double)v_n_t + epsilon_n && (double)v_n_t <= n_t)
-	{
-		int n = v_n_t;
-		double a = v_a[n];
-		assert(!isnan(a));
-		return a;
-	}
-
-	assert(0);
+	double a = interpolate(t_zap, v_a);
+	return a;
 }
 
 /* установить значение поля в точке наблюдения R0 в момент t */
-void set_E_ex1(timevalue t, double R0, double E)
-{
-	double n_t = (t - g_t_start) / g_dt;
-	if (fabs(n_t - v_n_t) > epsilon_n)
-	{
-		assert(0);
-	}
-
-	double n_r = R0 / g_dr;
-	int i_r = (int)round(n_r);
-	if (fabs(n_r - i_r) > epsilon_r)
-	{
-		assert(0);
-	}
-
-	v_E[i_r][v_n_t] = E;
-}
 
 void set_E_ex_1(int v_n_t, int v_n_r, double E)
 {
@@ -298,53 +327,18 @@ void set_E_ex_1(int v_n_t, int v_n_r, double E)
 /* установить значение ускорения слоя исходя из его текущего радиуса и значения поля в текущий момент на этом радиусе*/
 double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double q, double m, double * E)
 {
-	double n_t = (t - g_t_start) / g_dt;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
-	if (fabs(n_t - v_n_t - 1.0) > epsilon_n)
-	{
-		assert(0);
-	}
 
-	double n_r = r / g_dr;
-	int n_r1 = (int)floor(n_r);
-	int n_r2 = (int)ceil(n_r);
-	if (n_r1 != n_r2)
-	{
-		if (n_r2 >= v_Nr)
-		{
-			printf("r = %0.15f n_r = %0.15f\n", r, n_r);
-			assert(0);
-		}
-
-		double E1 = v_E[n_r1][v_n_t];
-		double E2 = v_E[n_r2][v_n_t];
-
-		double part_r = (n_r - n_r1) / (n_r2 - n_r1);
-		assert(!isnan(part_r));
-		*E = E1 + part_r * (E2 - E1);
-	}
-	else
-	{
-		if (n_r1 >= v_Nr)
-		{
-			printf("r = %0.15f n_r = %0.15f\n", r, n_r);
-			assert(0);
-		}
-		*E = v_E[n_r1][v_n_t];
-	}
 	assert(!isnan(*E));
 
-	double a = (*E) * q / m;
+	double a = multiplier_a * (*E) * q / m;
 	if (t <= t_a0)
 	{
 		a += a0;
 	}
 
-	double part_t = n_t - v_n_t;
-	assert(part_t != 0.0);
-	double da = (a - v_a[v_n_t]) / part_t;
-	assert(!isnan(da));
-	v_a[v_n_t + 1] = v_a[v_n_t] + da;
+	assert(!isnan(a));
+	v_a[v_n_t + 1] = a;
 	return a;
 }
 
@@ -355,55 +349,36 @@ double get_v_ex1(timevalue t_zap, velocity v0, double q)
 	if (t_zap < g_t_start)
 		return v0;
 
-	double n_t = (t_zap - g_t_start) / g_dt;
 	double * v_v = q > 0 ? v_v_pos : v_v_neg;
-	if (n_t <= (double)v_n_t)
-	{
-		// результат может быть взят с помощью линейной интерполяции ранее рассчитнных значений
-		int n1 = (int)floor(n_t);
-		int n2 = (int)ceil(n_t);
-		double part = n_t - n1;
-
-		double v = v_v[n1] + part * (v_v[n2] - v_v[n1]);
-		assert(!isnan(v));
-		return v;
-	}
-
-	if (n_t <= (double)v_n_t + epsilon_n && (double)v_n_t <= n_t)
-	{
-		int n = v_n_t;
-		double v = v_v[n];
-		assert(!isnan(v));
-		return v;
-	}
-
-	assert(0);
+	double v = interpolate(t_zap, v_v);
+	return v;
 }
 
 double set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double q, double m)
 {
-	double n_t = (t - g_t_start) / g_dt;
 	double * v_v = q > 0 ? v_v_pos : v_v_neg;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
-	if (fabs(n_t - v_n_t - 1.0) > epsilon_n)
-	{
-		assert(0);
-	}
 
-	//double a = get_a_ex1(t - dt, q);
-	double a = v_a[v_n_t];
-	double v = v_v[v_n_t];
+	double t1 = v_t[v_n_t];
+	double t2 = v_t[v_n_t + 1];
+	double dt = t2 - t1;
+	double a1 = v_a[v_n_t];
+	double a2 = v_a[v_n_t + 1];
+	double a = (a1 + a2) / 2;
+	double v1 = v_v[v_n_t];
 	// a = dv / dt
 	// dv = a * dt
-	double dv = a * g_dt;
-	v += dv;
-
-	double part = n_t - v_n_t;
-	assert(part != 0.0);
-	double dv_out = (v - v_v[v_n_t]) / part;
-	assert(!isnan(dv_out));
-	v_v[v_n_t + 1] = v_v[v_n_t] + dv_out;
-	return v;
+	double dv = a * dt;
+	assert(!isnan(dv));
+	double v2 = v1 + dv;
+	if (fabs(v2) >= g_c)
+	{
+		printf("v1/c = %f, v2/c = %f, dv/c = %f\n", v1/g_c, v2/g_c, dv/g_c);
+		int * p = 0;
+		*p += 1;
+	}
+	v_v[v_n_t + 1] = v2;
+	return v2;
 }
 
 double get_s_ex1(timevalue t_zap, double v0, double q)
@@ -417,78 +392,46 @@ double get_s_ex1(timevalue t_zap, double v0, double q)
 		return s;
 	}
 
-	double n_t = (t_zap - g_t_start) / g_dt;
 	double * v_s = q > 0 ? v_s_pos : v_s_neg;
-	if (n_t <= (double)v_n_t)
-	{
-		// результат может быть взят с помощью линейной интерполяции ранее рассчитнных значений
-		int n1 = (int)floor(n_t);
-		int n2 = (int)ceil(n_t);
-		double part = n_t - n1;
-
-		double s = v_s[n1] + part * (v_s[n2] - v_s[n1]);
-		assert(!isnan(s));
-		return s;
-	}
-
-	if (n_t <= (double)v_n_t + epsilon_n && (double)v_n_t <= n_t)
-	{
-		int n = v_n_t;
-		double s = v_s[n];
-		assert(!isnan(s));
-		return s;
-	}
-
-	printf("n_t = %0.20f v_n_t = %d t_zap = %0.20f\n", n_t, v_n_t, t_zap);
-	assert(0);
+	s = interpolate(t_zap, v_s);
+	return s;
 }
 
 double set_s_ex1(timevalue t, double r0, double v0, double r_min, double q)
 {
-	double n_t = (t - g_t_start) / g_dt;
 	double * v_s = q > 0 ? v_s_pos : v_s_neg;
 	double * v_v = q > 0 ? v_v_pos : v_v_neg;
 	double * v_a = q > 0 ? v_a_pos : v_a_neg;
 
-	if (fabs(n_t - v_n_t - 1.0) > epsilon_n)
-	{
-		assert(0);
-	}
+	double t1 = v_t[v_n_t];
+	double t2 = v_t[v_n_t + 1];
+	double dt = t2 - t1;
+	double a1 = v_a[v_n_t];
+	double a2 = v_a[v_n_t + 1];
+	double a = (a1 + a2) / 2;
+	double v1 = v_v[v_n_t];
+	double v2 = v_v[v_n_t + 1];
+	double v = (v1 + v2) / 2;
 
-	//double a = get_a_ex1(t-g_dt, q);
-	//double v = get_v_ex1(t-g_dt, v0, q);
-	double a = v_a[v_n_t];
-	double v = v_v[v_n_t];
-	double s = v_s[v_n_t];
-	// v = ds / g_dt
-	double ds = v * g_dt + a * g_dt * g_dt / 2;
-	s += ds;
+	double s1 = v_s[v_n_t];
 
-	if (r0 + s < r_min)
+	// ds = v * dt + a * dt * dt / 2
+	double ds = v * dt + a * dt * dt / 2;
+	double s2 = s1 + ds;
+
+	if (r0 + s2 < r_min)
 	{
-		printf("Warning: r %0.20f < r_min %0.20f\n", r0 + s, r_min);
+		printf("Warning: r %0.20f < r_min %0.20f\n", r0 + s2, r_min);
 		//r0 + s = r_min; // ???????
-		int* v = 0;
-		*v += 1;
+		int* p = 0;
+		*p += 1;
 		assert(0);
 
 	}
 
-	double part = n_t - v_n_t;
-	assert(part != 0.0);
-	double ds_out = (s - v_s[v_n_t]) / part;
-	v_s[v_n_t + 1] = v_s[v_n_t] + ds_out;
+	v_s[v_n_t + 1] = s2;
 
-	if (r0 + v_s[v_n_t + 1] < r_min)
-	{
-		printf("Warning: r %0.20f < r_min %0.20f\n", r0 + v_s[v_n_t + 1], r_min);
-		//r0 + s = r_min; // ???????
-		int* v = 0;
-		*v += 1;
-		assert(0);
-
-	}
-	return s;
+	return s2;
 }
 
 
@@ -503,8 +446,8 @@ int get_r_ex1(double q, timevalue t_zap, double r0, double v0, double r_min, dou
 		printf("Warning: r %0.20f < r_min %0.20f\n", *r, r_min);
 		*r = r_min;
 		error = 1;
-		int* v = 0;
-		*v += 1;
+		int* p = 0;
+		*p += 1;
 		assert(0);
 	}
 	assert(*r > 0.0);
@@ -635,7 +578,7 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 #else
 	double epsilon = 1.0e-15;
 	double t1;
-	* t2 = t;
+	*t2 = t;
 	double dt;
 	double v1,v2;
 	double r, R, R_pre = DBL_MAX;
@@ -646,7 +589,7 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 	double n = 0.9;
 #if 0
 	double v;
-	v = get_v(t, v0, a0);      /* скорость заряда в текущий момент времени t                          */
+	v = get_v(t, v0, a0);      /* скорость заряда в текущий момент времени t */
 
 	DBG_INFO("calc_tzap(t=%f, v = %f, R0=%f, r0=%f, v0=%f, a0=%f, theta=%f)\n", t, v, R0, r0, v0, a0, theta);
 	assert(v < c);
@@ -695,6 +638,20 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 		v2 = get_v_ex2(*t2, v0, q);
 #endif
 		DBG_INFO("t2=%f t1=%f t=%f v1 = %f, v2 = %f, v = %f, R=%f dR=%e dR_pre=%e ", *t2, t1, t, v1, v2, v, R, dR, dR_pre);
+		if (v1 >= g_c || v2 >= g_c)
+		{
+			double v;
+#ifdef ALGORITHM_VERSION_0			
+			v = get_v(t, v0, a0);      /* скорость заряда в текущий момент времени t */
+#endif
+#ifdef ALGORITHM_VERSION_1
+			v = get_v_ex1(t, v0, q);
+#endif
+			printf("t2=%f t1=%f t=%f v1 = %f, v2 = %f, v = %f, R=%f dR=%e dR_pre=%e\n", *t2, t1, t, v1, v2, v, R, dR, dR_pre);
+			printf("v1/c = %f, v2/c = %f, v/c = %f\n", v1/g_c, v2/g_c, v/g_c);
+			int * p = 0;
+			*p += 1;
+		}
 		assert(v1 < g_c);
 		assert(v2 < g_c);
 #if 1

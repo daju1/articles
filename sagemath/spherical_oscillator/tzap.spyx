@@ -1,8 +1,5 @@
 cdef extern from "tzap.c":
     double get_c()
-    double get_dt()
-    void set_dt(double dt)
-    void set_t_finish(double t_finish)
     double get_dr()
     void set_dr(double dr)
     void set_r_finish(double r_finish)
@@ -16,16 +13,6 @@ cdef extern from "testtzap.c":
 def get_light_veloncity():
     cdef double c = get_c()
     return c
-
-def get_dt_py():
-    cdef double dt = get_dt()
-    return dt
-
-def set_dt_py(dt):
-    set_dt(dt)
-
-def set_t_finish_py(t_finish):
-    set_t_finish(t_finish)
 
 def get_dr_py():
     cdef double dr = get_dr()

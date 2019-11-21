@@ -347,12 +347,6 @@ print "a0_neg = ", a0_neg
 
 t_a0 = Delta_t.n()
 
-t_finish = t_a0 * 2
-dt = t_finish / 1000
-
-set_dt_py(dt)
-set_t_finish_py(t_finish)
-
 r_finish = r0_pos * 2
 dr = r_finish / 100
 

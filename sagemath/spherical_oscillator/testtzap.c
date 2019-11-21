@@ -8,6 +8,9 @@
 #include "dbg_info.h"
 
 extern double g_c;
+extern double * v_t;
+extern double multiplier_E;
+extern double multiplier_a;
 
 int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_neg, velocity v0_pos, velocity v0_neg, double a0_pos, double a0_neg, double t_a0, double r_min_pos, double r_min_neg);
 
@@ -122,9 +125,7 @@ double get_E_minus_grad_phi_R0(double theta, double v_zap, double R_zap, double 
 			- v_zap*cos(theta) / g_c
 		)
 		/ (R_lw_zap * R_lw_zap);
-#ifdef SI
-	E_minus_grad_phi_R0 *= (g_c*g_c)/(10000000.0);
-#endif
+
 	DBG_INFO("E_minus_grad_phi_R0 = %0.25e\n", E_minus_grad_phi_R0);
 	return E_minus_grad_phi_R0;
 }
@@ -158,11 +159,8 @@ double get_E_minus_1_c_dA_dt_R0(double theta, double v_zap, double a_zap, double
 		)
 		/
 		(R_lw_zap * R_lw_zap);
-	printf("E_minus_1_c_dA_dt_R0 = %0.20f ", E_minus_1_c_dA_dt_R0);
-#ifdef SI
-	E_minus_1_c_dA_dt_R0 *= (g_c*g_c)/(10000000.0);
-#endif
-	printf("E_minus_1_c_dA_dt_R0 = %0.20f\n", E_minus_1_c_dA_dt_R0);
+
+	DBG_INFO("E_minus_1_c_dA_dt_R0 = %0.25f\n", E_minus_1_c_dA_dt_R0);
 	return E_minus_1_c_dA_dt_R0;
 }
 
@@ -265,7 +263,7 @@ int integral_phi_and_E(double q, double t, double R0, double r0, double v0, doub
 	double ommited_S = 0.0;
 	double S0 = 4*Pi*r0*r0;
 	double S = 0.0;
-	printf("integral_phi_and_E(q=%f t=%f, R0=%0.20f, r0=%0.20f, v0=%0.10f, a0=%0.10f)\n", q, t, R0, r0, v0, a0);
+	DBG_INFO("integral_phi_and_E(q=%f t=%f, R0=%0.20f, r0=%0.20f, v0=%0.10f, a0=%0.10f)\n", q, t, R0, r0, v0, a0);
 
 	*pE_minus_grad_phi_R0 = 0.0;
 	*pE_minus_1_c_dA_dt_R0 = 0.0;
@@ -301,7 +299,7 @@ int integral_phi_and_E(double q, double t, double R0, double r0, double v0, doub
 		E_minus_grad_varphi_R0 = get_E_minus_grad_phi_R0 (theta, v_zap, R_zap, aR_zap, R_lw_zap, cos_alpha_zap);
 		E_minus_1_c_dA_dt_R0   = get_E_minus_1_c_dA_dt_R0(theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap);
 		if (i % 100 == 0)
-			printf("theta = %f "
+			DBG_INFO("theta = %f "
 				"r_zap = %0.6e "
 				"R_zap %0.6e "
 				"R_lw_zap %0.6e "
@@ -683,7 +681,6 @@ int test_v1()
 	double a0_pos = 0.1*g_c;
 	double a0_neg = 1.0*g_c;
 
-
 	double m_pos = 10.0;
 	double m_neg = 1.0;
 
@@ -691,7 +688,7 @@ int test_v1()
 	double q = 1.0;
 
 	/* время действия ускорения вызванного причинами неэлектрического характера, например вледствие подвода энергии извне */
-	double t_a0 = get_nt() * get_dt() / 10;
+	double t_a0 = 1.0;
 
 	return do_v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0 , r_min_pos, r_min_neg);
 }
@@ -787,11 +784,11 @@ int copper_explosion_lw_v1()
 	double r_min_pos = dr;
 	double r_min_neg = dr;
 
-	double t_finish = t_a0 * 5;
-	dt = t_finish / 10000;
+	//double t_finish = t_a0 * 5;
+	//dt = t_finish / 10000;
 
-	set_dt(dt);
-	set_t_finish(t_finish);
+	//set_dt(dt);
+	//set_t_finish(t_finish);
 
 	double r_finish = r0_pos * 10;
 	dr = r_finish / 10000;
@@ -833,7 +830,6 @@ int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_ne
 	printf ("nr = %d ", get_nr());
 	printf ("nt = %d\n", get_nt());
 	printf ("dr = %0.20f ", get_dr());
-	printf ("dt = %0.20f\n", get_dt());
 
 	printf("t_a0 = %0.20f\n", t_a0);
 	printf("m_pos = %0.20f m_neg = %0.20f\n", m_pos, m_neg);
@@ -844,7 +840,7 @@ int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_ne
 #ifdef ALGORITHM_VERSION_1
 	init_array_1(a0_pos, v0_pos, r0_pos, a0_neg, v0_neg, r0_neg);
 #endif
-	for (v_n_t = 0; v_n_t < 2/*get_nt()*/; ++v_n_t)
+	for (v_n_t = 0; v_n_t < get_nt(); ++v_n_t)
 	{
 
 		int error = 0, err;
@@ -856,7 +852,7 @@ int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_ne
 		double r_neg;
 		double E1, E2, E;
 
-		double t = v_n_t * get_dt();
+		double t = v_t[v_n_t];
 		printf("t = %f v_n_t = %d\n", t, v_n_t);
 		#if 0
 		for (int v_n_r = 0; v_n_r < get_nr(); ++v_n_r)
@@ -902,7 +898,6 @@ int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_ne
 #endif
 			}
 #ifdef ALGORITHM_VERSION_1
-			set_E_ex1(t, R0, E);
 			set_E_ex_1(v_n_t, v_n_r, E);
 #endif
 		}
@@ -925,88 +920,105 @@ int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_ne
 		printf("t = %f\n"
 			"a_pos = % 0.20f, a_neg = % 0.20f\n"
 			"v_pos = % 0.20f, v_neg = % 0.20f\n"
+			"vcpos = % 0.20f, vcneg = % 0.20f\n"
 			"s_pos = % 0.20f, s_neg = % 0.20f\n"
 			"r_pos = % 0.20f, r_neg = % 0.20f\n"
 			, t
 			, a_pos, a_neg
 			, v_pos, v_neg
+			, v_pos / g_c, v_neg / g_c
 			, s_pos, s_neg
 			, r_pos, r_neg
 			);
 
 
-		{
-			double E_pos, E_neg;
+		//
+		double E_pos, E_neg; // электрическое поле в облаасти нахождения положительной и отрицательной обкладки
 
-			calc_E(q, t, r_pos,
-				r0_pos, r0_neg,
-				v0_pos, v0_neg,
-				a0_pos, a0_neg,
-				r_min_pos, r_min_neg,
-				&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos,
-				&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
-				&E1, &E2, &E_pos);
+		calc_E(q, t,
+			r_pos, // координата наблюдения совпадает с координатой обкладки
+			r0_pos, r0_neg,
+			v0_pos, v0_neg,
+			a0_pos, a0_neg,
+			r_min_pos, r_min_neg,
+			&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos,
+			&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
+			&E1, &E2, &E_pos);
 
-			printf(
-				"R0_pos = %0.10f t = %0.10f "
-				"E1_pos %f "
-				"E1_neg %f "
-				"E2_pos % 0.20f "
-				"E2_neg % 0.20f "
-				"\n"
-				, r_pos, t
-				, E_minus_grad_phi_R0_pos
-				, E_minus_grad_phi_R0_neg
-				, E_minus_1_c_dA_dt_R0_pos
-				, E_minus_1_c_dA_dt_R0_neg
-				);
+		printf(
+			"R0_pos = %0.10f t = %0.10f "
+			"E1_pos %f "
+			"E1_neg %f "
+			"E2_pos % 0.20f "
+			"E2_neg % 0.20f "
+			"\n"
+			, r_pos, t
+			, E_minus_grad_phi_R0_pos
+			, E_minus_grad_phi_R0_neg
+			, E_minus_1_c_dA_dt_R0_pos
+			, E_minus_1_c_dA_dt_R0_neg
+			);
 
-			calc_E(q, t, r_neg,
-				r0_pos, r0_neg,
-				v0_pos, v0_neg,
-				a0_pos, a0_neg,
-				r_min_pos, r_min_neg,
-				&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos, 
-				&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
-				&E1, &E2, &E_neg);
+		calc_E(q, t,
+			r_neg, // координата наблюдения совпадает с координатой обкладки
+			r0_pos, r0_neg,
+			v0_pos, v0_neg,
+			a0_pos, a0_neg,
+			r_min_pos, r_min_neg,
+			&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos, 
+			&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
+			&E1, &E2, &E_neg);
 
-			printf(
-				"R0_neg = %0.10f t = %0.10f "
-				"E1_pos %f "
-				"E1_neg %f "
-				"E2_pos % 0.20f "
-				"E2_neg % 0.20f "
-				"\n"
-				, r_neg, t
-				, E_minus_grad_phi_R0_pos
-				, E_minus_grad_phi_R0_neg
-				, E_minus_1_c_dA_dt_R0_pos
-				, E_minus_1_c_dA_dt_R0_neg
-				);
-			printf(
-				"E_pos2 = % 0.20f, E_neg2 = % 0.20f\n"
-				, E_pos, E_neg
-				);
+		printf(
+			"R0_neg = %0.10f t = %0.10f "
+			"E1_pos %f "
+			"E1_neg %f "
+			"E2_pos % 0.20f "
+			"E2_neg % 0.20f "
+			"\n"
+			, r_neg, t
+			, E_minus_grad_phi_R0_pos
+			, E_minus_grad_phi_R0_neg
+			, E_minus_1_c_dA_dt_R0_pos
+			, E_minus_1_c_dA_dt_R0_neg
+			);
 
-		}
+		printf(
+			"E_pos2 = % 0.20e, E_neg2 = % 0.20e\n"
+			, E_pos, E_neg
+			);
+		//
 
 		if (v_n_t < get_nt() - 1)
 		{
-			double t1 = (v_n_t + 1) * get_dt();
+			double fabs_E_neg
+				= fabs(E_neg) < 1000000.0
+				? 1000000.0
+				: fabs(E_neg);
+
+			double fabs_a_neg = fabs_E_neg * q / m_neg;
+			printf("fabs_a_neg = %f\n", fabs_a_neg);
+
+			double dt = sqrt(2*get_dr()/(fabs_a_neg * multiplier_a));
+			printf("dt = %e\n", dt);
+			v_t[v_n_t + 1] = v_t[v_n_t] + dt;
+			double t1 = v_t[v_n_t + 1];
 
 			printf("t = %f t1 = %f v_n_t = %d\n", t, t1, v_n_t);
 
-			error = get_r_ex1(+q, t, r0_pos, v0_pos, r_min_pos, &r_pos);
-			error = get_r_ex1(-q, t, r0_neg, v0_neg, r_min_neg, &r_neg);
+			//error = get_r_ex1(+q, t, r0_pos, v0_pos, r_min_pos, &r_pos);
+			//error = get_r_ex1(-q, t, r0_neg, v0_neg, r_min_neg, &r_neg);
 
-			double E_pos, E_neg;
+			//double E_pos, E_neg;
 
 			set_a_ex1(t1, r_pos, a0_pos, t_a0, +q, m_pos, &E_pos);
 			set_a_ex1(t1, r_neg, a0_neg, t_a0, -q, m_neg, &E_neg);
+
 			printf(
-				"E_pos1 = % 0.20f, E_neg1 = % 0.20f\n"
+				"E_pos1 = % 0.20e, E_neg1 = % 0.20e\n"
 				, E_pos, E_neg
 				);
+
 			set_v_ex1(t1, v0_pos, a0_pos, t_a0, +q, m_pos);
 			set_v_ex1(t1, v0_neg, a0_neg, t_a0, -q, m_neg);
 
@@ -1015,8 +1027,6 @@ int do_v1_calc(double q, double m_pos, double m_neg, double r0_pos, double r0_ne
 		}
 #endif
 	}
-	int * p = 0;
-	*p+=1;
 }
 
 

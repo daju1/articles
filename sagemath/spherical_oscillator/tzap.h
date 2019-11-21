@@ -8,10 +8,19 @@
 
 #define SI
 
-typedef double timevalue;
-typedef double timespan;
-typedef double acceleration;
-typedef double velocity;
+typedef long double timevalue;
+typedef long double timespan;
+typedef long double acceleration;
+typedef long double velocity;
+typedef long double charge;
+typedef long double coordinate;
+typedef long double distance;
+typedef long double distance2;
+typedef long double mass;
+typedef long double potential;
+typedef long double field;
+typedef long double angle;
+
 
 double get_c();
 #ifdef ALGORITHM_VERSION_0
@@ -25,32 +34,35 @@ double get_v(timevalue t_zap, velocity v0, acceleration a0);
 double get_s(timevalue t_zap, velocity v0, acceleration a0);
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-int get_r(double q, timevalue t_zap, double r0, velocity v0, acceleration a0, double r_min, double * r);
+int get_r(charge q, timevalue t_zap, double r0, velocity v0, acceleration a0, double r_min, double * r);
 #endif /* ALGORITHM_VERSION_0 */
 
-double get_dr();
+distance get_dr();
 int get_nt();
 int get_nr();
 
 #ifdef ALGORITHM_VERSION_1
-void init_array_1(double a0_pos, velocity v0_pos, double r0_pos, double a0_neg, velocity v0_neg, double r0_neg);
+void init_array_1(acceleration a0_pos, velocity v0_pos, coordinate r0_pos, acceleration a0_neg, velocity v0_neg, coordinate r0_neg);
 
-double get_a_ex1(timevalue t_zap, double q);
-double get_v_ex1(timevalue t_zap, velocity v0, double q);
-double get_s_ex1(timevalue t_zap, double v0, double q);
+acceleration get_a_ex1(timevalue t_zap, charge q);
+velocity get_v_ex1(timevalue t_zap, velocity v0, charge q);
+distance get_s_ex1(timevalue t_zap, velocity v0, charge q);
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-int get_r_ex1(double q, timevalue t_zap, double r0, double v0, double r_min, double * r);
+int get_r_ex1(charge q, timevalue t_zap, coordinate r0, velocity v0, coordinate r_min, coordinate * r, int log);
 
-void set_E_ex_1(int v_n_t, int v_n_r, double E);
+void set_E_ex_1(int v_n_t, int v_n_r, field E);
 
-double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double q, double m, double * E);
-double set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double q, double m);
-double set_s_ex1(timevalue t, double r0, double v0, double r_min, double q);
+acceleration set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a0, charge q, mass m, field * E);
+velocity set_v_ex1(timevalue t, velocity v0, acceleration a0, timevalue t_a0, charge q, mass m);
+distance set_s_ex1(timevalue t, coordinate r0, velocity v0, coordinate r_min, charge q);
 #endif /*ALGORITHM_VERSION_1*/
 
 /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
-double get_R(double R0, double r, double theta);
+distance get_R(coordinate R0, coordinate r, angle theta);
 
 /* численный расчёта запаздывающего момента */
-int calc_tzap(double q, timevalue t, double R0, double r0, velocity v0, acceleration a0, double theta, double r_min, double * t2);
+int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, coordinate r_min, timevalue * t2);
 
+
+void set_dr(distance dr);
+void set_r_finish(coordinate r_finish);

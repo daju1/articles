@@ -16,47 +16,47 @@
 
 #ifdef SI
 #define LIGHT_VELONCITY 299792458.0
-double multiplier_E = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000000.0;
+long double multiplier_E = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000000.0;
 #ifdef MASS_IN_GRAMM
-double multiplier_a = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000.0;
+long double multiplier_a = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000.0;
 #else
-double multiplier_a = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000000.0;
+long double multiplier_a = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000000.0;
 #endif
 #else
 #define LIGHT_VELONCITY 3.0
-double multiplier_E = 1.0;
-double multiplier_a = 1.0;
+long double multiplier_E = 1.0;
+long double multiplier_a = 1.0;
 #endif
 
-double g_c = LIGHT_VELONCITY;
-static double v_max = 0.999 * LIGHT_VELONCITY;
+velocity g_c = LIGHT_VELONCITY;
+static velocity v_max = 0.999 * LIGHT_VELONCITY;
 
-static double g_t_start = T_START;    // момент включения ускорения
+static timevalue g_t_start = T_START;    // момент включения ускорения
 //static double g_dt = DT;              // шаг времени
-static double g_t_finish = T_FINISH;  // момент времени окончания расчёта
-static double g_dr = DR;              // шаг координаты
+static timevalue g_t_finish = T_FINISH;  // момент времени окончания расчёта
+static distance g_dr = DR;              // шаг координаты
 
 // одномерные массивы для сохранения истории при интегрировании только лишь по времени
 // без учёта эволючии объёмного распределения заряда - упрощённый случай сферического конденсатора
 // сохраняется только лишь история положительной обкладки и отрицательной обкладки
-static double g_r_start = R_START;
-static double g_r_finish = R_FINISH;
+static coordinate g_r_start = R_START;
+static coordinate g_r_finish = R_FINISH;
 //static int v_Nt = (int)((T_FINISH - T_START) / DT);
 static int v_Nt = 10000;
 static int v_Nr = (int)((R_FINISH - R_START) / DR);
 
-double get_dr()
+distance get_dr()
 {
 	return g_dr;
 }
 
-void set_dr(double dr)
+void set_dr(distance dr)
 {
 	g_dr = dr;
 	v_Nr = (int)((g_r_finish - g_r_start) / g_dr);
 }
 
-void set_r_finish(double r_finish)
+void set_r_finish(coordinate r_finish)
 {
 	g_r_finish = r_finish;
 	v_Nr = (int)((g_r_finish - g_r_start) / g_dr);
@@ -72,26 +72,26 @@ int get_nr()
 	return v_Nr;
 }
 
-static double epsilon_n = 1e-8;
-static double epsilon_r = 1e-8;
+static timevalue epsilon_n = 1e-8;
+static distance epsilon_r = 1e-8;
 
-double * v_t;
+timevalue * v_t;
 int v_n_t = 0; // итератор полноты заполения двумерных массивов по координате времени
 
 #ifdef ALGORITHM_VERSION_1
-static double * v_a_pos;
-static double * v_v_pos;
-static double * v_s_pos;
-static double * v_r_pos;
+static acceleration * v_a_pos;
+static velocity * v_v_pos;
+static distance * v_s_pos;
+static coordinate * v_r_pos;
 
-static double * v_a_neg;
-static double * v_v_neg;
-static double * v_s_neg;
-static double * v_r_neg;
+static acceleration * v_a_neg;
+static velocity * v_v_neg;
+static distance * v_s_neg;
+static coordinate * v_r_neg;
 
-static double ** v_E1;
-static double ** v_E2;
-static double ** v_E;
+static field ** v_E1;
+static field ** v_E2;
+static field ** v_E;
 #endif /* ALGORITHM_VERSION_1 */
 
 
@@ -120,23 +120,23 @@ static double ** vv_E;
 #endif
 
 #ifdef ALGORITHM_VERSION_1
-void init_array_1(double a0_pos, velocity v0_pos, double r0_pos, double a0_neg, velocity v0_neg, double r0_neg)
+void init_array_1(acceleration a0_pos, velocity v0_pos, coordinate r0_pos, acceleration a0_neg, velocity v0_neg, coordinate r0_neg)
 {
-	v_t = malloc(v_Nt * sizeof(double));
+	v_t = malloc(v_Nt * sizeof(timevalue));
 
-	v_a_pos = malloc(v_Nt * sizeof(double));
-	v_v_pos = malloc(v_Nt * sizeof(double));
-	v_s_pos = malloc(v_Nt * sizeof(double));
-	v_r_pos = malloc(v_Nt * sizeof(double));
+	v_a_pos = malloc(v_Nt * sizeof(acceleration));
+	v_v_pos = malloc(v_Nt * sizeof(velocity));
+	v_s_pos = malloc(v_Nt * sizeof(distance));
+	v_r_pos = malloc(v_Nt * sizeof(coordinate));
 
-	v_a_neg = malloc(v_Nt * sizeof(double));
-	v_v_neg = malloc(v_Nt * sizeof(double));
-	v_s_neg = malloc(v_Nt * sizeof(double));
-	v_r_neg = malloc(v_Nt * sizeof(double));
+	v_a_neg = malloc(v_Nt * sizeof(acceleration));
+	v_v_neg = malloc(v_Nt * sizeof(velocity));
+	v_s_neg = malloc(v_Nt * sizeof(distance));
+	v_r_neg = malloc(v_Nt * sizeof(coordinate));
 
-	v_E1 = malloc(v_Nr * sizeof(double *));
-	v_E2 = malloc(v_Nr * sizeof(double *));
-	v_E  = malloc(v_Nr * sizeof(double *));
+	v_E1 = malloc(v_Nr * sizeof(field *));
+	v_E2 = malloc(v_Nr * sizeof(field *));
+	v_E  = malloc(v_Nr * sizeof(field *));
 
 	v_t[0] = T_START;
 
@@ -152,9 +152,9 @@ void init_array_1(double a0_pos, velocity v0_pos, double r0_pos, double a0_neg, 
 
 	for (int i_r = 0; i_r < v_Nr; ++i_r)
 	{
-		v_E1[i_r] = malloc(v_Nt * sizeof(double));
-		v_E2[i_r] = malloc(v_Nt * sizeof(double));
-		v_E [i_r] = malloc(v_Nt * sizeof(double));
+		v_E1[i_r] = malloc(v_Nt * sizeof(field));
+		v_E2[i_r] = malloc(v_Nt * sizeof(field));
+		v_E [i_r] = malloc(v_Nt * sizeof(field));
 
 		// initialization
 		v_E1[i_r][0] = 0.0;
@@ -167,7 +167,7 @@ void init_array_1(double a0_pos, velocity v0_pos, double r0_pos, double a0_neg, 
 #ifdef ALGORITHM_VERSION_2
 void init_array_2(int v_N_r0, int v_N_t, double * a0_pos, velocity * v0_pos, double * r0_pos, double * a0_neg, velocity * v0_neg, double * r0_neg)
 {
-	v_t = malloc(v_Nt * sizeof(double *));
+	v_t = malloc(v_Nt * sizeof(timevalue *));
 
 	vv_a_pos = malloc(v_N_r0 * sizeof(double **));
 	vv_v_pos = malloc(v_N_r0 * sizeof(double **));
@@ -224,18 +224,32 @@ double get_c()
 }
 
 #ifdef ALGORITHM_VERSION_1
-double interpolate(timevalue t_zap, double * values)
+long double interpolate(timevalue t_zap, long double * values)
 {
-	double n_t 
+	long double n_t
 		= 0 == v_n_t 
 		? t_zap - g_t_start
 		: v_n_t * (t_zap - g_t_start) / (v_t[v_n_t] - v_t[0]);
 
-	if (n_t < (double)v_n_t)
+	if (n_t < (long double)v_n_t)
 	{
 		// результат может быть взят с помощью линейной интерполяции ранее рассчитнных значений
-		int n1 = (int)floor(n_t);
-		int n2 = (int)ceil(n_t);
+		long n1 = (long)floor(n_t);
+		long n2 = (long)ceil(n_t);
+		if (n1 == n2)
+		{
+			int n = n1;
+			if (fabs(t_zap - v_t[n]) < epsilon_n )
+			{
+				long double value = values[n];
+				assert(!isnan(value));
+				return value;
+			}
+			else
+			{
+				assert(0);
+			}
+		}
 
 		while (t_zap < v_t[n1] && n1 > 0)
 		{
@@ -246,7 +260,7 @@ double interpolate(timevalue t_zap, double * values)
 
 		if (t_zap < v_t[n1])
 		{
-			printf("t_zap\n%0.25e < v_t[%d]\n%0.25e\n", t_zap, n1, v_t[n1]);
+			printf("t_zap\n%0.25Le < v_t[%ld]\n%0.25Le\n", t_zap, n1, v_t[n1]);
 			int * p = 0;
 			*p += 1;
 		}
@@ -260,18 +274,18 @@ double interpolate(timevalue t_zap, double * values)
 	
 		if (t_zap > v_t[n2])
 		{
-			printf("t_zap %0.25e > v_t[%d] %0.25e\n", t_zap, n2, v_t[n2]);
+			printf("t_zap %0.25Le > v_t[%ld] %0.25Le\n", t_zap, n2, v_t[n2]);
 			int * p = 0;
 			*p += 1;
 		}
 
-		double part = (t_zap - v_t[n1]) / (v_t[n2] - v_t[n1]);
+		long double part = (t_zap - v_t[n1]) / (v_t[n2] - v_t[n1]);
 
-		double value = values[n1] + part * (values[n2] - values[n1]);
+		long double value = values[n1] + part * (values[n2] - values[n1]);
 
 		if (isnan(value))
 		{
-			printf("n1 %d n2 %d v_n_t %d t_zap %0.25e n_t %f\n", n1, n2, v_n_t, t_zap, n_t);
+			printf("n1 %ld n2 %ld v_n_t %d t_zap %0.25Le n_t %Lf\n", n1, n2, v_n_t, t_zap, n_t);
 			int * p = 0;
 			*p += 1;			
 		}
@@ -279,16 +293,15 @@ double interpolate(timevalue t_zap, double * values)
 		return value;
 	}
 
-	if (n_t <= (double)v_n_t + epsilon_n && (double)v_n_t <= n_t)
+	int n = v_n_t;
+	if (fabs(t_zap - v_t[n]) < epsilon_n )
 	{
-		int n = v_n_t;
-		double value = values[n];
+		long double value = values[n];
 		assert(!isnan(value));
 		return value;
 	}
 
-
-	printf("n_t = %0.20f v_n_t = %d\n", n_t, v_n_t);
+	printf("n_t = %0.20Lf v_n_t = %d\n", n_t, v_n_t);
 
 	int * p = 0;
 	*p+=1;
@@ -307,31 +320,31 @@ double interpolate(timevalue t_zap, double * values)
 	m * a = E * q
 	a = E * q / m
 */
-double get_a_ex1(timevalue t_zap, double q)
+acceleration get_a_ex1(timevalue t_zap, charge q)
 {
 	if (t_zap < g_t_start)
 		return 0;
 
-	double * v_a = q > 0 ? v_a_pos : v_a_neg;
-	double a = interpolate(t_zap, v_a);
+	acceleration * v_a = q > 0 ? v_a_pos : v_a_neg;
+	acceleration a = interpolate(t_zap, v_a);
 	return a;
 }
 
 /* установить значение поля в точке наблюдения R0 в момент t */
 
-void set_E_ex_1(int v_n_t, int v_n_r, double E)
+void set_E_ex_1(int v_n_t, int v_n_r, field E)
 {
 	v_E[v_n_r][v_n_t] = E;
 }
 
 /* установить значение ускорения слоя исходя из его текущего радиуса и значения поля в текущий момент на этом радиусе*/
-double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double q, double m, double * E)
+acceleration set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a0, charge q, mass m, field * E)
 {
-	double * v_a = q > 0 ? v_a_pos : v_a_neg;
+	acceleration * v_a = q > 0 ? v_a_pos : v_a_neg;
 
 	assert(!isnan(*E));
 
-	double a = multiplier_a * (*E) * q / m;
+	acceleration a = multiplier_a * (*E) * q / m;
 	if (t <= t_a0)
 	{
 		a += a0;
@@ -342,38 +355,38 @@ double set_a_ex1(timevalue t, double r, acceleration a0, timevalue t_a0, double 
 	return a;
 }
 
-double get_v_ex1(timevalue t_zap, velocity v0, double q)
+velocity get_v_ex1(timevalue t_zap, velocity v0, charge q)
 {
 	assert(v0 < v_max);
 
 	if (t_zap < g_t_start)
 		return v0;
 
-	double * v_v = q > 0 ? v_v_pos : v_v_neg;
-	double v = interpolate(t_zap, v_v);
+	velocity * v_v = q > 0 ? v_v_pos : v_v_neg;
+	velocity v = interpolate(t_zap, v_v);
 	return v;
 }
 
-double set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double q, double m)
+velocity set_v_ex1(timevalue t, velocity v0, acceleration a0, timevalue t_a0, charge q, mass m)
 {
-	double * v_v = q > 0 ? v_v_pos : v_v_neg;
-	double * v_a = q > 0 ? v_a_pos : v_a_neg;
+	velocity * v_v = q > 0 ? v_v_pos : v_v_neg;
+	acceleration * v_a = q > 0 ? v_a_pos : v_a_neg;
 
-	double t1 = v_t[v_n_t];
-	double t2 = v_t[v_n_t + 1];
-	double dt = t2 - t1;
-	double a1 = v_a[v_n_t];
-	double a2 = v_a[v_n_t + 1];
-	double a = (a1 + a2) / 2;
-	double v1 = v_v[v_n_t];
+	timevalue t1 = v_t[v_n_t];
+	timevalue t2 = v_t[v_n_t + 1];
+	timespan dt = t2 - t1;
+	acceleration a1 = v_a[v_n_t];
+	acceleration a2 = v_a[v_n_t + 1];
+	acceleration a = (a1 + a2) / 2;
+	velocity v1 = v_v[v_n_t];
 	// a = dv / dt
 	// dv = a * dt
-	double dv = a * dt;
+	velocity dv = a * dt;
 	assert(!isnan(dv));
-	double v2 = v1 + dv;
+	velocity v2 = v1 + dv;
 	if (fabs(v2) >= g_c)
 	{
-		printf("v1/c = %f, v2/c = %f, dv/c = %f\n", v1/g_c, v2/g_c, dv/g_c);
+		printf("v1/c = %Lf, v2/c = %Lf, dv/c = %Lf\n", v1/g_c, v2/g_c, dv/g_c);
 		int * p = 0;
 		*p += 1;
 	}
@@ -381,52 +394,52 @@ double set_v_ex1(timevalue t, double v0, acceleration a0, timevalue t_a0, double
 	return v2;
 }
 
-double get_s_ex1(timevalue t_zap, double v0, double q)
+distance get_s_ex1(timevalue t_zap, velocity v0, charge q)
 {
 	assert(v0 < v_max);
-	double s;
+	distance s;
 	if (t_zap < g_t_start)
 	{
 		s = v0*(t_zap - g_t_start);
-		DBG_INFO("get_s1 t_zap=%f returns %f\n", t_zap, s);
+		DBG_INFO("get_s1 t_zap=%Lf returns %Lf\n", t_zap, s);
 		return s;
 	}
 
-	double * v_s = q > 0 ? v_s_pos : v_s_neg;
+	distance * v_s = q > 0 ? v_s_pos : v_s_neg;
 	s = interpolate(t_zap, v_s);
 	return s;
 }
 
-double set_s_ex1(timevalue t, double r0, double v0, double r_min, double q)
+distance set_s_ex1(timevalue t, coordinate r0, velocity v0, coordinate r_min, charge q)
 {
-	double * v_s = q > 0 ? v_s_pos : v_s_neg;
-	double * v_v = q > 0 ? v_v_pos : v_v_neg;
-	double * v_a = q > 0 ? v_a_pos : v_a_neg;
+	distance * v_s = q > 0 ? v_s_pos : v_s_neg;
+	velocity * v_v = q > 0 ? v_v_pos : v_v_neg;
+	acceleration * v_a = q > 0 ? v_a_pos : v_a_neg;
 
-	double t1 = v_t[v_n_t];
-	double t2 = v_t[v_n_t + 1];
-	double dt = t2 - t1;
-	double a1 = v_a[v_n_t];
-	double a2 = v_a[v_n_t + 1];
-	double a = (a1 + a2) / 2;
-	double v1 = v_v[v_n_t];
-	double v2 = v_v[v_n_t + 1];
-	double v = (v1 + v2) / 2;
 
-	double s1 = v_s[v_n_t];
+	timevalue t1 = v_t[v_n_t];
+	timevalue t2 = v_t[v_n_t + 1];
+	timespan dt = t2 - t1;
+	acceleration a1 = v_a[v_n_t];
+	acceleration a2 = v_a[v_n_t + 1];
+	acceleration a = (a1 + a2) / 2;
+	velocity v1 = v_v[v_n_t];
+	velocity v2 = v_v[v_n_t + 1];
+	velocity v = (v1 + v2) / 2;
+
+	distance s1 = v_s[v_n_t];
 
 	// ds = v * dt + a * dt * dt / 2
-	double ds = v * dt + a * dt * dt / 2;
-	double s2 = s1 + ds;
+	distance ds = v * dt + a * dt * dt / 2;
+	distance s2 = s1 + ds;
 
 	if (r0 + s2 < r_min)
 	{
-		printf("Warning: r %0.20f < r_min %0.20f\n", r0 + s2, r_min);
+		printf("Warning: r %0.20Lf < r_min %0.20Lf\n", r0 + s2, r_min);
 		//r0 + s = r_min; // ???????
 		int* p = 0;
 		*p += 1;
 		assert(0);
-
 	}
 
 	v_s[v_n_t + 1] = s2;
@@ -436,14 +449,27 @@ double set_s_ex1(timevalue t, double r0, double v0, double r_min, double q)
 
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-int get_r_ex1(double q, timevalue t_zap, double r0, double v0, double r_min, double * r)
+int get_r_ex1(charge q, timevalue t_zap, coordinate r0, velocity v0, coordinate r_min, coordinate * r, int log)
 {
 	int error = 0;
-	double s = get_s_ex1(t_zap, v0, q);
+	distance s = get_s_ex1(t_zap, v0, q);
 	*r = r0 + s;
+	if (log)
+		printf(
+			"t_zap = %Lf "
+			"q = % 0.20Le "
+			"r0 = % 0.20Le "
+			"s = % 0.20Le "
+			"*r = % 0.20Le\n"
+			, t_zap
+			, q
+			, r0
+			, s
+			, *r
+			);
 	if (*r < r_min)
 	{
-		printf("Warning: r %0.20f < r_min %0.20f\n", *r, r_min);
+		printf("Warning: r %0.20Lf < r_min %0.20Lf\n", *r, r_min);
 		*r = r_min;
 		error = 1;
 		int* p = 0;
@@ -495,7 +521,7 @@ double get_s(timevalue t_zap, double v0, acceleration a0)
 	if (t_zap < g_t_start)
 	{
 		s = v0*(t_zap - g_t_start);
-		DBG_INFO("get_s1 t_zap=%f a0=%f returns %f\n", t_zap, a0, s);
+		DBG_INFO("get_s1 t_zap=%Lf a0=%Lf returns %Lf\n", t_zap, a0, s);
 		return s;
 	}
 #endif
@@ -512,30 +538,30 @@ double get_s(timevalue t_zap, double v0, acceleration a0)
 
 	if (a0 != 0.0 && t_zap >= t_max)
 	{
-		DBG_INFO("get_s t_max %f\n", t_max);
+		DBG_INFO("get_s t_max %Lf\n", t_max);
 
 		dt_start = (t_max - g_t_start);
 		dt_max = (t_zap - t_max);
 		s = v0 * dt_start + a0*dt_start*dt_start/2 + dt_max*v_max;
-		DBG_INFO("get_s2 t_zap=%f a0=%f returns %f\n", t_zap, a0, s);
+		DBG_INFO("get_s2 t_zap=%Lf a0=%Lf returns %Lf\n", t_zap, a0, s);
 		return s;
 	}
 
 	dt_start = (t_zap - g_t_start);
 	s = v0 * dt_start + a0*dt_start*dt_start/2;
-	DBG_INFO("get_s t_zap=%f a0=%f dt_start=%f returns %f\n", t_zap, a0, dt_start, s);
+	DBG_INFO("get_s t_zap=%Lf a0=%Lf dt_start=%Lf returns %Lf\n", t_zap, a0, dt_start, s);
 	return s;
 }
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-int get_r(double q, timevalue t_zap, double r0, double v0, acceleration a0, double r_min, double * r)
+int get_r(charge q, timevalue t_zap, double r0, double v0, acceleration a0, double r_min, double * r)
 {
 	int error = 0;
 	*r = r0 + get_s(t_zap, v0, a0);
 #ifdef USE_MINIMAL_RADIUS
 	if (*r < r_min)
 	{
-		DBG_INFO("Warning: r %f < r_min %f\n", *r, r_min);
+		DBG_INFO("Warning: r %Lf < r_min %Lf\n", *r, r_min);
 		*r = r_min;
 		error = 1;
 	}
@@ -545,14 +571,14 @@ int get_r(double q, timevalue t_zap, double r0, double v0, acceleration a0, doub
 }
 #endif /*ALGORITHM_VERSION_0*/
 /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
-double get_R(double R0, double r, double theta)
+distance get_R(coordinate R0, coordinate r, angle theta)
 {
-	//double RR = R0*R0 - 2 * R0*r*cos(theta) + r*r;
-	//double RR2 = R0*R0*cos(theta) - 2 * R0*r*cos(theta) + r*r*cos(theta) + R0*R0*(1 - cos(theta)) + r*r*(1 - cos(theta));
-	double RR3 = (R0 - r)*(R0 - r)*cos(theta) + (R0*R0 + r*r)*(1 - cos(theta));
-	//DBG_INFO("RR=%f, RR2 = %f, RR3 = %f, R0=%f, r=%f, theta=%f)\n", RR, RR2, RR3, R0, r, theta);
+	//distance2 RR = R0*R0 - 2 * R0*r*cos(theta) + r*r;
+	//distance2 RR2 = R0*R0*cos(theta) - 2 * R0*r*cos(theta) + r*r*cos(theta) + R0*R0*(1 - cos(theta)) + r*r*(1 - cos(theta));
+	distance2 RR3 = (R0 - r)*(R0 - r)*cos(theta) + (R0*R0 + r*r)*(1 - cos(theta));
+	//DBG_INFO("RR=%Lf, RR2 = %Lf, RR3 = %Lf, R0=%Lf, r=%Lf, theta=%Lf)\n", RR, RR2, RR3, R0, r, theta);
 	assert(RR3 >= 0.0);
-	double R = sqrt(RR3);
+	distance R = sqrt(RR3);
 	return R;
 }
 
@@ -570,35 +596,35 @@ sqrt(2*R__0*a__0*cos(theta)-2*a__0*r__0-2*sqrt(cos(theta)^2*R__0^2*a__0^2-R__0^2
 */
 
 /* численный расчёта запаздывающего момента */
-int calc_tzap(double q, timevalue t, double R0, double r0, double v0, acceleration a0, double theta, double r_min, double * t2)
+int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, coordinate r_min, timevalue * t2)
 {
 	int err, error = 0;
 #ifdef CALC_LW_WITHOUT_LAGGING
 	*t2 = g_t_start;
 #else
-	double epsilon = 1.0e-15;
-	double t1;
+	long double epsilon = 1.0e-15;
+	timevalue t1;
 	*t2 = t;
-	double dt;
-	double v1,v2;
-	double r, R, R_pre = DBL_MAX;
-	double dR, dR_pre = DBL_MAX;
-	double R_tmp;
+	timespan dt;
+	velocity v1,v2;
+	coordinate r, R, R_pre = LDBL_MAX;
+	distance dR, dR_pre = LDBL_MAX;
+	coordinate R_tmp;
 
 	int i = 0;
-	double n = 0.9;
+	long double n = 0.9;
 #if 0
 	double v;
 	v = get_v(t, v0, a0);      /* скорость заряда в текущий момент времени t */
 
-	DBG_INFO("calc_tzap(t=%f, v = %f, R0=%f, r0=%f, v0=%f, a0=%f, theta=%f)\n", t, v, R0, r0, v0, a0, theta);
+	DBG_INFO("calc_tzap(t=%Lf, v = %Lf, R0=%Lf, r0=%Lf, v0=%Lf, a0=%Lf, theta=%Lf)\n", t, v, R0, r0, v0, a0, theta);
 	assert(v < c);
 #endif
 
 	/*
-	DBG_INFO("epsilon=%e\n", epsilon);
-	DBG_INFO("t1=%f\n", t1);
-	DBG_INFO("t2=%f\n", *t2);
+	DBG_INFO("epsilon=%Le\n", epsilon);
+	DBG_INFO("t1=%Lf\n", t1);
+	DBG_INFO("t2=%Lf\n", *t2);
 	*/
 
 	do
@@ -610,7 +636,7 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 		err = get_r(q, t1, r0, v0, a0, r_min, &r);   /* итерационная координата заряда */
 #endif
 #ifdef ALGORITHM_VERSION_1
-		err = get_r_ex1(q, t1, r0, v0, r_min, &r);
+		err = get_r_ex1(q, t1, r0, v0, r_min, &r, 0);
 #endif
 #ifdef ALGORITHM_VERSION_2
 		err = get_r_ex2(q, t1, r0, v0, r_min, &r);
@@ -637,18 +663,18 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 		v1 = get_v_ex2(t1, v0, q);
 		v2 = get_v_ex2(*t2, v0, q);
 #endif
-		DBG_INFO("t2=%f t1=%f t=%f v1 = %f, v2 = %f, v = %f, R=%f dR=%e dR_pre=%e ", *t2, t1, t, v1, v2, v, R, dR, dR_pre);
+		DBG_INFO("t2=%Lf t1=%Lf t=%Lf v1 = %Lf, v2 = %Lf, v = %Lf, R=%Lf dR=%Le dR_pre=%Le ", *t2, t1, t, v1, v2, v, R, dR, dR_pre);
 		if (v1 >= g_c || v2 >= g_c)
 		{
-			double v;
+			velocity v;
 #ifdef ALGORITHM_VERSION_0			
 			v = get_v(t, v0, a0);      /* скорость заряда в текущий момент времени t */
 #endif
 #ifdef ALGORITHM_VERSION_1
 			v = get_v_ex1(t, v0, q);
 #endif
-			printf("t2=%f t1=%f t=%f v1 = %f, v2 = %f, v = %f, R=%f dR=%e dR_pre=%e\n", *t2, t1, t, v1, v2, v, R, dR, dR_pre);
-			printf("v1/c = %f, v2/c = %f, v/c = %f\n", v1/g_c, v2/g_c, v/g_c);
+			printf("t2=%Lf t1=%Lf t=%Lf v1 = %Lf, v2 = %Lf, v = %Lf, R=%Lf dR=%Le dR_pre=%Le\n", *t2, t1, t, v1, v2, v, R, dR, dR_pre);
+			printf("v1/c = %Lf, v2/c = %Lf, v/c = %Lf\n", v1/g_c, v2/g_c, v/g_c);
 			int * p = 0;
 			*p += 1;
 		}
@@ -662,14 +688,14 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 			do
 			{
 				R_tmp = R_pre + n * (R - R_pre);
-				DBG_INFO("R_tmp = R_pre + n * (R - R_pre);= %f ", R_tmp);
+				DBG_INFO("R_tmp = R_pre + n * (R - R_pre);= %Lf ", R_tmp);
 
 				*t2 = t -  R_tmp / g_c;
 				dR = g_c*(t-t1) - R_tmp;
-				DBG_INFO("t2 = %f ", *t2);
+				DBG_INFO("t2 = %Lf ", *t2);
 
 				n *= 0.9;
-				DBG_INFO("n = %f ", n);
+				DBG_INFO("n = %Lf ", n);
 				++j;
 			}
 			while (fabs(dR) > fabs(dR_pre));
@@ -678,7 +704,7 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 		}
 #endif
 		dt = t1 - *t2;
-		DBG_INFO("dt=%e \n", dt);
+		DBG_INFO("dt=%Le \n", dt);
 		dR_pre = dR;
 		R_pre = R;
 
@@ -687,7 +713,7 @@ int calc_tzap(double q, timevalue t, double R0, double r0, double v0, accelerati
 	}
 	while (fabs(dt) > epsilon);
 
-	DBG_INFO("fabs(t1 - t2) = %e fabs(t - t2) = %e calc_tzap() result=%f\n", fabs(t1 - *t2), fabs(t - *t2), *t2);
+	DBG_INFO("fabs(t1 - t2) = %Le fabs(t - t2) = %Le calc_tzap() result=%Lf\n", fabs(t1 - *t2), fabs(t - *t2), *t2);
 #endif
 	return error;
 }

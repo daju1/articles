@@ -7,6 +7,7 @@
 
 void show_backtrace(void)
 {
+#if 0
 #ifndef _MSC_VER
     void    *array[BACKTRACE_SIZ];
     size_t   size, i;
@@ -20,6 +21,7 @@ void show_backtrace(void)
     }
 
     free(strings);  // malloced by backtrace_symbols
+#endif
 #endif
 }
 

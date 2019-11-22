@@ -7,6 +7,11 @@
 //#define ALGORITHM_VERSION_2
 
 #define SI
+#ifdef SI
+#define LIGHT_VELONCITY 299792458.0
+#else
+#define LIGHT_VELONCITY 3.0
+#endif
 
 typedef long double timevalue;
 typedef long double timespan;

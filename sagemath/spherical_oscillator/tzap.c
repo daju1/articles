@@ -15,17 +15,9 @@
 #define DR 0.01
 
 #ifdef SI
-#define LIGHT_VELONCITY 299792458.0
 long double multiplier_E = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000000.0;
-#ifdef MASS_IN_GRAMM
-long double multiplier_a = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000.0;
 #else
-long double multiplier_a = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000000.0;
-#endif
-#else
-#define LIGHT_VELONCITY 3.0
 long double multiplier_E = 1.0;
-long double multiplier_a = 1.0;
 #endif
 
 velocity g_c = LIGHT_VELONCITY;
@@ -265,7 +257,7 @@ long double interpolate(timevalue t_zap, long double * values)
 			*p += 1;
 		}
 
-		while (t_zap > v_t[n2] && n2 < v_n_t - 1)
+		while (t_zap > v_t[n2] && n2 < v_n_t)
 		{
 			//printf("t_zap %0.25e > v_t[%d] %0.25e\n", t_zap, n2, v_t[n2]);
 			n1 += 1;
@@ -344,7 +336,7 @@ acceleration set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a
 
 	assert(!isnan(*E));
 
-	acceleration a = multiplier_a * (*E) * q / m;
+	acceleration a = (*E) * q / m;
 	if (t <= t_a0)
 	{
 		a += a0;
@@ -604,8 +596,8 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 #else
 
 #ifdef SI
-	long double epsilon = 1.0e-32;
-	long double epsilon_dr = 1.0e-32;
+	long double epsilon = 1.0e-64;
+	long double epsilon_dr = 1.0e-64;
 #else
 	long double epsilon = 1.0e-15;
 	long double epsilon_dr = 1.0e-3;

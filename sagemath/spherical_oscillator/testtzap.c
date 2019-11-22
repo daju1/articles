@@ -11,9 +11,6 @@
 extern velocity g_c;
 extern timevalue * v_t;
 extern long double multiplier_E;
-extern long double multiplier_a;
-
-
 
 long double get_sigma(charge q, coordinate r)
 {
@@ -785,28 +782,72 @@ int copper_explosion_lw_v1()
 	acceleration a0_pos = 3.81193295102697e-7;
 	acceleration a0_neg = 0.000130201300422018;
 	int nr = 10000, nt = 10000;
-	distance dr = 0.00000027781594917032, dt = 0.00000017375011816052;
 	timespan t_a0 = 0.00034750023632103418;
 	mass m_pos = 0.00000141116074503615, m_neg = 0.00000000001209584880;
 	coordinate r0_pos = 0.00027781594917031547, r0_neg = 0.00027781594917031547;
 	velocity v0_pos = 0.00000000000000000000, v0_neg = 0.00000000000000000000;
 	//double a0_pos = 0.00000038119329510270, a0_neg = 0.00013020130042201811;
-	coordinate r_min_pos = dr;
-	coordinate r_min_neg = dr;
 
-	//double t_finish = t_a0 * 5;
-	//dt = t_finish / 10000;
 
-	//set_dt(dt);
-	//set_t_finish(t_finish);
+	// q = q_calc * k_q
+	// m = m_calc * k_m
+	// r = r_calc * k_r
+	// t = t_calc * k_t
+	// v = v_valc * k_v
+	// c = c_calc * k_v -> LIGHT_VELONCITY = g_c * k_v
+	// a = a_calc * k_a
+	// E = E_calc * k_E
 
-	coordinate r_finish = r0_pos * 10;
-	dr = r_finish / 10000;
+    // SI :
+	// k_E = (LIGHT_VELONCITY * LIGHT_VELONCITY / 10000000.0) * k_q / (k_r * k_r)
+	// k_E = SI_multiplier_E * k_q / (k_r * k_r)
+	// sgs :
+	// k_E = k_q / (k_r * k_r)
 
-	set_dr(dr);
-	set_r_finish(r_finish);
+	// k_a = k_E * k_q  / k_m
+	// k_t = k_v / k_a
+	// k_v = k_t * k_a
+	// k_a * k_r = k_v * k_v
 
-	return do_v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0 , r_min_pos, r_min_neg);
+
+	long double k_q = 1.0;
+	long double k_m = 0.0001;
+	long double k_r = 0.001;
+	long double k_E = multiplier_E * k_q / (k_r * k_r);
+	long double k_a = k_E * k_q  / k_m;
+	long double k_v = sqrt(k_a * k_r);
+	long double k_t = k_v  / k_a;
+	g_c = LIGHT_VELONCITY / k_v;
+
+	printf("k_q = %0.20Lf\n", k_q);
+	printf("k_m = %0.20Lf\n", k_m);
+	printf("k_r = %0.20Lf\n", k_r);
+	printf("m_E = %0.20Lf\n", multiplier_E);
+	printf("k_E = %0.20Lf\n", k_E);
+	printf("k_a = %0.20Lf\n", k_a);
+	printf("k_v = %0.20Lf\n", k_v);
+	printf("g_c = %0.20Lf\n", g_c);
+	printf("defc= %0.20f\n", LIGHT_VELONCITY);
+	printf("k_t = %0.20Lf\n", k_t);
+
+
+	charge q_calc = q / k_q;
+	acceleration a0_pos_calc = a0_pos / k_a;
+	acceleration a0_neg_calc = a0_neg / k_a;
+	distance dr = 0.00000027781594917032, dt = 0.00000017375011816052;
+	timespan t_a0_calc = t_a0 / k_t;
+	mass m_pos_calc = m_pos / k_m, m_neg_calc = m_neg / k_m;
+	coordinate r0_pos_calc = r0_pos / k_r, r0_neg_calc = r0_neg / k_r;
+	velocity v0_pos_calc = v0_pos / k_v, v0_neg_calc = v0_neg / k_v;
+
+	coordinate r_finish_calc = r0_pos_calc * 10;
+	distance dr_calc = r_finish_calc / 1000;
+	coordinate r_min_pos_calc = dr_calc;
+	coordinate r_min_neg_calc = dr_calc;
+
+	set_dr(dr_calc);
+	set_r_finish(r_finish_calc);
+	return do_v1_calc(q_calc, m_pos_calc, m_neg_calc, r0_pos_calc, r0_neg_calc, v0_pos_calc, v0_neg_calc, a0_pos_calc, a0_neg_calc, t_a0_calc , r_min_pos_calc, r_min_neg_calc);
 }
 
 int calc_E(charge q, timevalue t, coordinate R0,
@@ -1004,16 +1045,17 @@ int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r
 
 		if (v_n_t < get_nt() - 1)
 		{
+			#define min_E_for_dt_calc 10.0
 			field fabs_E_neg
-				= fabs(E_neg) < 1000000.0
-				? 1000000.0
+				= fabs(E_neg) < min_E_for_dt_calc
+				? min_E_for_dt_calc
 				: fabs(E_neg);
 
 			acceleration fabs_a_neg = fabs_E_neg * q / m_neg;
-			//printf("fabs_a_neg = %Lf\n", fabs_a_neg);
+			printf("fabs_a_neg = %Lf\n", fabs_a_neg);
 
-			timespan dt = sqrt(2*get_dr()/(fabs_a_neg * multiplier_a));
-			//printf("dt = %Le\n", dt);
+			timespan dt = sqrt(2*get_dr()/(fabs_a_neg));
+			printf("dt = %Le\n", dt);
 			v_t[v_n_t + 1] = v_t[v_n_t] + dt;
 			timevalue t1 = v_t[v_n_t + 1];
 

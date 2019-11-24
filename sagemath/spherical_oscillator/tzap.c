@@ -330,13 +330,30 @@ void set_E_ex_1(int v_n_t, int v_n_r, field E)
 }
 
 /* установить значение ускорения слоя исходя из его текущего радиуса и значения поля в текущий момент на этом радиусе*/
-acceleration set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a0, charge q, mass m, field * E)
+acceleration set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a0, charge q, mass m, field E, field E1, field E2)
 {
 	acceleration * v_a = q > 0 ? v_a_pos : v_a_neg;
 
 	assert(!isnan(*E));
 
-	acceleration a = (*E) * q / m;
+	acceleration a = E * q / m;
+	acceleration a1 = E1 * q / m;
+	acceleration a2 = E2 * q / m;
+
+	if (fabs(a2) > fabs(a0))
+	{
+		printf("fabs(a2) %Le > fabs(a0) %Le\n", a2, a0);
+		int * p = 0;
+		*p += 1;
+	}
+
+	if (fabs(a2) > fabs(v_a[v_n_t]))
+	{
+		printf("fabs(a2) %Le > fabs(v_a[v_n_t]) %Le\n", a2, v_a[v_n_t]);
+		int * p = 0;
+		*p += 1;
+	}
+
 	if (t <= t_a0)
 	{
 		a += a0;

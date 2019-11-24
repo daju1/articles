@@ -353,7 +353,7 @@ dr = r_finish / 100
 set_dr_py(dr)
 set_r_finish_py(r_finish)
 
-v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0, r_min_pos, r_min_neg)
+v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0)
 
 
 

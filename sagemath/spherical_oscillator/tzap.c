@@ -34,7 +34,7 @@ static distance g_dr = DR;              // шаг координаты
 static coordinate g_r_start = R_START;
 static coordinate g_r_finish = R_FINISH;
 //static int v_Nt = (int)((T_FINISH - T_START) / DT);
-static int v_Nt = 10000;
+static int v_Nt = 100000;
 static int v_Nr = (int)((R_FINISH - R_START) / DR);
 
 distance get_dr()
@@ -271,17 +271,27 @@ long double interpolate(timevalue t_zap, long double * values)
 			*p += 1;
 		}
 
-		long double part = (t_zap - v_t[n1]) / (v_t[n2] - v_t[n1]);
+		timevalue t1 = v_t[n1];
+		timevalue t2 = v_t[n2];
+		timespan dt = t2 - t1;
+
+		long double part = (t_zap - v_t[n1]) / dt;
 
 		long double value = values[n1] + part * (values[n2] - values[n1]);
 
 		if (isnan(value))
 		{
-			printf("n1 %ld n2 %ld v_n_t %d t_zap %0.25Le n_t %Lf\n", n1, n2, v_n_t, t_zap, n_t);
-			int * p = 0;
-			*p += 1;			
+			//printf("n1 %ld n2 %ld v_n_t %d t_zap %0.25Le n_t %Lf\n", n1, n2, v_n_t, t_zap, n_t);
+			if (fabs(t_zap - t1) < fabs(t_zap - t2))
+			{
+				value = value = values[n1];
+			}
+			else
+			{
+				value = value = values[n2];
+			}
 		}
-		assert(!isnan(value));		
+		assert(!isnan(value));
 		return value;
 	}
 
@@ -330,11 +340,12 @@ void set_E_ex_1(int v_n_t, int v_n_r, field E)
 }
 
 /* установить значение ускорения слоя исходя из его текущего радиуса и значения поля в текущий момент на этом радиусе*/
-acceleration set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a0, charge q, mass m, field E, field E1, field E2)
+int set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a0, charge q, mass m, field E, field E1, field E2)
 {
+	int error = 0;
 	acceleration * v_a = q > 0 ? v_a_pos : v_a_neg;
 
-	assert(!isnan(*E));
+	assert(!isnan(E));
 
 	acceleration a = E * q / m;
 	acceleration a1 = E1 * q / m;
@@ -343,15 +354,13 @@ acceleration set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a
 	if (fabs(a2) > fabs(a0))
 	{
 		printf("fabs(a2) %Le > fabs(a0) %Le\n", a2, a0);
-		int * p = 0;
-		*p += 1;
+		error = 1;
 	}
 
 	if (fabs(a2) > fabs(v_a[v_n_t]))
 	{
 		printf("fabs(a2) %Le > fabs(v_a[v_n_t]) %Le\n", a2, v_a[v_n_t]);
-		int * p = 0;
-		*p += 1;
+		error = 1;
 	}
 
 	if (t <= t_a0)
@@ -361,7 +370,7 @@ acceleration set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a
 
 	assert(!isnan(a));
 	v_a[v_n_t + 1] = a;
-	return a;
+	return error;
 }
 
 velocity get_v_ex1(timevalue t_zap, velocity v0, charge q)

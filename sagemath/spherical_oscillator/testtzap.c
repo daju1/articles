@@ -904,9 +904,11 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 #ifdef ALGORITHM_VERSION_1
 	init_array_1(a0_pos, v0_pos, r0_pos, a0_neg, v0_neg, r0_neg);
 #endif
-	for (v_n_t = 0; v_n_t < get_nt(); ++v_n_t)
+	v_n_t = 0;
+	timespan dt = 1e-7;
+	printf("dt = %Le\n", dt);
+	while (v_n_t < get_nt())
 	{
-
 		int error = 0, err;
 		potential phi_lw_pos;
 		potential phi_lw_neg;
@@ -917,7 +919,7 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 		field E1, E2, E;
 
 		timevalue t = v_t[v_n_t];
-		printf("t = %Le v_n_t = %d\n", t, v_n_t);
+		//printf("t = %Le v_n_t = %d\n", t, v_n_t);
 		#if 0
 		for (int v_n_r = 0; v_n_r < get_nr(); ++v_n_r)
 		{
@@ -1061,35 +1063,27 @@ E1 = % 0.20f E2 = % 0.20f "
 			, E_minus_1_c_dA_dt_R0_pos + E_minus_1_c_dA_dt_R0_neg
 			);
 
-		printf(
-			"E_pos = % 0.20Le, E_neg = % 0.20Le (E_pos - E_neg) = % 0.20Le\n"
-			, E_pos, E_neg, (E_pos - E_neg)
-			);
+		//printf(
+		//	"E_pos = % 0.20Le, E_neg = % 0.20Le (E_pos - E_neg) = % 0.20Le\n"
+		//	, E_pos, E_neg, (E_pos - E_neg)
+		//	);
 		//
 
 		if (v_n_t < get_nt() - 1)
 		{
-			#define min_E_for_dt_calc 1.0
-			field fabs_E_neg
-				= fabs(E_neg) < min_E_for_dt_calc
-				? min_E_for_dt_calc
-				: fabs(E_neg);
-
-			acceleration fabs_a_neg = fabs_E_neg * q / m_neg;
-			printf("fabs_a_neg = %Lf\n", fabs_a_neg);
-
-			//timespan dt = sqrt(2*fabs(ds/10)/(fabs_a_neg));
-			//timespan dt = sqrt(2*get_dr()/(fabs_a_neg));
-
-			timespan dt = 1e-8;
-			printf("dt = %Le\n", dt);
 			v_t[v_n_t + 1] = v_t[v_n_t] + dt;
 			timevalue t1 = v_t[v_n_t + 1];
 
 			printf("t = %Le t1 = %Le v_n_t = %d dt = %Le\n", t, t1, v_n_t, dt);
 
-			set_a_ex1(t1, r_pos, a0_pos, t_a0, +q, m_pos, E_pos, E1_pos, E2_pos);
-			set_a_ex1(t1, r_neg, a0_neg, t_a0, -q, m_neg, E_neg, E1_neg, E2_neg);
+			if (0 != set_a_ex1(t1, r_pos, a0_pos, t_a0, +q, m_pos, E_pos, E1_pos, E2_pos))
+			{
+				error += 1;
+			}
+			if (0 != set_a_ex1(t1, r_neg, a0_neg, t_a0, -q, m_neg, E_neg, E1_neg, E2_neg))
+			{
+				error += 1;
+			}
 
 			set_v_ex1(t1, v0_pos, a0_pos, t_a0, +q, m_pos);
 			set_v_ex1(t1, v0_neg, a0_neg, t_a0, -q, m_neg);
@@ -1098,6 +1092,17 @@ E1 = % 0.20f E2 = % 0.20f "
 			set_s_ex1(t1, r0_neg, v0_neg, r_min_neg, -q);
 		}
 #endif
+		if (0 == error)
+		{
+			++v_n_t;
+		}
+		else
+		{
+			v_n_t-=2;
+			dt /= 2.0;
+			printf("dt = %Le\n", dt);
+		}
+		
 	}
 }
 

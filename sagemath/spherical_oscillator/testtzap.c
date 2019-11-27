@@ -123,7 +123,10 @@ field get_E_minus_grad_phi_R0(angle theta, velocity v_zap, distance R_zap, long 
 			- v_zap*cos(theta) / g_c
 		)
 		/ (R_lw_zap * R_lw_zap);
-
+#ifndef USE_NORM
+	DBG_INFO("E_minus_grad_phi_R0 = %0.25Lf\n", E_minus_grad_phi_R0);
+	E_minus_grad_phi_R0 *= multiplier_E;
+#endif
 	DBG_INFO("E_minus_grad_phi_R0 = %0.25e\n", E_minus_grad_phi_R0);
 	return E_minus_grad_phi_R0;
 }
@@ -157,7 +160,10 @@ field get_E_minus_1_c_dA_dt_R0(angle theta, velocity v_zap, acceleration a_zap, 
 		)
 		/
 		(R_lw_zap * R_lw_zap);
-
+#ifndef USE_NORM
+	DBG_INFO("E_minus_1_c_dA_dt_R0 = %0.25Lf\n", E_minus_1_c_dA_dt_R0);
+	E_minus_1_c_dA_dt_R0 *= multiplier_E;
+#endif
 	DBG_INFO("E_minus_1_c_dA_dt_R0 = %0.25Lf\n", E_minus_1_c_dA_dt_R0);
 	return E_minus_1_c_dA_dt_R0;
 }
@@ -260,7 +266,7 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 	double E_minus_grad_varphi_R0;
 	double E_minus_1_c_dA_dt_R0;
 
-	int N = 1000;
+	int N = 10000;
 	angle dtheta = Pi / N;
 	*phi = 0.0;
 	long double sigma0 = get_sigma(q, r0);
@@ -272,7 +278,7 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 	*pE_minus_grad_phi_R0 = 0.0;
 	*pE_minus_1_c_dA_dt_R0 = 0.0;
 
-	for (i = 0; i <= N; ++i)
+	for (i = 1; i <= N; ++i)
 	{
 		theta = (i * dtheta);
 
@@ -302,29 +308,6 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 		DBG_INFO("cos_alpha_zap = %Lf ", cos_alpha_zap);
 		E_minus_grad_varphi_R0 = get_E_minus_grad_phi_R0 (theta, v_zap, R_zap, aR_zap, R_lw_zap, cos_alpha_zap);
 		E_minus_1_c_dA_dt_R0   = get_E_minus_1_c_dA_dt_R0(theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap);
-		if (i % 100 == 0)
-			DBG_INFO("theta = %Lf "
-				"r_zap = %0.6e "
-				"R_zap %0.6e "
-				"R_lw_zap %0.6e "
-				"v_zap = %0.6e "
-				"t_zap = %0.6e "
-				"a_zap = %0.6e "
-				"aR_zap = %0.6e "
-				"E1 %Lf "
-				"E2 %0.20Lf "
-				"\n"
-				, theta
-				, r_zap
-				, R_zap
-				, R_lw_zap
-				, v_zap
-				, t_zap
-				, a_zap
-				, aR_zap
-				, E_minus_grad_varphi_R0
-				, E_minus_1_c_dA_dt_R0
-				);
 
 #ifdef OLD_DS_THETA_ALG
 		dS_dtheta = get_dS_dtheta(*r, theta);
@@ -336,6 +319,34 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 		S += dS_dtheta * dtheta;
 		//printf("S = %Lf S0 = %Lf\n", S, S0);
 		DBG_INFO("dS_dtheta = %Lf ", dS_dtheta);
+
+		//if (i % 100 == 0)
+		if (0.0 != E_minus_1_c_dA_dt_R0)
+			printf("theta = %Lf "
+				"r_zap = %0.6e "
+				"R_zap %0.6e "
+				"R_lw_zap %0.6e "
+				"v_zap = %0.6e "
+				"t_zap = %0.6e "
+				"a_zap = %0.6e "
+				"aR_zap = %0.6e "
+				"E1 %Lf "
+				"E2 %0.20Lf "
+				"e2 %0.20Le "
+				"\n"
+				, theta
+				, r_zap
+				, R_zap
+				, R_lw_zap
+				, v_zap
+				, t_zap
+				, a_zap
+				, aR_zap
+				, E_minus_grad_varphi_R0
+				, E_minus_1_c_dA_dt_R0
+				, E_minus_1_c_dA_dt_R0 * sigma0 * dS_dtheta * dtheta
+			);
+
 		if (0.0 != R_lw_zap){
 			*phi                   += dS_dtheta * dtheta / R_lw_zap ;
 			*pE_minus_grad_phi_R0  += dS_dtheta * dtheta * E_minus_grad_varphi_R0;
@@ -798,7 +809,7 @@ int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r
 	printf("r0_pos = %0.20Le r0_neg = %0.20Le\n", r0_pos, r0_neg);
 	printf("v0_pos = %0.20Le v0_neg = %0.20Le\n", v0_pos, v0_neg);
 	printf("a0_pos = %0.20Le a0_neg = %0.20Le\n", a0_pos, a0_neg);
-
+#ifdef USE_NORM
 	// q = q_calc * k_q
 	// m = m_calc * k_m
 	// r = r_calc * k_r
@@ -847,6 +858,15 @@ int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r
 	mass m_pos_calc = m_pos / k_m, m_neg_calc = m_neg / k_m;
 	coordinate r0_pos_calc = r0_pos / k_r, r0_neg_calc = r0_neg / k_r;
 	velocity v0_pos_calc = v0_pos / k_v, v0_neg_calc = v0_neg / k_v;
+#else
+	charge q_calc = q;
+	acceleration a0_pos_calc = a0_pos;
+	acceleration a0_neg_calc = a0_neg;
+	timespan t_a0_calc = t_a0;
+	mass m_pos_calc = m_pos, m_neg_calc = m_neg;
+	coordinate r0_pos_calc = r0_pos, r0_neg_calc = r0_neg;
+	velocity v0_pos_calc = v0_pos, v0_neg_calc = v0_neg;
+#endif
 
 	coordinate r_finish_calc = r0_pos_calc * 10;
 	distance dr_calc = r_finish_calc / 1000;
@@ -871,11 +891,13 @@ int calc_E(charge q, timevalue t, coordinate R0,
 	potential phi_lw_pos;
 	potential phi_lw_neg;
 
+	printf("\n");
 	error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, a0_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos, r_min_pos, &phi_lw_pos);
-	//printf("pos err = %d phi_lw = %Lf E1=%Lf E2 = %0.20Lf\n", error, phi_lw_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos);
+	printf("pos err = %d phi_lw = %Lf E1=%Lf E2 = %0.20Lf\n", error, phi_lw_pos, *E_minus_grad_phi_R0_pos, *E_minus_1_c_dA_dt_R0_pos);
 
+	printf("\n");
 	error = integral_phi_and_E(-q, t, R0, r0_neg, v0_neg, a0_neg, E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg, r_min_neg, &phi_lw_neg);
-	//printf("neg err = %d phi_lw = %Lf E1=%Lf E2 = %0.20Lf\n", error, phi_lw_neg, E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg);
+	printf("neg err = %d phi_lw = %Lf E1=%Lf E2 = %0.20Lf\n", error, phi_lw_neg, *E_minus_grad_phi_R0_neg, *E_minus_1_c_dA_dt_R0_neg);
 
 	*E1 = *E_minus_grad_phi_R0_pos + *E_minus_grad_phi_R0_neg;
 	*E2 = *E_minus_1_c_dA_dt_R0_pos + *E_minus_1_c_dA_dt_R0_neg;
@@ -1005,6 +1027,8 @@ E1 = % 0.20f E2 = % 0.20f "
 		field E1_pos, E1_neg; // электрическое поле в облаасти нахождения положительной и отрицательной обкладки
 		field E2_pos, E2_neg; // электрическое поле в облаасти нахождения положительной и отрицательной обкладки
 
+		printf("\nCalc E on positive side");
+
 		calc_E(q, t,
 			r_pos, // координата наблюдения совпадает с координатой обкладки
 			r0_pos, r0_neg,
@@ -1033,6 +1057,8 @@ E1 = % 0.20f E2 = % 0.20f "
 			, E_minus_1_c_dA_dt_R0_neg
 			, E_minus_1_c_dA_dt_R0_pos + E_minus_1_c_dA_dt_R0_neg
 			);
+
+		printf("\nCalc E on negative side");
 
 		calc_E(q, t,
 			r_neg, // координата наблюдения совпадает с координатой обкладки
@@ -1075,21 +1101,38 @@ E1 = % 0.20f E2 = % 0.20f "
 			timevalue t1 = v_t[v_n_t + 1];
 
 			printf("t = %Le t1 = %Le v_n_t = %d dt = %Le\n", t, t1, v_n_t, dt);
-
+			if (0 != set_a_ex1(t1, r_neg, a0_neg, t_a0, -q, m_neg, E_neg, E1_neg, E2_neg))
+			{
+				error += 1;
+				int * p = 0;
+				*p += 1;
+			}
 			if (0 != set_a_ex1(t1, r_pos, a0_pos, t_a0, +q, m_pos, E_pos, E1_pos, E2_pos))
 			{
 				error += 1;
 			}
-			if (0 != set_a_ex1(t1, r_neg, a0_neg, t_a0, -q, m_neg, E_neg, E1_neg, E2_neg))
+
+			velocity v_pos, v_neg;
+			if (0 != set_v_ex1(t1, v0_neg, a0_neg, t_a0, -q, m_neg, &v_neg))
+			{
+				error += 1;
+			}
+			if (0 != set_v_ex1(t1, v0_pos, a0_pos, t_a0, +q, m_pos, &v_pos))
 			{
 				error += 1;
 			}
 
-			set_v_ex1(t1, v0_pos, a0_pos, t_a0, +q, m_pos);
-			set_v_ex1(t1, v0_neg, a0_neg, t_a0, -q, m_neg);
+			printf(
+				"v_pos = % 0.20Le, v_neg = % 0.20Le\n"
+				, v_pos, v_neg
+				);
+			
 
-			set_s_ex1(t1, r0_pos, v0_pos, r_min_pos, +q);
-			set_s_ex1(t1, r0_neg, v0_neg, r_min_neg, -q);
+			if (0 == error) {
+				set_s_ex1(t1, r0_pos, v0_pos, r_min_pos, +q);
+				set_s_ex1(t1, r0_neg, v0_neg, r_min_neg, -q);
+			}
+
 		}
 #endif
 		if (0 == error)
@@ -1099,6 +1142,8 @@ E1 = % 0.20f E2 = % 0.20f "
 		else
 		{
 			v_n_t-=2;
+			if (v_n_t < 0)
+				v_n_t = 0;
 			dt /= 2.0;
 			printf("dt = %Le\n", dt);
 		}

@@ -8,6 +8,7 @@
 
 #define SI
 #ifdef SI
+//#define USE_NORM
 #define LIGHT_VELONCITY 299792458.0
 #else
 #define LIGHT_VELONCITY 3.0
@@ -58,7 +59,7 @@ int get_r_ex1(charge q, timevalue t_zap, coordinate r0, velocity v0, coordinate 
 void set_E_ex_1(int v_n_t, int v_n_r, field E);
 
 int set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a0, charge q, mass m, field E, field E1, field E2);
-velocity set_v_ex1(timevalue t, velocity v0, acceleration a0, timevalue t_a0, charge q, mass m);
+int set_v_ex1(timevalue t, velocity v0, acceleration a0, timevalue t_a0, charge q, mass m, velocity * v2);
 distance set_s_ex1(timevalue t, coordinate r0, velocity v0, coordinate r_min, charge q);
 #endif /*ALGORITHM_VERSION_1*/
 

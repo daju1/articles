@@ -34,7 +34,7 @@ static distance g_dr = DR;              // шаг координаты
 static coordinate g_r_start = R_START;
 static coordinate g_r_finish = R_FINISH;
 //static int v_Nt = (int)((T_FINISH - T_START) / DT);
-static int v_Nt = 100000;
+static int v_Nt = 10000;
 static int v_Nr = (int)((R_FINISH - R_START) / DR);
 
 distance get_dr()
@@ -354,12 +354,16 @@ int set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a0, charge
 	if (fabs(a2) > fabs(a0))
 	{
 		printf("fabs(a2) %Le > fabs(a0) %Le\n", a2, a0);
+		field E0 = a0 * m / q;
+		printf("E2 %Le > E0 %Le\n", E2, E0);
 		error = 1;
 	}
 
 	if (fabs(a2) > fabs(v_a[v_n_t]))
 	{
 		printf("fabs(a2) %Le > fabs(v_a[v_n_t]) %Le\n", a2, v_a[v_n_t]);
+		field E0 = a0 * m / q;
+		printf("E2 %Le > E0 %Le\n", E2, E0);
 		error = 1;
 	}
 
@@ -385,8 +389,9 @@ velocity get_v_ex1(timevalue t_zap, velocity v0, charge q)
 	return v;
 }
 
-velocity set_v_ex1(timevalue t, velocity v0, acceleration a0, timevalue t_a0, charge q, mass m)
+int set_v_ex1(timevalue t, velocity v0, acceleration a0, timevalue t_a0, charge q, mass m, velocity * v2)
 {
+	int error = 0;
 	velocity * v_v = q > 0 ? v_v_pos : v_v_neg;
 	acceleration * v_a = q > 0 ? v_a_pos : v_a_neg;
 
@@ -401,15 +406,14 @@ velocity set_v_ex1(timevalue t, velocity v0, acceleration a0, timevalue t_a0, ch
 	// dv = a * dt
 	velocity dv = a * dt;
 	assert(!isnan(dv));
-	velocity v2 = v1 + dv;
-	if (fabs(v2) >= g_c)
+	*v2 = v1 + dv;
+	if (fabs(*v2) >= g_c)
 	{
-		printf("v1/c = %Lf, v2/c = %Lf, dv/c = %Lf\n", v1/g_c, v2/g_c, dv/g_c);
-		int * p = 0;
-		*p += 1;
+		printf("v1/c = %Lf, v2/c = %Lf, dv/c = %Lf\n", v1/g_c, (*v2)/g_c, dv/g_c);
+		error = 1;
 	}
-	v_v[v_n_t + 1] = v2;
-	return v2;
+	v_v[v_n_t + 1] = *v2;
+	return error;
 }
 
 distance get_s_ex1(timevalue t_zap, velocity v0, charge q)

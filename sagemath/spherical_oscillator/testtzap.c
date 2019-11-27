@@ -322,7 +322,7 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 
 		//if (i % 100 == 0)
 		if (0.0 != E_minus_1_c_dA_dt_R0)
-			printf("theta = %Lf "
+			DBG_INFO("theta = %Lf "
 				"r_zap = %0.6e "
 				"R_zap %0.6e "
 				"R_lw_zap %0.6e "
@@ -684,12 +684,12 @@ extern int v_n_t; // итератор полноты заполения двум
 int test_v1()
 {
 	/* начальный радиус заряженной сферы в момент t=t_start */
-	coordinate r0_pos = 1.0;
-	coordinate r0_neg = 1.0;
+	coordinate r0_pos = 0.1;
+	coordinate r0_neg = 0.1;
 
 	/* минимально возможный радиус заряженной сферы (из соображений упругости) в момент более ранний чем t=t_start */
-	coordinate r_min_pos = 0.1;
-	coordinate r_min_neg = 0.1;
+	coordinate r_min_pos = 0.01;
+	coordinate r_min_neg = 0.01;
 
 	/* скорость в момент t_start*/
 	velocity v0_pos = 0.0;

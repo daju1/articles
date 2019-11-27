@@ -351,7 +351,7 @@ int set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a0, charge
 	acceleration a1 = E1 * q / m;
 	acceleration a2 = E2 * q / m;
 
-	if (fabs(a2) > fabs(a0))
+	if (fabs(a2) > 0.1*fabs(a0))
 	{
 		printf("fabs(a2) %Le > fabs(a0) %Le\n", a2, a0);
 		field E0 = a0 * m / q;
@@ -359,7 +359,7 @@ int set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a0, charge
 		error = 1;
 	}
 
-	if (fabs(a2) > fabs(v_a[v_n_t]))
+	if (fabs(a2) > 0.1*fabs(v_a[v_n_t]))
 	{
 		printf("fabs(a2) %Le > fabs(v_a[v_n_t]) %Le\n", a2, v_a[v_n_t]);
 		field E0 = a0 * m / q;
@@ -641,7 +641,6 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 	coordinate R_tmp;
 
 	int i = 0;
-	long double n = 0.9;
 #if 0
 	double v;
 	v = get_v(t, v0, a0);      /* скорость заряда в текущий момент времени t */
@@ -710,6 +709,7 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 		assert(v1 < g_c);
 		assert(v2 < g_c);
 #if 1
+		long double n = 0.9;
 		if (i > 1 && fabs(dR) - fabs(dR_pre) < epsilon_dr)
 		{
 			int j = 0;

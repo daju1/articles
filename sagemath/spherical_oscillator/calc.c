@@ -13,7 +13,7 @@ extern velocity g_c;
 extern timevalue * v_t;
 extern int v_n_t; // итератор полноты заполения двумерных массивов по координате времени
 
-int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r0_neg, velocity v0_pos, velocity v0_neg, acceleration a0_pos, acceleration a0_neg, timespan t_a0)
+int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r0_neg, velocity v0_pos, velocity v0_neg, power pw_pos, power pw_neg, timespan t_a0)
 {
 	printf("do_v1_calc\n");
 	printf("q = %0.20Le\n", q);
@@ -21,7 +21,7 @@ int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r
 	printf("m_pos = %0.20Le m_neg = %0.20Le\n", m_pos, m_neg);
 	printf("r0_pos = %0.20Le r0_neg = %0.20Le\n", r0_pos, r0_neg);
 	printf("v0_pos = %0.20Le v0_neg = %0.20Le\n", v0_pos, v0_neg);
-	printf("a0_pos = %0.20Le a0_neg = %0.20Le\n", a0_pos, a0_neg);
+	printf("pw_pos = %0.20Le pw_neg = %0.20Le\n", pw_pos, pw_neg);
 #ifdef USE_NORM
 	// q = q_calc * k_q
 	// m = m_calc * k_m
@@ -65,16 +65,16 @@ int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r
 	printf("k_t = %0.20Lf\n", k_t);
 
 	charge q_calc = q / k_q;
-	acceleration a0_pos_calc = a0_pos / k_a;
-	acceleration a0_neg_calc = a0_neg / k_a;
+	power pw_pos_calc = a0_pos / k_a;
+	power pw_neg_calc = a0_neg / k_a;
 	timespan t_a0_calc = t_a0 / k_t;
 	mass m_pos_calc = m_pos / k_m, m_neg_calc = m_neg / k_m;
 	coordinate r0_pos_calc = r0_pos / k_r, r0_neg_calc = r0_neg / k_r;
 	velocity v0_pos_calc = v0_pos / k_v, v0_neg_calc = v0_neg / k_v;
 #else
 	charge q_calc = q;
-	acceleration a0_pos_calc = a0_pos;
-	acceleration a0_neg_calc = a0_neg;
+	power pw_pos_calc = pw_pos;
+	power pw_neg_calc = pw_neg;
 	timespan t_a0_calc = t_a0;
 	mass m_pos_calc = m_pos, m_neg_calc = m_neg;
 	coordinate r0_pos_calc = r0_pos, r0_neg_calc = r0_neg;
@@ -88,13 +88,13 @@ int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r
 
 	set_dr(dr_calc);
 	set_r_finish(r_finish_calc);
-	return do_v1_calc_priv(q_calc, m_pos_calc, m_neg_calc, r0_pos_calc, r0_neg_calc, v0_pos_calc, v0_neg_calc, a0_pos_calc, a0_neg_calc, t_a0_calc , r_min_pos_calc, r_min_neg_calc);
+	return do_v1_calc_priv(q_calc, m_pos_calc, m_neg_calc, r0_pos_calc, r0_neg_calc, v0_pos_calc, v0_neg_calc, pw_pos_calc, pw_neg_calc, t_a0_calc , r_min_pos_calc, r_min_neg_calc);
 }
 
 int calc_E(charge q, timevalue t, coordinate R0,
 			coordinate r0_pos, coordinate r0_neg,
 			velocity v0_pos, velocity v0_neg,
-			acceleration a0_pos, acceleration a0_neg,
+			power pw_pos, power pw_neg,
 			coordinate r_min_pos, coordinate r_min_neg,
 			field * E_minus_grad_phi_R0_pos, field * E_minus_1_c_dA_dt_R0_pos,
 			field * E_minus_grad_phi_R0_neg, field * E_minus_1_c_dA_dt_R0_neg,
@@ -105,11 +105,11 @@ int calc_E(charge q, timevalue t, coordinate R0,
 	potential phi_lw_neg;
 
 	printf("\n");
-	error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, a0_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos, r_min_pos, &phi_lw_pos);
+	error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, pw_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos, r_min_pos, &phi_lw_pos);
 	printf("pos err = %d phi_lw = %Lf E1=%Lf E2 = %0.20Lf\n", error, phi_lw_pos, *E_minus_grad_phi_R0_pos, *E_minus_1_c_dA_dt_R0_pos);
 
 	printf("\n");
-	error = integral_phi_and_E(-q, t, R0, r0_neg, v0_neg, a0_neg, E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg, r_min_neg, &phi_lw_neg);
+	error = integral_phi_and_E(-q, t, R0, r0_neg, v0_neg, pw_neg, E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg, r_min_neg, &phi_lw_neg);
 	printf("neg err = %d phi_lw = %Lf E1=%Lf E2 = %0.20Lf\n", error, phi_lw_neg, *E_minus_grad_phi_R0_neg, *E_minus_1_c_dA_dt_R0_neg);
 
 	*E1 = *E_minus_grad_phi_R0_pos + *E_minus_grad_phi_R0_neg;
@@ -119,7 +119,7 @@ int calc_E(charge q, timevalue t, coordinate R0,
 }
 
 
-int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r0_neg, velocity v0_pos, velocity v0_neg, acceleration a0_pos, acceleration a0_neg, timespan t_a0, coordinate r_min_pos, coordinate r_min_neg)
+int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r0_neg, velocity v0_pos, velocity v0_neg, power pw_pos, power pw_neg, timespan t_a0, coordinate r_min_pos, coordinate r_min_neg)
 {
 	printf("sizeof(double) %ld\n", sizeof(double));
 	printf("sizeof(long double) %ld\n", sizeof(long double));
@@ -134,10 +134,10 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 	printf("m_pos = %0.20Le m_neg = %0.20Le\n", m_pos, m_neg);
 	printf("r0_pos = %0.20Le r0_neg = %0.20Le\n", r0_pos, r0_neg);
 	printf("v0_pos = %0.20Le v0_neg = %0.20Le\n", v0_pos, v0_neg);
-	printf("a0_pos = %0.20Le a0_neg = %0.20Le\n", a0_pos, a0_neg);
+	printf("pw_pos = %0.20Le pw_neg = %0.20Le\n", pw_pos, pw_neg);
 
 #ifdef ALGORITHM_VERSION_1
-	init_array_1(a0_pos, v0_pos, r0_pos, a0_neg, v0_neg, r0_neg);
+	init_array_1(0.0, v0_pos, r0_pos, 0.0, v0_neg, r0_neg);
 #endif
 	v_n_t = 0;
 	timespan dt = 1e-7;
@@ -245,7 +245,7 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 			r_pos, // координата наблюдения совпадает с координатой обкладки
 			r0_pos, r0_neg,
 			v0_pos, v0_neg,
-			a0_pos, a0_neg,
+			pw_pos, pw_neg,
 			r_min_pos, r_min_neg,
 			&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos,
 			&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
@@ -276,7 +276,7 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 			r_neg, // координата наблюдения совпадает с координатой обкладки
 			r0_pos, r0_neg,
 			v0_pos, v0_neg,
-			a0_pos, a0_neg,
+			pw_pos, pw_neg,
 			r_min_pos, r_min_neg,
 			&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos, 
 			&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
@@ -313,23 +313,23 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 			timevalue t1 = v_t[v_n_t + 1];
 
 			printf("t = %Le t1 = %Le v_n_t = %d dt = %Le\n", t, t1, v_n_t, dt);
-			if (0 != set_a_ex1(t1, r_neg, a0_neg, t_a0, -q, m_neg, E_neg, E1_neg, E2_neg))
+			if (0 != set_a_ex1(t1, dt, r_neg, pw_neg, t_a0, -q, m_neg, E_neg, E1_neg, E2_neg))
 			{
 				error += 1;
 				int * p = 0;
 				*p += 1;
 			}
-			if (0 != set_a_ex1(t1, r_pos, a0_pos, t_a0, +q, m_pos, E_pos, E1_pos, E2_pos))
+			if (0 != set_a_ex1(t1, dt, r_pos, pw_pos, t_a0, +q, m_pos, E_pos, E1_pos, E2_pos))
 			{
 				error += 1;
 			}
 
 			velocity v_pos, v_neg;
-			if (0 != set_v_ex1(t1, v0_neg, a0_neg, t_a0, -q, m_neg, &v_neg))
+			if (0 != set_v_ex1(t1, v0_neg, t_a0, -q, m_neg, &v_neg))
 			{
 				error += 1;
 			}
-			if (0 != set_v_ex1(t1, v0_pos, a0_pos, t_a0, +q, m_pos, &v_pos))
+			if (0 != set_v_ex1(t1, v0_pos, t_a0, +q, m_pos, &v_pos))
 			{
 				error += 1;
 			}

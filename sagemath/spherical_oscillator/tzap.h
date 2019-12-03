@@ -59,8 +59,8 @@ int get_r_ex1(charge q, timevalue t_zap, coordinate r0, velocity v0, coordinate 
 
 void set_E_ex_1(int v_n_t, int v_n_r, field E);
 
-int set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a0, charge q, mass m, field E, field E1, field E2);
-int set_v_ex1(timevalue t, velocity v0, acceleration a0, timevalue t_a0, charge q, mass m, velocity * v2);
+int set_a_ex1(timevalue t, timespan dt, coordinate r, power pw, timevalue t_a0, charge q, mass m, field E, field E1, field E2);
+int set_v_ex1(timevalue t, velocity v0, timevalue t_a0, charge q, mass m, velocity * v2);
 distance set_s_ex1(timevalue t, coordinate r0, velocity v0, coordinate r_min, charge q);
 #endif /*ALGORITHM_VERSION_1*/
 
@@ -68,7 +68,7 @@ distance set_s_ex1(timevalue t, coordinate r0, velocity v0, coordinate r_min, ch
 distance get_R(coordinate R0, coordinate r, angle theta);
 
 /* численный расчёта запаздывающего момента */
-int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, coordinate r_min, timevalue * t2);
+int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, power pw, angle theta, coordinate r_min, timevalue * t2);
 
 
 void set_dr(distance dr);

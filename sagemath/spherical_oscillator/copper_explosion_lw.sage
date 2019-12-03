@@ -319,7 +319,9 @@ print "should be 0.433908765869441e-3*r0/(sqrt(T/m)*m)"
 # r(t, r__0, R_init, m, T) = r__0 + v__0r(r__0, R_init, m, T)*t+(1/2)*a__0r(r__0, R_init, m, T)*t^2
 # print r(t, r__0, R__i, m, T)
 
-
+# Мощность взрыва
+power = Delta_E.n()/Delta_t.n()
+print "power = ", power
 
 
 attach("tzap.spyx")

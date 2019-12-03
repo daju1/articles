@@ -4,7 +4,8 @@
 //#define USE_DEBUG
 #include "dbg_info.h"
 #include "backtrace.h"
-#include "testtzap.h"
+#include "test_v0.h"
+#include "test_v1.h"
 
 int main()
 {

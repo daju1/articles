@@ -13,7 +13,7 @@ extern velocity g_c;
 extern timevalue * v_t;
 extern int v_n_t; // итератор полноты заполения двумерных массивов по координате времени
 
-int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r0_neg, velocity v0_pos, velocity v0_neg, acceleration a0_pos, acceleration a0_neg, timespan t_a0)
+int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r0_neg, velocity v0_pos, velocity v0_neg, power pw_pos, power pw_neg, timespan t_a0)
 {
 	printf("do_v1_calc\n");
 	printf("q = %0.20Le\n", q);
@@ -65,16 +65,16 @@ int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r
 	printf("k_t = %0.20Lf\n", k_t);
 
 	charge q_calc = q / k_q;
-	acceleration a0_pos_calc = a0_pos / k_a;
-	acceleration a0_neg_calc = a0_neg / k_a;
+	power pw_pos_calc = a0_pos / k_a;
+	power pw_neg_calc = a0_neg / k_a;
 	timespan t_a0_calc = t_a0 / k_t;
 	mass m_pos_calc = m_pos / k_m, m_neg_calc = m_neg / k_m;
 	coordinate r0_pos_calc = r0_pos / k_r, r0_neg_calc = r0_neg / k_r;
 	velocity v0_pos_calc = v0_pos / k_v, v0_neg_calc = v0_neg / k_v;
 #else
 	charge q_calc = q;
-	acceleration a0_pos_calc = a0_pos;
-	acceleration a0_neg_calc = a0_neg;
+	power pw_pos_calc = a0_pos;
+	power pw_neg_calc = a0_neg;
 	timespan t_a0_calc = t_a0;
 	mass m_pos_calc = m_pos, m_neg_calc = m_neg;
 	coordinate r0_pos_calc = r0_pos, r0_neg_calc = r0_neg;
@@ -94,7 +94,7 @@ int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r
 int calc_E(charge q, timevalue t, coordinate R0,
 			coordinate r0_pos, coordinate r0_neg,
 			velocity v0_pos, velocity v0_neg,
-			acceleration a0_pos, acceleration a0_neg,
+			power pw_pos, power pw_neg,
 			coordinate r_min_pos, coordinate r_min_neg,
 			field * E_minus_grad_phi_R0_pos, field * E_minus_1_c_dA_dt_R0_pos,
 			field * E_minus_grad_phi_R0_neg, field * E_minus_1_c_dA_dt_R0_neg,
@@ -119,7 +119,7 @@ int calc_E(charge q, timevalue t, coordinate R0,
 }
 
 
-int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r0_neg, velocity v0_pos, velocity v0_neg, acceleration a0_pos, acceleration a0_neg, timespan t_a0, coordinate r_min_pos, coordinate r_min_neg)
+int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r0_neg, velocity v0_pos, velocity v0_neg, power pw_pos, power pw_neg, timespan t_a0, coordinate r_min_pos, coordinate r_min_neg)
 {
 	printf("sizeof(double) %ld\n", sizeof(double));
 	printf("sizeof(long double) %ld\n", sizeof(long double));

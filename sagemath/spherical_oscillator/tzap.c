@@ -340,7 +340,7 @@ void set_E_ex_1(int v_n_t, int v_n_r, field E)
 }
 
 /* установить значение ускорения слоя исходя из его текущего радиуса и значения поля в текущий момент на этом радиусе*/
-int set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a0, charge q, mass m, field E, field E1, field E2)
+int set_a_ex1(timevalue t, coordinate r, power pw, timevalue t_a0, charge q, mass m, field E, field E1, field E2)
 {
 	int error = 0;
 	acceleration * v_a = q > 0 ? v_a_pos : v_a_neg;
@@ -350,6 +350,17 @@ int set_a_ex1(timevalue t, coordinate r, acceleration a0, timevalue t_a0, charge
 	acceleration a = E * q / m;
 	acceleration a1 = E1 * q / m;
 	acceleration a2 = E2 * q / m;
+
+	// power pw
+	// work dA = pw * dt
+	// on the other hand dA = F * ds
+	// where
+	// ds = v0 * dt + a * dt^2 / 2
+	// and
+	// F = m*a - q * E
+	// pw * dt = (m*a - q * E) * (v0 * dt + a * dt^2 / 2)
+	// pw = (m*a - q * E) * (v0 + a * dt / 2)
+
 
 	if (fabs(a2) > 0.1*fabs(a0))
 	{
@@ -389,7 +400,7 @@ velocity get_v_ex1(timevalue t_zap, velocity v0, charge q)
 	return v;
 }
 
-int set_v_ex1(timevalue t, velocity v0, acceleration a0, timevalue t_a0, charge q, mass m, velocity * v2)
+int set_v_ex1(timevalue t, velocity v0, power pw, timevalue t_a0, charge q, mass m, velocity * v2)
 {
 	int error = 0;
 	velocity * v_v = q > 0 ? v_v_pos : v_v_neg;
@@ -618,7 +629,7 @@ sqrt(2*R__0*a__0*cos(theta)-2*a__0*r__0-2*sqrt(cos(theta)^2*R__0^2*a__0^2-R__0^2
 */
 
 /* численный расчёта запаздывающего момента */
-int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, coordinate r_min, timevalue * t2)
+int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, power pw, angle theta, coordinate r_min, timevalue * t2)
 {
 	int err, error = 0;
 #ifdef CALC_LW_WITHOUT_LAGGING

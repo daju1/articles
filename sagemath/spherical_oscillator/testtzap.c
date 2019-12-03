@@ -960,8 +960,7 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 				#if 0
 				printf(
 					"R0 = %Lf t = %Lf "
-					"E = % 0.20f 		field E_pos, E_neg; // электрическое поле в облаасти нахождения положительной и отрицательной обкладки
-E1 = % 0.20f E2 = % 0.20f "
+					"E = % 0.20f E1 = % 0.20f E2 = % 0.20f "
 					"phi_lw_pos = %Lf phi_lw_neg = %Lf\n"
 					, R0, t
 					, E

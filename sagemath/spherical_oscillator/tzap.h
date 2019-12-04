@@ -61,6 +61,7 @@ void set_E_ex_1(int v_n_t, int v_n_r, field E);
 
 int set_a_ex1(timevalue t, timespan dt, coordinate r, power pw, timevalue t_a0, charge q, mass m, field E, field E1, field E2);
 int set_v_ex1(timevalue t, velocity v0, timevalue t_a0, charge q, mass m, velocity * v2);
+
 distance set_s_ex1(timevalue t, coordinate r0, velocity v0, coordinate r_min, charge q);
 #endif /*ALGORITHM_VERSION_1*/
 

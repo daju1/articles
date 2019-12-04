@@ -368,11 +368,18 @@ int set_a_ex1(timevalue t, timespan dt, coordinate r, power pw, timevalue t_a0, 
 	// ----- - ---- +- sqrt | -------- + -------- + ------ + -------- |
 	//  2*m     dt           \ 4*m^2       dt*m      dt^2      dt*m  /
 
+	power p = 0.0;
+	if (t <= t_a0)
+	{
+		p = pw;
+	}
+
+
 	long double radical
 		= E * E * q * q / (4 * m * m)
 		+ E * q * v / (dt * m)
 		+ v * v / (dt * dt)
-		+ 2 * pw;
+		+ 2 * p / (dt * m);
 
 	//acceleration a = E * q / m;
 	//acceleration a1 = E1 * q / m;
@@ -386,10 +393,6 @@ int set_a_ex1(timevalue t, timespan dt, coordinate r, power pw, timevalue t_a0, 
 
 	acceleration a = E * q / (2 * m) - v / dt + sqrt(radical);
 
-	/*if (t <= t_a0)
-	{
-		a += a0;
-	}*/
 
 	assert(!isnan(a));
 	v_a[v_n_t + 1] = a;
@@ -645,8 +648,8 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 #else
 
 #ifdef SI
-	long double epsilon = 1.0e-64;
-	long double epsilon_dr = 1.0e-64;
+	long double epsilon = 1.0e-16;
+	long double epsilon_dr = 1.0e-16;
 #else
 	long double epsilon = 1.0e-15;
 	long double epsilon_dr = 1.0e-3;

@@ -140,7 +140,7 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 	init_array_1(0.0, v0_pos, r0_pos, 0.0, v0_neg, r0_neg);
 #endif
 	v_n_t = 0;
-	timespan dt = 1e-7;
+	timespan dt = 1e-16;
 	printf("dt = %Le\n", dt);
 	while (v_n_t < get_nt())
 	{
@@ -357,10 +357,10 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 				v_n_t = 0;
 			}
 			else if (0 == v_n_t) {
-				printf("");
+				printf("0 == v_n_t\n");
 			}
 			else {
-				printf("");
+				printf("v_n_t > 0\n");
 			}
 			dt /= 2.0;
 			printf("dt = %Le\n", dt);

@@ -121,12 +121,12 @@ sage:
 int copper_explosion_lw_v1()
 {
 	charge q = 2.12744210611535; // кулон
-	acceleration a0_pos = 3.81193295102697e-7;
-	acceleration a0_neg = 0.000130201300422018;
+	power pw_pos = 0.000000001 * 270000.0/2.0;
+	power pw_neg = 0.000000001 * 270000.0/2.0;
 	int nr = 10000, nt = 10000;
-	timespan t_a0 = 0.00034750023632103418;
+	timespan t_a0 = 0.001 * 0.00034750023632103418;
 	mass m_pos = 0.00000141116074503615, m_neg = 0.00000000001209584880;
 	coordinate r0_pos = 0.00027781594917031547, r0_neg = 0.00027781594917031547;
 	velocity v0_pos = 0.00000000000000000000, v0_neg = 0.00000000000000000000;
-	return do_v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0);
+	return do_v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, pw_pos, pw_neg, t_a0);
 }

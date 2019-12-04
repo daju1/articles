@@ -352,9 +352,16 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 		}
 		else
 		{
-			v_n_t-=2;
-			if (v_n_t < 0)
+			v_n_t -= 2;
+			if (v_n_t < 0) {
 				v_n_t = 0;
+			}
+			else if (0 == v_n_t) {
+				printf("");
+			}
+			else {
+				printf("");
+			}
 			dt /= 2.0;
 			printf("dt = %Le\n", dt);
 		}

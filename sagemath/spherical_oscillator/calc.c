@@ -140,7 +140,7 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 	init_array_1(0.0, v0_pos, r0_pos, 0.0, v0_neg, r0_neg);
 #endif
 	v_n_t = 0;
-	timespan dt = 1e-16;
+	timespan dt = 1e-18;
 	printf("dt = %Le\n", dt);
 	while (v_n_t < get_nt())
 	{
@@ -219,7 +219,7 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 		err = get_r_ex1(+q, t, r0_pos, v0_pos, r_min_pos, &r_pos, 1);
 		err = get_r_ex1(-q, t, r0_neg, v0_neg, r_min_neg, &r_neg, 1);
 
-		printf("t = %Lf\n"
+		printf("t = %Le\n"
 			"a_pos = % 0.20Le, a_neg = % 0.20Le\n"
 			"v_pos = % 0.20Le, v_neg = % 0.20Le\n"
 			"vcpos = % 0.20Le, vcneg = % 0.20Le\n"
@@ -301,11 +301,10 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 			, E_minus_1_c_dA_dt_R0_pos + E_minus_1_c_dA_dt_R0_neg
 			);
 
-		//printf(
-		//	"E_pos = % 0.20Le, E_neg = % 0.20Le (E_pos - E_neg) = % 0.20Le\n"
-		//	, E_pos, E_neg, (E_pos - E_neg)
-		//	);
-		//
+		printf(
+			"E_pos = % 0.20Le, E_neg = % 0.20Le (E_pos - E_neg) = % 0.20Le\n"
+			, E_pos, E_neg, (E_pos - E_neg)
+			);
 
 		if (v_n_t < get_nt() - 1)
 		{

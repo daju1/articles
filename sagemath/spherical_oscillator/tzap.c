@@ -34,7 +34,7 @@ static distance g_dr = DR;              // шаг координаты
 static coordinate g_r_start = R_START;
 static coordinate g_r_finish = R_FINISH;
 //static int v_Nt = (int)((T_FINISH - T_START) / DT);
-static int v_Nt = 10000;
+static int v_Nt = 10000000;
 static int v_Nr = (int)((R_FINISH - R_START) / DR);
 
 distance get_dr()
@@ -368,14 +368,36 @@ int set_a_ex1(timevalue t, timespan dt, coordinate r, power pw, timevalue t_a0, 
 	// ----- - ---- +- sqrt | -------- + -------- + ------ + -------- |
 	//  2*m     dt           \ 4*m^2       dt*m      dt^2      dt*m  /
 
+	long double rel = 1.0 - (v*v / (g_c*g_c));
+	m /= rel * sqrt(rel);
+
+	acceleration a;
+	int sign = 1;
+
 	power p = 0.0;
 	if (t <= t_a0)
 	{
 		p = pw;
+		sign = 1;
 	}
+	else
+	{
+		printf("t = %Le t_a0 = %Le\n", t, t_a0);
 
-	long double rel = 1.0 - (v*v / (g_c*g_c));
-	m /= rel * sqrt(rel);
+		a = E * q / m;
+		acceleration a1 = E1 * q / m;
+		acceleration a2 = E2 * q / m;
+
+		/*if (fabs(a2) > fabs(v_a[v_n_t]))
+		{
+			printf("fabs(a2) %Le > fabs(v_a[v_n_t]) %Le\n", a2, v_a[v_n_t]);
+			field E0 = v_a[v_n_t] * m / q;
+			printf("E2 %Le > E0 %Le\n", E2, E0);
+			error = 1;
+		}*/
+
+		sign = q * E > 0.0 ? 1 : -1;
+	}
 
 	long double radical
 		= E * E * q * q / (4 * m * m)
@@ -383,18 +405,13 @@ int set_a_ex1(timevalue t, timespan dt, coordinate r, power pw, timevalue t_a0, 
 		+ v * v / (dt * dt)
 		+ 2 * p / (dt * m);
 
-	//acceleration a = E * q / m;
-	//acceleration a1 = E1 * q / m;
-	//acceleration a2 = E2 * q / m;
-
 	if (radical < 0.0)
 	{
 		printf("radical %Le < 0.0\n", radical);
 		return 1;
 	}
 
-	acceleration a = E * q / (2 * m) - v / dt + sqrt(radical);
-
+	a = E * q / (2 * m) - v / dt + sign * sqrt(radical);
 
 	assert(!isnan(a));
 	v_a[v_n_t + 1] = a;

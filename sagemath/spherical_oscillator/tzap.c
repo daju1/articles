@@ -374,6 +374,8 @@ int set_a_ex1(timevalue t, timespan dt, coordinate r, power pw, timevalue t_a0, 
 		p = pw;
 	}
 
+	long double rel = 1.0 - (v*v / (g_c*g_c));
+	m /= rel * sqrt(rel);
 
 	long double radical
 		= E * E * q * q / (4 * m * m)

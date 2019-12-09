@@ -660,6 +660,20 @@ sqrt(2)*sqrt(R__0*a__0*cos(theta)-a__0*r__0+sqrt(cos(theta)^2*R__0^2*a__0^2-R__0
 sqrt(2*R__0*a__0*cos(theta)-2*a__0*r__0-2*sqrt(cos(theta)^2*R__0^2*a__0^2-R__0^2*a__0^2+18*R__0*a__0*cos(theta)-18*a__0*r__0+81)+18)/a__0,
 -sqrt(2*R__0*a__0*cos(theta)-2*a__0*r__0-2*sqrt(cos(theta)^2*R__0^2*a__0^2-R__0^2*a__0^2+18*R__0*a__0*cos(theta)-18*a__0*r__0+81)+18)/a__0;
 */
+int get_r_common(charge q, timevalue t, coordinate r0, velocity v0, acceleration a0, coordinate r_min, coordinate * r)
+{
+	int err;
+#ifdef ALGORITHM_VERSION_0
+	err = get_r(q, t, r0, v0, a0, r_min, r);
+#endif
+#ifdef ALGORITHM_VERSION_1
+	err = get_r_ex1(q, t, r0, v0, r_min, r);
+#endif
+#ifdef ALGORITHM_VERSION_2
+	err = get_r_ex2(q, t, r0, v0, r_min, r);
+#endif
+	return err;
+}
 
 /* численный расчёта запаздывающего момента */
 int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, coordinate r_min, timevalue * t2)
@@ -673,7 +687,7 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 	long double epsilon = 1.0e-16;
 	long double epsilon_dr = 1.0e-16;
 #else
-	long double epsilon = 1.0e-15;
+	long double epsilon = 1.0e-8;
 	long double epsilon_dr = 1.0e-3;
 #endif
 	timevalue t1;

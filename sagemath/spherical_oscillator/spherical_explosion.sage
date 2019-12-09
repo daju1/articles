@@ -194,7 +194,7 @@ min_R0 = r0 + step_R0
 max_R0 = 10.0
 
 t1 = 0
-t2 = 100
+t2 = 10
 dt = 1.0
 dt_all = 2.0
 

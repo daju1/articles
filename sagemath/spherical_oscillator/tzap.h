@@ -6,7 +6,7 @@
 //#define ALGORITHM_VERSION_1
 //#define ALGORITHM_VERSION_2
 
-#define SI
+//#define SI
 #ifdef SI
 //#define USE_NORM
 #define LIGHT_VELONCITY 299792458.0
@@ -46,6 +46,8 @@ distance get_s(timevalue t_zap, velocity v0, acceleration a0);
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
 int get_r(charge q, timevalue t_zap, coordinate r0, velocity v0, acceleration a0, coordinate r_min, coordinate * r);
 #endif /* ALGORITHM_VERSION_0 */
+
+int get_r_common(charge q, timevalue t, coordinate r0, velocity v0, acceleration a0, coordinate r_min, coordinate * r);
 
 distance get_dr();
 int get_nt();

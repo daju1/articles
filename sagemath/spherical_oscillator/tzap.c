@@ -687,8 +687,8 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 	long double epsilon = 1.0e-16;
 	long double epsilon_dr = 1.0e-16;
 #else
-	long double epsilon = 1.0e-8;
-	long double epsilon_dr = 1.0e-3;
+	long double epsilon = 1.0e-12;
+	long double epsilon_dr = 1.0e-8;
 #endif
 	timevalue t1;
 	*t2 = t;

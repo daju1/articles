@@ -372,13 +372,11 @@ int set_a_ex1(timevalue t, timespan dt, coordinate r, power pw, timevalue t_a0, 
 	m /= rel * sqrt(rel);
 
 	acceleration a;
-	int sign = 1;
 
 	power p = 0.0;
 	if (t <= t_a0)
 	{
 		p = pw;
-		sign = 1;
 	}
 	else
 	{
@@ -395,8 +393,6 @@ int set_a_ex1(timevalue t, timespan dt, coordinate r, power pw, timevalue t_a0, 
 			printf("E2 %Le > E0 %Le\n", E2, E0);
 			error = 1;
 		}*/
-
-		sign = q * E > 0.0 ? 1 : -1;
 	}
 
 	long double radical
@@ -411,7 +407,7 @@ int set_a_ex1(timevalue t, timespan dt, coordinate r, power pw, timevalue t_a0, 
 		return 1;
 	}
 
-	a = E * q / (2 * m) - v / dt + sign * sqrt(radical);
+	a = E * q / (2 * m) - v / dt + sqrt(radical);
 
 	assert(!isnan(a));
 	v_a[v_n_t + 1] = a;

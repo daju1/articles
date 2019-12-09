@@ -82,7 +82,7 @@ int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r
 #endif
 
 	coordinate r_finish_calc = r0_pos_calc * 10;
-	distance dr_calc = r_finish_calc / 1000;
+	distance dr_calc = r_finish_calc / 100;
 	coordinate r_min_pos_calc = dr_calc;
 	coordinate r_min_neg_calc = dr_calc;
 
@@ -94,7 +94,7 @@ int do_v1_calc(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r
 int calc_E(charge q, timevalue t, coordinate R0,
 			coordinate r0_pos, coordinate r0_neg,
 			velocity v0_pos, velocity v0_neg,
-			power pw_pos, power pw_neg,
+			acceleration a0_pos, acceleration a0_neg,
 			coordinate r_min_pos, coordinate r_min_neg,
 			field * E_minus_grad_phi_R0_pos, field * E_minus_1_c_dA_dt_R0_pos,
 			field * E_minus_grad_phi_R0_neg, field * E_minus_1_c_dA_dt_R0_neg,
@@ -105,11 +105,11 @@ int calc_E(charge q, timevalue t, coordinate R0,
 	potential phi_lw_neg;
 
 	printf("\n");
-	error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, pw_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos, r_min_pos, &phi_lw_pos);
+	error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, a0_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos, r_min_pos, &phi_lw_pos);
 	printf("pos err = %d phi_lw = %Lf E1=%Lf E2 = %0.20Lf\n", error, phi_lw_pos, *E_minus_grad_phi_R0_pos, *E_minus_1_c_dA_dt_R0_pos);
 
 	printf("\n");
-	error = integral_phi_and_E(-q, t, R0, r0_neg, v0_neg, pw_neg, E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg, r_min_neg, &phi_lw_neg);
+	error = integral_phi_and_E(-q, t, R0, r0_neg, v0_neg, a0_neg, E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg, r_min_neg, &phi_lw_neg);
 	printf("neg err = %d phi_lw = %Lf E1=%Lf E2 = %0.20Lf\n", error, phi_lw_neg, *E_minus_grad_phi_R0_neg, *E_minus_1_c_dA_dt_R0_neg);
 
 	*E1 = *E_minus_grad_phi_R0_pos + *E_minus_grad_phi_R0_neg;
@@ -119,7 +119,7 @@ int calc_E(charge q, timevalue t, coordinate R0,
 }
 
 
-int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r0_neg, velocity v0_pos, velocity v0_neg, power pw_pos, power pw_neg, timespan t_a0, coordinate r_min_pos, coordinate r_min_neg)
+int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r0_neg, velocity v0_pos, velocity v0_neg, acceleration a0_pos, acceleration a0_neg, timespan t_a0, coordinate r_min_pos, coordinate r_min_neg)
 {
 	printf("sizeof(double) %ld\n", sizeof(double));
 	printf("sizeof(long double) %ld\n", sizeof(long double));
@@ -134,13 +134,19 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 	printf("m_pos = %0.20Le m_neg = %0.20Le\n", m_pos, m_neg);
 	printf("r0_pos = %0.20Le r0_neg = %0.20Le\n", r0_pos, r0_neg);
 	printf("v0_pos = %0.20Le v0_neg = %0.20Le\n", v0_pos, v0_neg);
-	printf("pw_pos = %0.20Le pw_neg = %0.20Le\n", pw_pos, pw_neg);
+	printf("a0_pos = %0.20Le a0_neg = %0.20Le\n", a0_pos, a0_neg);
+
+#ifdef ALGORITHM_VERSION_0
+	init_array_0();
+	timespan dt = 1e-3;
+#endif
 
 #ifdef ALGORITHM_VERSION_1
 	init_array_1(0.0, v0_pos, r0_pos, 0.0, v0_neg, r0_neg);
+	timespan dt = 1e-18;
 #endif
 	v_n_t = 0;
-	timespan dt = 1e-18;
+
 	printf("dt = %Le\n", dt);
 	while (v_n_t < get_nt())
 	{
@@ -154,12 +160,12 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 		field E1, E2, E;
 
 		timevalue t = v_t[v_n_t];
-		//printf("t = %Le v_n_t = %d\n", t, v_n_t);
-		#if 0
+#ifdef ALGORITHM_VERSION_0
+		printf("t = %Le v_n_t = %d\n", t, v_n_t);
 		for (int v_n_r = 0; v_n_r < get_nr(); ++v_n_r)
 		{
 			coordinate R0 = v_n_r * get_dr();
-			//printf("R0 = %Lf v_n_r = %d dr = %Lf\n", R0, v_n_r, dr);
+			printf("R0 = %Lf v_n_r = %d dr = %Lf\n", R0, v_n_r, get_dr());
 
 			calc_E(q, t, R0,
 				r0_pos, r0_neg,
@@ -170,21 +176,21 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 				&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
 				&E1, &E2, &E);
 			if (fabs(E) > 1e-20){
-				#if 0
+				#if 1
 				printf(
 					"R0 = %Lf t = %Lf "
-					"E = % 0.20f E1 = % 0.20f E2 = % 0.20f "
+					"E = % 0.20Lf E1 = % 0.20Lf E2 = % 0.20Lf "
 					"phi_lw_pos = %Lf phi_lw_neg = %Lf\n"
 					, R0, t
 					, E
 					, E1, E2
 					, phi_lw_pos, phi_lw_neg);
 				#endif
-#if 0
+#if 1
 				printf(
 					"R0 = %0.10Lf t = %0.10Lf "
-					"E1_pos % 0.20f "
-					"E1_neg % 0.20f "
+					"E1_pos % 0.20Lf "
+					"E1_neg % 0.20Lf "
 					"phi_lw_pos = %Lf phi_lw_neg = %Lf "
 					//"E2_pos % 0.20f "
 					//"E2_neg % 0.20f "

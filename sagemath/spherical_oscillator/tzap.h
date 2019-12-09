@@ -2,8 +2,8 @@
 #define WITHOUT_ACCELERATION_BEFORE_TSTART
 #define USE_MINIMAL_RADIUS
 
-//#define ALGORITHM_VERSION_0
-#define ALGORITHM_VERSION_1
+#define ALGORITHM_VERSION_0
+//#define ALGORITHM_VERSION_1
 //#define ALGORITHM_VERSION_2
 
 #define SI
@@ -29,19 +29,22 @@ typedef long double field;
 typedef long double angle;
 
 
-double get_c();
+velocity get_c();
 #ifdef ALGORITHM_VERSION_0
+
+void init_array_0();
+
 /* ускорение заряда */
-double get_a(timevalue t_zap, acceleration a0);
+acceleration get_a(timevalue t_zap, acceleration a0);
 
 /* радиальная скорость заряда */
-double get_v(timevalue t_zap, velocity v0, acceleration a0);
+velocity get_v(timevalue t_zap, velocity v0, acceleration a0);
 
 /* перемещение заряда */
-double get_s(timevalue t_zap, velocity v0, acceleration a0);
+distance get_s(timevalue t_zap, velocity v0, acceleration a0);
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-int get_r(charge q, timevalue t_zap, double r0, velocity v0, acceleration a0, double r_min, double * r);
+int get_r(charge q, timevalue t_zap, coordinate r0, velocity v0, acceleration a0, coordinate r_min, coordinate * r);
 #endif /* ALGORITHM_VERSION_0 */
 
 distance get_dr();
@@ -69,7 +72,7 @@ distance set_s_ex1(timevalue t, coordinate r0, velocity v0, coordinate r_min, ch
 distance get_R(coordinate R0, coordinate r, angle theta);
 
 /* численный расчёта запаздывающего момента */
-int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, power pw, angle theta, coordinate r_min, timevalue * t2);
+int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, coordinate r_min, timevalue * t2);
 
 
 void set_dr(distance dr);

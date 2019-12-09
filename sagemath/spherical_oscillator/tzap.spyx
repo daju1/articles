@@ -1,6 +1,6 @@
 cdef extern from "tzap.c":
-    double get_c()
-    double get_dr()
+    long double get_c()
+    long double get_dr()
     void set_dr(long double dr)
     void set_r_finish(long double r_finish)
     int calc_tzap(long double q, long double t, long double R0, long double r0, long double v0, long double a0, long double theta, long double r_min, long double * t2)

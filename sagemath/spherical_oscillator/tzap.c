@@ -111,6 +111,13 @@ static double ** vv_E2;
 static double ** vv_E;
 #endif
 
+#ifdef ALGORITHM_VERSION_0
+void init_array_0()
+{
+	v_t = malloc(v_Nt * sizeof(timevalue));
+}
+#endif
+
 #ifdef ALGORITHM_VERSION_1
 void init_array_1(acceleration a0_pos, velocity v0_pos, coordinate r0_pos, acceleration a0_neg, velocity v0_neg, coordinate r0_neg)
 {
@@ -210,7 +217,7 @@ void init_array_2(int v_N_r0, int v_N_t, double * a0_pos, velocity * v0_pos, dou
 	}
 }
 #endif /*ALGORITHM_VERSION_2*/
-double get_c()
+velocity get_c()
 {
 	return g_c;
 }
@@ -541,9 +548,9 @@ int get_r_ex1(charge q, timevalue t_zap, coordinate r0, velocity v0, coordinate 
 #endif /*ALGORITHM_VERSION_1*/
 
 #ifdef ALGORITHM_VERSION_0
-double get_a(timevalue t_zap, acceleration a0)
+acceleration get_a(timevalue t_zap, acceleration a0)
 {
-	double t_max;
+	timevalue t_max;
 #ifdef WITHOUT_ACCELERATION_BEFORE_TSTART
 	if (t_zap < g_t_start)
 		return 0;
@@ -556,10 +563,10 @@ double get_a(timevalue t_zap, acceleration a0)
 
 /* радиальная скорость заряда */
 
-double get_v(timevalue t_zap, double v0, acceleration a0)
+velocity get_v(timevalue t_zap, velocity v0, acceleration a0)
 {
 	assert(v0 < v_max);
-	double t_max;
+	timevalue t_max;
 #ifdef WITHOUT_ACCELERATION_BEFORE_TSTART
 	if (t_zap < g_t_start)
 		return v0;
@@ -570,12 +577,12 @@ double get_v(timevalue t_zap, double v0, acceleration a0)
 	return v0 + a0*(t_zap-g_t_start);
 }
 /* перемещение заряда */
-double get_s(timevalue t_zap, double v0, acceleration a0)
+distance get_s(timevalue t_zap, velocity v0, acceleration a0)
 {
 	assert(v0 < v_max);
-	double dt_start, dt_max;
-	double t_max;
-	double s;
+	timespan dt_start, dt_max;
+	timevalue t_max;
+	distance s;
 #ifdef WITHOUT_ACCELERATION_BEFORE_TSTART
 	if (t_zap < g_t_start)
 	{
@@ -613,7 +620,7 @@ double get_s(timevalue t_zap, double v0, acceleration a0)
 }
 
 /* расстояние от заряда до центра сферы в запаздывающий момент времени */
-int get_r(charge q, timevalue t_zap, double r0, double v0, acceleration a0, double r_min, double * r)
+int get_r(charge q, timevalue t_zap, coordinate r0, velocity v0, acceleration a0, coordinate r_min, coordinate * r)
 {
 	int error = 0;
 	*r = r0 + get_s(t_zap, v0, a0);
@@ -655,7 +662,7 @@ sqrt(2*R__0*a__0*cos(theta)-2*a__0*r__0-2*sqrt(cos(theta)^2*R__0^2*a__0^2-R__0^2
 */
 
 /* численный расчёта запаздывающего момента */
-int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, power pw, angle theta, coordinate r_min, timevalue * t2)
+int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, coordinate r_min, timevalue * t2)
 {
 	int err, error = 0;
 #ifdef CALC_LW_WITHOUT_LAGGING

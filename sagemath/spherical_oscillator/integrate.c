@@ -25,14 +25,14 @@ long double get_dS_dtheta(coordinate r, angle theta)
 }
 
 /* Радиус Лиенара Вихерта */
-int calc_R_lw(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, power pw, angle theta, timevalue * pt_zap, coordinate * pr_zap, distance * pR_zap, coordinate r_min, distance * R_lw_zap)
+int calc_R_lw(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, timevalue * pt_zap, coordinate * pr_zap, distance * pR_zap, coordinate r_min, distance * R_lw_zap)
 {
 //#define DBG_INFO printf
 	int err, error = 0;
 	velocity v;
 
 	/* численный расчёта запаздывающего момента */
-	err = calc_tzap(q, t, R0, r0, v0, pw, theta, r_min, pt_zap);
+	err = calc_tzap(q, t, R0, r0, v0, a0, theta, r_min, pt_zap);
 	if (0 != err)
 	{
 		error += 1;
@@ -175,7 +175,7 @@ field get_E_minus_1_c_dA_dt_R0(angle theta, velocity v_zap, acceleration a_zap, 
 varphi := proc (q, t, r__0, v__0, a__0, R__0) options operator, arrow;
 int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*sigma(q, r__0)/K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta), theta = 0 .. Pi) end proc;
 */
-int integral_phi(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, double a0, coordinate r_min, potential * result)
+int integral_phi(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, coordinate r_min, potential * result)
 {
 	int err, error = 0;
 	int i;
@@ -248,7 +248,7 @@ int integral_phi(charge q, timevalue t, coordinate R0, coordinate r0, velocity v
 	return error;
 }
 
-int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, power pw, field * pE_minus_grad_phi_R0, field *pE_minus_1_c_dA_dt_R0, coordinate r_min, potential *phi)
+int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, field * pE_minus_grad_phi_R0, field *pE_minus_1_c_dA_dt_R0, coordinate r_min, potential *phi)
 {
 	int err, error = 0;
 	int i;
@@ -282,7 +282,7 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 	{
 		theta = (i * dtheta);
 
-		err = calc_R_lw(q, t, R0, r0, v0, pw, theta, &t_zap, &r_zap, &R_zap, r_min, &R_lw_zap);
+		err = calc_R_lw(q, t, R0, r0, v0, a0, theta, &t_zap, &r_zap, &R_zap, r_min, &R_lw_zap);
 		if (0 != err)
 		{
 			error += 1;

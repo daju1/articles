@@ -259,12 +259,12 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 	distance R_lw_zap;
 	long double dS_dtheta;
 
-	double v_zap;
+	velocity v_zap;
 	acceleration a_zap;
 	long double aR_zap;
 	long double cos_alpha_zap;
-	double E_minus_grad_varphi_R0;
-	double E_minus_1_c_dA_dt_R0;
+	field E_minus_grad_varphi_R0;
+	field E_minus_1_c_dA_dt_R0;
 
 	int N = 10000;
 	angle dtheta = Pi / N;
@@ -320,16 +320,16 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 		//printf("S = %Lf S0 = %Lf\n", S, S0);
 		DBG_INFO("dS_dtheta = %Lf ", dS_dtheta);
 
-		//if (i % 100 == 0)
+		if (i % 1000 == 0)
 		if (0.0 != E_minus_1_c_dA_dt_R0)
 			DBG_INFO("theta = %Lf "
-				"r_zap = %0.6e "
-				"R_zap %0.6e "
-				"R_lw_zap %0.6e "
-				"v_zap = %0.6e "
-				"t_zap = %0.6e "
-				"a_zap = %0.6e "
-				"aR_zap = %0.6e "
+				"r_zap = %0.6Le "
+				"R_zap %0.6Le "
+				"R_lw_zap %0.6Le "
+				"v_zap = %0.6Le "
+				"t_zap = %0.6Le "
+				"a_zap = %0.6Le "
+				"aR_zap = %0.6Le "
 				"E1 %Lf "
 				"E2 %0.20Lf "
 				"e2 %0.20Le "

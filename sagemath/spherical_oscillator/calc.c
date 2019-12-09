@@ -151,8 +151,8 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 	while (v_n_t < get_nt())
 	{
 		int error = 0, err;
-		potential phi_lw_pos;
-		potential phi_lw_neg;
+		//potential phi_lw_pos;
+		//potential phi_lw_neg;
 		field E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos;
 		field E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg;
 		coordinate r_pos;
@@ -176,22 +176,24 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 				&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
 				&E1, &E2, &E);
 			if (fabs(E) > 1e-20){
-				#if 1
+#if 1
 				printf(
 					"R0 = %Lf t = %Lf "
 					"E = % 0.20Lf E1 = % 0.20Lf E2 = % 0.20Lf "
-					"phi_lw_pos = %Lf phi_lw_neg = %Lf\n"
+					//"phi_lw_pos = %Lf phi_lw_neg = %Lf"
+                    "\n"
 					, R0, t
 					, E
 					, E1, E2
-					, phi_lw_pos, phi_lw_neg);
-				#endif
+					//, phi_lw_pos, phi_lw_neg
+                    );
+#endif
 #if 1
 				printf(
 					"R0 = %0.10Lf t = %0.10Lf "
 					"E1_pos % 0.20Lf "
 					"E1_neg % 0.20Lf "
-					"phi_lw_pos = %Lf phi_lw_neg = %Lf "
+					//"phi_lw_pos = %Lf phi_lw_neg = %Lf "
 					//"E2_pos % 0.20f "
 					//"E2_neg % 0.20f "
 					"\n"
@@ -200,7 +202,7 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 					, E_minus_grad_phi_R0_neg
 					//, E_minus_1_c_dA_dt_R0_pos
 					//, E_minus_1_c_dA_dt_R0_neg
-					, phi_lw_pos, phi_lw_neg
+					//, phi_lw_pos, phi_lw_neg
 					);
 #endif
 			}
@@ -210,6 +212,21 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 		}
 		printf("\n");
 		#endif
+
+#ifdef ALGORITHM_VERSION_0
+		acceleration a_pos = get_a(t, a0_pos);
+		acceleration a_neg = get_a(t, a0_neg);
+
+		velocity v_pos = get_v(t, v0_pos, a0_pos);
+		velocity v_neg = get_v(t, v0_neg, a0_neg);
+
+		distance s_pos = get_s(t, v0_pos, a0_pos);
+		distance s_neg = get_s(t, v0_neg, a0_neg);
+		distance ds = s_neg - s_pos;
+
+		err = get_r(+q, t, r0_pos, v0_pos, a0_pos, r_min_pos, &r_pos);
+		err = get_r(-q, t, r0_neg, v0_neg, a0_neg, r_min_neg, &r_neg);
+#endif
 
 #ifdef ALGORITHM_VERSION_1
 		acceleration a_pos = get_a_ex1(t, +q);
@@ -224,7 +241,7 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 
 		err = get_r_ex1(+q, t, r0_pos, v0_pos, r_min_pos, &r_pos, 1);
 		err = get_r_ex1(-q, t, r0_neg, v0_neg, r_min_neg, &r_neg, 1);
-
+#endif
 		printf("t = %Le\n"
 			"a_pos = % 0.20Le, a_neg = % 0.20Le\n"
 			"v_pos = % 0.20Le, v_neg = % 0.20Le\n"
@@ -251,7 +268,7 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 			r_pos, // координата наблюдения совпадает с координатой обкладки
 			r0_pos, r0_neg,
 			v0_pos, v0_neg,
-			pw_pos, pw_neg,
+			a0_pos, a0_neg,
 			r_min_pos, r_min_neg,
 			&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos,
 			&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
@@ -282,7 +299,7 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 			r_neg, // координата наблюдения совпадает с координатой обкладки
 			r0_pos, r0_neg,
 			v0_pos, v0_neg,
-			pw_pos, pw_neg,
+			a0_pos, a0_neg,
 			r_min_pos, r_min_neg,
 			&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos, 
 			&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
@@ -318,6 +335,7 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 			timevalue t1 = v_t[v_n_t + 1];
 
 			printf("t = %Le t1 = %Le v_n_t = %d dt = %Le\n", t, t1, v_n_t, dt);
+#ifdef ALGORITHM_VERSION_1
 			if (0 != set_a_ex1(t1, dt, r_neg, pw_neg, t_a0, -q, m_neg, E_neg, E1_neg, E2_neg))
 			{
 				error += 1;
@@ -348,9 +366,9 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 				set_s_ex1(t1, r0_pos, v0_pos, r_min_pos, +q);
 				set_s_ex1(t1, r0_neg, v0_neg, r_min_neg, -q);
 			}
-
-		}
 #endif
+		}
+
 		if (0 == error)
 		{
 			++v_n_t;

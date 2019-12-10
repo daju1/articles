@@ -25,7 +25,7 @@ a0_n = 0.01
 
 step_R0 = 1.0
 min_R0 = r0 + step_R0
-max_R0 = 7.0
+max_R0 = 10.0
 
 t1 = 0
 t2 = 10
@@ -52,6 +52,7 @@ for R0_i in np.arange(min_R0, max_R0, step_R0):
     plot_data_E2 = []
     plot_data_E2_p = []
     plot_data_E2_n = []
+    plot_data_E_E1_E2 = []
     for t_i in np.arange(t1, t2, dt):
         (phi_p, E1_p, E2_p, error_p, r_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
         (phi_n, E1_n, E2_n, error_n, r_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
@@ -68,6 +69,7 @@ for R0_i in np.arange(min_R0, max_R0, step_R0):
             plot_data_E2 += [(t_i, E2_p + E2_n)]
             plot_data_E2_p += [(t_i, E2_p)]
             plot_data_E2_n += [(t_i, E2_n)]
+            plot_data_E_E1_E2 += [(t_i, E1_p + E2_p + E1_n + E2_n), (t_i, E1_p + E1_n), (t_i, E2_p + E2_n)]
     all_plot_data_E += plot_data_E
     all_plot_data_E_p += plot_data_E_p
     all_plot_data_E_n += plot_data_E_n
@@ -138,6 +140,13 @@ for R0_i in np.arange(min_R0, max_R0, step_R0):
         pname = "results/spherical_explosion_E2_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
         print pname
         p.save(pname)
+
+    if len(plot_data_E_E1_E2) > 0:
+        p = list_plot(plot_data_E_E1_E2)
+        pname = "results/spherical_explosion_E_E1_E2_t" + "_R0=" + float_formatting(R0_i) + ".png"
+        print pname
+        p.save(pname)
+
 
 p = list_plot(all_plot_data_E)
 pname = "results/spherical_explosion_all_E_t.png"

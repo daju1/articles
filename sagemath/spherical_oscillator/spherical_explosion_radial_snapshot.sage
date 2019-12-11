@@ -25,11 +25,11 @@ a0_n = 0.01
 
 step_R0 = 0.1
 min_R0 = r0 + step_R0
-max_R0 = 10.0
+max_R0 = 20.0
 
 t1 = 0
 t2 = 10
-dt = 1.0
+dt = 0.5
 dt_all = 2.0
 
 

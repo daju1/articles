@@ -109,7 +109,11 @@ print "Iphi =", Iphi
 I2=integral(Iphi * sin(theta_q), (theta_q, 0, pi), algorithm="giac")
 print I2
 
-rho_q(rq) = 1/(rq^2)
+# распределение заряда ядра приближённо выражается распределением Ферми
+# http://nuclphys.sinp.msu.ru/ndb/ndb102.htm
+Rq = var("Rq")
+aq = var("aq")
+rho_q(rq) = rho0 / (1+exp(rq-Rq)/aq)
 
 I3 = integral(rho_q(rq) * rq^2 * I2, (rq, 0, infinity), algorithm="giac")
 print I3

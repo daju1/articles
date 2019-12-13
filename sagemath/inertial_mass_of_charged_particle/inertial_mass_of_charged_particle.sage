@@ -27,28 +27,28 @@ sys.setdefaultencoding('utf8')
 # vector_v / c * vector_R = v / c * vector_ort_z * vector_R = v / c * Rz = v / c * (za - zq)
 
 # радиальная координната заряда
-rq = var("rq")
+# rq = var("rq")
 # радиальная координата точки наблюдения
-ra = var("ra")
+# ra = var("ra")
 
-assume(rq>0)
-assume(ra>0)
+# assume(rq>0)
+# assume(ra>0)
 
 # азимутальная координата заряда
-phi_q = var("theta_q")
+# phi_q = var("theta_q")
 
 # азимутальная координата точки наблюдения
-phi_a = var("theta_a")
+# phi_a = var("theta_a")
 
 # полярная координата заряда
-theta_q = var("theta_q")
+# theta_q = var("theta_q")
 
 # полярная координата точки наблюдения
-theta_a = var("theta_a")
+# theta_a = var("theta_a")
 
 # z - координаты заряда и точки наблюдения
-zq = rq*cos(theta_q)
-za = ra*cos(theta_a)
+zq = lambda rq, theta_q : rq*cos(theta_q)
+za = lambda ra, theta_a : ra*cos(theta_a)
 
 # физический смысл первого интегрирования по dVq есть отыскание векторного потенциала
 # создаваемого движущимся распределённым зарядом частицы в ее объёме
@@ -59,19 +59,25 @@ za = ra*cos(theta_a)
 # введём вспомогательные переменные - цилиндрический радиус
 # как координата r точки при переходе в цилиндрическую систему коорденат с тем же направлением оси z
 
-rca = ra*sin(theta_a)
-rcq = rq*sin(theta_q)
+rcq = lambda rq, theta_q : rq*sin(theta_q)
+rca = lambda ra, theta_a : ra*sin(theta_a)
 
 # выражение для расстояния между точкой заряда и точкой наблюдения примет вид
-R = sqrt(rca^2+rcq^2+(za-zq)^2-2*rca*rcq*cos(phi_q))
+# R0 = lambda ra, theta_a, rq, theta_q, phi_q : sqrt(rca^2+rcq^2+(za-zq)^2-2*rca*rcq*cos(phi_q))
+R0 = lambda ra, theta_a, rq, theta_q, phi_q : sqrt(rca(ra, theta_a)^2+rcq(rq, theta_q)^2+(za(ra, theta_a)-zq(rq, theta_q))^2-2*rca(ra, theta_a)*rcq(rq, theta_q)*cos(phi_q))
 
 # поскольку по условию задачи распределение плотности заряда частицы сферически симметрично,
 # мы можем вынести rho_q(rq) за знак интегрирования по phi_q
 # интегрируя 1/R по phi_q от 0 до 2*pi запишем
 
-rcqa2 = (rcq-rca)^2+(zq-za)^2
-module = - 4*rcq*rca / rcqa2
-Iphi=4*elliptic_kc(module) / sqrt(rcqa2)
+# rcqa2 = (rcq-rca)^2+(zq-za)^2
+# module = - 4*rcq*rca / rcqa2
+# Iphi=4*elliptic_kc(module) / sqrt(rcqa2)
+
+rcqa2  = lambda ra, theta_a, rq, theta_q : (rcq(rq,theta_q)-rca(ra,theta_a))^2+(zq(rq, theta_q)-za(ra, theta_a))^2;
+module = lambda ra, theta_a, rq, theta_q : - 4*rcq(rq,theta_q)*rca(ra,theta_a) / rcqa2(ra, theta_a, rq, theta_q);
+Iphi   = lambda ra, theta_a, rq, theta_q : 4*elliptic_kc(module(ra, theta_a, rq, theta_q)) / sqrt(rcqa2(ra, theta_a, rq, theta_q));
+
 
 # http://maths.cnam.fr/Membres/wilk/MathMax/help/Maxima/maxima_17.html
 # Function: elliptic_kc (m)
@@ -86,7 +92,7 @@ Iphi=4*elliptic_kc(module) / sqrt(rcqa2)
 
 
 
-print "Iphi =", Iphi
+# print "Iphi =", Iphi(ra, theta_a, rq, theta_q)
 # Iphi = 4*elliptic_kc(-4*ra*rq*sin(theta_a)*sin(theta_q)/((ra*cos(theta_a) - rq*cos(theta_q))^2 + (ra*sin(theta_a) - rq*sin(theta_q))^2))/sqrt((ra*cos(theta_a) - rq*cos(theta_q))^2 + (ra*sin(theta_a) - rq*sin(theta_q))^2)
 
 # sage: %display ascii_art
@@ -104,24 +110,91 @@ print "Iphi =", Iphi
 # integral(Iphi * sin(theta_q), (theta_q, 0, pi))
 # RuntimeError: Encountered operator mismatch in maxima-to-sr translation
 
+def my_numerical_integral(f, a, b):
+    print "f = ", f
+    print "f(x) = ", f(x)
+    print "a = ", a
+    print "b = ", b
+    integral = numerical_integral(f, a, b)
+    print "integral = ", integral
+    result = integral[0]
+    print "result = ", result
+    return result
+
+print exp(-1/x).nintegral(x, 1, 2)
+
+print my_numerical_integral(lambda x : exp(-1/x), 1, 2)
+
+print ( lambda phi_q : 1 / R0 (ra, theta_a, rq, theta_q, phi_q) )
 
 
-I2=integral(Iphi * sin(theta_q), (theta_q, 0, pi), algorithm="giac")
-print I2
+def calc1_m():
+    I1 = lambda ra, theta_a, rq, theta_q : ( 1 / R0 (ra, theta_a, rq, theta_q, phi_q) )   .nintegral(phi_q, 0, 2*pi)
 
-# распределение заряда ядра приближённо выражается распределением Ферми
-# http://nuclphys.sinp.msu.ru/ndb/ndb102.htm
-Rq = var("Rq")
-aq = var("aq")
-rho_q(rq) = rho0 / (1+exp(rq-Rq)/aq)
+    I2 = lambda ra, theta_a, rq          : ( I1(ra, theta_a, rq, theta_q) * sin(theta_q) ).nintegral(theta_q, 0, pi)
 
-I3 = integral(rho_q(rq) * rq^2 * I2, (rq, 0, infinity), algorithm="giac")
-print I3
+    # распределение заряда ядра приближённо выражается распределением Ферми
+    # http://nuclphys.sinp.msu.ru/ndb/ndb102.htm
 
-I4 = 2 * pi * I3
+    rho_q = lambda rho0, Rq, aq, r : rho0 / (1 + exp( (r - Rq) / aq) )
 
-I5 = integral(I4 * sin(theta_a), (theta_a, 0, pi), algorithm="giac")
-print I5
+    I3 = lambda rho0, Rq, aq, ra, theta_a : ( rho_q(rho0, Rq, aq, rq) * rq^2 * I2(ra, theta_a, rq) ).nintegral(rq, 0, infinity)
 
-I6 = integral(rho_q(ra) * ra^2 * I5, (ra, 0, infinity), algorithm="giac")
-print I6
+    I4 = lambda rho0, Rq, aq, ra, theta_a : 2 * pi * I3(rho0, Rq, aq, ra, theta_a)
+
+    I5 = lambda rho0, Rq, aq, ra : ( I4(rho0, Rq, aq, ra, theta_a) * sin(theta_a)).nintegral(theta_a, 0, pi)
+
+    I6 = lambda rho0, Rq, aq : ( rho_q(rho0, Rq, aq, ra) * ra^2 * I5(rho0, Rq, aq, ra)).nintegral(ra, 0, infinity)
+
+    I6(1, 1, 1)
+
+    #m = (mju_0 / (4 * pi)) * I6(rho0, Rq, aq)
+
+def calc2_m():
+    I1 = lambda ra, theta_a, rq, theta_q : my_numerical_integral( lambda phi_q : 1 / R0 (ra, theta_a, rq, theta_q, phi_q), 0, 2*pi)
+
+    I2 = lambda ra, theta_a, rq          : my_numerical_integral( lambda theta_q : I1(ra, theta_a, rq, theta_q) * sin(theta_q), 0, pi)
+
+    # распределение заряда ядра приближённо выражается распределением Ферми
+    # http://nuclphys.sinp.msu.ru/ndb/ndb102.htm
+
+    rho_q = lambda rho0, Rq, aq, r : rho0 / (1 + exp( (r - Rq) / aq) )
+
+    I3 = lambda rho0, Rq, aq, ra, theta_a : my_numerical_integral( lambda rq : rho_q(rho0, Rq, aq, rq) * rq^2 * I2(ra, theta_a, rq),  0, infinity)
+
+    I4 = lambda rho0, Rq, aq, ra, theta_a : 2 * pi * I3(rho0, Rq, aq, ra, theta_a)
+
+    I5 = lambda rho0, Rq, aq, ra : my_numerical_integral( lambda theta_a : I4(rho0, Rq, aq, ra, theta_a) * sin(theta_a), 0, pi)
+
+    I6 = lambda rho0, Rq, aq : my_numerical_integral( lambda ra : rho_q(rho0, Rq, aq, ra) * ra^2 * I5(rho0, Rq, aq, ra), 0, infinity)
+
+    # I6(rho0, Rq, aq)
+    I6(1, 1, 1)
+    #m = (mju_0 / (4 * pi)) * I6(rho0, Rq, aq)
+
+def test():
+    f = lambda k,xx,yy,zz : k * xx^2 + yy^3 + zz^4;
+
+    I1 = lambda k,xx,yy : my_numerical_integral(lambda zz : f(k,xx,yy,zz), 0, 3 );
+
+    I2 = lambda k,xx   : my_numerical_integral(lambda yy : I1(k,xx,yy), 0, 2 );
+
+    I3 = lambda k     : my_numerical_integral(lambda xx : I2(k,xx), 0, 1 );
+
+    I4 = I3(1.0)
+
+    print "I4 = ", I4
+
+    from sympy import integrate, Symbol
+    k = Symbol('k')
+    xx = Symbol('xx')
+    yy = Symbol('yy')
+    zz = Symbol('zz')
+    print integrate(f(k,xx,yy,zz), (xx), (yy), (zz))
+    print integrate(f(k,xx,yy,zz), (xx, 0, 1), (yy, 0, 2), (zz, 0, 3))
+    print integrate(f(k,xx,yy,zz), (xx, 0, 1), (yy, 0, 2), (zz, 0, 3))
+    print integrate(f(1,xx,yy,zz), (xx, 0, 1), (yy, 0, 2), (zz, 0, 3)).n()
+
+#calc1_m()
+#calc2_m()
+test()

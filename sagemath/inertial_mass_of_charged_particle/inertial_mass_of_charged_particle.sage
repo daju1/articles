@@ -110,7 +110,7 @@ Iphi   = lambda ra, theta_a, rq, theta_q : 4*elliptic_kc(module(ra, theta_a, rq,
 # integral(Iphi * sin(theta_q), (theta_q, 0, pi))
 # RuntimeError: Encountered operator mismatch in maxima-to-sr translation
 
-def my_numerical_integral(f, a, b):
+def my_numerical_integral1(f, a, b):
     print "f = ", f
     print "f(x) = ", f(x)
     print "a = ", a
@@ -120,6 +120,31 @@ def my_numerical_integral(f, a, b):
     result = integral[0]
     print "result = ", result
     return result
+
+def my_numerical_integral(f, a, b):
+    #print "f = ", f
+    #print "f(x) = ", f(x)
+    #print "a = ", a
+    #print "b = ", b
+    from scipy import integrate
+    #import ctypes
+    try:
+        integral = integrate.quad(f, a, b)
+        #print "integral = ", integral
+        result = integral[0]
+        #print "result = ", result
+        return result
+    except Exception as ex:
+        print "ex = ", str(ex)
+        print "f = ", f
+        print "f(x) = ", f(x)
+        print "a = ", a
+        print "b = ", b
+        integral = numerical_integral(f, a, b)
+        print "integral = ", integral
+        result = integral[0]
+        print "result = ", result
+        return result
 
 print exp(-1/x).nintegral(x, 1, 2)
 
@@ -131,7 +156,8 @@ print ( lambda phi_q : 1 / R0 (ra, theta_a, rq, theta_q, phi_q) )
 def calc1_m():
     I1 = lambda ra, theta_a, rq, theta_q : ( 1 / R0 (ra, theta_a, rq, theta_q, phi_q) )   .nintegral(phi_q, 0, 2*pi)
 
-    I2 = lambda ra, theta_a, rq          : ( I1(ra, theta_a, rq, theta_q) * sin(theta_q) ).nintegral(theta_q, 0, pi)
+    # I2 = lambda ra, theta_a, rq          : ( I1(ra, theta_a, rq, theta_q) * sin(theta_q) ).nintegral(theta_q, 0, pi)
+    I2 = lambda ra, theta_a, rq          : ( Iphi(ra, theta_a, rq, theta_q) * sin(theta_q) ).nintegral(theta_q, 0, pi)
 
     # распределение заряда ядра приближённо выражается распределением Ферми
     # http://nuclphys.sinp.msu.ru/ndb/ndb102.htm
@@ -153,7 +179,8 @@ def calc1_m():
 def calc2_m():
     I1 = lambda ra, theta_a, rq, theta_q : my_numerical_integral( lambda phi_q : 1 / R0 (ra, theta_a, rq, theta_q, phi_q), 0, 2*pi)
 
-    I2 = lambda ra, theta_a, rq          : my_numerical_integral( lambda theta_q : I1(ra, theta_a, rq, theta_q) * sin(theta_q), 0, pi)
+    #I2 = lambda ra, theta_a, rq          : my_numerical_integral( lambda theta_q : I1(ra, theta_a, rq, theta_q) * sin(theta_q), 0, pi)
+    I2 = lambda ra, theta_a, rq          : my_numerical_integral( lambda theta_q : Iphi(ra, theta_a, rq, theta_q) * sin(theta_q), 0, pi)
 
     # распределение заряда ядра приближённо выражается распределением Ферми
     # http://nuclphys.sinp.msu.ru/ndb/ndb102.htm
@@ -169,7 +196,10 @@ def calc2_m():
     I6 = lambda rho0, Rq, aq : my_numerical_integral( lambda ra : rho_q(rho0, Rq, aq, ra) * ra^2 * I5(rho0, Rq, aq, ra), 0, infinity)
 
     # I6(rho0, Rq, aq)
-    I6(1, 1, 1)
+
+    I7 = I6(1, 1, 1)
+
+    print "I7 = ", I7
     #m = (mju_0 / (4 * pi)) * I6(rho0, Rq, aq)
 
 def test():
@@ -196,5 +226,5 @@ def test():
     print integrate(f(1,xx,yy,zz), (xx, 0, 1), (yy, 0, 2), (zz, 0, 3)).n()
 
 #calc1_m()
-#calc2_m()
-test()
+calc2_m()
+#test()

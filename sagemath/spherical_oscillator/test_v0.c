@@ -16,7 +16,7 @@ int test_v0()
 	int error = 0;
 	coordinate r_zap;
 	distance R_zap, R_lw_zap;
-	potential phi_lw;
+	potential phi_lw, A_lw;
 	field E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0;
 
 	/* Текущий момент */
@@ -153,13 +153,13 @@ return 0;
 	int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*sigma(q, r__0)/K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta), theta = 0 .. Pi) end proc;*/
 	error = integral_phi(q, t, R0, r0, v0, a0, r_min, &phi_lw);
 	printf("phi_lw = %Lf\n", phi_lw);
-	error = integral_phi_and_E(q, t, R0, r0, v0, a0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw);
+	error = integral_phi_and_E(q, t, R0, r0, v0, a0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &A_lw);
 	printf("phi_lw = %Lf E1=%Lf E2 = %Lf\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	/*infinity error result*/
 	error = integral_phi(q, t, -1.0000000000000142, 1, 0, 0, r_min, &phi_lw);
 	printf("phi_lw = %Lf\n", phi_lw);
-	phi_lw = integral_phi_and_E(q, t, -1.0000000000000142, 1, 0, 0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw);
+	phi_lw = integral_phi_and_E(q, t, -1.0000000000000142, 1, 0, 0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &A_lw);
 	printf("phi_lw = %Lf E1=%Lf E2 = %Lf\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	/*hung
@@ -180,12 +180,13 @@ return 0;
 
 	error = integral_phi(-q, 5.0, -1.5, 2.0, 0.0, 1.0, r_min, &phi_lw);
 	printf("phi_lw = %Lf\n", phi_lw);
-	error = integral_phi_and_E(-q, 5.0, -1.5, 2.0, 0.0, 1.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw);
+	error = integral_phi_and_E(-q, 5.0, -1.5, 2.0, 0.0, 1.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &A_lw);
 	printf("phi_lw = %Lf E1=%Lf E2 = %Lf\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	{
 		field E1_p, E1_n, E2_p, E2_n;
 		potential phi_p, phi_n;
+		potential A_p, A_n;
 		velocity v0_p = 0.0;
 		velocity v0_n = 0.0;
 		acceleration a0_p = 0.0001;
@@ -201,8 +202,8 @@ return 0;
 			{
 				printf("ti=%03.1f R0_i=%03.1f ", ti, R0_i);
 
-				error = integral_phi_and_E(+q, ti, R0_i, r0, v0_p, a0_p, &E1_p, &E2_p, r_min, &phi_p);
-				error = integral_phi_and_E(-q, ti, R0_i, r0, v0_n, a0_n, &E1_n, &E2_n, r_min, &phi_n);
+				error = integral_phi_and_E(+q, ti, R0_i, r0, v0_p, a0_p, &E1_p, &E2_p, r_min, &phi_p, &A_p);
+				error = integral_phi_and_E(-q, ti, R0_i, r0, v0_n, a0_n, &E1_n, &E2_n, r_min, &phi_n, &A_n);
 				//printf("phi_p = %Lf ", phi_p);
 				//printf("phi_n = %Lf ", phi_n);
 
@@ -230,10 +231,10 @@ return 0;
 			}
 			printf("\n");
 		}
-		error = integral_phi_and_E(q, t, R0, r0, 0.0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw);
+		error = integral_phi_and_E(q, t, R0, r0, 0.0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &A_lw);
 		printf("phi_lw = %Lf E1=%Lf E2 = %Lf\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
-		error = integral_phi_and_E(-q, t, R0, r0, 0.0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw);
+		error = integral_phi_and_E(-q, t, R0, r0, 0.0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &A_lw);
 		printf("phi_lw = %Lf E1=%Lf E2 = %Lf\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	}

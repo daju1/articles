@@ -248,7 +248,7 @@ int integral_phi(charge q, timevalue t, coordinate R0, coordinate r0, velocity v
 	return error;
 }
 
-int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, field * pE_minus_grad_phi_R0, field *pE_minus_1_c_dA_dt_R0, coordinate r_min, potential *phi)
+int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, field * pE_minus_grad_phi_R0, field *pE_minus_1_c_dA_dt_R0, coordinate r_min, potential *phi, potential *A)
 {
 	int err, error = 0;
 	int i;
@@ -269,6 +269,7 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 	int N = 10000;
 	angle dtheta = Pi / N;
 	*phi = 0.0;
+	*A = 0.0;
 	long double sigma0 = get_sigma(q, r0);
 	long double ommited_S = 0.0;
 	long double S0 = 4*Pi*r0*r0;
@@ -349,6 +350,7 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 
 		if (0.0 != R_lw_zap){
 			*phi                   += dS_dtheta * dtheta / R_lw_zap ;
+			*A                     += dS_dtheta * dtheta * cos(theta) * v_zap / (g_c * R_lw_zap);
 			*pE_minus_grad_phi_R0  += dS_dtheta * dtheta * E_minus_grad_varphi_R0;
 			*pE_minus_1_c_dA_dt_R0 += dS_dtheta * dtheta * E_minus_1_c_dA_dt_R0;
 			DBG_INFO("phi = %Lf ", *phi);
@@ -374,6 +376,7 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 	long double sigma = q / S;
 	DBG_INFO("sigma = %Lf\n", sigma);
 	*phi                   *= sigma;
+	*A                     *= sigma;
 	*pE_minus_grad_phi_R0  *= sigma;
 	*pE_minus_1_c_dA_dt_R0 *= sigma;
 

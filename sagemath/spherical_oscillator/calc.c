@@ -101,15 +101,15 @@ int calc_E(charge q, timevalue t, coordinate R0,
 			field * E1, field * E2, field * E)
 {
 	int error = 0, err;
-	potential phi_lw_pos;
-	potential phi_lw_neg;
+	potential phi_lw_pos, A_lw_pos;
+	potential phi_lw_neg, A_lw_neg;
 
 	printf("\n");
-	error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, a0_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos, r_min_pos, &phi_lw_pos);
+	error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, a0_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos, r_min_pos, &phi_lw_pos, &A_lw_pos);
 	printf("pos err = %d phi_lw = %Lf E1=%Lf E2 = %0.20Lf\n", error, phi_lw_pos, *E_minus_grad_phi_R0_pos, *E_minus_1_c_dA_dt_R0_pos);
 
 	printf("\n");
-	error = integral_phi_and_E(-q, t, R0, r0_neg, v0_neg, a0_neg, E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg, r_min_neg, &phi_lw_neg);
+	error = integral_phi_and_E(-q, t, R0, r0_neg, v0_neg, a0_neg, E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg, r_min_neg, &phi_lw_neg, &A_lw_neg);
 	printf("neg err = %d phi_lw = %Lf E1=%Lf E2 = %0.20Lf\n", error, phi_lw_neg, *E_minus_grad_phi_R0_neg, *E_minus_1_c_dA_dt_R0_neg);
 
 	*E1 = *E_minus_grad_phi_R0_pos + *E_minus_grad_phi_R0_neg;

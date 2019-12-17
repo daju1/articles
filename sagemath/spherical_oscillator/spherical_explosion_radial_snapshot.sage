@@ -32,7 +32,13 @@ t2 = 10
 dt = 0.5
 dt_all = 2.0
 
+all_plot_data_phi = []
+all_plot_data_phi_p = []
+all_plot_data_phi_n = []
 
+all_plot_data_A = []
+all_plot_data_A_p = []
+all_plot_data_A_n = []
 
 all_plot_data_E = []
 all_plot_data_E_p = []
@@ -45,6 +51,14 @@ all_plot_data_E2 = []
 all_plot_data_E2_p = []
 all_plot_data_E2_n = []
 for t_i in np.arange(t1, t2, dt):
+    plot_data_phi = []
+    plot_data_phi_p = []
+    plot_data_phi_n = []
+
+    plot_data_A = []
+    plot_data_A_p = []
+    plot_data_A_n = []
+
     plot_data_E = []
     plot_data_E_p = []
     plot_data_E_n = []
@@ -56,10 +70,19 @@ for t_i in np.arange(t1, t2, dt):
     plot_data_E2_p = []
     plot_data_E2_n = []
     for R0_i in np.arange(min_R0, max_R0, step_R0):
-        (phi_p, E1_p, E2_p, error_p, r_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
-        (phi_n, E1_n, E2_n, error_n, r_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
+        (phi_p, A_p, E1_p, E2_p, error_p, r_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
+        (phi_n, A_n, E1_n, E2_n, error_n, r_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
         print (phi_p, E1_p, E2_p, error_p, r_p)
         print (phi_n, E1_n, E2_n, error_n, r_n)
+
+        plot_data_phi += [(R0_i, phi_p + phi_n)]
+        plot_data_phi_p += [(R0_i, phi_p)]
+        plot_data_phi_n += [(R0_i, phi_n)]
+
+        plot_data_A += [(R0_i, A_p + A_n)]
+        plot_data_A_p += [(R0_i, A_p)]
+        plot_data_A_n += [(R0_i, A_n)]
+
         if r_n < R0_i - step_R0:
             plot_data_E += [(R0_i, E1_p + E2_p + E1_n + E2_n)]
             plot_data_E_p += [(R0_i, E1_p + E2_p)]
@@ -72,9 +95,18 @@ for t_i in np.arange(t1, t2, dt):
             plot_data_E2_p += [(R0_i, E2_p)]
             plot_data_E2_n += [(R0_i, E2_n)]
     if abs(t_i/dt_all) > dt/2:
+        all_plot_data_phi += plot_data_phi
+        all_plot_data_phi_p += plot_data_phi_p
+        all_plot_data_phi_n += plot_data_phi_n
+
+        all_plot_data_A += plot_data_A
+        all_plot_data_A_p += plot_data_A_p
+        all_plot_data_A_n += plot_data_A_n
+
         all_plot_data_E += plot_data_E
         all_plot_data_E_p += plot_data_E_p
         all_plot_data_E_n += plot_data_E_n
+
         all_plot_data_EE += plot_data_EE
         all_plot_data_E1 += plot_data_E1
         all_plot_data_E1_p += plot_data_E1_p
@@ -82,6 +114,42 @@ for t_i in np.arange(t1, t2, dt):
         all_plot_data_E2 += plot_data_E2
         all_plot_data_E2_p += plot_data_E2_p
         all_plot_data_E2_n += plot_data_E2_n
+
+    if len(plot_data_phi) > 0:
+        p = list_plot(plot_data_phi)
+        pname = "results/spherical_explosion_phi_R0" + "_t=" + float_formatting(t_i) + ".png"
+        print pname
+        p.save(pname)
+
+    if len(plot_data_phi_p) > 0:
+        p = list_plot(plot_data_phi_p)
+        pname = "results/spherical_explosion_phi_p_R0" + "_t=" + float_formatting(t_i) + ".png"
+        print pname
+        p.save(pname)
+
+    if len(plot_data_phi_n) > 0:
+        p = list_plot(plot_data_phi_n)
+        pname = "results/spherical_explosion_phi_n_R0" + "_t=" + float_formatting(t_i) + ".png"
+        print pname
+        p.save(pname)
+
+    if len(plot_data_A) > 0:
+        p = list_plot(plot_data_A)
+        pname = "results/spherical_explosion_A_R0" + "_t=" + float_formatting(t_i) + ".png"
+        print pname
+        p.save(pname)
+
+    if len(plot_data_A_p) > 0:
+        p = list_plot(plot_data_A_p)
+        pname = "results/spherical_explosion_A_p_R0" + "_t=" + float_formatting(t_i) + ".png"
+        print pname
+        p.save(pname)
+
+    if len(plot_data_A_n) > 0:
+        p = list_plot(plot_data_A_n)
+        pname = "results/spherical_explosion_A_n_R0" + "_t=" + float_formatting(t_i) + ".png"
+        print pname
+        p.save(pname)
 
     if len(plot_data_E) > 0:
         p = list_plot(plot_data_E)
@@ -142,6 +210,39 @@ for t_i in np.arange(t1, t2, dt):
         pname = "results/spherical_explosion_E2_n_R0" + "_t=" + float_formatting(t_i) + ".png"
         print pname
         p.save(pname)
+
+
+p = list_plot(all_plot_data_phi)
+pname = "results/spherical_explosion_all_phi_R0.png"
+print pname
+p.save(pname)
+
+p = list_plot(all_plot_data_phi_p)
+pname = "results/spherical_explosion_all_phi_p_R0.png"
+print pname
+p.save(pname)
+
+p = list_plot(all_plot_data_phi_n)
+pname = "results/spherical_explosion_all_phi_n_R0.png"
+print pname
+p.save(pname)
+
+
+p = list_plot(all_plot_data_A)
+pname = "results/spherical_explosion_all_A_R0.png"
+print pname
+p.save(pname)
+
+p = list_plot(all_plot_data_A_p)
+pname = "results/spherical_explosion_all_A_p_R0.png"
+print pname
+p.save(pname)
+
+p = list_plot(all_plot_data_A_n)
+pname = "results/spherical_explosion_all_A_n_R0.png"
+print pname
+p.save(pname)
+
 
 p = list_plot(all_plot_data_E)
 pname = "results/spherical_explosion_all_E_R0.png"

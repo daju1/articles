@@ -9,7 +9,7 @@ cdef extern from "tzap.c":
 
 cdef extern from "integrate.c":
     int integral_phi(long double q, long double t, long double R0, long double r0, long double v0, long double a0, long double r_min, long double * result)
-    int integral_phi_and_E(long double q, long double t, long double R0, long double r0, long double v0, long double a0, long double * pE_minus_grad_phi_R0, long double *pE_minus_1_c_dA_dt_R0, long double r_min, long double *phi)
+    int integral_phi_and_E(long double q, long double t, long double R0, long double r0, long double v0, long double a0, long double * pE_minus_grad_phi_R0, long double *pE_minus_1_c_dA_dt_R0, long double r_min, long double *phi, long double *A)
 
 cdef extern from "calc.c":
     int do_v1_calc(long double q, long double m_pos, long double m_neg, long double r0_pos, long double r0_neg, long double v0_pos, long double v0_neg, long double a0_pos, long double a0_neg, long double t_a0)
@@ -42,10 +42,11 @@ def phi_and_E_lw(q, t, R0, r0, v0, a0, r_min):
     cdef long double E1
     cdef long double E2
     cdef long double phi
+    cdef long double A
     cdef long double r
-    cdef error = integral_phi_and_E(q, t, R0, r0, v0, a0, &E1, &E2, r_min, &phi)
+    cdef error = integral_phi_and_E(q, t, R0, r0, v0, a0, &E1, &E2, r_min, &phi, &A)
     cdef err = get_r_common(q, t, r0, v0, a0, r_min, &r)
-    return (phi, E1, E2, error, r)
+    return (phi, A, E1, E2, error, r)
 
 def v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0):
     cdef error = do_v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0)

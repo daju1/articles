@@ -7,6 +7,8 @@ import numpy as np
 attach("tzap.spyx")
 attach("float_formatting.sage")
 
+from sage.plot.line import Line
+
 c = get_light_veloncity()
 q = 1
 t = 5
@@ -28,9 +30,20 @@ min_R0 = r0 + step_R0
 max_R0 = 20.0
 
 t1 = 0
-t2 = 10
+t2 = 100
 dt = 0.5
 dt_all = 2.0
+
+def get_min_max_of_data(data):
+    min = sys.float_info.max;
+    max = -sys.float_info.max;
+    for (t, v) in data:
+        if min > v:
+            min = v
+        if max < v:
+            max = v
+    return (min, max)
+
 
 all_plot_data_phi = []
 all_plot_data_phi_p = []
@@ -69,11 +82,15 @@ for t_i in np.arange(t1, t2, dt):
     plot_data_E2 = []
     plot_data_E2_p = []
     plot_data_E2_n = []
+
+    r_p = get_r_of_sphere(+q, t_i, r0, v0_p, a0_p, r_min)
+    r_n = get_r_of_sphere(+q, t_i, r0, v0_n, a0_n, r_min)
+
     for R0_i in np.arange(min_R0, max_R0, step_R0):
-        (phi_p, A_p, E1_p, E2_p, error_p, r_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
-        (phi_n, A_n, E1_n, E2_n, error_n, r_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
-        print (phi_p, E1_p, E2_p, error_p, r_p)
-        print (phi_n, E1_n, E2_n, error_n, r_n)
+        (phi_p, A_p, E1_p, E2_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
+        (phi_n, A_n, E1_n, E2_n, error_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
+        print (phi_p, A_p, E1_p, E2_p, error_p, r_p)
+        print (phi_n, A_n, E1_n, E2_n, error_n, r_n)
 
         plot_data_phi += [(R0_i, phi_p + phi_n)]
         plot_data_phi_p += [(R0_i, phi_p)]
@@ -119,6 +136,11 @@ for t_i in np.arange(t1, t2, dt):
         p = list_plot(plot_data_phi)
         pname = "results/spherical_explosion_phi_R0" + "_t=" + float_formatting(t_i) + ".png"
         print pname
+        (min_phi, max_phi) = get_min_max_of_data(plot_data_phi)
+        L = Line([r_p,r_p], [min_phi, max_phi],{'alpha':1,'thickness':1,'rgbcolor':(1,0,0),'legend_label':''})
+        p.add_primitive(L)
+        L = Line([r_n,r_n], [min_phi, max_phi],{'alpha':1,'thickness':1,'rgbcolor':(0,0,1),'legend_label':''})
+        p.add_primitive(L)
         p.save(pname)
 
     if len(plot_data_phi_p) > 0:

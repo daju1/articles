@@ -179,8 +179,8 @@ def calc1_m():
 def calc2_m():
     I1 = lambda ra, theta_a, rq, theta_q : my_numerical_integral( lambda phi_q : 1 / R0 (ra, theta_a, rq, theta_q, phi_q), 0, 2*pi)
 
-    #I2 = lambda ra, theta_a, rq          : my_numerical_integral( lambda theta_q : I1(ra, theta_a, rq, theta_q) * sin(theta_q), 0, pi)
-    I2 = lambda ra, theta_a, rq          : my_numerical_integral( lambda theta_q : Iphi(ra, theta_a, rq, theta_q) * sin(theta_q), 0, pi)
+    I2 = lambda ra, theta_a, rq          : my_numerical_integral( lambda theta_q : I1(ra, theta_a, rq, theta_q) * sin(theta_q), 0, pi)
+    # I2 = lambda ra, theta_a, rq          : my_numerical_integral( lambda theta_q : Iphi(ra, theta_a, rq, theta_q) * sin(theta_q), 0, pi)
 
     # распределение заряда ядра приближённо выражается распределением Ферми
     # http://nuclphys.sinp.msu.ru/ndb/ndb102.htm
@@ -198,8 +198,12 @@ def calc2_m():
     # I6(rho0, Rq, aq)
 
     I7 = I6(1, 1, 1)
+    print "I6(1, 1, 1) = ", I7
 
-    print "I7 = ", I7
+    # integral =  (820.1392952900268, 0.0004965284196251068)
+    # result =  820.13929529
+    # using Iphi
+    # I6(1, 1, 1) =  820.13929529
     #m = (mju_0 / (4 * pi)) * I6(rho0, Rq, aq)
 
 def test():

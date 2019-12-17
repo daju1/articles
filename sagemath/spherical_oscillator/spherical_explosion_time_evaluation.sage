@@ -70,10 +70,13 @@ for R0_i in np.arange(min_R0, max_R0, step_R0):'
     plot_data_E2_n = []
     plot_data_E_E1_E2 = []
     for t_i in np.arange(t1, t2, dt):
-        (phi_p, A_p, E1_p, E2_p, error_p, r_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
-        (phi_n, A_n, E1_n, E2_n, error_n, r_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
-        print (phi_p, E1_p, E2_p, error_p, r_p)
-        print (phi_n, E1_n, E2_n, error_n, r_n)
+        r_p = get_r_of_sphere(+q, t_i, r0, v0_p, a0_p, r_min)
+        r_n = get_r_of_sphere(+q, t_i, r0, v0_n, a0_n, r_min)
+
+        (phi_p, A_p, E1_p, E2_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
+        (phi_n, A_n, E1_n, E2_n, error_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
+        print (phi_p, A_p, E1_p, E2_p, error_p, r_p)
+        print (phi_n, A_n, E1_n, E2_n, error_n, r_n)
 
         plot_data_phi += [(R0_i, phi_p + phi_n)]
         plot_data_phi_p += [(R0_i, phi_p)]

@@ -2,6 +2,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+import numpy as np
+
 # расмотрим модель заряженной частицы имеющей сферическую симметрию распределения заряда с плотностью rho_q(r)
 # задача : найти коэффициент самоиндукции такой частицы L
 # 1/(J^2)*integral(integral(vector_j*vector_j/R, dV), dV)
@@ -206,6 +208,33 @@ def calc2_m():
     # I6(1, 1, 1) =  820.13929529
     #m = (mju_0 / (4 * pi)) * I6(rho0, Rq, aq)
 
+def calc3_scalar_potential():
+    # распределение заряда ядра приближённо выражается распределением Ферми
+    # http://nuclphys.sinp.msu.ru/ndb/ndb102.htm
+
+    rho_q = lambda rho0, Rq, aq, r : rho0 / (1 + np.exp( (r - Rq) / aq) )
+
+    Ir = lambda rho0, Rq, aq, theta_a, ra, phi_q, theta_q : my_numerical_integral( lambda rq : rho_q(rho0, Rq, aq, rq) * rq^2 * sin(theta_q) / R0 (ra, theta_a, rq, theta_q, phi_q),  0, infinity)
+
+    I2 = lambda rho0, Rq, aq, theta_a, ra, phi_q : my_numerical_integral( lambda theta_q : Ir(rho0, Rq, aq, theta_a, ra, phi_q, theta_q), 0, pi)
+
+    I3 = lambda rho0, Rq, aq, theta_a, ra : my_numerical_integral( lambda phi_q : I2(rho0, Rq, aq, theta_a, ra, phi_q), 0, 2*pi)
+
+    # scalar_potential = I3(1, 1, 1, 0.5, pi/4)
+    # print "I3(1, 1, 1, 0.5, pi/4) = ", scalar_potential
+    # I3(1, 1, 1, 0.5, pi/4) =  21.8634904207
+
+    I4 = lambda rho0, Rq, aq, theta_a, ra : 2 * pi * I3(rho0, Rq, aq, theta_a, ra)
+
+    I5 = lambda rho0, Rq, aq, theta_a : my_numerical_integral( lambda ra : rho_q(rho0, Rq, aq, ra) * I4(rho0, Rq, aq, theta_a, ra) * sin(theta_a) * ra^2, 0, infinity)
+
+    I6 = lambda rho0, Rq, aq : my_numerical_integral( lambda theta_a : I5 (rho0, Rq, aq, theta_a), 0, pi)
+
+    # I6(rho0, Rq, aq)
+
+    I7 = I6(1, 1, 1)
+    print "I6(1, 1, 1) = ", I7
+
 def test():
     f = lambda k,xx,yy,zz : k * xx^2 + yy^3 + zz^4;
 
@@ -230,5 +259,6 @@ def test():
     print integrate(f(1,xx,yy,zz), (xx, 0, 1), (yy, 0, 2), (zz, 0, 3)).n()
 
 #calc1_m()
-calc2_m()
+#calc2_m()
 #test()
+calc3_scalar_potential()

@@ -202,11 +202,32 @@ def calc2_m():
     I7 = I6(1, 1, 1)
     print "I6(1, 1, 1) = ", I7
 
+    # using Iphi
     # integral =  (820.1392952900268, 0.0004965284196251068)
     # result =  820.13929529
-    # using Iphi
     # I6(1, 1, 1) =  820.13929529
-    #m = (mju_0 / (4 * pi)) * I6(rho0, Rq, aq)
+    # m = (mju_0 / (4 * pi)) * I6(rho0, Rq, aq)
+
+    # using I1
+    # float division by zero
+    # ...
+    # float division by zero
+    # integral =  (17.077164899361996, 0.0721483434946714)
+    # result =  17.0771648994
+    # ex =  float division by zero
+    # f =  <function <lambda> at 0x7fcf9034a7d0>
+    # f(x) =  1/sqrt(-10.595854716776243*cos(x) + 10.595854716776243)
+    # a =  0
+    # b =  2*pi
+    # float division by zero
+    # ....
+    # float division by zero
+    # integral =  (17.07716489912273, 0.07214834349503378)
+    # result =  17.0771648991
+    # math range error
+    # math range error
+    # math range error
+    # Killed
 
 def calc3_scalar_potential():
     # распределение заряда ядра приближённо выражается распределением Ферми
@@ -234,6 +255,8 @@ def calc3_scalar_potential():
 
     I7 = I6(1, 1, 1)
     print "I6(1, 1, 1) = ", I7
+    # sage/src/bin/sage-ipython:220: RuntimeWarning: overflow encountered in exp
+    # I6(1, 1, 1) =  820.139143519
 
 def test():
     f = lambda k,xx,yy,zz : k * xx^2 + yy^3 + zz^4;
@@ -261,4 +284,4 @@ def test():
 #calc1_m()
 #calc2_m()
 #test()
-calc3_scalar_potential()
+#calc3_scalar_potential()

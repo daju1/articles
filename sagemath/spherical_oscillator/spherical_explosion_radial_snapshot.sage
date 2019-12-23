@@ -10,6 +10,7 @@ attach("float_formatting.sage")
 from sage.plot.line import Line
 
 c = get_light_veloncity()
+'''
 q = 1
 
 r0 = 1
@@ -31,7 +32,7 @@ t1 = 0
 t2 = 100
 dt = 0.5
 dt_all = 2.0
-
+'''
 def get_min_max_of_data(data):
     min = sys.float_info.max;
     max = -sys.float_info.max;
@@ -42,7 +43,7 @@ def get_min_max_of_data(data):
             max = v
     return (min, max)
 
-def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_n, step_R0, min_R0, max_R0):
+def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_n, step_R0, min_R0, max_R0, r_min):
     all_plot_data_phi = []
     all_plot_data_phi_p = []
     all_plot_data_phi_n = []
@@ -314,4 +315,4 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
     print pname
     p.save(pname)
 
-spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_n, step_R0, min_R0, max_R0)
+# spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_n, step_R0, min_R0, max_R0, r_min)

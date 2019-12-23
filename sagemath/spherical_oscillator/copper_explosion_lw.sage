@@ -334,6 +334,7 @@ m_neg = m__e  * N__i
 
 r0_pos = R__i / 2
 r0_neg = R__i / 2
+r0 = R__i / 2
 
 v0_pos = 0
 v0_neg = 0
@@ -343,6 +344,7 @@ a0_neg = a__0r(R__i / 2, R__i, m_neg, (T__i + T__e) / 2).n()
 
 r_min_pos = R__i / 10
 r_min_neg = R__i / 10
+r_min = R__i / 10
 
 print "a0_pos = ", a0_pos
 print "a0_neg = ", a0_neg
@@ -355,7 +357,18 @@ dr = r_finish / 100
 set_dr_py(dr)
 set_r_finish_py(r_finish)
 
-v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0)
+# v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0)
+
+step_R0 = 1.0
+min_R0 = r0 + step_R0
+max_R0 = 10.0
+
+t1 = 0
+t2 = 1
+dt = 0.01
+
+attach("spherical_explosion_time_evaluation.sage")
+spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_pos, v0_neg, a0_pos, a0_neg, step_R0, min_R0, max_R0, r_min)
 
 
 

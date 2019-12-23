@@ -8,6 +8,7 @@ attach("tzap.spyx")
 attach("float_formatting.sage")
 
 c = get_light_veloncity()
+'''
 q = 1
 
 
@@ -29,8 +30,8 @@ max_R0 = 10.0
 t1 = 0
 t2 = 10
 dt = 0.1
-
-def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_n, step_R0, min_R0, max_R0):
+'''
+def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_n, step_R0, min_R0, max_R0, r_min):
     all_plot_data_phi = []
     all_plot_data_phi_p = []
     all_plot_data_phi_n = []
@@ -303,4 +304,4 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
     print pname
     p.save(pname)
 
-spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_n, step_R0, min_R0, max_R0)
+# spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_n, step_R0, min_R0, max_R0, r_min)

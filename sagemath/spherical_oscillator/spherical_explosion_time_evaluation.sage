@@ -119,188 +119,201 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
         all_plot_data_E2_p += plot_data_E2_p
         all_plot_data_E2_n += plot_data_E2_n
 
+
+        dir = os.getcwd()  + "/results/R0=" + float_formatting(R0_i)
+        print "dir = ", dir
+
+        try:
+            os.mkdir(dir)
+        except:
+            pass
+
+        folder = dir + "/"
+
         if len(plot_data_phi) > 0:
             p = list_plot(plot_data_phi)
-            pname = "results/spherical_explosion_phi_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_phi_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_phi_p) > 0:
             p = list_plot(plot_data_phi_p)
-            pname = "results/spherical_explosion_phi_p_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_phi_p_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_phi_n) > 0:
             p = list_plot(plot_data_phi_n)
-            pname = "results/spherical_explosion_phi_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_phi_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_A) > 0:
             p = list_plot(plot_data_A)
-            pname = "results/spherical_explosion_A_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_A_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_A_p) > 0:
             p = list_plot(plot_data_A_p)
-            pname = "results/spherical_explosion_A_p_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_A_p_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_A_n) > 0:
             p = list_plot(plot_data_A_n)
-            pname = "results/spherical_explosion_A_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_A_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
 
         if len(plot_data_E) > 0:
             p = list_plot(plot_data_E)
-            pname = "results/spherical_explosion_E_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_E_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_E_p) > 0:
             p = list_plot(plot_data_E_p)
-            pname = "results/spherical_explosion_E_p_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_E_p_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_E_n) > 0:
             p = list_plot(plot_data_E_n)
-            pname = "results/spherical_explosion_E_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_E_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_EE) > 0:
             p = list_plot(plot_data_EE)
-            pname = "results/spherical_explosion_EE_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_EE_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_E1) > 0:
             p = list_plot(plot_data_E1)
-            pname = "results/spherical_explosion_E1_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_E1_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_E1_p) > 0:
             p = list_plot(plot_data_E1_p)
-            pname = "results/spherical_explosion_E1_p_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_E1_p_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_E1_n) > 0:
             p = list_plot(plot_data_E1_n)
-            pname = "results/spherical_explosion_E1_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_E1_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_E2) > 0:
             p = list_plot(plot_data_E2)
-            pname = "results/spherical_explosion_E2_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_E2_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_E2_p) > 0:
             p = list_plot(plot_data_E2_p)
-            pname = "results/spherical_explosion_E2_p_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_E2_p_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_E2_n) > 0:
             p = list_plot(plot_data_E2_n)
-            pname = "results/spherical_explosion_E2_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_E2_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
         if len(plot_data_E_E1_E2) > 0:
             p = list_plot(plot_data_E_E1_E2)
-            pname = "results/spherical_explosion_E_E1_E2_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            pname = folder + "spherical_explosion_E_E1_E2_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print pname
             p.save(pname)
 
+    folder = "results/"
+
     p = list_plot(all_plot_data_phi)
-    pname = "results/spherical_explosion_all_phi_t.png"
+    pname = folder + "spherical_explosion_all_phi_t.png"
     print pname
     p.save(pname)
 
     p = list_plot(all_plot_data_phi_p)
-    pname = "results/spherical_explosion_all_phi_p_t.png"
+    pname = folder + "spherical_explosion_all_phi_p_t.png"
     print pname
     p.save(pname)
 
     p = list_plot(all_plot_data_phi_n)
-    pname = "results/spherical_explosion_all_phi_n_t.png"
+    pname = folder + "spherical_explosion_all_phi_n_t.png"
     print pname
     p.save(pname)
 
 
     p = list_plot(all_plot_data_A)
-    pname = "results/spherical_explosion_all_A_t.png"
+    pname = folder + "spherical_explosion_all_A_t.png"
     print pname
     p.save(pname)
 
     p = list_plot(all_plot_data_A_p)
-    pname = "results/spherical_explosion_all_A_p_t.png"
+    pname = folder + "spherical_explosion_all_A_p_t.png"
     print pname
     p.save(pname)
 
     p = list_plot(all_plot_data_A_n)
-    pname = "results/spherical_explosion_all_A_n_t.png"
+    pname = folder + "spherical_explosion_all_A_n_t.png"
     print pname
     p.save(pname)
 
 
     p = list_plot(all_plot_data_E)
-    pname = "results/spherical_explosion_all_E_t.png"
+    pname = folder + "spherical_explosion_all_E_t.png"
     print pname
     p.save(pname)
 
     p = list_plot(all_plot_data_E_p)
-    pname = "results/spherical_explosion_all_E_p_t.png"
+    pname = folder + "spherical_explosion_all_E_p_t.png"
     print pname
     p.save(pname)
 
     p = list_plot(all_plot_data_E_n)
-    pname = "results/spherical_explosion_all_E_n_t.png"
+    pname = folder + "spherical_explosion_all_E_n_t.png"
     print pname
     p.save(pname)
 
     p = list_plot(all_plot_data_EE)
-    pname = "results/spherical_explosion_all_EE_t.png"
+    pname = folder + "spherical_explosion_all_EE_t.png"
     print pname
     p.save(pname)
 
     p = list_plot(all_plot_data_E1)
-    pname = "results/spherical_explosion_all_E1_t.png"
+    pname = folder + "spherical_explosion_all_E1_t.png"
     print pname
     p.save(pname)
 
     p = list_plot(all_plot_data_E1_p)
-    pname = "results/spherical_explosion_all_E1_p_t.png"
+    pname = folder + "spherical_explosion_all_E1_p_t.png"
     print pname
     p.save(pname)
 
     p = list_plot(all_plot_data_E1_n)
-    pname = "results/spherical_explosion_all_E1_n_t.png"
+    pname = folder + "spherical_explosion_all_E1_n_t.png"
     print pname
     p.save(pname)
 
     p = list_plot(all_plot_data_E2)
-    pname = "results/spherical_explosion_all_E2_t.png"
+    pname = folder + "spherical_explosion_all_E2_t.png"
     print pname
     p.save(pname)
 
     p = list_plot(all_plot_data_E2_p)
-    pname = "results/spherical_explosion_all_E2_p_t.png"
+    pname = folder + "spherical_explosion_all_E2_p_t.png"
     print pname
     p.save(pname)
 
     p = list_plot(all_plot_data_E2_n)
-    pname = "results/spherical_explosion_all_E2_n_t.png"
+    pname = folder + "spherical_explosion_all_E2_n_t.png"
     print pname
     p.save(pname)
 

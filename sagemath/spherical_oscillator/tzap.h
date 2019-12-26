@@ -48,6 +48,7 @@ int get_r(charge q, timevalue t_zap, coordinate r0, velocity v0, acceleration a0
 #endif /* ALGORITHM_VERSION_0 */
 
 int get_r_common(charge q, timevalue t, coordinate r0, velocity v0, acceleration a0, coordinate r_min, coordinate * r);
+velocity get_v_common(charge q, timevalue t, velocity v0, acceleration a0);
 
 distance get_dr();
 int get_nt();

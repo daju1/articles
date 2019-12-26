@@ -675,6 +675,21 @@ int get_r_common(charge q, timevalue t, coordinate r0, velocity v0, acceleration
 	return err;
 }
 
+velocity get_v_common(charge q, timevalue t, velocity v0, acceleration a0)
+{
+	velocity v;
+#ifdef ALGORITHM_VERSION_0
+	v = get_v(t, v0, a0);      /* скорость заряда в итерационный "текущий" момент времени t1                          */
+#endif
+#ifdef ALGORITHM_VERSION_1
+	v = get_v_ex1(t, v0, q);
+#endif
+#ifdef ALGORITHM_VERSION_2
+	v = get_v_ex2(t, v0, q);
+#endif
+	return v;
+}
+
 /* численный расчёта запаздывающего момента */
 int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, coordinate r_min, timevalue * t2)
 {

@@ -6,6 +6,7 @@ import numpy as np
 
 attach("tzap.spyx")
 attach("float_formatting.sage")
+attach("get_min_max_of_data.sage")
 
 from sage.plot.line import Line
 
@@ -33,15 +34,6 @@ t2 = 100
 dt = 0.5
 dt_all = 2.0
 '''
-def get_min_max_of_data(data):
-    min = sys.float_info.max;
-    max = -sys.float_info.max;
-    for (t, v) in data:
-        if min > v:
-            min = v
-        if max < v:
-            max = v
-    return (min, max)
 
 def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_n, step_R0, min_R0, max_R0, r_min):
     all_plot_data_phi = []
@@ -55,7 +47,7 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
     all_plot_data_E = []
     all_plot_data_E_p = []
     all_plot_data_E_n = []
-    all_plot_data_EE = []
+
     all_plot_data_E1 = []
     all_plot_data_E1_p = []
     all_plot_data_E1_n = []
@@ -74,7 +66,7 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
         plot_data_E = []
         plot_data_E_p = []
         plot_data_E_n = []
-        plot_data_EE = []
+
         plot_data_E1 = []
         plot_data_E1_p = []
         plot_data_E1_n = []
@@ -83,7 +75,7 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
         plot_data_E2_n = []
 
         r_p = get_r_of_sphere(+q, t_i, r0, v0_p, a0_p, r_min)
-        r_n = get_r_of_sphere(+q, t_i, r0, v0_n, a0_n, r_min)
+        r_n = get_r_of_sphere(-q, t_i, r0, v0_n, a0_n, r_min)
 
         for R0_i in np.arange(min_R0, max_R0, step_R0):
             (phi_p, A_p, E1_p, E2_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
@@ -103,7 +95,7 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
                 plot_data_E += [(R0_i, E1_p + E2_p + E1_n + E2_n)]
                 plot_data_E_p += [(R0_i, E1_p + E2_p)]
                 plot_data_E_n += [(R0_i, E1_n + E2_n)]
-                plot_data_EE += [(R0_i, E1_p - E2_p + E1_n - E2_n)]
+
                 plot_data_E1 += [(R0_i, E1_p + E1_n)]
                 plot_data_E1_p += [(R0_i, E1_p)]
                 plot_data_E1_n += [(R0_i, E1_n)]
@@ -123,7 +115,6 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
             all_plot_data_E_p += plot_data_E_p
             all_plot_data_E_n += plot_data_E_n
 
-            all_plot_data_EE += plot_data_EE
             all_plot_data_E1 += plot_data_E1
             all_plot_data_E1_p += plot_data_E1_p
             all_plot_data_E1_n += plot_data_E1_n
@@ -187,12 +178,6 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
         if len(plot_data_E_n) > 0:
             p = list_plot(plot_data_E_n)
             pname = "results/spherical_explosion_E_n_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
-            p.save(pname)
-
-        if len(plot_data_EE) > 0:
-            p = list_plot(plot_data_EE)
-            pname = "results/spherical_explosion_EE_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
             p.save(pname)
 
@@ -277,11 +262,6 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
 
     p = list_plot(all_plot_data_E_n)
     pname = "results/spherical_explosion_all_E_n_R0.png"
-    print pname
-    p.save(pname)
-
-    p = list_plot(all_plot_data_EE)
-    pname = "results/spherical_explosion_all_EE_R0.png"
     print pname
     p.save(pname)
 

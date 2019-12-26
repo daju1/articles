@@ -365,13 +365,13 @@ set_r_finish_py(r_finish)
 
 # v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0)
 
-step_R0 = 1.0
+step_R0 = 5*r0
 min_R0 = r0 + step_R0
-max_R0 = 10.0
+max_R0 = r0 + 10.0 * step_R0
 
 t1 = 0
-t2 = 1
-dt = 0.01
+t2 = 10
+dt = 0.05
 
 attach("spherical_explosion_time_evaluation.sage")
 spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_pos, v0_neg, a0_pos, a0_neg, step_R0, min_R0, max_R0, r_min)

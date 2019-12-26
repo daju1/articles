@@ -5,6 +5,7 @@ cdef extern from "tzap.c":
     void set_r_finish(long double r_finish)
     int calc_tzap(long double q, long double t, long double R0, long double r0, long double v0, long double a0, long double theta, long double r_min, long double * t2)
     int get_r_common(long double q, long double t, long double r0, long double v0, long double a0, long double r_min, long double * r)
+    long double get_v_common(long double q, long double t, long double v0, long double a0)
 
 
 cdef extern from "integrate.c":
@@ -53,5 +54,9 @@ def get_r_of_sphere(q, t, r0, v0, a0, r_min):
     cdef long double r
     cdef err = get_r_common(q, t, r0, v0, a0, r_min, &r)
     return r
+
+def get_v_of_sphere(q, t, v0, a0):
+    cdef long double v = get_v_common(q, t, v0, a0)
+    return v
 
 

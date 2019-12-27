@@ -307,7 +307,8 @@ print (v__T(m__Cu, T__e)).n()
 print "should be 5914.67712890453"
 
 # Для распределения радиальной компоненты начальной скорости частиц примем линейную аппроксимацию в виде:
-alpha = 0.25e-3
+# alpha = 0.25e-3
+alpha = 0.25
 v__0r(r__0, R_init, m, T) = alpha*r__0*v__T(m, T)/R_init
 print v__0r(r__0, R__i, m, T)
 
@@ -369,9 +370,16 @@ step_R0 = 5*r0
 min_R0 = r0 + step_R0
 max_R0 = r0 + 10.0 * step_R0
 
+# without SI
+# t1 = 0
+# t2 = 10
+# dt = 0.05
+
+# witht SI
 t1 = 0
-t2 = 10
-dt = 0.05
+t2 = Delta_t # "should be 0.347500236218306e-3"
+dt = 0.000025
+
 
 attach("spherical_explosion_time_evaluation.sage")
 spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_pos, v0_neg, a0_pos, a0_neg, step_R0, min_R0, max_R0, r_min)

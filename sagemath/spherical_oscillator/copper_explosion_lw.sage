@@ -296,15 +296,23 @@ print "n__i = ", n__i
 v__T(m, T) = sqrt(2*k*T/m)
 print v__T(m__e, T__i)
 print "should be 4.636895888*10^5"
+print v__T(m__e, T__i)/c
+print "should be 0.1546701981e-2"
 
 print (v__T(m__e, T__e)).n()
 print "should be 2.02023137241212*10^6"
+print (v__T(m__e, T__e)/c).n()
+print "should be 0.673876649829570e-2"
 
 print v__T(m__Cu, T__i)
 print "should be 1357.554508"
+print v__T(m__Cu, T__i)/c
+print "should be 0.4528314411e-5"
 
 print (v__T(m__Cu, T__e)).n()
 print "should be 5914.67712890453"
+print (v__T(m__Cu, T__e)).n()
+print "should be 0.197292392489224e-4"
 
 # Для распределения радиальной компоненты начальной скорости частиц примем линейную аппроксимацию в виде:
 # alpha = 0.25e-3
@@ -325,6 +333,8 @@ print "should be 0.433908765869441e-3*r0/(sqrt(T/m)*m)"
 # Уравнения радиального движения слоя заряженных частиц
 # r(t, r__0, R_init, m, T) = r__0 + v__0r(r__0, R_init, m, T)*t+(1/2)*a__0r(r__0, R_init, m, T)*t^2
 # print r(t, r__0, R__i, m, T)
+
+# plot(subs(T = T__i+t*(T__e-T__i)/`&Delta;t`, r__0 = (1/2)*R__i, v__r(t, r__0, R__i, m__e, T)/c), t = 0 .. `&Delta;t`)
 
 # Мощность взрыва
 power = Delta_E.n()/Delta_t.n()

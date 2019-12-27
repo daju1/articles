@@ -35,10 +35,10 @@ velocity get_c();
 void init_array_0();
 
 /* ускорение заряда */
-acceleration get_a(timevalue t_zap, acceleration a0);
+acceleration get_a(charge q, timevalue t_zap, acceleration a0);
 
 /* радиальная скорость заряда */
-velocity get_v(timevalue t_zap, velocity v0, acceleration a0);
+velocity get_v(charge q, timevalue t_zap, velocity v0, acceleration a0);
 
 /* перемещение заряда */
 distance get_s(timevalue t_zap, velocity v0, acceleration a0);

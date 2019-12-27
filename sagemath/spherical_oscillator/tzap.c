@@ -548,7 +548,7 @@ int get_r_ex1(charge q, timevalue t_zap, coordinate r0, velocity v0, coordinate 
 #endif /*ALGORITHM_VERSION_1*/
 
 #ifdef ALGORITHM_VERSION_0
-acceleration get_a(timevalue t_zap, acceleration a0)
+acceleration get_a(charge q, timevalue t_zap, acceleration a0)
 {
 	timevalue t_max;
 #ifdef WITHOUT_ACCELERATION_BEFORE_TSTART
@@ -563,7 +563,7 @@ acceleration get_a(timevalue t_zap, acceleration a0)
 
 /* радиальная скорость заряда */
 
-velocity get_v(timevalue t_zap, velocity v0, acceleration a0)
+velocity get_v(charge q, timevalue t_zap, velocity v0, acceleration a0)
 {
 	assert(v0 < v_max);
 	timevalue t_max;
@@ -679,7 +679,7 @@ velocity get_v_common(charge q, timevalue t, velocity v0, acceleration a0)
 {
 	velocity v;
 #ifdef ALGORITHM_VERSION_0
-	v = get_v(t, v0, a0);      /* скорость заряда в итерационный "текущий" момент времени t1                          */
+	v = get_v(q, t, v0, a0);      /* скорость заряда в итерационный "текущий" момент времени t1                          */
 #endif
 #ifdef ALGORITHM_VERSION_1
 	v = get_v_ex1(t, v0, q);
@@ -716,7 +716,7 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 	int i = 0;
 #if 0
 	double v;
-	v = get_v(t, v0, a0);      /* скорость заряда в текущий момент времени t */
+	v = get_v(q, t, v0, a0);      /* скорость заряда в текущий момент времени t */
 
 	DBG_INFO("calc_tzap(t=%Lf, v = %Lf, R0=%Lf, r0=%Lf, v0=%Lf, a0=%Lf, theta=%Lf)\n", t, v, R0, r0, v0, a0, theta);
 	assert(v < c);
@@ -753,8 +753,8 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 		                         /* итерационный "запаздывающий" момент времени t2                                      */
 		dR = g_c*(t-t1) - R;       /**/
 #ifdef ALGORITHM_VERSION_0
-		v1 = get_v(t1, v0, a0);      /* скорость заряда в итерационный "текущий" момент времени t1                          */
-		v2 = get_v(*t2, v0, a0);      /* скорость заряда в итерационный "запаздывающий" момент времени t2                    */
+		v1 = get_v(q, t1, v0, a0);      /* скорость заряда в итерационный "текущий" момент времени t1                          */
+		v2 = get_v(q, *t2, v0, a0);      /* скорость заряда в итерационный "запаздывающий" момент времени t2                    */
 #endif
 #ifdef ALGORITHM_VERSION_1
 		v1 = get_v_ex1(t1, v0, q);
@@ -769,7 +769,7 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 		{
 			velocity v;
 #ifdef ALGORITHM_VERSION_0			
-			v = get_v(t, v0, a0);      /* скорость заряда в текущий момент времени t */
+			v = get_v(q, t, v0, a0);      /* скорость заряда в текущий момент времени t */
 #endif
 #ifdef ALGORITHM_VERSION_1
 			v = get_v_ex1(t, v0, q);

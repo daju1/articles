@@ -214,11 +214,11 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 		#endif
 
 #ifdef ALGORITHM_VERSION_0
-		acceleration a_pos = get_a(t, a0_pos);
-		acceleration a_neg = get_a(t, a0_neg);
+		acceleration a_pos = get_a(q, t, a0_pos);
+		acceleration a_neg = get_a(q, t, a0_neg);
 
-		velocity v_pos = get_v(t, v0_pos, a0_pos);
-		velocity v_neg = get_v(t, v0_neg, a0_neg);
+		velocity v_pos = get_v(q, t, v0_pos, a0_pos);
+		velocity v_neg = get_v(q, t, v0_neg, a0_neg);
 
 		distance s_pos = get_s(t, v0_pos, a0_pos);
 		distance s_neg = get_s(t, v0_neg, a0_neg);

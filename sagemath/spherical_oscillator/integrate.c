@@ -57,7 +57,7 @@ int calc_R_lw(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 	DBG_INFO("r_zap = %Lf ", *pr_zap);
 	DBG_INFO("R_zap = %Lf ", *pR_zap);
 #ifdef ALGORITHM_VERSION_0
-	v = get_v(*pt_zap, v0, a0);
+	v = get_v(q, *pt_zap, v0, a0);
 #endif
 #ifdef ALGORITHM_VERSION_1
 	v = get_v_ex1(*pt_zap, v0, q);
@@ -289,8 +289,8 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 			error += 1;
 		}
 #ifdef ALGORITHM_VERSION_0
-		v_zap = get_v(t_zap, v0, a0);
-		a_zap = get_a(t_zap, a0);
+		v_zap = get_v(q, t_zap, v0, a0);
+		a_zap = get_a(q, t_zap, a0);
 #endif
 #ifdef ALGORITHM_VERSION_1
 		v_zap = get_v_ex1(t_zap, v0, q);

@@ -314,16 +314,49 @@ print "should be 5914.67712890453"
 print (v__T(m__Cu, T__e)).n()
 print "should be 0.197292392489224e-4"
 
-# Для распределения радиальной компоненты начальной скорости частиц примем линейную аппроксимацию в виде:
-# alpha = 0.25e-3
-alpha = 0.25
-v__0r(r__0, R_init, m, T) = alpha*r__0*v__T(m, T)/R_init
+# Для распределения радиальной компоненты начальной скорости частиц
+# будем исходить из следующих соображений - в поверхностном слое взрывающегося шара
+# средняя тепловая скорость частиц наиболее полно превращается в радиальную скорость за счёт
+# отражения от приповерхностного слоя частиц и за счёт отсутствия препятствий (если
+# пренебречь сопротивлением воздуха или производить взрыв в вакуме) с внешней стороны взрывающегося шара
+# Для нахождения коэффициента преобразования средней тепловой скорости частиц в радиальную
+# для поверхностного слоя взрывающегося шара достаточно проинтегрировать
+# косинус зенитного угла по полусфере направлений скоростей в сферической системе координат
+
+theta = var("theta")
+phi = var("phi")
+half_sphere_S = integrate(r*integrate(r*sin(theta), (phi, 0, 2*pi)),(theta, 0, pi/2))
+half_sphere_S_cos_theta = integrate(r*integrate(r*sin(theta), (phi, 0, 2*pi))*cos(theta),(theta, 0, pi/2))
+alpha = half_sphere_S_cos_theta / half_sphere_S
+print "alpha = ", alpha
+print "should be 1/2"
+
+# для нахождения коэффициента преобразования средней тепловой скорости частиц в радиальную
+# для внутреннего слоя нужно интегрировать косинус зенитного угла по полной сфере направлений скоростей
+# в сферической системе координат
+
+sphere_S = integrate(r*integrate(r*sin(theta), (phi, 0, 2*pi)),(theta, 0, pi))
+sphere_S_cos_theta = integrate(r * integrate(r*sin(theta), (phi, 0, 2*pi))*cos(theta),(theta, 0, pi))
+alpha = sphere_S_cos_theta / sphere_S
+print "alpha = ", alpha
+
+# но с учётом коэффициента поглощения /или замедления/ частиц при прохождении частицы через шар плазмы
+# из точки определяемой r__0 на оси z в направлении определяемом углами theta и phi
+
+# sphere_S = integrate(r*integrate(r*sin(theta), (phi, 0, 2*pi)),(theta, 0, pi))
+# sphere_S_cos_theta = integrate(zamedlenie(r__0, R_sphere, theta) * r * integrate(r*sin(theta), (phi, 0, 2*pi))*cos(theta),(theta, 0, pi))
+# alpha = sphere_S_cos_theta / sphere_S
+# print "alpha = ", alpha
+
+# для простоты расчёта можно в первом приближении применить линейную аппроксимацию для радиальной скорости частиц в виде:
+alpha = 0.5
+v__0r(r__0, R_init, m, T) = (alpha * r__0 / R_init) * v__T(m, T)
 print v__0r(r__0, R__i, m, T)
 
 # Здесь r__0 радиус слоя заряженных частиц в начальный момент времени
 
 # Для распределения радиальной компоненты теплового ускорения в начальный момент времени взрыва примем аппросксимацию в виде
-a__0r(r__0, R_init, m, T) = Delta_T.n()*alpha*r__0*(diff(v__T(m, T), T))/(Delta_t.n()*R_init)
+a__0r(r__0, R_init, m, T) = Delta_T.n()*(alpha * r__0 / R_init)*(diff(v__T(m, T), T))/(Delta_t.n())
 print a__0r(r__0, R_init, m, T)
 
 r0 = var("r0")
@@ -334,7 +367,26 @@ print "should be 0.433908765869441e-3*r0/(sqrt(T/m)*m)"
 # r(t, r__0, R_init, m, T) = r__0 + v__0r(r__0, R_init, m, T)*t+(1/2)*a__0r(r__0, R_init, m, T)*t^2
 # print r(t, r__0, R__i, m, T)
 
-# plot(subs(T = T__i+t*(T__e-T__i)/`&Delta;t`, r__0 = (1/2)*R__i, v__r(t, r__0, R__i, m__e, T)/c), t = 0 .. `&Delta;t`)
+# предполагая линейный характер роста температуры со временем
+# исходя из зависимости для радиальной скорости частиц от радиальной координаты и температуры
+# можно получить зависимость радиальной скорости частиц от радиальной координаты и времени
+t = var("t")
+v_r_t(t, r__0, R_init, m) = (v__0r(r__0, R_init, m, T)).substitute(T == T__i+t*(T__e-T__i)/Delta_t)
+print "v_r_t = ", v_r_t(t, r__0, R_init, m)
+
+# в упрощённом алгоритме в котором взрыв эмулируется сферическим конденсатором
+# требуется зависимость скорости и ускорения обкладки от времени
+v_t(t, m) = v_r_t(t, (1/2)*R__i, R__i, m__e) - v_r_t(0, (1/2)*R__i, R__i, m)
+# v_t(t, m) = v_r_t(t, t / Delta_t * R__i, R__i, m) - v_r_t(0, 0, R__i, m)
+a_t(t, m) = diff(v_t (t, m), t)
+
+print "v_t =", v_t(t, m)
+print "a_t =", a_t(t, m)
+
+p = plot(v_t(t, m__e) / c, (t, 0, Delta_t))
+p.save("results/v_c_t_e.png")
+p = plot(a_t(t, m__e), (t, 0, Delta_t))
+p.save("results/a_t_e.png")
 
 # Мощность взрыва
 power = Delta_E.n()/Delta_t.n()
@@ -392,7 +444,7 @@ dt = 0.000025
 
 
 attach("spherical_explosion_time_evaluation.sage")
-spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_pos, v0_neg, a0_pos, a0_neg, step_R0, min_R0, max_R0, r_min)
+# spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_pos, v0_neg, a0_pos, a0_neg, step_R0, min_R0, max_R0, r_min)
 
 
 

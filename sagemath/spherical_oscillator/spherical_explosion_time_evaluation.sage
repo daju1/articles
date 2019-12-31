@@ -7,8 +7,8 @@ import numpy as np
 attach("tzap.spyx")
 attach("float_formatting.sage")
 attach("get_min_max_of_data.sage")
+attach("plot_r_of_sphere.sage")
 
-from sage.plot.line import Line
 
 c = get_light_veloncity()
 '''
@@ -34,15 +34,6 @@ t1 = 0
 t2 = 10
 dt = 0.1
 '''
-def plot_r_of_sphere(plot_data, p, r_p_met, r_n_met, t_r_p, t_r_n):
-    if r_p_met is True or r_n_met is True:
-        (min_v, max_v) = get_min_max_of_data(plot_data)
-    if r_p_met is True:
-        L = Line([t_r_p, t_r_p], [min_v, max_v],{'alpha':1,'thickness':1,'rgbcolor':(1,0,0),'legend_label':''})
-        p.add_primitive(L)
-    if r_n_met is True:
-        L = Line([t_r_n, t_r_n], [min_v, max_v],{'alpha':1,'thickness':1,'rgbcolor':(0,0,1),'legend_label':''})
-        p.add_primitive(L)
 
 def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_n, step_R0, min_R0, max_R0, r_min):
     all_plot_data_phi = []
@@ -125,9 +116,10 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
             print (phi_p, A_p, E1_p, E2_p, error_p, r_p)
             print (phi_n, A_n, E1_n, E2_n, error_n, r_n)
 
-            plot_data_phi += [(t_i, phi_p + phi_n)]
-            plot_data_phi_p += [(t_i, phi_p)]
-            plot_data_phi_n += [(t_i, phi_n)]
+            if r_n < R0_i - step_R0:
+                plot_data_phi += [(t_i, phi_p + phi_n)]
+                plot_data_phi_p += [(t_i, phi_p)]
+                plot_data_phi_n += [(t_i, phi_n)]
 
             plot_data_A += [(t_i, A_p + A_n)]
             plot_data_A_p += [(t_i, A_p)]
@@ -317,7 +309,15 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
             plot_r_of_sphere(plot_data_E_E1_E2, p, r_p_met, r_n_met, t_r_p, t_r_n)
             p.save(pname)
 
-    folder = "results/"
+    dir = os.getcwd()  + "/results/all_R0"
+    print "dir = ", dir
+
+    try:
+        os.mkdir(dir)
+    except:
+        pass
+
+    folder = dir + "/"
 
     p = list_plot(all_plot_data_phi)
     pname = folder + "spherical_explosion_all_phi_t.png"

@@ -7,6 +7,10 @@
 #include "dbg_info.h"
 #include "stdlib.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+#define Pi M_PI
+
 #define T_START 0.0
 #define T_FINISH 10.0
 //#define DT 0.01
@@ -15,7 +19,9 @@
 #define DR 0.01
 
 #ifdef SI
-long double multiplier_E = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000000.0;
+long double multiplier_E = LIGHT_VELONCITY * LIGHT_VELONCITY / 10000000.0; // = 1.0 / (4.0*Pi*epsilon_0)
+// long double epsilon_0 = 1.0 / (4.0 * Pi * multiplier_E);
+long double epsilon_0 = 10000000.0 / (4.0 * Pi * LIGHT_VELONCITY * LIGHT_VELONCITY);
 #else
 long double multiplier_E = 1.0;
 #endif
@@ -660,6 +666,22 @@ sqrt(2)*sqrt(R__0*a__0*cos(theta)-a__0*r__0+sqrt(cos(theta)^2*R__0^2*a__0^2-R__0
 sqrt(2*R__0*a__0*cos(theta)-2*a__0*r__0-2*sqrt(cos(theta)^2*R__0^2*a__0^2-R__0^2*a__0^2+18*R__0*a__0*cos(theta)-18*a__0*r__0+81)+18)/a__0,
 -sqrt(2*R__0*a__0*cos(theta)-2*a__0*r__0-2*sqrt(cos(theta)^2*R__0^2*a__0^2-R__0^2*a__0^2+18*R__0*a__0*cos(theta)-18*a__0*r__0+81)+18)/a__0;
 */
+
+int get_capacity_common(charge q, timevalue t, coordinate r0_p, velocity v0_p, acceleration a0_p, coordinate r0_n, velocity v0_n, acceleration a0_n, coordinate r_min, coordinate * r_pos, coordinate * r_neg, long double * capacity, long double * energy)
+{
+	int err_pos = get_r_common(+q, t, r0_p, v0_p, a0_p, r_min, r_pos);
+	int err_neg = get_r_common(-q, t, r0_n, v0_n, a0_n, r_min, r_neg);
+	*capacity = (*r_pos) * (*r_neg) / ((*r_neg) - (*r_pos));
+#ifdef SI
+	// long double epsilon_0 = 1.0 / (4.0*Pi*multiplier_E);
+	(*capacity) /= (multiplier_E);
+#else
+	(*capacity) *= 4.0*Pi;
+#endif
+	*energy = (q * q) / (2 * (*capacity));
+	return err_pos + err_neg;
+}
+
 int get_r_common(charge q, timevalue t, coordinate r0, velocity v0, acceleration a0, coordinate r_min, coordinate * r)
 {
 	int err;

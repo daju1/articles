@@ -65,6 +65,9 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
         plot_data_v_p = []
         plot_data_v_n = []
 
+        plot_data_capacity = []
+        plot_data_energy = []
+
         t_r_p = NaN
         t_r_n = NaN
 
@@ -88,8 +91,10 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
         plot_data_E2_n = []
         plot_data_E_E1_E2 = []
         for t_i in np.arange(t1, t2, dt):
-            r_p = get_r_of_sphere(+q, t_i, r0, v0_p, a0_p, r_min)
-            r_n = get_r_of_sphere(-q, t_i, r0, v0_n, a0_n, r_min)
+            # r_p = get_r_of_sphere(+q, t_i, r0, v0_p, a0_p, r_min)
+            # r_n = get_r_of_sphere(-q, t_i, r0, v0_n, a0_n, r_min)
+
+            (r_p, r_n, capacity, energy) = get_capacity_of_spherical_capacitor(q, t_i, r0, v0_p, a0_p, r0, v0_n, a0_n, r_min)
 
             if r_p_met is False and r_p >= R0_i:
                 r_p_met = True
@@ -107,6 +112,10 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
 
             plot_data_r_p += [(t_i, r_p)]
             plot_data_r_n += [(t_i, r_n)]
+
+            if r_p != r_n:
+                plot_data_capacity += [(t_i, capacity)]
+                plot_data_energy += [(t_i, energy)]
 
             plot_data_v_p += [(t_i, v_p/c)]
             plot_data_v_n += [(t_i, v_n/c)]
@@ -167,6 +176,20 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
             pass
 
         folder = dir + "/"
+
+        if len(plot_data_capacity) > 0:
+            p = list_plot(plot_data_capacity)
+            pname = folder + "spherical_explosion_capacity_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            print pname
+            plot_r_of_sphere(plot_data_capacity, p, r_p_met, r_n_met, t_r_p, t_r_n)
+            p.save(pname)
+
+        if len(plot_data_energy) > 0:
+            p = list_plot(plot_data_energy)
+            pname = folder + "spherical_explosion_energy_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            print pname
+            plot_r_of_sphere(plot_data_energy, p, r_p_met, r_n_met, t_r_p, t_r_n)
+            p.save(pname)
 
         if len(plot_data_r_p) > 0:
             p = list_plot(plot_data_r_p)

@@ -6,6 +6,7 @@ cdef extern from "tzap.c":
     int calc_tzap(long double q, long double t, long double R0, long double r0, long double v0, long double a0, long double theta, long double r_min, long double * t2)
     int get_r_common(long double q, long double t, long double r0, long double v0, long double a0, long double r_min, long double * r)
     long double get_v_common(long double q, long double t, long double v0, long double a0)
+    int get_capacity_common(long double q, long double t, long double r0_p, long double v0_p, long double a0_p, long double r0_n, long double v0_n, long double a0_n, long double r_min, long double * r_pos, long double * r_neg, long double * capacity, long double * energy)
 
 
 cdef extern from "integrate.c":
@@ -54,6 +55,14 @@ def get_r_of_sphere(q, t, r0, v0, a0, r_min):
     cdef long double r
     cdef err = get_r_common(q, t, r0, v0, a0, r_min, &r)
     return r
+
+def get_capacity_of_spherical_capacitor(q, t, r0_p, v0_p, a0_p, r0_n, v0_n, a0_n, r_min):
+    cdef long double r_pos
+    cdef long double r_neg
+    cdef long double capacity
+    cdef long double energy
+    cdef err = get_capacity_common(q, t, r0_p, v0_p, a0_p, r0_n, v0_n, a0_n, r_min, &r_pos, &r_neg, &capacity, &energy)
+    return (r_pos, r_neg, capacity, energy)
 
 def get_v_of_sphere(q, t, v0, a0):
     cdef long double v = get_v_common(q, t, v0, a0)

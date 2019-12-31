@@ -72,9 +72,12 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
         plot_data_E2 = []
         plot_data_E2_p = []
         plot_data_E2_n = []
+        plot_data_E_E1_E2 = []
 
-        r_p = get_r_of_sphere(+q, t_i, r0, v0_p, a0_p, r_min)
-        r_n = get_r_of_sphere(-q, t_i, r0, v0_n, a0_n, r_min)
+        #r_p = get_r_of_sphere(+q, t_i, r0, v0_p, a0_p, r_min)
+        #r_n = get_r_of_sphere(-q, t_i, r0, v0_n, a0_n, r_min)
+
+        (r_p, r_n, capacity, energy) = get_capacity_of_spherical_capacitor(q, t_i, r0, v0_p, a0_p, r0, v0_n, a0_n, r_min)
 
         r_p_met = r_p < max_R0 and r_p > min_R0
         r_n_met = r_n < max_R0 and r_n > min_R0
@@ -104,6 +107,7 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
                 plot_data_E2 += [(R0_i, E2_p + E2_n)]
                 plot_data_E2_p += [(R0_i, E2_p)]
                 plot_data_E2_n += [(R0_i, E2_n)]
+                plot_data_E_E1_E2 += [(R0_i, E1_p + E2_p + E1_n + E2_n), (R0_i, E1_p + E1_n), (R0_i, E2_p + E2_n)]
 
         if True: #abs(t_i/dt_all) > dt/2:
             all_plot_data_phi += plot_data_phi
@@ -238,6 +242,13 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
             pname = folder + "spherical_explosion_E2_n_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
             plot_r_of_sphere(plot_data_E2_n, p, r_p_met, r_n_met, r_p, r_n)
+            p.save(pname)
+
+        if len(plot_data_E_E1_E2) > 0:
+            p = list_plot(plot_data_E_E1_E2)
+            pname = folder + "spherical_explosion_E_E1_E2_R0" + "_t=" + float_formatting(t_i) + ".png"
+            print pname
+            plot_r_of_sphere(plot_data_E_E1_E2, p, r_p_met, r_n_met, r_p, r_n)
             p.save(pname)
 
     dir = os.getcwd()  + "/results/all_t"

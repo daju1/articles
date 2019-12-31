@@ -279,7 +279,7 @@ def calc_proton_mass():
 
     I5 = lambda r0, theta_a : my_numerical_integral( lambda ra : rho_q(r0, ra) * I4(r0, theta_a, ra) * sin(theta_a) * ra^2, 0, infinity)
 
-    I6 = lambda r0 : my_numerical_integral( lambda theta_a : I5 (r0, Rq, aq, theta_a), 0, pi)
+    I6 = lambda r0 : my_numerical_integral( lambda theta_a : I5 (r0, theta_a), 0, pi)
 
     I7 = I6(2/3 * 0.8)
     print "I6(2/3 * 0.8) = ", I7

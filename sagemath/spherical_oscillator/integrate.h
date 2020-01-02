@@ -7,4 +7,5 @@ field get_E_minus_grad_phi_R0(angle theta, velocity v_zap, distance R_zap, long 
 field get_E_minus_1_c_dA_dt_R0(angle theta, velocity v_zap, acceleration a_zap, distance R_zap, long double aR_zap, distance R_lw_zap);
 int integral_phi(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, coordinate r_min, potential * result);
 int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, field * pE_minus_grad_phi_R0, field *pE_minus_1_c_dA_dt_R0, coordinate r_min, potential *phi, potential *A);
+int dbl_integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0_min, velocity v0_min, acceleration a0_min, coordinate r0_max, velocity v0_max, acceleration a0_max, field * pE_minus_grad_phi_R0, field *pE_minus_1_c_dA_dt_R0, coordinate r_min, potential *phi, potential *A);
 

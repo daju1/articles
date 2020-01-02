@@ -713,7 +713,7 @@ velocity get_v_common(charge q, timevalue t, velocity v0, acceleration a0)
 }
 
 /* численный расчёта запаздывающего момента */
-int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, coordinate r_min, timevalue * t2)
+int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, coordinate r_min, timevalue * t2, coordinate * r1)
 {
 	int err, error = 0;
 #ifdef CALC_LW_WITHOUT_LAGGING
@@ -731,7 +731,7 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 	*t2 = t;
 	timespan dt;
 	velocity v1,v2;
-	coordinate r, R, R_pre = LDBL_MAX;
+	coordinate R, R_pre = LDBL_MAX;
 	distance dR, dR_pre = LDBL_MAX;
 	coordinate R_tmp;
 
@@ -756,21 +756,21 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 
 
 #ifdef ALGORITHM_VERSION_0
-		err = get_r(q, t1, r0, v0, a0, r_min, &r);   /* итерационная координата заряда */
+		err = get_r(q, t1, r0, v0, a0, r_min, r1);   /* итерационная координата заряда */
 #endif
 #ifdef ALGORITHM_VERSION_1
-		err = get_r_ex1(q, t1, r0, v0, r_min, &r, 0);
+		err = get_r_ex1(q, t1, r0, v0, r_min, r1, 0);
 #endif
 #ifdef ALGORITHM_VERSION_2
-		err = get_r_ex2(q, t1, r0, v0, r_min, &r);
+		err = get_r_ex2(q, t1, r0, v0, r_min, r1);
 #endif
 		if (0 != err)
 		{
 			error += 1;
 		}
 
-		assert(r >= 0.0);
-		R = get_R(R0, r, theta); /* итерационный радиус - на первой итерации текущий радиус                             */
+		assert(*r1 >= 0.0);
+		R = get_R(R0, *r1, theta); /* итерационный радиус - на первой итерации текущий радиус                             */
 		*t2 = t - R / g_c;          /* время прохождения сигнала от итерационной координаты в точку наблюдения             */
 		                         /* итерационный "запаздывающий" момент времени t2                                      */
 		dR = g_c*(t-t1) - R;       /**/

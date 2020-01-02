@@ -54,7 +54,7 @@ int test_v0()
 	printf ("should be -0.5\n\n");
 	#endif
 
-	error = calc_tzap(q, /*t*/0.0, /*R0*/0.0, /*r0*/2.0, /*v0*/1.0, /*a0*/0.0, /*theta*/0.0, r_min, &t_zap);
+	error = calc_tzap(q, /*t*/0.0, /*R0*/0.0, /*r0*/2.0, /*v0*/1.0, /*a0*/0.0, /*theta*/0.0, r_min, &t_zap, &r_zap);
 	printf("t_zap = %Lf\n", t_zap);
 
 	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/0.0, /*r0*/2.0, /*v0*/g_c/3.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw);
@@ -165,7 +165,7 @@ return 0;
 	/*hung
 	calc_tzap(t=5.000000, R0=-1.500000, r0=2.000000, v0=0.0, a0=1.000000, theta=0.000000
 	*/
-	error = calc_tzap(q, /*t*/5.0, /*R0*/-1.5, /*r0*/2.0, /*v0*/0.0, /*a0*/1.0, /*theta*/0.0, r_min, &t_zap);
+	error = calc_tzap(q, /*t*/5.0, /*R0*/-1.5, /*r0*/2.0, /*v0*/0.0, /*a0*/1.0, /*theta*/0.0, r_min, &t_zap, &r_zap);
 	printf("t_zap = %Lf\n", t_zap);
 
 	/*hung

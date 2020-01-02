@@ -408,11 +408,30 @@ r0_pos = R__i / 2
 r0_neg = R__i / 2
 r0 = R__i / 2
 
+r0_pos_min = 0.0
+r0_neg_max = 0.0
+
+r0_pos_max = R__i
+r0_neg_max = R__i
+
 v0_pos = 0
 v0_neg = 0
 
+v0_pos_min = 0
+v0_neg_min = 0
+
+v0_pos_max = 0
+v0_neg_max = 0
+
 a0_pos = a__0r(R__i / 2, R__i, m__Cu, (T__i + T__e) / 2).n()
 a0_neg = a__0r(R__i / 2, R__i, m__e, (T__i + T__e) / 2).n()
+
+a0_pos_min = a__0r(0.0, R__i, m__Cu, (T__i + T__e) / 2).n()
+a0_neg_min = a__0r(0.0, R__i, m__e, (T__i + T__e) / 2).n()
+
+a0_pos_max = a__0r(R__i, R__i, m__Cu, (T__i + T__e) / 2).n()
+a0_neg_max = a__0r(R__i, R__i, m__e, (T__i + T__e) / 2).n()
+
 
 print "a0_pos = ", a0_pos
 print "a0_neg = ", a0_neg

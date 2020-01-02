@@ -76,7 +76,7 @@ distance set_s_ex1(timevalue t, coordinate r0, velocity v0, coordinate r_min, ch
 distance get_R(coordinate R0, coordinate r, angle theta);
 
 /* численный расчёта запаздывающего момента */
-int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, coordinate r_min, timevalue * t2);
+int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, coordinate r_min, timevalue * t2, coordinate * r1);
 
 
 void set_dr(distance dr);

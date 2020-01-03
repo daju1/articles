@@ -3,7 +3,7 @@ cdef extern from "tzap.c":
     long double get_dr()
     void set_dr(long double dr)
     void set_r_finish(long double r_finish)
-    int calc_tzap(long double q, long double t, long double R0, long double r0, long double v0, long double a0, long double theta, long double r_min, long double * t2)
+    int calc_tzap(long double q, long double t, long double R0, long double r0, long double v0, long double a0, long double theta, long double r_min, long double * t2, long double * r1)
     int get_r_common(long double q, long double t, long double r0, long double v0, long double a0, long double r_min, long double * r)
     long double get_v_common(long double q, long double t, long double v0, long double a0)
     int get_capacity_common(long double q, long double t, long double r0_p, long double v0_p, long double a0_p, long double r0_n, long double v0_n, long double a0_n, long double r_min, long double * r_pos, long double * r_neg, long double * capacity, long double * energy)

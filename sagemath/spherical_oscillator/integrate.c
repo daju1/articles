@@ -311,6 +311,7 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 		E_minus_grad_varphi_R0 = get_E_minus_grad_phi_R0 (theta, v_zap, R_zap, aR_zap, R_lw_zap, cos_alpha_zap);
 		E_minus_1_c_dA_dt_R0   = get_E_minus_1_c_dA_dt_R0(theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap);
 
+		// 2*Pi*r^2*sin(theta)
 #ifdef OLD_DS_THETA_ALG
 		dS_dtheta = get_dS_dtheta(*r, theta);
 		//printf("dS_dtheta = %Lf ", dS_dtheta);

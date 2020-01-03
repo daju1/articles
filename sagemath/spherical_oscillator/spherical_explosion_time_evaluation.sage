@@ -35,7 +35,7 @@ t2 = 10
 dt = 0.1
 '''
 
-def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_n, step_R0, min_R0, max_R0, r_min):
+def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_min, r0_p_max, v0_p_max, a0_p_max, r0_n_min, v0_n_min, a0_n_min, r0_n_max, v0_n_max, a0_n_max, step_R0, min_R0, max_R0, r_min):
     all_plot_data_phi = []
     all_plot_data_phi_p = []
     all_plot_data_phi_n = []
@@ -56,14 +56,23 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
     all_plot_data_E2_n = []
     for R0_i in np.arange(min_R0, max_R0, step_R0):
 
-        r_p_met = False
-        r_n_met = False
+        r_p_min_met = False
+        r_n_min_met = False
 
-        plot_data_r_p = []
-        plot_data_r_n = []
+        r_p_max_met = False
+        r_n_max_met = False
 
-        plot_data_v_p = []
-        plot_data_v_n = []
+        plot_data_r_p_min = []
+        plot_data_r_n_min = []
+
+        plot_data_r_p_max = []
+        plot_data_r_n_max = []
+
+        plot_data_v_p_min = []
+        plot_data_v_n_min = []
+
+        plot_data_v_p_max = []
+        plot_data_v_n_max = []
 
         plot_data_capacity = []
         plot_data_energy = []
@@ -91,41 +100,69 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
         plot_data_E2_n = []
         plot_data_E_E1_E2 = []
         for t_i in np.arange(t1, t2, dt):
-            # r_p = get_r_of_sphere(+q, t_i, r0, v0_p, a0_p, r_min)
-            # r_n = get_r_of_sphere(-q, t_i, r0, v0_n, a0_n, r_min)
+            r_p_min = get_r_of_sphere(+q, t_i, r0_p_min, v0_p_min, a0_p_min, r_min)
+            r_p_max = get_r_of_sphere(+q, t_i, r0_p_max, v0_p_max, a0_p_max, r_min)
+            r_n_min = get_r_of_sphere(-q, t_i, r0_n_min, v0_n_min, a0_n_min, r_min)
+            r_n_max = get_r_of_sphere(-q, t_i, r0_n_max, v0_n_max, a0_n_max, r_min)
 
-            (r_p, r_n, capacity, energy) = get_capacity_of_spherical_capacitor(q, t_i, r0, v0_p, a0_p, r0, v0_n, a0_n, r_min)
+            if False:
+                (r_p, r_n, capacity, energy) = get_capacity_of_spherical_capacitor(q, t_i, r0, v0_p, a0_p, r0, v0_n, a0_n, r_min)
 
-            if r_p_met is False and r_p >= R0_i:
-                r_p_met = True
-                t_r_p = t_i - dt + dt * (R0_i - r_p_pre) / (r_p - r_p_pre)
+            if r_p_min_met is False and r_p_min >= R0_i:
+                r_p_min_met = True
+                t_r_p = t_i - dt + dt * (R0_i - r_p_min_pre) / (r_p_min - r_p_min_pre)
 
-            if r_n_met is False and r_n >= R0_i:
-                r_n_met = True
-                t_r_n = t_i - dt + dt * (R0_i - r_n_pre) / (r_n - r_n_pre)
+            if r_p_max_met is False and r_p_max >= R0_i:
+                r_p_max_met = True
+                t_r_p = t_i - dt + dt * (R0_i - r_p_max_pre) / (r_p_max - r_p_max_pre)
 
-            r_p_pre = r_p
-            r_n_pre = r_n
+            if r_n_min_met is False and r_n_min >= R0_i:
+                r_n_min_met = True
+                t_r_n = t_i - dt + dt * (R0_i - r_n_min_pre) / (r_n_min - r_n_min_pre)
 
-            v_p = get_v_of_sphere(+q, t_i, v0_p, a0_p)
-            v_n = get_v_of_sphere(-q, t_i, v0_n, a0_n)
+            if r_n_max_met is False and r_n_max >= R0_i:
+                r_n_max_met = True
+                t_r_n = t_i - dt + dt * (R0_i - r_n_max_pre) / (r_n_max - r_n_max_pre)
 
-            plot_data_r_p += [(t_i, r_p)]
-            plot_data_r_n += [(t_i, r_n)]
+            r_p_min_pre = r_p_min
+            r_n_min_pre = r_n_min
 
-            if r_p != r_n:
-                plot_data_capacity += [(t_i, capacity)]
-                plot_data_energy += [(t_i, energy)]
+            r_p_max_pre = r_p_max
+            r_n_max_pre = r_n_max
 
-            plot_data_v_p += [(t_i, v_p/c)]
-            plot_data_v_n += [(t_i, v_n/c)]
+            v_p_min = get_v_of_sphere(+q, t_i, v0_p_min, a0_p_min)
+            v_n_min = get_v_of_sphere(-q, t_i, v0_n_min, a0_n_min)
 
-            (phi_p, A_p, E1_p, E2_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
-            (phi_n, A_n, E1_n, E2_n, error_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
-            print (phi_p, A_p, E1_p, E2_p, error_p, r_p)
-            print (phi_n, A_n, E1_n, E2_n, error_n, r_n)
+            v_p_max = get_v_of_sphere(+q, t_i, v0_p_max, a0_p_max)
+            v_n_max = get_v_of_sphere(-q, t_i, v0_n_max, a0_n_max)
 
-            if r_n < R0_i - step_R0:
+            plot_data_r_p_min += [(t_i, r_p_min)]
+            plot_data_r_n_min += [(t_i, r_n_min)]
+
+            plot_data_r_p_max += [(t_i, r_p_max)]
+            plot_data_r_n_max += [(t_i, r_n_max)]
+
+            #if r_p != r_n:
+            #    plot_data_capacity += [(t_i, capacity)]
+            #    plot_data_energy += [(t_i, energy)]
+
+            plot_data_v_p_min += [(t_i, v_p_min/c)]
+            plot_data_v_n_min += [(t_i, v_n_min/c)]
+
+            plot_data_v_p_max += [(t_i, v_p_max/c)]
+            plot_data_v_n_max += [(t_i, v_n_max/c)]
+
+            if True:
+                (phi_p, A_p, E1_p, E2_p, error_p) = dbl_phi_and_E_lw(+q, t_i, R0_i, r0_p_min, v0_p_min, a0_p_min, r0_p_max, v0_p_max, a0_p_max, r_min)
+                (phi_n, A_n, E1_n, E2_n, error_n) = dbl_phi_and_E_lw(-q, t_i, R0_i, r0_n_min, v0_n_min, a0_n_min, r0_n_max, v0_n_max, a0_n_max, r_min)
+            if False:
+                (phi_p, A_p, E1_p, E2_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
+                (phi_n, A_n, E1_n, E2_n, error_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
+
+            print (phi_p, A_p, E1_p, E2_p, error_p, r_p_min, r_p_max)
+            print (phi_n, A_n, E1_n, E2_n, error_n, r_n_min, r_n_max)
+
+            if r_n_max < R0_i - step_R0:
                 plot_data_phi += [(t_i, phi_p + phi_n)]
                 plot_data_phi_p += [(t_i, phi_p)]
                 plot_data_phi_n += [(t_i, phi_n)]
@@ -134,7 +171,7 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
             plot_data_A_p += [(t_i, A_p)]
             plot_data_A_n += [(t_i, A_n)]
 
-            if r_n < R0_i - step_R0:
+            if r_n_max < R0_i - step_R0:
                 plot_data_E += [(t_i, E1_p + E2_p + E1_n + E2_n)]
                 plot_data_E_p += [(t_i, E1_p + E2_p)]
                 plot_data_E_n += [(t_i, E1_n + E2_n)]

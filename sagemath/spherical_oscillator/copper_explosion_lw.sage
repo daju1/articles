@@ -404,18 +404,19 @@ print "q = ", q.n(), "кулон"
 m_pos = m__Cu * N__i
 m_neg = m__e  * N__i
 
-r0_pos = R__i / 2
-r0_neg = R__i / 2
-r0 = R__i / 2
+# r0_pos = R__i / 2
+# r0_neg = R__i / 2
+
+r0 = R__i
 
 r0_pos_min = 0.0
-r0_neg_max = 0.0
+r0_neg_min = 0.0
 
 r0_pos_max = R__i
 r0_neg_max = R__i
 
-v0_pos = 0
-v0_neg = 0
+# v0_pos = 0
+# v0_neg = 0
 
 v0_pos_min = 0
 v0_neg_min = 0
@@ -423,8 +424,8 @@ v0_neg_min = 0
 v0_pos_max = 0
 v0_neg_max = 0
 
-a0_pos = a__0r(R__i / 2, R__i, m__Cu, (T__i + T__e) / 2).n()
-a0_neg = a__0r(R__i / 2, R__i, m__e, (T__i + T__e) / 2).n()
+# a0_pos = a__0r(R__i / 2, R__i, m__Cu, (T__i + T__e) / 2).n()
+# a0_neg = a__0r(R__i / 2, R__i, m__e, (T__i + T__e) / 2).n()
 
 a0_pos_min = a__0r(0.0, R__i, m__Cu, (T__i + T__e) / 2).n()
 a0_neg_min = a__0r(0.0, R__i, m__e, (T__i + T__e) / 2).n()
@@ -436,8 +437,8 @@ a0_neg_max = a__0r(R__i, R__i, m__e, (T__i + T__e) / 2).n()
 print "a0_pos = ", a0_pos
 print "a0_neg = ", a0_neg
 
-a0_pos = a_t(Delta_t/2, m__Cu).n()
-a0_neg = a_t(Delta_t/2, m__e).n()
+# a0_pos = a_t(Delta_t/2, m__Cu).n()
+# a0_neg = a_t(Delta_t/2, m__e).n()
 
 r_min_pos = R__i / 10
 r_min_neg = R__i / 10
@@ -471,7 +472,7 @@ t2 = Delta_t # "should be 0.347500236218306e-3"
 dt = 0.00001
 
 attach("spherical_explosion_time_evaluation.sage")
-spherical_explosion_time_evaluation(q, t1, t2, dt, r0, v0_pos, v0_neg, a0_pos, a0_neg, step_R0, min_R0, max_R0, r_min)
+spherical_explosion_time_evaluation(q, t1, t2, dt, r0_pos_min, v0_pos_min, a0_pos_min, r0_pos_max, v0_pos_max, a0_pos_max, r0_neg_min, v0_neg_min, a0_neg_min, r0_neg_max, v0_neg_max, a0_neg_max, step_R0, min_R0, max_R0, r_min)
 
 
 step_R0 = 100*r0
@@ -484,7 +485,7 @@ t2 = Delta_t # "should be 0.347500236218306e-3"
 dt = 0.00005
 
 attach("spherical_explosion_radial_snapshot.sage")
-spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_pos, v0_neg, a0_pos, a0_neg, step_R0, min_R0, max_R0, r_min)
+spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_pos_min, v0_pos_min, a0_pos_min, r0_pos_max, v0_pos_max, a0_pos_max, r0_neg_min, v0_neg_min, a0_neg_min, r0_neg_max, v0_neg_max, a0_neg_max, step_R0, min_R0, max_R0, r_min)
 
 
 

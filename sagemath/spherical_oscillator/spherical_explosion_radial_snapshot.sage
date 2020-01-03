@@ -34,7 +34,7 @@ dt = 0.5
 dt_all = 2.0
 '''
 
-def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_n, step_R0, min_R0, max_R0, r_min):
+def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_min, r0_p_max, v0_p_max, a0_p_max, r0_n_min, v0_n_min, a0_n_min, r0_n_max, v0_n_max, a0_n_max, step_R0, min_R0, max_R0, r_min):
     all_plot_data_phi = []
     all_plot_data_phi_p = []
     all_plot_data_phi_n = []
@@ -83,8 +83,12 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_
         r_n_met = r_n < max_R0 and r_n > min_R0
 
         for R0_i in np.arange(min_R0, max_R0, step_R0):
-            (phi_p, A_p, E1_p, E2_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
-            (phi_n, A_n, E1_n, E2_n, error_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
+            if True:
+                (phi_p, A_p, E1_p, E2_p, error_p) = dbl_phi_and_E_lw(+q, t_i, R0_i, r0_p_min, v0_p_min, a0_p_min, r0_p_max, v0_p_max, a0_p_max, r_min)
+                (phi_n, A_n, E1_n, E2_n, error_n) = dbl_phi_and_E_lw(-q, t_i, R0_i, r0_n_min, v0_n_min, a0_n_min, r0_n_max, v0_n_max, a0_n_max, r_min)
+            if  False:
+                (phi_p, A_p, E1_p, E2_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
+                (phi_n, A_n, E1_n, E2_n, error_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
             print (phi_p, A_p, E1_p, E2_p, error_p, r_p)
             print (phi_n, A_n, E1_n, E2_n, error_n, r_n)
 

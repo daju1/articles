@@ -74,13 +74,18 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
         plot_data_E2_n = []
         plot_data_E_E1_E2 = []
 
-        #r_p = get_r_of_sphere(+q, t_i, r0, v0_p, a0_p, r_min)
-        #r_n = get_r_of_sphere(-q, t_i, r0, v0_n, a0_n, r_min)
+        r_p_min = get_r_of_sphere(+q, t_i, r0_p_min, v0_p_min, a0_p_min, r_min)
+        r_p_max = get_r_of_sphere(+q, t_i, r0_p_max, v0_p_max, a0_p_max, r_min)
+        r_n_min = get_r_of_sphere(-q, t_i, r0_n_min, v0_n_min, a0_n_min, r_min)
+        r_n_max = get_r_of_sphere(-q, t_i, r0_n_max, v0_n_max, a0_n_max, r_min)
 
-        (r_p, r_n, capacity, energy) = get_capacity_of_spherical_capacitor(q, t_i, r0, v0_p, a0_p, r0, v0_n, a0_n, r_min)
+        if False:
+            (r_p, r_n, capacity, energy) = get_capacity_of_spherical_capacitor(q, t_i, r0, v0_p, a0_p, r0, v0_n, a0_n, r_min)
 
-        r_p_met = r_p < max_R0 and r_p > min_R0
-        r_n_met = r_n < max_R0 and r_n > min_R0
+        r_p_min_met = r_p_min < max_R0 and r_p_min > min_R0
+        r_p_max_met = r_p_max < max_R0 and r_p_max > min_R0
+        r_n_min_met = r_n_min < max_R0 and r_n_min > min_R0
+        r_n_max_met = r_n_max < max_R0 and r_n_max > min_R0
 
         for R0_i in np.arange(min_R0, max_R0, step_R0):
             if True:
@@ -147,112 +152,112 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             p = list_plot(plot_data_phi)
             pname = folder + "spherical_explosion_phi_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_phi, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_phi, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_phi_p) > 0:
             p = list_plot(plot_data_phi_p)
             pname = folder + "spherical_explosion_phi_p_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_phi_p, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_phi_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_phi_n) > 0:
             p = list_plot(plot_data_phi_n)
             pname = folder + "spherical_explosion_phi_n_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_phi_n, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_phi_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_A) > 0:
             p = list_plot(plot_data_A)
             pname = folder + "spherical_explosion_A_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_A, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_A, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_A_p) > 0:
             p = list_plot(plot_data_A_p)
             pname = folder + "spherical_explosion_A_p_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_A_p, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_A_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_A_n) > 0:
             p = list_plot(plot_data_A_n)
             pname = folder + "spherical_explosion_A_n_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_A_n, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_A_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E) > 0:
             p = list_plot(plot_data_E)
             pname = folder + "spherical_explosion_E_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_E, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_E, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E_p) > 0:
             p = list_plot(plot_data_E_p)
             pname = folder + "spherical_explosion_E_p_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_E_p, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_E_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E_n) > 0:
             p = list_plot(plot_data_E_n)
             pname = folder + "spherical_explosion_E_n_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_E_n, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_E_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E1) > 0:
             p = list_plot(plot_data_E1)
             pname = folder + "spherical_explosion_E1_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_E1, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_E1, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E1_p) > 0:
             p = list_plot(plot_data_E1_p)
             pname = folder + "spherical_explosion_E1_p_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_E1_p, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_E1_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E1_n) > 0:
             p = list_plot(plot_data_E1_n)
             pname = folder + "spherical_explosion_E1_n_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_E1_n, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_E1_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E2) > 0:
             p = list_plot(plot_data_E2)
             pname = folder + "spherical_explosion_E2_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_E2, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_E2, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E2_p) > 0:
             p = list_plot(plot_data_E2_p)
             pname = folder + "spherical_explosion_E2_p_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_E2_p, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_E2_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E2_n) > 0:
             p = list_plot(plot_data_E2_n)
             pname = folder + "spherical_explosion_E2_n_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_E2_n, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_E2_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E_E1_E2) > 0:
             p = list_plot(plot_data_E_E1_E2)
             pname = folder + "spherical_explosion_E_E1_E2_R0" + "_t=" + float_formatting(t_i) + ".png"
             print pname
-            plot_r_of_sphere(plot_data_E_E1_E2, p, r_p_met, r_n_met, r_p, r_n)
+            plot_r_of_sphere(plot_data_E_E1_E2, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
     dir = os.getcwd()  + "/results/all_t"

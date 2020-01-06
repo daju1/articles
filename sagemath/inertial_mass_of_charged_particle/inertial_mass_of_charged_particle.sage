@@ -283,6 +283,7 @@ def calc_proton_mass():
 
     I7 = I6(2/3 * 0.8)
     print "I6(2/3 * 0.8) = ", I7
+    # Killed
 
 def calc_neutron_mass():
     # http://www.actaphys.uj.edu.pl/fulltext?series=Reg&vol=30&page=119
@@ -345,6 +346,6 @@ def test():
 #test()
 #calc3_scalar_potential()
 
-calc_proton_mass()
+# calc_proton_mass()
 calc_neutron_mass()
 

@@ -94,8 +94,8 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             if  False:
                 (phi_p, A_p, E1_p, E2_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
                 (phi_n, A_n, E1_n, E2_n, error_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
-            print (phi_p, A_p, E1_p, E2_p, error_p, r_p)
-            print (phi_n, A_n, E1_n, E2_n, error_n, r_n)
+            print (phi_p, A_p, E1_p, E2_p, error_p, r_p_min, r_p_max)
+            print (phi_n, A_n, E1_n, E2_n, error_n, r_n_min, r_n_max)
 
             plot_data_phi += [(R0_i, phi_p + phi_n)]
             plot_data_phi_p += [(R0_i, phi_p)]
@@ -105,7 +105,7 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             plot_data_A_p += [(R0_i, A_p)]
             plot_data_A_n += [(R0_i, A_n)]
 
-            if r_n < R0_i - 50*step_R0:
+            if r_n_max < R0_i - 50*step_R0:
                 plot_data_E += [(R0_i, E1_p + E2_p + E1_n + E2_n)]
                 plot_data_E_p += [(R0_i, E1_p + E2_p)]
                 plot_data_E_n += [(R0_i, E1_n + E2_n)]

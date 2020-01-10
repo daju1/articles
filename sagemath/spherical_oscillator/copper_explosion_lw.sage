@@ -434,8 +434,11 @@ a0_pos_max = a__0r(R__i, R__i, m__Cu, (T__i + T__e) / 2).n()
 a0_neg_max = a__0r(R__i, R__i, m__e, (T__i + T__e) / 2).n()
 
 
-print "a0_pos = ", a0_pos
-print "a0_neg = ", a0_neg
+print "a0_pos_min = ", a0_pos_min
+print "a0_neg_min = ", a0_neg_min
+
+print "a0_pos_max = ", a0_pos_max
+print "a0_neg_max = ", a0_neg_max
 
 # a0_pos = a_t(Delta_t/2, m__Cu).n()
 # a0_neg = a_t(Delta_t/2, m__e).n()
@@ -444,12 +447,12 @@ r_min_pos = R__i / 10
 r_min_neg = R__i / 10
 r_min = R__i / 10
 
-print "a0_pos = ", a0_pos
-print "a0_neg = ", a0_neg
+# print "a0_pos = ", a0_pos
+# print "a0_neg = ", a0_neg
 
 t_a0 = Delta_t.n()
 
-r_finish = r0_pos * 2
+r_finish = r0_neg_max * 2
 dr = r_finish / 100
 
 set_dr_py(dr)
@@ -457,9 +460,9 @@ set_r_finish_py(r_finish)
 
 # v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0)
 
-step_R0 = 1000*r0
+step_R0 = 100*r0
 min_R0 = r0 + step_R0
-max_R0 = r0 + 10.0 * step_R0
+max_R0 = r0 + 100.0 * step_R0
 
 # without SI
 # t1 = 0
@@ -472,7 +475,7 @@ t2 = Delta_t # "should be 0.347500236218306e-3"
 dt = 0.00001
 
 attach("spherical_explosion_time_evaluation.sage")
-spherical_explosion_time_evaluation(q, t1, t2, dt, r0_pos_min, v0_pos_min, a0_pos_min, r0_pos_max, v0_pos_max, a0_pos_max, r0_neg_min, v0_neg_min, a0_neg_min, r0_neg_max, v0_neg_max, a0_neg_max, step_R0, min_R0, max_R0, r_min)
+# spherical_explosion_time_evaluation(q, t1, t2, dt, r0_pos_min, v0_pos_min, a0_pos_min, r0_pos_max, v0_pos_max, a0_pos_max, r0_neg_min, v0_neg_min, a0_neg_min, r0_neg_max, v0_neg_max, a0_neg_max, step_R0, min_R0, max_R0, r_min)
 
 
 step_R0 = 100*r0

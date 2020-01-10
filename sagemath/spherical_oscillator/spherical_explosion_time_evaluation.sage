@@ -77,8 +77,10 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
         plot_data_capacity = []
         plot_data_energy = []
 
-        t_r_p = NaN
-        t_r_n = NaN
+        t_r_p_min = NaN
+        t_r_p_max = NaN
+        t_r_n_min = NaN
+        t_r_n_max = NaN
 
         plot_data_phi = []
         plot_data_phi_p = []
@@ -156,8 +158,8 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
                 (phi_p, A_p, E1_p, E2_p, error_p) = dbl_phi_and_E_lw(+q, t_i, R0_i, r0_p_min, v0_p_min, a0_p_min, r0_p_max, v0_p_max, a0_p_max, r_min)
                 (phi_n, A_n, E1_n, E2_n, error_n) = dbl_phi_and_E_lw(-q, t_i, R0_i, r0_n_min, v0_n_min, a0_n_min, r0_n_max, v0_n_max, a0_n_max, r_min)
             if False:
-                (phi_p, A_p, E1_p, E2_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
-                (phi_n, A_n, E1_n, E2_n, error_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
+                (phi_p, A_p, E1_p, E2_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, 0.5 * (r0_p_min + r0_p_max), 0.5 * (v0_p_min + v0_p_max), 0.5 * (a0_p_min + a0_p_max), r_min)
+                (phi_n, A_n, E1_n, E2_n, error_n) = phi_and_E_lw(-q, t_i, R0_i, 0.5 * (r0_n_min + r0_n_max), 0.5 * (v0_n_min + v0_n_max), 0.5 * (a0_n_min + a0_n_max), r_min)
 
             print (phi_p, A_p, E1_p, E2_p, error_p, r_p_min, r_p_max)
             print (phi_n, A_n, E1_n, E2_n, error_n, r_n_min, r_n_max)

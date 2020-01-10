@@ -317,6 +317,7 @@ def calc_neutron_mass():
     I7 = I6(0.71*sqrt(2/5), -0.113)
 
     print "I6(0.71*sqrt(2/5), -0.113) = ", I7
+    # Killed
 
 def test():
     f = lambda k,xx,yy,zz : k * xx^2 + yy^3 + zz^4;

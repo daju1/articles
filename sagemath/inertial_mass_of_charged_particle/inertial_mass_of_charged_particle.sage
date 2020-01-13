@@ -319,6 +319,82 @@ def calc_neutron_mass():
     print "I6(0.71*sqrt(2/5), -0.113) = ", I7
     # Killed
 
+nquad_default_opts = \
+           { 'epsabs' : 1.49e-08,
+             'epsrel' : 1.49e-08,
+             'limit'  : 50 }
+
+nquad_opts = { 'epsabs' : 1.49e-03,
+               'epsrel' : 1.49e-03,
+               'limit'  : 20 }
+
+def calc_proton_mass2():
+    # http://www.actaphys.uj.edu.pl/fulltext?series=Reg&vol=30&page=119
+    # the rms charge radius of the proton being
+    # rp_rms = 0.8
+    # r0 = 2/3 * rp_rms
+    # the charge distribution of the proton
+    # g(r) = exp(-r^2/r__0^2)/(r__0^3*sqrt(pi)^3)
+
+    rho_q = lambda r0, r : exp(-r^2/r0^2)/(r0^3*sqrt(pi)^3)
+
+    Ir = lambda r0, theta_a, ra, phi_q, theta_q, rq : rho_q(r0, rq) * rq^2 * sin(theta_q) / R0 (ra, theta_a, rq, theta_q, phi_q)    # (rq,  0, infinity)
+
+    I2 = lambda r0, theta_a, ra, phi_q, theta_q, rq : Ir(r0, theta_a, ra, phi_q, theta_q, rq)                                       # (theta_q, 0, pi)
+
+    I3 = lambda r0, theta_a, ra, phi_q, theta_q, rq : I2(r0, theta_a, ra, phi_q, theta_q, rq)                                       # (phi_q, 0, 2*pi)
+
+    I4 = lambda r0, theta_a, ra, phi_q, theta_q, rq : 2 * pi * I3(r0, theta_a, ra, phi_q, theta_q, rq)
+
+    I5 = lambda r0, theta_a, ra, phi_q, theta_q, rq : rho_q(r0, ra) * I4(r0, theta_a, ra, phi_q, theta_q, rq) * sin(theta_a) * ra^2 # (ra, 0, infinity)
+
+    I6 = lambda r0, theta_a, ra, phi_q, theta_q, rq : I5 (r0, theta_a, ra, phi_q, theta_q, rq)                                      # (theta_a, 0, pi)
+
+    I7 = lambda theta_a, ra, phi_q, theta_q, rq : I6(2/3 * 0.8, theta_a, ra, phi_q, theta_q, rq)
+
+    from scipy import integrate
+    #                              theta_a, ra,            phi_q,      theta_q,  rq
+    answer = integrate.nquad(I7, [ [0, pi], [0, infinity], [0, 2*pi],  [0, pi],  [0, infinity]], opts=nquad_opts)
+
+    print "I6(2/3 * 0.8) = ", answer
+
+def calc_neutron_mass2():
+    # http://www.actaphys.uj.edu.pl/fulltext?series=Reg&vol=30&page=119
+
+    # the rms value of g__n
+    # r2 := -0.113
+
+    # The third parameter r1 is a scaling parameter, which is necessary to define
+    # a dimensionless quantity (r/r1) in the Gaussian exponent. The results of
+    # QCD-calculations of the charge density distribution inside the neutron [2]
+    # are best reproduced by choosing:
+    # r1 = 0.71*sqrt(2/5) # fm
+
+    # the charge density distribution within the neutron
+    # gn(r) = (-2/3)*(r2 / (r1^2 * (r1*sqrt(pi))^3)) * (r/r1)^2 * (1 - (2/5)*r^2/r1^2) * exp(-r^2/r1^2)
+
+    rho_q = lambda r1, r2, r : (-2/3)*(r2 / (r1^2 * (r1*sqrt(pi))^3)) * (r/r1)^2 * (1 - (2/5)*r^2/r1^2) * exp(-r^2/r1^2)
+
+    Ir = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq : rho_q(r1, r2, rq) * rq^2 * sin(theta_q) / R0 (ra, theta_a, rq, theta_q, phi_q)              # (rq, 0, infinity)
+
+    I2 = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq : Ir(r1, r2, theta_a, ra, phi_q, theta_q)                                                     # (theta_q, 0, pi)
+
+    I3 = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq : I2(r1, r2, theta_a, ra, phi_q)                                                              # (phi_q, 0, 2*pi)
+
+    I4 = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq : 2 * pi * I3(r1, r2, theta_a, ra, phi_q, theta_q, rq)
+
+    I5 = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq : rho_q(r1, r2, ra) * I4(r1, r2, theta_a, ra, phi_q, theta_q, rq) * sin(theta_a) * ra^2       # (ra, 0, infinity)
+
+    I6 = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq : I5 (r1, r2, theta_a, ra, phi_q, theta_q, rq )                                               # (theta_a, 0, pi)
+
+    I7 = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq  : I6(0.71*sqrt(2/5), -0.113, theta_a, ra, phi_q, theta_q, rq)
+
+    from scipy import integrate
+    #                              theta_a, ra,            phi_q,      theta_q,  rq
+    answer = integrate.nquad(I7, [ [0, pi], [0, infinity], [0, 2*pi],  [0, pi],  [0, infinity]], opts=nquad_opts)
+
+    print "I6(0.71*sqrt(2/5), -0.113) = ", answer
+
 def test():
     f = lambda k,xx,yy,zz : k * xx^2 + yy^3 + zz^4;
 
@@ -347,6 +423,6 @@ def test():
 #test()
 #calc3_scalar_potential()
 
-# calc_proton_mass()
-calc_neutron_mass()
+calc_proton_mass2()
+calc_neutron_mass2()
 

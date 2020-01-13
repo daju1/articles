@@ -336,6 +336,15 @@ def calc_proton_mass2():
     # the charge distribution of the proton
     # g(r) = exp(-r^2/r__0^2)/(r__0^3*sqrt(pi)^3)
 
+    file = open('calc_proton_mass2.txt', 'a')
+    file.write('http://www.actaphys.uj.edu.pl/fulltext?series=Reg&vol=30&page=119\n')
+    file.write('the rms charge radius of the proton being\n')
+    file.write('rp_rms = 0.8\n')
+    file.write('r0 = 2/3 * rp_rms\n')
+    file.write('the charge distribution of the proton\n')
+    file.write('g(r) = exp(-r^2/r__0^2)/(r__0^3*sqrt(pi)^3)\n')
+    file.close()
+
     rho_q = lambda r0, r : exp(-r^2/r0^2)/(r0^3*sqrt(pi)^3)
 
     Ir = lambda r0, theta_a, ra, phi_q, theta_q, rq : rho_q(r0, rq) * rq^2 * sin(theta_q) / R0 (ra, theta_a, rq, theta_q, phi_q)    # (rq,  0, infinity)
@@ -358,6 +367,13 @@ def calc_proton_mass2():
 
     print "I6(2/3 * 0.8) = ", answer
 
+    file = open('calc_proton_mass2.txt', 'a')
+    file.write('\n')
+    file.write('I6(2/3 * 0.8) = ')
+    file.write(str(answer))
+    file.write('\n\n')
+    file.close()
+
 def calc_neutron_mass2():
     # http://www.actaphys.uj.edu.pl/fulltext?series=Reg&vol=30&page=119
 
@@ -372,6 +388,21 @@ def calc_neutron_mass2():
 
     # the charge density distribution within the neutron
     # gn(r) = (-2/3)*(r2 / (r1^2 * (r1*sqrt(pi))^3)) * (r/r1)^2 * (1 - (2/5)*r^2/r1^2) * exp(-r^2/r1^2)
+
+    file = open('calc_neutron_mass2.txt', 'a')
+    file.write('http://www.actaphys.uj.edu.pl/fulltext?series=Reg&vol=30&page=119\n')
+    file.write('the rms value of g__n\n')
+    file.write('r2 := -0.113\n')
+    file.write('\n')
+    file.write('The third parameter r1 is a scaling parameter, which is necessary to define\n')
+    file.write('a dimensionless quantity (r/r1) in the Gaussian exponent. The results of\n')
+    file.write('QCD-calculations of the charge density distribution inside the neutron [2]\n')
+    file.write('are best reproduced by choosing:\n')
+    file.write('r1 = 0.71*sqrt(2/5) # fm\n')
+    file.write('\n')
+    file.write('the charge density distribution within the neutron\n')
+    file.write('gn(r) = (-2/3)*(r2 / (r1^2 * (r1*sqrt(pi))^3)) * (r/r1)^2 * (1 - (2/5)*r^2/r1^2) * exp(-r^2/r1^2)\n')
+    file.close()
 
     rho_q = lambda r1, r2, r : (-2/3)*(r2 / (r1^2 * (r1*sqrt(pi))^3)) * (r/r1)^2 * (1 - (2/5)*r^2/r1^2) * exp(-r^2/r1^2)
 
@@ -394,6 +425,13 @@ def calc_neutron_mass2():
     answer = integrate.nquad(I7, [ [0, pi], [0, infinity], [0, 2*pi],  [0, pi],  [0, infinity]], opts=nquad_opts)
 
     print "I6(0.71*sqrt(2/5), -0.113) = ", answer
+
+    file = open('calc_neutron_mass2.txt', 'a')
+    file.write('\n')
+    file.write('I6(0.71*sqrt(2/5), -0.113) = ')
+    file.write(str(answer))
+    file.write('\n\n')
+    file.close()
 
 def test():
     f = lambda k,xx,yy,zz : k * xx^2 + yy^3 + zz^4;

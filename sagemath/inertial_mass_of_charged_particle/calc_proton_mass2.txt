@@ -1,0 +1,18 @@
+http://www.actaphys.uj.edu.pl/fulltext?series=Reg&vol=30&page=119
+the rms charge radius of the proton being
+rp_rms = 0.8
+r0 = 2/3 * rp_rms
+the charge distribution of the proton
+g(r) = exp(-r^2/r__0^2)/(r__0^3*sqrt(pi)^3)
+
+I6(2/3 * 0.8) = (1.4960348943817992, 0.0026474827067254846)
+
+http://www.actaphys.uj.edu.pl/fulltext?series=Reg&vol=30&page=119
+the rms charge radius of the proton being
+rp_rms = 0.8
+r0 = 2/3 * rp_rms
+the charge distribution of the proton
+g(r) = exp(-r^2/r__0^2)/(r__0^3*sqrt(pi)^3)
+
+I6(2/3 * 0.8) = (1.4960348943817992, 0.0026474827067254846)
+

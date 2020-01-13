@@ -366,6 +366,7 @@ def calc_proton_mass2():
     answer = integrate.nquad(I7, [ [0, pi], [0, infinity], [0, 2*pi],  [0, pi],  [0, infinity]], opts=nquad_opts)
 
     print "I6(2/3 * 0.8) = ", answer
+    # I6(2/3 * 0.8) =  (1.4960348943817992, 0.0026474827067254846)
 
     file = open('calc_proton_mass2.txt', 'a')
     file.write('\n')
@@ -408,9 +409,9 @@ def calc_neutron_mass2():
 
     Ir = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq : rho_q(r1, r2, rq) * rq^2 * sin(theta_q) / R0 (ra, theta_a, rq, theta_q, phi_q)              # (rq, 0, infinity)
 
-    I2 = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq : Ir(r1, r2, theta_a, ra, phi_q, theta_q)                                                     # (theta_q, 0, pi)
+    I2 = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq : Ir(r1, r2, theta_a, ra, phi_q, theta_q, rq)                                                     # (theta_q, 0, pi)
 
-    I3 = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq : I2(r1, r2, theta_a, ra, phi_q)                                                              # (phi_q, 0, 2*pi)
+    I3 = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq : I2(r1, r2, theta_a, ra, phi_q, theta_q, rq)                                                              # (phi_q, 0, 2*pi)
 
     I4 = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq : 2 * pi * I3(r1, r2, theta_a, ra, phi_q, theta_q, rq)
 
@@ -418,7 +419,7 @@ def calc_neutron_mass2():
 
     I6 = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq : I5 (r1, r2, theta_a, ra, phi_q, theta_q, rq )                                               # (theta_a, 0, pi)
 
-    I7 = lambda r1, r2, theta_a, ra, phi_q, theta_q, rq  : I6(0.71*sqrt(2/5), -0.113, theta_a, ra, phi_q, theta_q, rq)
+    I7 = lambda theta_a, ra, phi_q, theta_q, rq  : I6(0.71*sqrt(2/5), -0.113, theta_a, ra, phi_q, theta_q, rq)
 
     from scipy import integrate
     #                              theta_a, ra,            phi_q,      theta_q,  rq
@@ -461,6 +462,6 @@ def test():
 #test()
 #calc3_scalar_potential()
 
-calc_proton_mass2()
+# calc_proton_mass2()
 calc_neutron_mass2()
 

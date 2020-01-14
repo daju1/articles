@@ -368,10 +368,25 @@ def calc_proton_mass2():
     print "I6(2/3 * 0.8) = ", answer
     # I6(2/3 * 0.8) =  (1.4960348943817992, 0.0026474827067254846)
 
+    # Elementary charge, coulombs
+    e = 1.60217662e-19
+    mju0 = 4*pi*10^(-7) # H/m
+    k = mju0 / (4 * pi) * e^2 / 10^-15
+    m = k * answer[0]
+    print "m = ", m
+    # 3.84027657565375e-30
+
+    me = 9.1093837015e-31
+    print "me / m = ", me / m
+    # 4.21573698231790
+
     file = open('calc_proton_mass2.txt', 'a')
     file.write('\n')
     file.write('I6(2/3 * 0.8) = ')
     file.write(str(answer))
+    file.write('\n')
+    file.write('m = ')
+    file.write(str(m))
     file.write('\n\n')
     file.close()
 
@@ -433,6 +448,7 @@ def calc_neutron_mass2():
     file.write(str(answer))
     file.write('\n\n')
     file.close()
+    # Killed
 
 def test():
     f = lambda k,xx,yy,zz : k * xx^2 + yy^3 + zz^4;

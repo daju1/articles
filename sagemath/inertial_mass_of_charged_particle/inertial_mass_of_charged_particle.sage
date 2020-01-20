@@ -450,28 +450,42 @@ def calc_neutron_mass2():
     file.close()
     # Killed
 
-def test():
-    f = lambda k,xx,yy,zz : k * xx^2 + yy^3 + zz^4;
+def calc_sphere_mass():
 
-    I1 = lambda k,xx,yy : my_numerical_integral(lambda zz : f(k,xx,yy,zz), 0, 3 );
+    file = open('calc_sphere_mass.txt', 'a')
+    file.close()
 
-    I2 = lambda k,xx   : my_numerical_integral(lambda yy : I1(k,xx,yy), 0, 2 );
+    rho_q = lambda r0, q : 3*q / (4*pi*r0^3)
 
-    I3 = lambda k     : my_numerical_integral(lambda xx : I2(k,xx), 0, 1 );
+    Ir = lambda r0, q, theta_a, ra, phi_q, theta_q, rq : rho_q(r0, q) * rq^2 * sin(theta_q) / R0 (ra, theta_a, rq, theta_q, phi_q)    # (rq,  0, infinity)
 
-    I4 = I3(1.0)
+    I2 = lambda r0, q, theta_a, ra, phi_q, theta_q, rq : Ir(r0, q, theta_a, ra, phi_q, theta_q, rq)                                       # (theta_q, 0, pi)
 
-    print "I4 = ", I4
+    I3 = lambda r0, q, theta_a, ra, phi_q, theta_q, rq : I2(r0, q, theta_a, ra, phi_q, theta_q, rq)                                       # (phi_q, 0, 2*pi)
 
-    from sympy import integrate, Symbol
-    k = Symbol('k')
-    xx = Symbol('xx')
-    yy = Symbol('yy')
-    zz = Symbol('zz')
-    print integrate(f(k,xx,yy,zz), (xx), (yy), (zz))
-    print integrate(f(k,xx,yy,zz), (xx, 0, 1), (yy, 0, 2), (zz, 0, 3))
-    print integrate(f(k,xx,yy,zz), (xx, 0, 1), (yy, 0, 2), (zz, 0, 3))
-    print integrate(f(1,xx,yy,zz), (xx, 0, 1), (yy, 0, 2), (zz, 0, 3)).n()
+    I4 = lambda r0, q, theta_a, ra, phi_q, theta_q, rq : 2 * pi * I3(r0, q, theta_a, ra, phi_q, theta_q, rq)
+
+    I5 = lambda r0, q, theta_a, ra, phi_q, theta_q, rq : rho_q(r0, q) * I4(r0, q, theta_a, ra, phi_q, theta_q, rq) * sin(theta_a) * ra^2 # (ra, 0, infinity)
+
+    I6 = lambda r0, q, theta_a, ra, phi_q, theta_q, rq : I5 (r0, q, theta_a, ra, phi_q, theta_q, rq)                                      # (theta_a, 0, pi)
+
+    I7 = lambda theta_a, ra, phi_q, theta_q, rq : I6(1, 1, theta_a, ra, phi_q, theta_q, rq)
+    Iq1 = lambda r0, theta_a, ra, phi_q, theta_q, rq : I6(r0, 1, theta_a, ra, phi_q, theta_q, rq)
+
+    from scipy import integrate
+    Ir0 = lambda r0 : integrate.nquad(I6(r0, 1), [ [0, pi], [0, r0], [0, 2*pi],  [0, pi],  [0, r0]], opts=nquad_opts)
+
+    #                              theta_a, ra,            phi_q,      theta_q,  rq
+    # answer = integrate.nquad(I7, [ [0, pi], [0, 1], [0, 2*pi],  [0, pi],  [0, 1]], opts=nquad_opts)
+    answer = Ir0(1)
+
+    print "I6(1, 1) = ", answer
+
+    file = open('calc_sphere_mass.txt', 'a')
+    file.write('\n')
+    file.write('I6(1, 1) = ')
+    file.write(str(answer))
+    file.close()
 
 #calc1_m()
 #calc2_m()
@@ -479,5 +493,6 @@ def test():
 #calc3_scalar_potential()
 
 # calc_proton_mass2()
-calc_neutron_mass2()
+# calc_neutron_mass2()
+calc_sphere_mass()
 

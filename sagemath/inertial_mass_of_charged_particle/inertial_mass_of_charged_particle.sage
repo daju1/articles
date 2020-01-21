@@ -474,9 +474,13 @@ def calc_sphere_mass():
     from scipy import integrate
     #                                                                                                                      theta_a, ra,      phi_q,      theta_q,  rq
     Ir0 = lambda r0 : integrate.nquad(lambda theta_a, ra, phi_q, theta_q, rq : Iq1(r0, theta_a, ra, phi_q, theta_q, rq), [ [0, pi], [0, r0], [0, 2*pi],  [0, pi],  [0, r0]], opts=nquad_opts)
-    answer = Ir0(1)
+    # answer = Ir0(0.1)
+    # print "Ir0(0.1) = ", answer
+    # Killed
 
+    answer = Ir0(1.0)
     print "Ir0(1) = ", answer
+    # Ir0(1) =  (1.1999998963704677, 0.005411660477958158)
 
     file = open('calc_sphere_mass.txt', 'a')
     file.write('\n')

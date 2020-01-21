@@ -1,3 +1,7 @@
+documentation:
+https://www-zeuthen.desy.de/acat05/talks/Hahn.Thomas.3/hahn.pdf
+
+build:
 wget http://www.feynarts.de/cuba/Cuba-4.2.tar.gz
 tar zxvf Cuba-4.2.tar.gz
 cd Cuba-4.2
@@ -9,8 +13,9 @@ cd ..
 make -f Makefile-calc_sphere_mass
 ./calc_sphere_mass
 
-    cubareal r0 = 1.0;
+results:
 
+    cubareal r0 = 1.0;
 SUAVE RESULT:   nregions 50     neval 50000     fail 1
 SUAVE RESULT:   1.19688515 +- 0.00328190        p = 1.000
 

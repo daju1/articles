@@ -469,21 +469,18 @@ def calc_sphere_mass():
 
     I6 = lambda r0, q, theta_a, ra, phi_q, theta_q, rq : I5 (r0, q, theta_a, ra, phi_q, theta_q, rq)                                      # (theta_a, 0, pi)
 
-    I7 = lambda theta_a, ra, phi_q, theta_q, rq : I6(1, 1, theta_a, ra, phi_q, theta_q, rq)
     Iq1 = lambda r0, theta_a, ra, phi_q, theta_q, rq : I6(r0, 1, theta_a, ra, phi_q, theta_q, rq)
 
     from scipy import integrate
-    Ir0 = lambda r0 : integrate.nquad(I6(r0, 1), [ [0, pi], [0, r0], [0, 2*pi],  [0, pi],  [0, r0]], opts=nquad_opts)
-
-    #                              theta_a, ra,            phi_q,      theta_q,  rq
-    # answer = integrate.nquad(I7, [ [0, pi], [0, 1], [0, 2*pi],  [0, pi],  [0, 1]], opts=nquad_opts)
+    #                                                                                                                      theta_a, ra,      phi_q,      theta_q,  rq
+    Ir0 = lambda r0 : integrate.nquad(lambda theta_a, ra, phi_q, theta_q, rq : Iq1(r0, theta_a, ra, phi_q, theta_q, rq), [ [0, pi], [0, r0], [0, 2*pi],  [0, pi],  [0, r0]], opts=nquad_opts)
     answer = Ir0(1)
 
-    print "I6(1, 1) = ", answer
+    print "Ir0(1) = ", answer
 
     file = open('calc_sphere_mass.txt', 'a')
     file.write('\n')
-    file.write('I6(1, 1) = ')
+    file.write('Ir0(1) = ')
     file.write(str(answer))
     file.close()
 

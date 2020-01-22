@@ -5,7 +5,7 @@
 // g(r) = exp(-r^2/r__0^2)/(r__0^3*sqrt(pi)^3)
 static inline cubareal rho_q (cubareal r0, cubareal r)
 {
-    return exp(-Sq(r/r0)/Cb(r0*sqrt(M_PI)));
+    return exp(-Sq(r/r0)) / Cb(r0*sqrt(M_PI));
 }
 
 // интегрирование по координатам заряда источника потенциала

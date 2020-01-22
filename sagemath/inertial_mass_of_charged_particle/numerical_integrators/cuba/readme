@@ -15,7 +15,7 @@ make -f Makefile-calc_sphere_mass
 
 make -f cuba.mk clean && ll && make -f Makefile-calc_proton_mass all && ./calc_proton_mass 
 
-results:
+calc_sphere_mass results:
 
     cubareal r0 = 1.0;
 SUAVE RESULT:   nregions 50     neval 50000     fail 1
@@ -24,3 +24,26 @@ SUAVE RESULT:   1.19688515 +- 0.00328190        p = 1.000
     cubareal r0 = 0.1;
 UAVE RESULT:   nregions 50     neval 50000     fail 1
 SUAVE RESULT:   11.96885154 +- 0.03281897       p = 1.000
+
+calc_proton_mass results:
+
+
+Iteration 13:  52000 integrand evaluations so far
+[1] 1.49695 +- 0.00345851       chisq 3.14802 (12 df)
+VEGAS RESULT:   neval 52000     fail 1
+VEGAS RESULT:   1.49695439 +- 0.00345851        p = 0.006
+
+
+Iteration 50:  50000 integrand evaluations so far
+[1] 1.49412 +- 0.00538849       chisq 419.116 (337 df)
+SUAVE RESULT:   nregions 50     neval 50000     fail 1
+SUAVE RESULT:   1.49411951 +- 0.00538849        p = 0.998
+
+Iteration 243:  243000 integrand evaluations so far
+[1] 1.49425 +- 0.00149158       chisq 34468.8 (2164 df)
+SUAVE RESULT:   nregions 243    neval 243000    fail 0
+SUAVE RESULT:   1.49424975 +- 0.00149158        p = 1.000
+
+scipy integrate.quad calc_proton_mass results (for comparing):
+# I6(2/3 * 0.8) =  (1.4960348943817992, 0.0026474827067254846)
+

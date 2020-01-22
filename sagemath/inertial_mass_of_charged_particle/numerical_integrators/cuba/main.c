@@ -15,7 +15,7 @@ int Integrand(const int *ndim, const cubareal xx[],
 #define LAST 4
 #define SEED 0
 #define MINEVAL 0
-#define MAXEVAL 50000
+#define MAXEVAL 500000
 
 #define NSTART 1000
 #define NINCREASE 500

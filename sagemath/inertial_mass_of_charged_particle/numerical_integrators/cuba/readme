@@ -47,3 +47,15 @@ SUAVE RESULT:   1.49424975 +- 0.00149158        p = 1.000
 scipy integrate.quad calc_proton_mass results (for comparing):
 # I6(2/3 * 0.8) =  (1.4960348943817992, 0.0026474827067254846)
 
+
+make -f cuba.mk clean && ll && make -f Makefile-calc_neutron_mass all && ./calc_neutron_mass 
+
+Iteration 32:  280000 integrand evaluations so far
+[1] 0.00183803 +- 1.78927e-06   chisq 3.50361 (31 df)
+VEGAS RESULT:   neval 280000    fail 0
+VEGAS RESULT:   0.00183803 +- 0.00000179        p = 0.000
+
+Iteration 200:  200000 integrand evaluations so far
+[1] 0.00183606 +- 1.83376e-06   chisq 10456.6 (1743 df)
+SUAVE RESULT:   nregions 200    neval 200000    fail 0
+SUAVE RESULT:   0.00183606 +- 0.00000183        p = 1.000

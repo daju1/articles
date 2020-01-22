@@ -1,0 +1,9 @@
+include ./cuba.mk
+
+OBJ = calc_neutron_mass.o main.o
+
+all : calc_neutron_mass
+
+calc_neutron_mass: $(OBJ)
+	$(info OBJ=$(OBJ))
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)

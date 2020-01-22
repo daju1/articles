@@ -1,28 +1,9 @@
-IDIR =$(PWD)/../local/include
-$(info IDIR=$(IDIR))
+include ./cuba.mk
 
-CC=gcc
-CFLAGS=-I$(IDIR) -g -O0
+OBJ = calc_sphere_mass.o main.o
 
-
-LDIR =../lib
-
-LIBS=-lm -lcuba -L/$(PWD)/../local/lib
-
-_DEPS = cuba.h
-DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
-$(info DEPS=$(DEPS))
-
-OBJ = calc_sphere_mass.o
-
-%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+all : calc_sphere_mass
 
 calc_sphere_mass: $(OBJ)
 	$(info OBJ=$(OBJ))
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
-
-.PHONY: clean
-
-clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~

@@ -13,6 +13,8 @@ cd ..
 make -f Makefile-calc_sphere_mass
 ./calc_sphere_mass
 
+make -f cuba.mk clean && ll && make -f Makefile-calc_proton_mass all && ./calc_proton_mass 
+
 results:
 
     cubareal r0 = 1.0;

@@ -1,0 +1,9 @@
+include ./cuba.mk
+
+OBJ = calc_proton_mass.o main.o
+
+all : calc_proton_mass
+
+calc_proton_mass: $(OBJ)
+	$(info OBJ=$(OBJ))
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)

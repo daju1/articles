@@ -263,7 +263,20 @@ dt = 0.2
 r0 = 0.2
 c = 1
 v = 0.9
+
 tau1 = 5
+
+tau1 = 25
+dt_circle = 1
+dr_color = 5
+
+tau1 = 125
+dt_circle = 5
+dr_color = 25
+
+tau1 = 625
+dt_circle = 25
+dr_color = 125
 
 g += circle((0, 0), r0, rgbcolor=hue(r0/500))
 
@@ -277,14 +290,14 @@ for theta_i in np.arange(0, 360, 15):
         
         plot_data += [(x2, z2)]
         
-        if (dt/2 > (tau2+r0/c) % 1 and theta_i == 0):
+        if (dt/2 > (tau2+r0/c) % dt_circle and theta_i == 0):
             zq = tau2*v
             rr = c*tau2 + r0
-            g += circle((0, -zq), rr, rgbcolor=hue(rr/5))
+            g += circle((0, -zq), rr, rgbcolor=hue(rr/dr_color))
         
     g += list_plot(plot_data,size=2)
 
-pname = "results/field_of_directions_of_propagation_of_electric_potential.png"
+pname = "results/field_of_directions_of_propagation_of_electric_potential"+ "_tau1=" + str(tau1) + "_v=" + float_formatting(v) + ".png"
 print pname
 g.save(pname)
 

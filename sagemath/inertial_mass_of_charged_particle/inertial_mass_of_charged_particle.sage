@@ -488,6 +488,26 @@ def calc_sphere_mass():
     file.write(str(answer))
     file.close()
 
+def legendre_summ(l, m, theta_q, phi_q, theta_a, phi_a):
+    f = spherical_harmonic(l, m, theta_q, phi_q) * conjugate(spherical_harmonic(l, m, theta_a, phi_a))
+    return 4 * pi / (2*l + 1) * sum(f, m, -l, l)
+
+def calc_inductivity_of_sphere():
+    from sage.functions.special import spherical_harmonic
+    theta_q, phi_q = var('theta_q, phi_q')
+    assume(theta_q, 'real')
+    assume(phi_q, 'real')
+
+    theta_a, phi_a = var('theta_a, phi_a')
+    assume(theta_a, 'real')
+    assume(phi_a, 'real')
+
+    l,m = var('l,m')
+    f = spherical_harmonic(l, m, theta_q, phi_q) * conjugate(spherical_harmonic(l, m, theta_a, phi_a))
+    print sum(f, m, -l, l)
+    print legendre_summ(l, m, theta_q, phi_q, theta_a, phi_a)
+
+
 #calc1_m()
 #calc2_m()
 #test()
@@ -495,5 +515,6 @@ def calc_sphere_mass():
 
 # calc_proton_mass2()
 # calc_neutron_mass2()
-calc_sphere_mass()
+# calc_sphere_mass()
+calc_inductivity_of_sphere()
 

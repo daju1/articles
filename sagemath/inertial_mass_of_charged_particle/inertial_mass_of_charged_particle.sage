@@ -488,12 +488,77 @@ def calc_sphere_mass():
     file.write(str(answer))
     file.close()
 
-def legendre_summ(l, m, theta_q, phi_q, theta_a, phi_a):
+def legendre_summ(l, theta_q, phi_q, theta_a, phi_a):
+    from sage.functions.special import spherical_harmonic
     f = spherical_harmonic(l, m, theta_q, phi_q) * conjugate(spherical_harmonic(l, m, theta_a, phi_a))
     return 4 * pi / (2*l + 1) * sum(f, m, -l, l)
 
+def legendre_summ_of_vector_potencial_of_rotated_sphere(l):
+    theta_q, phi_q = var('theta_q, phi_q')
+    assume(theta_q, 'real')
+    assume(phi_q, 'real')
+
+    theta_a, phi_a = var('theta_a, phi_a')
+    assume(theta_a, 'real')
+    assume(phi_a, 'real')
+    phi_a = 0
+
+    r_q, r_a = var("r_q, r_a")
+    R = var("R")
+    v = var("v")
+    ro = var("ro")
+
+    assume(r_a>0)
+    assume(r_a<R)
+    assume(R>0)
+
+    # if r_q < r_a
+    I1 = ((1/r_a)*((r_q/r_a)^l)*ro*v*cos(phi_q)*sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, 0, r_a)
+    # if r_a < r_q
+    I2 = ((1/r_q)*((r_a/r_q)^l)*ro*v*cos(phi_q)*sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, r_a, R)
+
+    return I1 + I2
+
+def legendre_summ_of_vector_potencial_of_rotated_solid_sphere(l):
+    theta_q, phi_q = var('theta_q, phi_q')
+    assume(theta_q, 'real')
+    assume(phi_q, 'real')
+
+    theta_a, phi_a = var('theta_a, phi_a')
+    assume(theta_a, 'real')
+    assume(phi_a, 'real')
+
+    phi_a = 0
+
+    r_q = var("r_q")
+    omega = var("omega")
+    R = var("R")
+    v = omega*r_q*sin(theta_q)
+    ro = var("ro")
+
+    assume(r_a>0)
+    assume(r_a<R)
+    assume(R>0)
+
+    # if r_q < r_a
+    I1 = ((1/r_a)*((r_q/r_a)^l)*ro*v*cos(phi_q)*sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, 0, r_a)
+    # if r_a < r_q
+    I2 = ((1/r_q)*((r_a/r_q)^l)*ro*v*cos(phi_q)*sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, r_a, R)
+
+    return I1 + I2
+
+
+def make_spherical_plot3d(f):
+    # Color plots on surface of sphere
+    var('x,y')
+    cm = colormaps.spring
+    cf = lambda x,y: (sin(x) + cos(y)) % 1
+    return spherical_plot3d(f, (phi_a,0,2*pi), (theta_a,0,pi), color=(cf,cm))
+
+
 def calc_inductivity_of_sphere():
     from sage.functions.special import spherical_harmonic
+
     theta_q, phi_q = var('theta_q, phi_q')
     assume(theta_q, 'real')
     assume(phi_q, 'real')
@@ -505,7 +570,61 @@ def calc_inductivity_of_sphere():
     l,m = var('l,m')
     f = spherical_harmonic(l, m, theta_q, phi_q) * conjugate(spherical_harmonic(l, m, theta_a, phi_a))
     print sum(f, m, -l, l)
-    print legendre_summ(l, m, theta_q, phi_q, theta_a, phi_a)
+    print legendre_summ(l, theta_q, phi_q, theta_a, phi_a)
+
+    #for l in range(0, 4):
+    #    print "l =", str(l), " legendre_summ = ", legendre_summ(l, theta_q, phi_q, theta_a, phi_a).simplify()
+    #    print "l =", str(l), " legendre_summ.integral = ", (sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)
+    #    print "l =", str(l), " legendre_summ.integral = ", (sin(theta_a)*(sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)).integrate(theta_a, 0, pi)
+    #    print "l =", str(l), " legendre_summ.integral = ", (sin(theta_a)*(sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)).integrate(theta_a, 0, pi).integrate(phi_q, 0, 2*pi)
+    #    print "l =", str(l), " legendre_summ.integral = ", (sin(theta_a)*(sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)).integrate(theta_a, 0, pi).integrate(phi_q, 0, 2*pi).integrate(phi_a, 0, 2*pi)
+
+    #for l in range(0, 4):
+    #    print "l =", str(l), " legendre_summ = ", legendre_summ(l, theta_q, phi_q, theta_a, phi_a).simplify()
+    #    print "l =", str(l), " legendre_summ.integral theta_q = ", (cos(phi_q)*sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)
+    #    print "l =", str(l), " legendre_summ.integral phi_q = ", (cos(phi_q)*sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi)
+
+    l_max = 5
+
+    A = legendre_summ_of_vector_potencial_of_rotated_sphere(0)
+    for l in range(1, l_max+1):
+        print "l = ", l
+        dA = legendre_summ_of_vector_potencial_of_rotated_sphere(l)
+        print "dA = ", dA
+        A += dA
+    print "A = ", A
+    # make_spherical_plot3d(A.real()).show(aspect_ratio=(1,1,1))
+    A = A.subs(phi_a=0)
+    print "A = ", A
+
+    # plot3d(A.subs(v = 1, ro = 1, R = 1), (r_a, 0, 1), (theta_a,0,pi)).show(aspect_ratio=(1,1,1))
+    p = plot(A.subs(v = 1, ro = 1, R = 1, theta_a=pi/2), (r_a, 0, 1))
+    p.save("A.png")
+
+
+    A_solid = legendre_summ_of_vector_potencial_of_rotated_solid_sphere(0)
+    for l in range(1, l_max+1):
+        print "l = ", l
+        dA_solid = legendre_summ_of_vector_potencial_of_rotated_solid_sphere(l)
+        print "dA_solid = ", dA_solid
+        A_solid += dA_solid
+    print "A_solid = ", A_solid
+    # make_spherical_plot3d(A_solid.real()).show(aspect_ratio=(1,1,1))
+    A_solid = A_solid.subs(phi_a=0)
+    print "A_solid = ", A_solid
+
+    # plot3d(A_solid.subs(omega = 1, ro = 1, R = 1), (r_a, 0, 1), (theta_a,0,pi)).show(aspect_ratio=(1,1,1))
+    p = plot(A_solid.subs(omega = 1, ro = 1, R = 1, theta_a=pi/2), (r_a, 0, 1))
+    p.save("A_solid.png")
+
+    # p = make_spherical_plot3d(spherical_harmonic(1, 0, theta_a, phi_a).real())
+    #p = make_spherical_plot3d(legendre_summ_of_vector_potencial_of_rotated_sphere(0).real())
+    #p += make_spherical_plot3d(legendre_summ_of_vector_potencial_of_rotated_sphere(1).real())
+    #p += make_spherical_plot3d(legendre_summ_of_vector_potencial_of_rotated_sphere(2).real())
+    #p += make_spherical_plot3d(legendre_summ_of_vector_potencial_of_rotated_sphere(3).real())
+    #p += make_spherical_plot3d(legendre_summ_of_vector_potencial_of_rotated_sphere(4).real())
+    #p += make_spherical_plot3d(legendre_summ_of_vector_potencial_of_rotated_sphere(5).real())
+    #p.show(aspect_ratio=(1,1,1))
 
 
 #calc1_m()

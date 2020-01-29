@@ -493,7 +493,7 @@ def legendre_summ(l, theta_q, phi_q, theta_a, phi_a):
     f = spherical_harmonic(l, m, theta_q, phi_q) * conjugate(spherical_harmonic(l, m, theta_a, phi_a))
     return 4 * pi / (2*l + 1) * sum(f, m, -l, l)
 
-def legendre_summ_of_vector_potencial_of_rotated_sphere(l):
+def legendre_summ_of_inductivity_of_sphere(l):
     theta_q, phi_q = var('theta_q, phi_q')
     assume(theta_q, 'real')
     assume(phi_q, 'real')
@@ -501,11 +501,9 @@ def legendre_summ_of_vector_potencial_of_rotated_sphere(l):
     theta_a, phi_a = var('theta_a, phi_a')
     assume(theta_a, 'real')
     assume(phi_a, 'real')
-    phi_a = 0
 
     r_q, r_a = var("r_q, r_a")
     R = var("R")
-    v = var("v")
     ro = var("ro")
 
     assume(r_a>0)
@@ -513,13 +511,20 @@ def legendre_summ_of_vector_potencial_of_rotated_sphere(l):
     assume(R>0)
 
     # if r_q < r_a
-    I1 = ((1/r_a)*((r_q/r_a)^l)*ro*v*cos(phi_q)*sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, 0, r_a)
+    A1 = ((1/r_a)*((r_q/r_a)^l)*ro*v*sin(theta_q)*(r_q^2)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, 0, r_a)
     # if r_a < r_q
-    I2 = ((1/r_q)*((r_a/r_q)^l)*ro*v*cos(phi_q)*sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, r_a, R)
+    A2 = ((1/r_q)*((r_a/r_q)^l)*ro*v*sin(theta_q)*(r_q^2)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, r_a, R)
 
-    return I1 + I2
+    A = A1 + A2
 
-def legendre_summ_of_vector_potencial_of_rotated_solid_sphere(l):
+    V = 4/3*pi*R^3
+    q = ro*V
+
+    J = q*v / (2 * R)
+
+    return var("mju0")/(4*pi) * (A * ro * v * sin(theta_a) * r_a^2).integrate(r_a, 0, R).integrate(theta_a, 0, pi).integrate(phi_a, 0, 2*pi) / (J^2)
+
+def legendre_summ_of_mass_of_sphere(l):
     theta_q, phi_q = var('theta_q, phi_q')
     assume(theta_q, 'real')
     assume(phi_q, 'real')
@@ -528,12 +533,8 @@ def legendre_summ_of_vector_potencial_of_rotated_solid_sphere(l):
     assume(theta_a, 'real')
     assume(phi_a, 'real')
 
-    phi_a = 0
-
-    r_q = var("r_q")
-    omega = var("omega")
+    r_q, r_a = var("r_q, r_a")
     R = var("R")
-    v = omega*r_q*sin(theta_q)
     ro = var("ro")
 
     assume(r_a>0)
@@ -541,12 +542,13 @@ def legendre_summ_of_vector_potencial_of_rotated_solid_sphere(l):
     assume(R>0)
 
     # if r_q < r_a
-    I1 = ((1/r_a)*((r_q/r_a)^l)*ro*v*cos(phi_q)*sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, 0, r_a)
+    potential_1 = ((1/r_a)*((r_q/r_a)^l)*ro*sin(theta_q)*(r_q^2)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, 0, r_a)
     # if r_a < r_q
-    I2 = ((1/r_q)*((r_a/r_q)^l)*ro*v*cos(phi_q)*sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, r_a, R)
+    potential_2 = ((1/r_q)*((r_a/r_q)^l)*ro*sin(theta_q)*(r_q^2)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, r_a, R)
 
-    return I1 + I2
+    potential = potential_1 + potential_2
 
+    return (potential * ro * sin(theta_a) * r_a^2).integrate(r_a, 0, R).integrate(theta_a, 0, pi).integrate(phi_a, 0, 2*pi)
 
 def make_spherical_plot3d(f):
     # Color plots on surface of sphere
@@ -572,13 +574,111 @@ def calc_inductivity_of_sphere():
     print sum(f, m, -l, l)
     print legendre_summ(l, theta_q, phi_q, theta_a, phi_a)
 
-    #for l in range(0, 4):
-    #    print "l =", str(l), " legendre_summ = ", legendre_summ(l, theta_q, phi_q, theta_a, phi_a).simplify()
-    #    print "l =", str(l), " legendre_summ.integral = ", (sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)
-    #    print "l =", str(l), " legendre_summ.integral = ", (sin(theta_a)*(sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)).integrate(theta_a, 0, pi)
-    #    print "l =", str(l), " legendre_summ.integral = ", (sin(theta_a)*(sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)).integrate(theta_a, 0, pi).integrate(phi_q, 0, 2*pi)
-    #    print "l =", str(l), " legendre_summ.integral = ", (sin(theta_a)*(sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)).integrate(theta_a, 0, pi).integrate(phi_q, 0, 2*pi).integrate(phi_a, 0, 2*pi)
+    for l in range(0, 4):
+        print "l =", str(l), " legendre_summ = ", legendre_summ(l, theta_q, phi_q, theta_a, phi_a).simplify()
+        print "l =", str(l), " legendre_summ.integral = ", (sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)
+        print "l =", str(l), " legendre_summ.integral = ", (sin(theta_a)*(sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)).integrate(theta_a, 0, pi)
+        print "l =", str(l), " legendre_summ.integral = ", (sin(theta_a)*(sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)).integrate(theta_a, 0, pi).integrate(phi_q, 0, 2*pi)
+        print "l =", str(l), " legendre_summ.integral = ", (sin(theta_a)*(sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)).integrate(theta_a, 0, pi).integrate(phi_q, 0, 2*pi).integrate(phi_a, 0, 2*pi)
+        print "legendre_summ_of_inductivity_of_sphere(", l, ") =", legendre_summ_of_inductivity_of_sphere(l)
 
+    # legendre_summ_of_inductivity_of_sphere( 0 ) = 6/5*R*mju0/pi
+
+def calc_mass_of_sphere():
+    # https://en.wikipedia.org/wiki/Electromagnetic_mass
+    m = legendre_summ_of_mass_of_sphere(0)
+    print "m =", m
+    # m = 32/15*pi^2*R^5*ro^2
+
+    V = 4/3*pi*R^3
+    m = m.subs(ro = q/V)
+    print "m =", m
+    # m = 6/5*q^2/R
+
+    m = var("mju0")/(4*pi) * m
+    print "m =", m
+    # m = 3/10*mju0*q^2/(pi*R)
+
+    # Classical electron radius
+    # https://en.wikipedia.org/wiki/
+    # Классический радиус электрона равен радиусу полой сферы, на которой равномерно распределён заряд, если этот заряд равен заряду электрона, а потенциальная энергия электростатического поля {\displaystyle U_{0}\ } U_{0}\ полностью эквивалентна половине массы электрона (без учета квантовых эффектов):
+    # {\displaystyle U_{0}={\frac {1}{2}}{\frac {1}{4\pi \varepsilon _{0}}}\cdot {\frac {e^{2}}{r_{0}}}={\frac {1}{2}}m_{0}c^{2}}.
+    r_e = 1/(4*pi*var("epsilon_0"))*q^2/(var("m_e")*var("c")^2)
+    print "r_e =", r_e
+
+    m = m.subs(R = r_e)
+    print "m =", m
+    # m = 6/5*c^2*epsilon_0*m_e*mju0
+
+    # https://en.wikipedia.org/wiki/Vacuum_permittivity
+    m = m.subs(epsilon_0 = 1/(mju0*c^2))
+    print "m =", m
+    # m = 6/5*m_e
+
+def legendre_summ_of_vector_potencial_of_rotated_sphere(l):
+    theta_q, phi_q = var('theta_q, phi_q')
+    assume(theta_q, 'real')
+    assume(phi_q, 'real')
+
+    theta_a, phi_a = var('theta_a, phi_a')
+    assume(theta_a, 'real')
+    assume(phi_a, 'real')
+    phi_a = 0
+
+    r_q, r_a = var("r_q, r_a")
+    R = var("R")
+    v = var("v")
+    ro = var("ro")
+
+    assume(r_a>0)
+    assume(r_a<R)
+    assume(R>0)
+
+    # if r_q < r_a
+    A1 = ((1/r_a)*((r_q/r_a)^l)*ro*v*cos(phi_q)*sin(theta_q)*(r_q^2)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, 0, r_a)
+    # if r_a < r_q
+    A2 = ((1/r_q)*((r_a/r_q)^l)*ro*v*cos(phi_q)*sin(theta_q)*(r_q^2)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, r_a, R)
+
+    return A1 + A2
+
+def legendre_summ_of_vector_potencial_of_rotated_solid_sphere(l):
+    theta_q, phi_q = var('theta_q, phi_q')
+    assume(theta_q, 'real')
+    assume(phi_q, 'real')
+
+    theta_a, phi_a = var('theta_a, phi_a')
+    assume(theta_a, 'real')
+    assume(phi_a, 'real')
+
+    phi_a = 0
+
+    r_q = var("r_q")
+    omega = var("omega")
+    R = var("R")
+    v = omega*r_q*sin(theta_q)
+    ro = var("ro")
+
+    assume(r_a>0)
+    assume(r_a<R)
+    assume(R>0)
+
+    # if r_q < r_a
+    A1 = ((1/r_a)*((r_q/r_a)^l)*ro*v*cos(phi_q)*sin(theta_q)*(r_q^2)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, 0, r_a)
+    # if r_a < r_q
+    A2 = ((1/r_q)*((r_a/r_q)^l)*ro*v*cos(phi_q)*sin(theta_q)*(r_q^2)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, r_a, R)
+
+    return A1 + A2
+
+
+def magnetic_moment(v, ro, R):
+    return 2*pi * (r_a^2 * (sin(theta_a))^3 * v * ro).integrate(r_a, 0, R).integrate(theta_a, 0, pi)
+def angular_momentum(A, ro, R):
+    return 2*pi * (r_a^2 * (sin(theta_a))^3 * A * ro).integrate(r_a, 0, R).integrate(theta_a, 0, pi)
+def orbital_angular_momentum(v, ro_m, R):
+    return 2*pi * (r_a^2 * (sin(theta_a))^3 * v * ro_m).integrate(r_a, 0, R).integrate(theta_a, 0, pi)
+
+def calc_gyromagnetic_ratio_of_sphere():
+    # the ratio of its magnetic moment to its angular momentum
     #for l in range(0, 4):
     #    print "l =", str(l), " legendre_summ = ", legendre_summ(l, theta_q, phi_q, theta_a, phi_a).simplify()
     #    print "l =", str(l), " legendre_summ.integral theta_q = ", (cos(phi_q)*sin(theta_q)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi)
@@ -597,6 +697,22 @@ def calc_inductivity_of_sphere():
     A = A.subs(phi_a=0)
     print "A = ", A
 
+    ro = var("ro")
+
+    ro_m = var("m")/(4/3*pi*R^3)
+
+    Mo = orbital_angular_momentum(v, ro_m, R)
+    print "Mo =", Mo
+
+    M = angular_momentum(A, ro, R)
+    print "M =", M
+
+    m = magnetic_moment(v, ro, R)
+    print "m =", m
+
+    g = m/M
+    print "g =", g
+
     # plot3d(A.subs(v = 1, ro = 1, R = 1), (r_a, 0, 1), (theta_a,0,pi)).show(aspect_ratio=(1,1,1))
     p = plot(A.subs(v = 1, ro = 1, R = 1, theta_a=pi/2), (r_a, 0, 1))
     p.save("A.png")
@@ -612,6 +728,30 @@ def calc_inductivity_of_sphere():
     # make_spherical_plot3d(A_solid.real()).show(aspect_ratio=(1,1,1))
     A_solid = A_solid.subs(phi_a=0)
     print "A_solid = ", A_solid
+
+    v_solid = omega*r_a*sin(theta_a)
+    Mo_solid = orbital_angular_momentum(v_solid, ro_m, R)
+    print "Mo_solid =", Mo_solid
+
+    M_solid = angular_momentum(A_solid, ro, R)
+    print "M_solid =", M_solid
+
+    m_solid = magnetic_moment(v_solid, ro, R)
+    print "m_solid =", m_solid
+
+    g_solid = m_solid/M_solid
+    print "g_solid =", g_solid
+    print "g =", g
+    print "g_solid =", (g_solid*ro*R^2).n()/(ro*R^2)
+    print "g =", (g*ro*R^2).n()/(ro*R^2)
+
+    ro_uniform = var("q")/(4/3*pi*R^3)
+    g = g.subs(ro = ro_uniform)
+    g_solid = g_solid.subs(ro = ro_uniform)
+    print "g_solid =", g_solid
+    print "g =", g
+    print "g_solid =", (g_solid*q/R).n()/(q/R)
+    print "g =", (g*q/R).n()/(q/R)
 
     # plot3d(A_solid.subs(omega = 1, ro = 1, R = 1), (r_a, 0, 1), (theta_a,0,pi)).show(aspect_ratio=(1,1,1))
     p = plot(A_solid.subs(omega = 1, ro = 1, R = 1, theta_a=pi/2), (r_a, 0, 1))
@@ -636,4 +776,6 @@ def calc_inductivity_of_sphere():
 # calc_neutron_mass2()
 # calc_sphere_mass()
 calc_inductivity_of_sphere()
+calc_gyromagnetic_ratio_of_sphere()
+calc_mass_of_sphere()
 

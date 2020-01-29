@@ -59,3 +59,16 @@ Iteration 200:  200000 integrand evaluations so far
 [1] 0.00183606 +- 1.83376e-06   chisq 10456.6 (1743 df)
 SUAVE RESULT:   nregions 200    neval 200000    fail 0
 SUAVE RESULT:   0.00183606 +- 0.00000183        p = 1.000
+
+
+make -f cuba.mk clean && ll && make -f Makefile-calc_sphere_mass all && ./calc_sphere_mass 
+
+Iteration 31:  263500 integrand evaluations so far
+[1] 1.20057 +- 0.00117095       chisq 3.28661 (30 df)
+VEGAS RESULT:   neval 263500    fail 0
+VEGAS RESULT:   1.20057324 +- 0.00117095        p = 0.000
+
+Iteration 197:  197000 integrand evaluations so far
+[1] 1.19945 +- 0.00119818       chisq 7122.78 (1614 df)
+SUAVE RESULT:   nregions 197    neval 197000    fail 0
+SUAVE RESULT:   1.19945246 +- 0.00119818        p = 1.000

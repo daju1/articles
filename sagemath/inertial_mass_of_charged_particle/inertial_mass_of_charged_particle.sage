@@ -632,6 +632,7 @@ def calc_inductivity_of_sphere():
     # legendre_summ_of_inductivity_of_sphere( 0 ) = 6/5*R*mju0/pi
 
 def calc_mass_of_sphere():
+    print "\ncalc_mass_of_sphere"
     # https://en.wikipedia.org/wiki/Electromagnetic_mass
     m = legendre_summ_of_mass_of_sphere(0)
     print "m =", m
@@ -654,7 +655,7 @@ def calc_mass_of_sphere():
     print "r_e =", r_e
 
     # собственная электрическая энергия заряженного шара радиуса r_0 равна 3/5 * e^2/r_0, если заряд равномерно распределён по всему объёму шара (Тамм, стр.88)
-	# для такой модели электрона классический радиус будет иметь уже другое значение
+    # для такой модели электрона классический радиус будет иметь уже другое значение
     # U = 3/5 * 1/(4*pi*epsilon_0) * e^2/r_0 = 1/2*m*c^2
 
     r_e = 3/5 * 1/(4*pi*var("epsilon_0"))*q^2/((1/2)*var("m_e")*var("c")^2)
@@ -663,13 +664,18 @@ def calc_mass_of_sphere():
     m = m.subs(R = r_e)
     print "m =", m
     # m = 6/5*c^2*epsilon_0*m_e*mju0
+    # для классического радиуса перерасчитанного в модели заряда распределённого по всему объёму шара
+    # m = c^2*epsilon_0*m_e*mju0
 
     # https://en.wikipedia.org/wiki/Vacuum_permittivity
     m = m.subs(epsilon_0 = 1/(mju0*c^2))
     print "m =", m
     # m = 6/5*m_e
+    # для классического радиуса перерасчитанного в модели заряда распределённого по всему объёму шара
+    # m = m_e
 
 def calc_mass_of_spherical_shell():
+    print "\ncalc_mass_of_spherical_shell"
     # https://en.wikipedia.org/wiki/Electromagnetic_mass
     m = legendre_summ_of_mass_of_spherical_shell(0)
     print "m =", m
@@ -782,10 +788,14 @@ def calc_gyromagnetic_ratio_of_sphere():
 
     ro = var("ro")
 
-    ro_m = var("m")/(4/3*pi*R^3)
+    mass = legendre_summ_of_mass_of_sphere(0)
+    print "mass =", mass
 
-    Mo = orbital_angular_momentum(v, ro_m, R)
-    print "Mo =", Mo
+    ro_m = mass/(4/3*pi*R^3)
+    print "ro_m =", ro_m
+
+    M_orbital = orbital_angular_momentum(v, ro_m, R)
+    print "M_orbital =", M_orbital
 
     M = angular_momentum(A, ro, R)
     print "M =", M
@@ -795,6 +805,9 @@ def calc_gyromagnetic_ratio_of_sphere():
 
     g = m/M
     print "g =", g
+
+    g_orbital = m/M_orbital
+    print "g_orbital =", g_orbital
 
     # plot3d(A.subs(v = 1, ro = 1, R = 1), (r_a, 0, 1), (theta_a,0,pi)).show(aspect_ratio=(1,1,1))
     p = plot(A.subs(v = 1, ro = 1, R = 1, theta_a=pi/2), (r_a, 0, 1))
@@ -816,6 +829,9 @@ def calc_gyromagnetic_ratio_of_sphere():
     Mo_solid = orbital_angular_momentum(v_solid, ro_m, R)
     print "Mo_solid =", Mo_solid
 
+    M_orbital_solid = orbital_angular_momentum(v_solid, ro_m, R)
+    print "M_orbital_solid =", M_orbital_solid
+
     M_solid = angular_momentum(A_solid, ro, R)
     print "M_solid =", M_solid
 
@@ -824,17 +840,37 @@ def calc_gyromagnetic_ratio_of_sphere():
 
     g_solid = m_solid/M_solid
     print "g_solid =", g_solid
+
+    g_orbital_solid = m_solid/M_orbital_solid
+    print "g_orbital_solid =", g_orbital_solid
+
     print "g =", g
     print "g_solid =", (g_solid*ro*R^2).n()/(ro*R^2)
     print "g =", (g*ro*R^2).n()/(ro*R^2)
+    print "g_orbital_solid =", (g_orbital_solid*ro*R^2).n()/(ro*R^2)
+    print "g_orbital =", (g_orbital*ro*R^2).n()/(ro*R^2)
 
     ro_uniform = var("q")/(4/3*pi*R^3)
     g = g.subs(ro = ro_uniform)
     g_solid = g_solid.subs(ro = ro_uniform)
+    g_orbital = g_orbital.subs(ro = ro_uniform)
+    g_orbital_solid = g_orbital_solid.subs(ro = ro_uniform)
+
+    print "g/g_orbital =", g/g_orbital
+    print "g_solid/g_orbital_solid =", g_solid/g_orbital_solid
+
     print "g_solid =", g_solid
     print "g =", g
+    print "g_orbital_solid =", g_orbital_solid
+    print "g_orbital =", g_orbital
+
     print "g_solid =", (g_solid*q/R).n()/(q/R)
     print "g =", (g*q/R).n()/(q/R)
+    print "g_orbital_solid =", (g_orbital_solid*q/R).n()/(q/R)
+    print "g_orbital =", (g_orbital*q/R).n()/(q/R)
+
+    print "g/g_orbital =", (g/g_orbital).n()
+    print "g_solid/g_orbital_solid =", (g_solid/g_orbital_solid).n()
 
     # plot3d(A_solid.subs(omega = 1, ro = 1, R = 1), (r_a, 0, 1), (theta_a,0,pi)).show(aspect_ratio=(1,1,1))
     p = plot(A_solid.subs(omega = 1, ro = 1, R = 1, theta_a=pi/2), (r_a, 0, 1))

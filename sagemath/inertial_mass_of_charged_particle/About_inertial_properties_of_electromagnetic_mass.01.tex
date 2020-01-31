@@ -18,30 +18,102 @@
 
 
 
-Пусть частица с заданным распределением объёмной плотности электрического заряда $\rho \left( r \right)$ приобретает ускорение $\overrightarrow{a}$ . Найти силу, действующую на распределённый в объёме электрический заряд этой частицы со стороны электрического поля самоиндукции. 
+Пусть частица с заданным распределением объёмной плотности электрического заряда $\rho \left( r \right)$ приобретает ускорение $\overrightarrow{a}$ . Найти силу, действующую на распределённый в объёме электрический заряд этой частицы со стороны электрического поля самоиндукции.
 
-Для решения этой задачи электрическое поле самоиндукции $\overrightarrow{E}=-\frac{1}{c}\frac{\partial \overrightarrow{A}}{\partial t}$ 
-Выразим исходя из выражения векторного потенциала Лиенара-Вихерта [1] $\overrightarrow{A}=\frac{\overrightarrow{v}}{c}\frac{q}{R-\frac{\overrightarrow{v}\cdot \overrightarrow{R}}{c}}=\frac{\overrightarrow{v}}{c}\frac{q}{{{R}^{*}}}$ дифференцирование которого приводит к выражению [2]
+Для решения этой задачи электрическое поле самоиндукции $\overrightarrow{E}=-\frac{1}{c}\frac{\partial \overrightarrow{A}}{\partial t}$
+выразим исходя из выражения векторного потенциала Лиенара-Вихерта \cite{LL2} $\overrightarrow{A}=\frac{\overrightarrow{v}}{c}\frac{q}{R-\frac{\overrightarrow{v}\cdot \overrightarrow{R}}{c}}=\frac{\overrightarrow{v}}{c}\frac{q}{{{R}^{*}}}$ дифференцирование которого приводит к выражению \cite{rustot}
 
-\[\overrightarrow{E}=\frac{dq}{{{R}^{*}}^{2}}\left\{ \frac{\overrightarrow{v}}{c}\left( \frac{R}{{{R}^{*}}}\left( \frac{{{v}^{2}}}{{{c}^{2}}}-\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-1 \right)+1 \right)-\frac{\overrightarrow{a}R}{{{c}^{2}}} \right\}\] 
+\[\overrightarrow{E}=\frac{dq}{{{R}^{*}}^{2}}\left\{ \frac{\overrightarrow{v}}{c}\left( \frac{R}{{{R}^{*}}}\left( \frac{{{v}^{2}}}{{{c}^{2}}}-\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-1 \right)+1 \right)-\frac{\overrightarrow{a}R}{{{c}^{2}}} \right\}\]
 
-В системе СИ перед этим выражением появляется множитель $\frac{1}{4\pi {{\varepsilon }_{0}}}=\frac{{{\mu }_{0}}{{c}^{2}}}{4\pi }=\frac{{{c}^{2}}}{{{10}^{7}}}$ 
+В системе СИ перед этим выражением появляется множитель $\frac{1}{4\pi {{\varepsilon }_{0}}}=\frac{{{\mu }_{0}}{{c}^{2}}}{4\pi }=\frac{{{c}^{2}}}{{{10}^{7}}}$
 
 Направляя в сферической системе координат вектор ускорения вдоль оси $z$  запишем
 
-${{R}^{*}}=R-\frac{v}{c}\left( {{z}_{a}}-{{z}_{q}} \right)$  
+${{R}^{*}}=R-\frac{v}{c}\left( {{z}_{a}}-{{z}_{q}} \right)$
 
 \[\overrightarrow{a}\cdot \overrightarrow{R}=a\left( {{z}_{a}}-{{z}_{q}} \right)=a\left( {{r}_{a}}\cos \left( {{\theta }_{a}} \right)-{{r}_{q}}\cos \left( {{\theta }_{q}} \right) \right)\]
 
-Где следуя Тамму [3], индексом  обозначены координаты заряда, а индексом  обозначены координаты точки наблюдения
+Где следуя Тамму \cite{tamm}, индексом $q$ обозначены координаты заряда, а индексом $a$ обозначены координаты точки наблюдения
 
-% \[\overrightarrow{E}=\iiint\limits_{{{V}_{q}}}{\left\{ \frac{\overrightarrow{v}}{c}\left( \frac{R}{{{R}^{*}}}\left( \frac{{{v}^{2}}}{{{c}^{2}}}-\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-1 \right)+1 \right)-\frac{\overrightarrow{a}R}{{{c}^{2}}} \right\}\frac{\rho \left( {{r}_{q}} \right){{r}_{q}}^{2}\sin \left( {{\theta }_{q}} \right)}{{{R}^{*}}^{2}}\ }d{{\theta }_{q}}d{{\varphi }_{q}}d{{r}_{q}}\]
+\[\overrightarrow{E}=\int\limits_{{{V}_{q}}}{\left\{ \frac{\overrightarrow{v}}{c}\left( \frac{R}{{{R}^{*}}}\left( \frac{{{v}^{2}}}{{{c}^{2}}}-\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-1 \right)+1 \right)-\frac{\overrightarrow{a}R}{{{c}^{2}}} \right\}\frac{\rho \left( {{r}_{q}} \right){{r}_{q}}^{2}\sin \left( {{\theta }_{q}} \right)}{{{R}^{*}}^{2}}\ }d{{\theta }_{q}}d{{\varphi }_{q}}d{{r}_{q}}\]
 
 учитывая, что по теореме косинусов
-${{R}^{2}}={{R}_{0}}^{2}+{{s}^{2}}-2{{R}_{0}}s\cos \left( \alpha  \right)={{R}_{0}}^{2}+{{s}^{2}}-2{{R}_{0}}s\frac{{{z}_{q'}}-{{z}_{a'}}}{{{R}_{0}}}={{R}_{0}}^{2}+{{s}^{2}}+2s\left( {{z}_{a'}}-{{z}_{q'}} \right)$ 
+${{R}^{2}}={{R}_{0}}^{2}+{{s}^{2}}-2{{R}_{0}}s\cos \left( \alpha  \right)={{R}_{0}}^{2}+{{s}^{2}}-2{{R}_{0}}s\frac{{{z}_{q'}}-{{z}_{a'}}}{{{R}_{0}}}={{R}_{0}}^{2}+{{s}^{2}}+2s\left( {{z}_{a'}}-{{z}_{q'}} \right)$
 где  расстояние от точки источника заряда к точке наблюдения без учёта запаздывания
 Действующая на заряд со стороны электрического поля самоиндукции инерционная сила равна
-% $\overrightarrow{{{F}_{z}}}=\iiint\limits_{{{V}_{a}}}{\overrightarrow{{{E}_{z}}}\rho \left( {{r}_{a}} \right){{r}_{a}}^{2}\sin \left( {{\theta }_{a}} \right)}\ d{{\theta }_{a}}d{{\varphi }_{a}}d{{r}_{a}}$ 
+
+$\overrightarrow{{{F}_{z}}}=\int\limits_{{{V}_{a}}}{\overrightarrow{{{E}_{z}}}\rho \left( {{r}_{a}} \right){{r}_{a}}^{2}\sin \left( {{\theta }_{a}} \right)}\ d{{\theta }_{a}}d{{\varphi }_{a}}d{{r}_{a}}$
+
+
+Из приведенных формул видно, что сила инерции электромагнитной массы зависит от вида функции распределения плотности заряда в пространстве, а также от скорости и ускорения заряда.
+В приближении малых скоростей ${}^{v}/{}_{c}\ll 1$  и малых ускорений $a{{r}_{0}}\ll {{c}^{2}}$
+\[\overrightarrow{E}=\int\limits_{{{V}_{q}}}{\left\{ -\frac{\overrightarrow{a}R}{{{c}^{2}}} \right\}\frac{\rho \left( {{r}_{q}} \right){{r}_{q}}^{2}\sin \left( {{\theta }_{q}} \right)}{{{R}^{*}}^{2}}\ }d{{\theta }_{q}}d{{\varphi }_{q}}d{{r}_{q}}\]
+Откуда
+${{F}_{z}}=-\frac{\overrightarrow{a}}{{{c}^{^{2}}}}\int\limits_{{{V}_{a}}}{\int\limits_{{{V}_{q}}}{\frac{\rho \left( {{r}_{q}} \right)\rho \left( {{r}_{a}} \right)}{R}}}\ d{{V}_{q}}d{{V}_{a}}$
+Сопоставляя с законами Ньютона для электромагнитной массы получаем выражение
+$m=\frac{1}{{{c}^{^{2}}}}\int\limits_{{{V}_{a}}}{\int\limits_{{{V}_{q}}}{\frac{\rho \left( {{r}_{q}} \right)\rho \left( {{r}_{a}} \right)}{R}}}\ d{{V}_{q}}d{{V}_{a}}$
+Рассчитаем теперь электромагнитную массу равномерно заряженной сферы радиуса ${{r}_{0}}$
+Расстояние между координатами заряда и точки наблюдения сферической системе координат имеет вид
+
+${{R}_{0}}=\sqrt{\\
+  { { \left( {{x}_{a}}  -  {{x}_{q}}\right) }^{2}} + \\
+  { { \left( {{y}_{a}}  -  {{y}_{q}}\right) }^{2}} + \\
+  { { \left( {{r}_{a}}\cos \left( {{\theta }_{a}} \right) - {{r}_{q}}\cos \left( {{\theta }_{q}} \right) \right)}^{2}}  }$
+
+
+${{x}_{a}} = {{r}_{a}}\sin \left( {{\theta }_{a}} \right)\cos \left( {{\varphi }_{a}} \right)$
+
+${{x}_{q}} = {{r}_{q}}\sin \left( {{\theta }_{q}} \right)\cos \left( {{\varphi }_{q}} \right)$
+
+${{y}_{a}} = {{r}_{a}}\sin \left( {{\theta }_{a}} \right)\sin \left( {{\varphi }_{a}} \right)$
+
+${{y}_{q}} = {{r}_{q}}\sin \left( {{\theta }_{q}} \right)\sin \left( {{\varphi }_{q}} \right)$
+
+
+Для его упрощения ввиду симметричности задачи поле не зависит от координаты ${{\varphi }_{a}}$поэтому мы можем положив ${{\varphi }_{a}}=0$ упростить формулу а вместо интегрирования по ${{\varphi }_{a}}$ просто применить умножение на $2\pi$
+
+${{R}_{0}}=\sqrt{\\
+ {{\left( {{r}_{a}}\sin \left( {{\theta }_{a}} \right)-{{r}_{q}}\sin \left( {{\theta }_{q}} \right)\cos \left( {{\varphi }_{q}} \right) \right)}^{2}}+ \\
+ {{\left( -{{r}_{q}}\sin \left( {{\theta }_{q}} \right)\sin \left( {{\varphi }_{q}} \right) \right)}^{2}}+ \\
+ {{\left( {{r}_{a}}\cos \left( {{\theta }_{a}} \right)-{{r}_{q}}\cos \left( {{\theta }_{q}} \right) \right)}^{2}} \\
+}=\sqrt{
+  {{\left( {{r}_{a}}\sin \left( {{\theta }_{a}} \right) \right)}^{2}}-2\left( {{r}_{a}}\sin \left( {{\theta }_{a}} \right){{r}_{q}}\sin \left( {{\theta }_{q}} \right)\cos \left( {{\varphi }_{q}} \right) \right)+ \\
+  {{\left( {{r}_{q}}\sin \left( {{\theta }_{q}} \right)\cos \left( {{\varphi }_{q}} \right) \right)}^{2}}+{{\left( {{r}_{q}}\sin \left( {{\theta }_{q}} \right)\sin \left( {{\varphi }_{q}} \right) \right)}^{2}}+ \\
+  {{\left( {{r}_{a}}\cos \left( {{\theta }_{a}} \right)-{{r}_{q}}\cos \left( {{\theta }_{q}} \right) \right)}^{2}} \\
+} \\
+  =\sqrt{{{\left( {{r}_{a}}\sin \left( {{\theta }_{a}} \right) \right)}^{2}}-2{{r}_{a}}\sin \left( {{\theta }_{a}} \right){{r}_{q}}\sin \left( {{\theta }_{q}} \right)\cos \left( {{\varphi }_{q}} \right)+{{\left( {{r}_{q}}\sin \left( {{\theta }_{q}} \right) \right)}^{2}}+{{\left( {{r}_{a}}\cos \left( {{\theta }_{a}} \right)-{{r}_{q}}\cos \left( {{\theta }_{q}} \right) \right)}^{2}}}$
+
+Плотность заряда положим $\rho \left( r \right)=\frac{e}{{}^{4}/{}_{3}\pi {{r}_{0}}^{3}}$
+
+В работе \cite{misyuchenko} приводится
+
+%========================================================================
+
+\begin{thebibliography}{99}
+
+\bibitem{LL2}
+\textit{Ландау Л.Д. Лившиц Е.М. Теория поля. М. 1973}
+
+\bibitem{rustot}
+\textit{Re: Как запаздывающий Лиенар-Вихерт становится "незапаздывающим". Визуализация}
+\\\texttt{http://www.sciteclibrary.ru/cgi-bin/yabb2/YaBB.pl?num=1528093569/330\#330}
+
+\bibitem{tamm}
+\textit{И.Е.Тамм. Основы теории электричества. М. 1957}
+
+\bibitem{misyuchenko}
+\textit{В. Ганкин, Ю. Ганкин, О. Куприянова, И. Мисюченко. История электромагнитной массы}
+% \\\texttt{http://fphysics.com/d/232484/d/istoriya_em_massy1.pdf}
+
+
+\bibitem{Haddad}
+S. Haddad and S. Suleiman
+\textit{NEUTRON CHARGE DISTRIBUTION AND CHARGE DENSITY DISTRIBUTIONS IN LEAD ISOTOPES}
+\textit{ACTA PHYSICA POLONICA B, Vol. 30 (1999) No 1}
+\\\texttt{http://www.actaphys.uj.edu.pl/fulltext?series=Reg\&vol=30\&page=119}
+
+\end{thebibliography}
+
 
 \end{document}
 

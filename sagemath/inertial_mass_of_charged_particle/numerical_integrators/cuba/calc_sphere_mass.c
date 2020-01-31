@@ -38,6 +38,17 @@ int Integrand(const int *ndim, const cubareal xx[],
 
     #define f ff[0]
 
+    if ( fabs(theta_a - theta_q) < 1e-12 && fabs(ra - rq) < 1e-12 && fabs(phi_q - 0.0) < 1e-12)
+    {
+        printf ("theta_a = %e ", theta_a);
+        printf ("theta_q = %e ", theta_q);
+        printf ("ra = %e ", ra);
+        printf ("rq = %e ", rq);
+        printf ("phi_q = %e\n", phi_q);
+
+        return -999;
+    }
+
     cubareal r0 = 1.0;
     cubareal q = 1.0;
 

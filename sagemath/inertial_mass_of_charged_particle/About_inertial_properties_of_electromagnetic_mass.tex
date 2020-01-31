@@ -1,7 +1,7 @@
-﻿\documentclass[12pt]{article}
+﻿\documentclass{article}
+\usepackage[T2A]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage[russian,english]{babel}
-\usepackage{colordvi}
+\usepackage[english, russian]{babel}
 
 \begin{document}
 
@@ -23,7 +23,7 @@
 Выразим исходя из выражения векторного потенциала Лиенара-Вихерта [1] $\overrightarrow{A}=\frac{\overrightarrow{v}}{c}\frac{q}{R-\frac{\overrightarrow{v}\cdot \overrightarrow{R}}{c}}=\frac{\overrightarrow{v}}{c}\frac{q}{{{R}^{*}}}$ дифференцирование которого приводит к выражению [2]
 \[\overrightarrow{E}=\frac{dq}{{{R}^{*}}^{2}}\left\{ \frac{\overrightarrow{v}}{c}\left( \frac{R}{{{R}^{*}}}\left( \frac{{{v}^{2}}}{{{c}^{2}}}-\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-1 \right)+1 \right)-\frac{\overrightarrow{a}R}{{{c}^{2}}} \right\}\] 
 В системе СИ перед этим выражением появляется множитель $\frac{1}{4\pi {{\varepsilon }_{0}}}=\frac{{{\mu }_{0}}{{c}^{2}}}{4\pi }=\frac{{{c}^{2}}}{{{10}^{7}}}$ 
-Направляя в сферической системе координат вектор ускорения вдоль оси  запишем
+Направляя в сферической системе координат вектор ускорения вдоль оси $z$  запишем
 ${{R}^{*}}=R-\frac{v}{c}\left( {{z}_{a}}-{{z}_{q}} \right)$  
 \[\overrightarrow{a}\cdot \overrightarrow{R}=a\left( {{z}_{a}}-{{z}_{q}} \right)=a\left( {{r}_{a}}\cos \left( {{\theta }_{a}} \right)-{{r}_{q}}\cos \left( {{\theta }_{q}} \right) \right)\]
 Где следуя Тамму [3], индексом  обозначены координаты заряда, а индексом  обозначены координаты точки наблюдения
@@ -71,14 +71,7 @@ $\begin{align}
 
 \begin{thebibliography}{99}
 
-\newcommand{\volyearpage}[3]{\textbf{#1} (#2) #3}
-\newcommand{\cpc}{\textsl{Comp.\ Phys.\ Commun.} \volyearpage}
-\newcommand{\jpc}{\textsl{J.\ Comp.\ Phys.} \volyearpage}
-\newcommand{\cip}{\textsl{Comp.\ in Phys.} \volyearpage}
-\newcommand{\toms}{\textsl{ACM Trans.\ Math.\ Software} \volyearpage}
-\newcommand{\tomacs}{\textsl{ACM Trans.\ Modeling Comp.\ Simulation} \volyearpage}
-\newcommand{\siam}{\textsl{SIAM J.\ Numer.\ Anal.} \volyearpage}
-\newcommand{\numa}{\textsl{Numer.\ Math.} \volyearpage}
+
 
 Литература
 \bibitem{Ландау}

@@ -1,0 +1,47 @@
+\documentclass{article}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english, russian]{babel}
+
+\begin{document}
+
+\title{Об инерционных свойствах электромагнитной массы}
+
+\author{А.Ю.Дроздов}
+
+\date{Jan 30, 2020}
+
+
+%========================================================================
+
+\section{Introduction}
+
+
+
+Пусть частица с заданным распределением объёмной плотности электрического заряда $\rho \left( r \right)$ приобретает ускорение $\overrightarrow{a}$ . Найти силу, действующую на распределённый в объёме электрический заряд этой частицы со стороны электрического поля самоиндукции. 
+
+Для решения этой задачи электрическое поле самоиндукции $\overrightarrow{E}=-\frac{1}{c}\frac{\partial \overrightarrow{A}}{\partial t}$ 
+Выразим исходя из выражения векторного потенциала Лиенара-Вихерта [1] $\overrightarrow{A}=\frac{\overrightarrow{v}}{c}\frac{q}{R-\frac{\overrightarrow{v}\cdot \overrightarrow{R}}{c}}=\frac{\overrightarrow{v}}{c}\frac{q}{{{R}^{*}}}$ дифференцирование которого приводит к выражению [2]
+
+\[\overrightarrow{E}=\frac{dq}{{{R}^{*}}^{2}}\left\{ \frac{\overrightarrow{v}}{c}\left( \frac{R}{{{R}^{*}}}\left( \frac{{{v}^{2}}}{{{c}^{2}}}-\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-1 \right)+1 \right)-\frac{\overrightarrow{a}R}{{{c}^{2}}} \right\}\] 
+
+В системе СИ перед этим выражением появляется множитель $\frac{1}{4\pi {{\varepsilon }_{0}}}=\frac{{{\mu }_{0}}{{c}^{2}}}{4\pi }=\frac{{{c}^{2}}}{{{10}^{7}}}$ 
+
+Направляя в сферической системе координат вектор ускорения вдоль оси $z$  запишем
+
+${{R}^{*}}=R-\frac{v}{c}\left( {{z}_{a}}-{{z}_{q}} \right)$  
+
+\[\overrightarrow{a}\cdot \overrightarrow{R}=a\left( {{z}_{a}}-{{z}_{q}} \right)=a\left( {{r}_{a}}\cos \left( {{\theta }_{a}} \right)-{{r}_{q}}\cos \left( {{\theta }_{q}} \right) \right)\]
+
+Где следуя Тамму [3], индексом  обозначены координаты заряда, а индексом  обозначены координаты точки наблюдения
+
+% \[\overrightarrow{E}=\iiint\limits_{{{V}_{q}}}{\left\{ \frac{\overrightarrow{v}}{c}\left( \frac{R}{{{R}^{*}}}\left( \frac{{{v}^{2}}}{{{c}^{2}}}-\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-1 \right)+1 \right)-\frac{\overrightarrow{a}R}{{{c}^{2}}} \right\}\frac{\rho \left( {{r}_{q}} \right){{r}_{q}}^{2}\sin \left( {{\theta }_{q}} \right)}{{{R}^{*}}^{2}}\ }d{{\theta }_{q}}d{{\varphi }_{q}}d{{r}_{q}}\]
+
+учитывая, что по теореме косинусов
+${{R}^{2}}={{R}_{0}}^{2}+{{s}^{2}}-2{{R}_{0}}s\cos \left( \alpha  \right)={{R}_{0}}^{2}+{{s}^{2}}-2{{R}_{0}}s\frac{{{z}_{q'}}-{{z}_{a'}}}{{{R}_{0}}}={{R}_{0}}^{2}+{{s}^{2}}+2s\left( {{z}_{a'}}-{{z}_{q'}} \right)$ 
+где  расстояние от точки источника заряда к точке наблюдения без учёта запаздывания
+Действующая на заряд со стороны электрического поля самоиндукции инерционная сила равна
+% $\overrightarrow{{{F}_{z}}}=\iiint\limits_{{{V}_{a}}}{\overrightarrow{{{E}_{z}}}\rho \left( {{r}_{a}} \right){{r}_{a}}^{2}\sin \left( {{\theta }_{a}} \right)}\ d{{\theta }_{a}}d{{\varphi }_{a}}d{{r}_{a}}$ 
+
+\end{document}
+

@@ -523,6 +523,7 @@ def legendre_summ_of_inductivity_of_sphere(l):
     J = q*v / (2 * R)
 
     return var("mju0")/(4*pi) * (A * ro * v * sin(theta_a) * r_a^2).integrate(r_a, 0, R).integrate(theta_a, 0, pi).integrate(phi_a, 0, 2*pi) / (J^2)
+
 def legendre_summ_of_mass_of_sphere(l):
     theta_q, phi_q = var('theta_q, phi_q')
     assume(theta_q, 'real')

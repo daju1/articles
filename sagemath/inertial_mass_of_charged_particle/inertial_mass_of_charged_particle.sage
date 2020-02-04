@@ -377,7 +377,7 @@ def calc_proton_mass2():
     # 3.84027657565375e-30
 
     me = 9.1093837015e-31
-    print "me / m = ", me / m
+    print "m / me = ", m / me
     # 4.21573698231790
 
     file = open('calc_proton_mass2.txt', 'a')
@@ -492,6 +492,92 @@ def legendre_summ(l, theta_q, phi_q, theta_a, phi_a):
     from sage.functions.special import spherical_harmonic
     f = spherical_harmonic(l, m, theta_q, phi_q) * conjugate(spherical_harmonic(l, m, theta_a, phi_a))
     return 4 * pi / (2*l + 1) * sum(f, m, -l, l)
+
+def legendre_summ_of_mass_of_proton(l):
+    # http://www.actaphys.uj.edu.pl/fulltext?series=Reg&vol=30&page=119
+    # the rms charge radius of the proton being
+    # rp_rms = 0.8
+    # r0 = 2/3 * rp_rms
+    # the charge distribution of the proton
+    # g(r) = exp(-r^2/r__0^2)/(r__0^3*sqrt(pi)^3)
+
+    theta_q, phi_q = var('theta_q, phi_q')
+    assume(theta_q, 'real')
+    assume(phi_q, 'real')
+
+    theta_a, phi_a = var('theta_a, phi_a')
+    assume(theta_a, 'real')
+    assume(phi_a, 'real')
+
+    r_q, r_a = var("r_q, r_a")
+    R = var("R")
+
+    rho_q = lambda r0, r : exp(-r^2/r0^2)/(r0^3*sqrt(pi)^3)
+
+    print latex(rho_q(var("r0"), r_q))
+
+    assume(r_a>0)
+    assume(r_a<R)
+    assume(R>0)
+
+    R = infinity
+    rp_rms = 0.8
+    r0 = 2/3 * rp_rms
+
+    # if r_q < r_a
+    potential_1 = ((1/r_a)*((r_q/r_a)^l)*rho_q(r0, r_q)*sin(theta_q)*(r_q^2)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, 0, r_a)
+    # if r_a < r_q
+    potential_2 = ((1/r_q)*((r_a/r_q)^l)*rho_q(r0, r_q)*sin(theta_q)*(r_q^2)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, r_a, R)
+
+    potential = potential_1 + potential_2
+
+    return (potential * rho_q(r0, r_a) * sin(theta_a) * r_a^2).integrate(r_a, 0, R).integrate(theta_a, 0, pi).integrate(phi_a, 0, 2*pi)
+
+def legendre_summ_of_mass_of_neutron(l):
+    # http://www.actaphys.uj.edu.pl/fulltext?series=Reg&vol=30&page=119
+
+    # the rms value of g__n
+    r2 = -0.113
+
+    # The third parameter r1 is a scaling parameter, which is necessary to define
+    # a dimensionless quantity (r/r1) in the Gaussian exponent. The results of
+    # QCD-calculations of the charge density distribution inside the neutron [2]
+    # are best reproduced by choosing:
+    r1 = 0.71*sqrt(2/5) # fm
+
+    # the charge density distribution within the neutron
+    # gn(r) = (-2/3)*(r2 / (r1^2 * (r1*sqrt(pi))^3)) * (r/r1)^2 * (1 - (2/5)*r^2/r1^2) * exp(-r^2/r1^2)
+
+
+    theta_q, phi_q = var('theta_q, phi_q')
+    assume(theta_q, 'real')
+    assume(phi_q, 'real')
+
+    theta_a, phi_a = var('theta_a, phi_a')
+    assume(theta_a, 'real')
+    assume(phi_a, 'real')
+
+    r_q, r_a = var("r_q, r_a")
+    R = var("R")
+
+    rho_q = lambda r1, r2, r : (-2/3)*(r2 / (r1^2 * (r1*sqrt(pi))^3)) * (r/r1)^2 * (1 - (2/5)*r^2/r1^2) * exp(-r^2/r1^2)
+
+    print latex(rho_q(var("r1"), var("r2"), r_q))
+
+    assume(r_a>0)
+    assume(r_a<R)
+    assume(R>0)
+
+    R = infinity
+
+    # if r_q < r_a
+    potential_1 = ((1/r_a)*((r_q/r_a)^l)*rho_q(r1, r2, r_q)*sin(theta_q)*(r_q^2)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, 0, r_a)
+    # if r_a < r_q
+    potential_2 = ((1/r_q)*((r_a/r_q)^l)*rho_q(r1, r2, r_q)*sin(theta_q)*(r_q^2)*legendre_summ(l, theta_q, phi_q, theta_a, phi_a)).integrate(theta_q, 0, pi).integrate(phi_q, 0, 2*pi).integrate(r_q, r_a, R)
+
+    potential = potential_1 + potential_2
+
+    return (potential * rho_q(r1, r2, r_a) * sin(theta_a) * r_a^2).integrate(r_a, 0, R).integrate(theta_a, 0, pi).integrate(phi_a, 0, 2*pi)
 
 def legendre_summ_of_inductivity_of_sphere(l):
     theta_q, phi_q = var('theta_q, phi_q')
@@ -706,6 +792,80 @@ def calc_mass_of_spherical_shell():
     print "m =", m
     # m = m_e
 
+def calc_mass_of_proton():
+    print "\ncalc_mass_of_proton"
+    m0 = legendre_summ_of_mass_of_proton(0)
+    print "legendre_summ_of_mass_of_proton(0) =", m0, m0.n()
+
+    m1 = legendre_summ_of_mass_of_proton(1)
+    print "legendre_summ_of_mass_of_proton(1) =", m1
+
+    m2 = legendre_summ_of_mass_of_proton(2)
+    print "legendre_summ_of_mass_of_proton(2) =", m2
+
+    print latex(m0)
+
+    # legendre_summ_of_mass_of_proton(0) = 1.875*sqrt(2)/sqrt(pi) 1.49603355150537
+    # legendre_summ_of_mass_of_proton(1) = 0
+    # legendre_summ_of_mass_of_proton(2) = 0
+    # VEGAS RESULT:   1.49695439 +- 0.00345851        p = 0.006
+    # SUAVE RESULT:   1.49424975 +- 0.00149158        p = 1.000
+    # scipy integrate.quad calc_proton_mass results (for comparing):
+    # I6(2/3 * 0.8) =  (1.4960348943817992, 0.0026474827067254846)
+
+    # Elementary charge, coulombs
+    e = 1.60217662e-19
+    mju0 = 4*pi*10^(-7) # H/m
+    k = mju0 / (4 * pi) * e^2 / 10^-15
+    m = k * m0
+    print "m = ", m, m.n()
+    print latex(m)
+    # 3.84027312853036e-30
+    # 3.84027657565375e-30 - scipy integrate.nquad result
+
+
+    me = 9.1093837015e-31
+    print "m / me = ", m / me, (m / me).n()
+    # 4.21573319817234
+    # 4.21573698231790 - scipy integrate.nquad result
+
+def calc_mass_of_neutron():
+    print "\ncalc_mass_of_neutron"
+    m0 = legendre_summ_of_mass_of_neutron(0)
+    print "legendre_summ_of_mass_of_neutron(0) =", m0
+    print "legendre_summ_of_mass_of_neutron(0) =", m0.n()
+
+    m1 = legendre_summ_of_mass_of_neutron(1)
+    print "legendre_summ_of_mass_of_neutron(1) =", m1
+
+    m2 = legendre_summ_of_mass_of_neutron(2)
+    print "legendre_summ_of_mass_of_neutron(2) =", m2
+
+    print latex(m0)
+
+    # legendre_summ_of_mass_of_neutron(0) = (4.48918680252563e-28)*sqrt(5)*sqrt(2)*(1824320471*sqrt(10)*sqrt(5) + 14369256122481640385175552*sqrt(2))/sqrt(pi)
+    # legendre_summ_of_mass_of_neutron(0) = 0.0162757880193542
+    # legendre_summ_of_mass_of_neutron(1) = 0
+    # legendre_summ_of_mass_of_neutron(2) = 0
+    # VEGAS RESULT:   0.00183803 +- 0.00000179        p = 0.000
+    # SUAVE RESULT:   0.00183606 +- 0.00000183        p = 1.000
+    # Elementary charge, coulombs
+    e = 1.60217662e-19
+    mju0 = 4*pi*10^(-7) # H/m
+    k = mju0 / (4 * pi) * e^2 / 10^-15
+    m = k * m0
+    print "m = ", m
+    print "m = ", m.n()
+    # m =  (1.1523607494861974e-57)*sqrt(5)*sqrt(2)*(1824320471*sqrt(10)*sqrt(5) + 14369256122481640385175552*sqrt(2))/sqrt(pi) 4.17794582972344e-32
+    # m / me =  (1.2650260294738088e-27)*sqrt(5)*sqrt(2)*(1824320471*sqrt(10)*sqrt(5) + 14369256122481640385175552*sqrt(2))/sqrt(pi) 0.0458641985739987
+
+    print latex(m)
+
+    me = 9.1093837015e-31
+    print "m / me = ", m / me, (m / me).n()
+
+
+
 def legendre_summ_of_vector_potencial_of_rotated_sphere(l):
     theta_q, phi_q = var('theta_q, phi_q')
     assume(theta_q, 'real')
@@ -896,7 +1056,11 @@ def calc_gyromagnetic_ratio_of_sphere():
 # calc_proton_mass2()
 # calc_neutron_mass2()
 # calc_sphere_mass()
-calc_inductivity_of_sphere()
-calc_gyromagnetic_ratio_of_sphere()
-calc_mass_of_sphere()
-calc_mass_of_spherical_shell()
+
+#calc_inductivity_of_sphere()
+#calc_gyromagnetic_ratio_of_sphere()
+#calc_mass_of_sphere()
+#calc_mass_of_spherical_shell()
+
+calc_mass_of_proton()
+calc_mass_of_neutron()

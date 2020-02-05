@@ -13,7 +13,7 @@ cd ..
 make -f Makefile-calc_sphere_mass
 ./calc_sphere_mass
 
-make -f cuba.mk clean && ll && make -f Makefile-calc_proton_mass all && ./calc_proton_mass 
+make -f cuba.mk clean && ll && make -f Makefile-calc_proton_mass all && ./calc_proton_mass
 
 calc_sphere_mass results:
 
@@ -48,7 +48,7 @@ scipy integrate.quad calc_proton_mass results (for comparing):
 # I6(2/3 * 0.8) =  (1.4960348943817992, 0.0026474827067254846)
 
 
-make -f cuba.mk clean && ll && make -f Makefile-calc_neutron_mass all && ./calc_neutron_mass 
+make -f cuba.mk clean && ll && make -f Makefile-calc_neutron_mass all && ./calc_neutron_mass
 
 Iteration 32:  280000 integrand evaluations so far
 [1] 0.00183803 +- 1.78927e-06   chisq 3.50361 (31 df)
@@ -61,7 +61,7 @@ SUAVE RESULT:   nregions 200    neval 200000    fail 0
 SUAVE RESULT:   0.00183606 +- 0.00000183        p = 1.000
 
 
-make -f cuba.mk clean && ll && make -f Makefile-calc_sphere_mass all && ./calc_sphere_mass 
+make -f cuba.mk clean && ll && make -f Makefile-calc_sphere_mass all && ./calc_sphere_mass
 
 Iteration 31:  263500 integrand evaluations so far
 [1] 1.20057 +- 0.00117095       chisq 3.28661 (30 df)
@@ -72,3 +72,15 @@ Iteration 197:  197000 integrand evaluations so far
 [1] 1.19945 +- 0.00119818       chisq 7122.78 (1614 df)
 SUAVE RESULT:   nregions 197    neval 197000    fail 0
 SUAVE RESULT:   1.19945246 +- 0.00119818        p = 1.000
+
+make -f cuba.mk clean && ll && make -f Makefile-calc_sphere_mass_a all && ./calc_sphere_mass_a
+
+    cubareal r0 = 1.0;
+    cubareal q = 1.0;
+    cubareal c = 1.0;
+    cubareal a = 1.0;
+
+Iteration 44:  517000 integrand evaluations so far
+[1] 0.832272 +- 0.00107483      chisq 6.37721 (43 df)
+VEGAS RESULT:   neval 517000    fail 1
+VEGAS RESULT:   0.83227193 +- 0.00107483        p = 0.000

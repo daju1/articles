@@ -1047,6 +1047,62 @@ def calc_gyromagnetic_ratio_of_sphere():
     #p += make_spherical_plot3d(legendre_summ_of_vector_potencial_of_rotated_sphere(5).real())
     #p.show(aspect_ratio=(1,1,1))
 
+def solve_lagging():
+    # Чтобы учесть запаздывание следует решить систему уравнений
+    # s = v*(t-t') + a/2*(t-t')^2
+    # и
+    # R = c*(t-t')
+    # Учитывая, что по теореме косинусов
+    # R^2 = R_0^2 + s^2 - 2*R_0*s*cos(alpha)
+    #     = R_0^2 + s^2 - 2*R_0*s*(z_q-z_a) / R_0
+    #     = R_0^2 + s^2 + 2*s*(z_a-z_q)
+    # где R_0 расстояние от точки источника заряда к точке наблюдения без учёта запаздывания.
+    # R^2 = c^2*( t-t')^2 = R_0^2 + s^2 + 2*s*(z_a-z_q)
+
+    # (t-t') = dt
+    # (z_a-z_q) = dz
+
+
+    dt = var("dt")
+    dz = var("dz")
+    a = var("a")
+    v = var("v")
+    c = var("c")
+    z_q, z_a = var("z_q, z_a")
+    R_0 = var("R_0")
+    s = var("s")
+
+    assume(dz <= R_0)
+
+    # eq = c^2*dt^2 - (R_0^2 + s^2 + 2*s*(z_a-z_q))
+    eq = c^2*dt^2 - (R_0^2 + s^2 + 2*s*dz)
+    print "eq = ", eq
+    eq2 = eq.subs(s = (v*dt + a/2*dt^2))
+    print "eq2 = ", eq2
+
+    eq3 = eq2.subs(v = 0)
+    # print "eq3 = ", eq3
+    print "eq3 = ", latex(eq3)
+
+    res = solve(eq3, dt)
+    # print "res = ", res
+
+    print len(res)
+
+    for i in range (0, len(res)):
+        print "\n"
+        print simplify(c*res[i])
+        print simplify(res[i])
+        print latex(simplify(res[i]))
+
+        print simplify((c*res[i]).subs(R_0 = 1, a = -1, c = 3, dz = 1))
+        print simplify((c*res[i]).subs(R_0 = 1, a = -1, c = 3, dz = 0))
+        print simplify((c*res[i]).subs(R_0 = 1, a = -1, c = 3, dz = -1))
+
+
+    print latex((z_a-z_q) - dz)
+
+
 
 #calc1_m()
 #calc2_m()
@@ -1062,5 +1118,7 @@ def calc_gyromagnetic_ratio_of_sphere():
 #calc_mass_of_sphere()
 #calc_mass_of_spherical_shell()
 
-calc_mass_of_proton()
-calc_mass_of_neutron()
+#calc_mass_of_proton()
+#calc_mass_of_neutron()
+
+solve_lagging()

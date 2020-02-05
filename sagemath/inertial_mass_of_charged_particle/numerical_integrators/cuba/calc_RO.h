@@ -20,6 +20,9 @@ static inline cubareal Cb(cubareal x) {
   return x*x*x;
 }
 
+static inline cubareal Qu(cubareal x) {
+  return x*x*x*x;
+}
 //z - координаты заряда и точки наблюдения
 static inline cubareal zq (cubareal rq, cubareal theta_q)
 {
@@ -45,4 +48,11 @@ static inline cubareal rca (cubareal ra, cubareal theta_a )
 static inline cubareal R0 (cubareal ra, cubareal theta_a, cubareal rq, cubareal theta_q, cubareal phi_q)
 {
     return sqrt(Sq(rca(ra, theta_a)) + Sq(rcq(rq, theta_q)) + Sq(za(ra, theta_a)-zq(rq, theta_q)) - 2*rca(ra, theta_a)*rcq(rq, theta_q)*cos(phi_q));
+}
+
+static inline cubareal R (cubareal ra, cubareal theta_a, cubareal rq, cubareal theta_q, cubareal phi_q, cubareal c, cubareal a)
+{
+    cubareal R_0 = R0 (ra, theta_a, rq, theta_q, phi_q);
+    cubareal dz = za(ra, theta_a) - zq(rq, theta_q);
+    return c/a*sqrt(2*Sq(c) - 2*a*dz - 2*sqrt(-Sq(R_0*a) + Qu(c) - 2*a*Sq(c)*dz + Sq(a*dz) ) );
 }

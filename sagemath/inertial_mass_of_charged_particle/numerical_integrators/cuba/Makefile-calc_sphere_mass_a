@@ -1,0 +1,9 @@
+include ./cuba.mk
+
+OBJ = calc_sphere_mass_a.o main.o
+
+all : calc_sphere_mass_a
+
+calc_sphere_mass_a: $(OBJ)
+	$(info OBJ=$(OBJ))
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)

@@ -52,7 +52,7 @@ int Integrand(const int *ndim, const cubareal xx[],
     cubareal r0 = 1.0;
     cubareal q = 1.0;
     cubareal c = 1.0;
-    cubareal a = 2250.0;
+    cubareal a = 5.0;
 
     f = r0 * r0 * M_PI * (2*M_PI) * M_PI * Ia (r0, q, theta_a * M_PI, ra * r0, phi_q * (2*M_PI), theta_q * M_PI, rq * r0 , c, a);
 

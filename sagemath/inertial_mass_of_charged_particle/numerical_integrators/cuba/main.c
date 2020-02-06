@@ -61,7 +61,7 @@ int main() {
       (double)integral[comp], (double)error[comp], (double)prob[comp]);
 #endif
 
-#if 1
+#if 0
   printf("\n-------------------- Suave test --------------------\n");
 
   Suave(NDIM, NCOMP, Integrand, USERDATA, NVEC,

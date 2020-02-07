@@ -3,6 +3,7 @@ $(info IDIR=$(IDIR))
 
 CC=gcc
 CFLAGS=-I$(IDIR) -g -O0
+CXXFLAGS=-I$(IDIR) -g -O0
 
 
 LDIR =../lib

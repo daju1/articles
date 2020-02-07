@@ -15,8 +15,8 @@ static inline cubareal rho_q (cubareal r0, cubareal q)
 // интегрирование по координатам заряда источника потенциала
 static inline cubareal Iq (cubareal r0, cubareal q, cubareal theta_a, cubareal ra, cubareal phi_q, cubareal theta_q, cubareal rq, cubareal c, cubareal a)
 {
-    cubareal R_ = R (ra, theta_a, rq, theta_q, phi_q, c, a);
-    return rho_q(r0, q) * Sq(rq) * sin(theta_q) / R_;
+    cubareal R = R_a (ra, theta_a, rq, theta_q, phi_q, c, a);
+    return rho_q(r0, q) * Sq(rq) * sin(theta_q) / R;
 }
 
 // интегрирование по координатам точек наблюдения

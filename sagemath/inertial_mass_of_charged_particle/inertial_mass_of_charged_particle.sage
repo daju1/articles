@@ -1047,6 +1047,87 @@ def calc_gyromagnetic_ratio_of_sphere():
     #p += make_spherical_plot3d(legendre_summ_of_vector_potencial_of_rotated_sphere(5).real())
     #p.show(aspect_ratio=(1,1,1))
 
+Sq = function('Sq') # x^2
+Cb = function('Cb') # x^3
+Qu = function('Qu') # x^4
+Fi = function('Fi') # x^5
+Si = function('Si') # x^6
+Se = function('Si') # x^7
+Ei = function('Ei') # x^8
+Ni = function('Ni') # x^9
+
+def replace_powers(res):
+    return res.subs({
+        R_0^2 : Sq(R_0),
+        dz^2  : Sq(dz),
+        c^2   : Sq(c),
+        v^2   : Sq(v),
+        a^2   : Sq(a),
+
+        1/(a^2)  : (1/Sq(a)),
+
+        R_0^3 : Cb(R_0),
+        dz^3  : Cb(dz),
+        c^3   : Cb(c),
+        v^3   : Cb(v),
+        a^3   : Cb(a),
+
+        1/(a^3)  : (1/Cb(a)),
+
+        R_0^4 : Qu(R_0),
+        dz^4  : Qu(dz),
+        c^4   : Qu(c),
+        v^4   : Qu(v),
+        a^4   : Qu(a),
+
+        1/(a^4)  : (1/Qu(a)),
+
+        R_0^5 : Fi(R_0),
+        dz^5  : Fi(dz),
+        c^5   : Fi(c),
+        v^5   : Fi(v),
+        a^5   : Fi(a),
+
+        1/(a^5)  : (1/Fi(a)),
+
+        R_0^6 : Si(R_0),
+        dz^6  : Si(dz),
+        c^6   : Si(c),
+        v^6   : Si(v),
+        a^6   : Si(a),
+
+        1/(a^6)  : (1/Si(a)),
+
+        R_0^7 : Se(R_0),
+        dz^7  : Se(dz),
+        c^7   : Se(c),
+        v^7   : Se(v),
+        a^7   : Se(a),
+
+        1/(a^7)  : (1/Se(a)),
+
+        R_0^8 : Ei(R_0),
+        dz^8  : Ei(dz),
+        c^8   : Ei(c),
+        v^8   : Ei(v),
+        a^8   : Ei(a),
+
+        1/(a^8)  : (1/Ei(a)),
+
+        R_0^9 : Ni(R_0),
+        dz^9  : Ni(dz),
+        c^9   : Ni(c),
+        v^9   : Ni(v),
+        a^9   : Ni(a),
+      })
+
+def replase_integer_frac(r):
+    s = str(r)
+    import re
+    digits_re = r'\d+\/'
+    s_double_frac = re.sub(r'([1-9]+)\/([1-9]+)', r'\1.0/\2.0', s)
+    return s_double_frac
+
 def solve_lagging():
     # Чтобы учесть запаздывание следует решить систему уравнений
     # s = v*(t-t') + a/2*(t-t')^2
@@ -1092,13 +1173,16 @@ def solve_lagging():
 
     for i in range (0, len(res3)):
         print "\n"
-        print simplify(c*res3[i])
-        print simplify(res3[i])
-        print latex(simplify(res3[i]))
+        r = simplify(c*res3[i])
+        print r
+        print latex(r)
+        r3 = replace_powers(r)
+        s3 = replase_integer_frac(r3)
+        print "res3 =",  s3
 
-        print simplify((c*res3[i]).subs(R_0 = 1, a = -1, c = 3, dz = 1))
-        print simplify((c*res3[i]).subs(R_0 = 1, a = -1, c = 3, dz = 0))
-        print simplify((c*res3[i]).subs(R_0 = 1, a = -1, c = 3, dz = -1))
+        print simplify(r.subs(R_0 = 1, a = -1, c = 3, dz = 1))
+        print simplify(r.subs(R_0 = 1, a = -1, c = 3, dz = 0))
+        print simplify(r.subs(R_0 = 1, a = -1, c = 3, dz = -1))
 
     eq4 = eq2.subs(a = 0)
     print "eq4 = ", eq4
@@ -1111,114 +1195,18 @@ def solve_lagging():
     print "res4 = ", res4
     print "res4 = ", latex(res4)
 
-    Sq = function('Sq') # x^2
-    Cb = function('Cb') # x^3
-    Qu = function('Qu') # x^4
-    Fi = function('Fi') # x^5
-    Si = function('Si') # x^6
-    Se = function('Si') # x^7
-    Ei = function('Ei') # x^8
-    Ni = function('Ni') # x^9
-
-    Pow = function ('Pow')
-    # X = function ('X')
-
-    def my_replace(res):
-        return res.subs({
-            R_0^2 : Sq(R_0),
-            dz^2  : Sq(dz),
-            c^2   : Sq(c),
-            v^2   : Sq(v),
-            a^2   : Sq(a),
-
-            1/(a^2)  : (1/Sq(a)),
-
-            R_0^3 : Cb(R_0),
-            dz^3  : Cb(dz),
-            c^3   : Cb(c),
-            v^3   : Cb(v),
-            a^3   : Cb(a),
-
-            1/(a^3)  : (1/Cb(a)),
-
-            R_0^4 : Qu(R_0),
-            dz^4  : Qu(dz),
-            c^4   : Qu(c),
-            v^4   : Qu(v),
-            a^4   : Qu(a),
-
-            1/(a^4)  : (1/Qu(a)),
-
-            R_0^5 : Fi(R_0),
-            dz^5  : Fi(dz),
-            c^5   : Fi(c),
-            v^5   : Fi(v),
-            a^5   : Fi(a),
-
-            1/(a^5)  : (1/Fi(a)),
-
-            R_0^6 : Si(R_0),
-            dz^6  : Si(dz),
-            c^6   : Si(c),
-            v^6   : Si(v),
-            a^6   : Si(a),
-
-            1/(a^6)  : (1/Si(a)),
-
-            R_0^7 : Se(R_0),
-            dz^7  : Se(dz),
-            c^7   : Se(c),
-            v^7   : Se(v),
-            a^7   : Se(a),
-
-            1/(a^7)  : (1/Se(a)),
-
-            R_0^8 : Ei(R_0),
-            dz^8  : Ei(dz),
-            c^8   : Ei(c),
-            v^8   : Ei(v),
-            a^8   : Ei(a),
-
-            1/(a^8)  : (1/Ei(a)),
-
-            R_0^9 : Ni(R_0),
-            dz^9  : Ni(dz),
-            c^9   : Ni(c),
-            v^9   : Ni(v),
-            a^9   : Ni(a),
-
-            # X^(1/3) : Pow(X,1/3)
-          })
-
-    Double = function("Double")
-
-    def my_replace2(res):
-        for i in range(1,100):
-            res = res.subs({i : Double(i)})
-            res = res.subs({-i : -Double(i)})
-            res = res.subs({1/i : 1/Double(i)})
-        return res
-
-    def my_replace3(res):
-        for i in range(0,17):
-          for j in range(1,17):
-              res = res.subs({i/j : float(i)/float(j)})
-        return res
+    for i in range (0, len(res4)):
+        r4 = replace_powers(c*res4[i])
+        s4 = replase_integer_frac(r4)
+        print s4
 
     for i in range (0, len(res2)):
         # print "\n"
         # print c*res2[i]
         print "\n"
-        r = my_replace(c*res2[i])
-        # print r
-        s = str(r)
-        # print s
-        import re
-        digits_re = r'\d+\/'
-        s2 = re.sub(r'([1-9]+)\/', r'\1.0/', s)
+        r2 = replace_powers(c*res2[i])
+        s2 = replase_integer_frac(r2)
         # print s2
-        s3 = re.sub(r'([1-9]+)\/([1-9]+)', r'\1.0/\2.0', s)
-        print s3
 
 
 #calc1_m()

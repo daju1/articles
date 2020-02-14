@@ -16,7 +16,9 @@ static inline cubareal rho_q (cubareal r0, cubareal q)
 static inline cubareal Iq (cubareal r0, cubareal q, cubareal theta_a, cubareal ra, cubareal phi_q, cubareal theta_q, cubareal rq, cubareal c, cubareal v)
 {
     cubareal R = R_v (ra, theta_a, rq, theta_q, phi_q, c, v);
-    return rho_q(r0, q) * Sq(rq) * sin(theta_q) / R;
+    cubareal R_lw = R - v / c * (ra * cos(theta_a) - rq * cos(theta_q));
+    cubareal integrand = rho_q(r0, q) / Sq(R_lw); // TODO
+    return integrand * Sq(rq) * sin(theta_q);
 }
 
 // интегрирование по координатам точек наблюдения
@@ -52,7 +54,7 @@ int Integrand(const int *ndim, const cubareal xx[],
     cubareal r0 = 1.0;
     cubareal q = 1.0;
     cubareal c = 1.0;
-    cubareal v = 0.999;
+    cubareal v = 0.5;
 
     f = r0 * r0 * M_PI * (2*M_PI) * M_PI * Ia (r0, q, theta_a * M_PI, ra * r0, phi_q * (2*M_PI), theta_q * M_PI, rq * r0 , c, v);
 

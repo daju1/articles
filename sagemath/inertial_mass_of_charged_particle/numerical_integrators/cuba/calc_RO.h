@@ -78,10 +78,19 @@ static inline cubareal R_a (cubareal ra, cubareal theta_a, cubareal rq, cubareal
 {
     cubareal R_0 = R0 (ra, theta_a, rq, theta_q, phi_q);
     cubareal dz = za(ra, theta_a) - zq(rq, theta_q);
+
+    cubareal tt1 = -2*a*dz + 2*sqrt(-2*a*dz*Sq(c) - Sq(R_0)*Sq(a) + Sq(a)*Sq(dz) + Qu(c)) + 2*Sq(c);
+    cubareal tt2 = -2*a*dz - 2*sqrt(-2*a*dz*Sq(c) - Sq(R_0)*Sq(a) + Sq(a)*Sq(dz) + Qu(c)) + 2*Sq(c);
     /*
-    res3 = c*dt == sqrt(-2*a*dz - 2*sqrt(-2*a*dz*Sq(c) - Sq(R_0)*Sq(a) + Sq(a)*Sq(dz) + Qu(c)) + 2*Sq(c))*c/a
+    res3 = c*dt == -sqrt(-2*a*dz + 2*sqrt(-2*a*dz*Sq(c) - Sq(R_0)*Sq(a) + Sq(a)*Sq(dz) + Qu(c)) + 2*Sq(c))*c/a
+    res3 = c*dt ==  sqrt(-2*a*dz + 2*sqrt(-2*a*dz*Sq(c) - Sq(R_0)*Sq(a) + Sq(a)*Sq(dz) + Qu(c)) + 2*Sq(c))*c/a
+    res3 = c*dt == -sqrt(-2*a*dz - 2*sqrt(-2*a*dz*Sq(c) - Sq(R_0)*Sq(a) + Sq(a)*Sq(dz) + Qu(c)) + 2*Sq(c))*c/a
+    res3 = c*dt ==  sqrt(-2*a*dz - 2*sqrt(-2*a*dz*Sq(c) - Sq(R_0)*Sq(a) + Sq(a)*Sq(dz) + Qu(c)) + 2*Sq(c))*c/a
     */
-    return c/a*sqrt(2*Sq(c) - 2*a*dz - 2*sqrt(-Sq(R_0*a) + Qu(c) - 2*a*Sq(c)*dz + Sq(a*dz) ) );
+    cubareal R = c/a*sqrt(2*Sq(c) - 2*a*dz - 2*sqrt(-Sq(R_0*a) + Qu(c) - 2*a*Sq(c)*dz + Sq(a*dz) ) );
+
+    printf("tt1 = %f, tt2 = %f, R = %f R0 = %f , ra = %f, theta_a = %f, rq = %f, theta_q = %f, phi_q = %f\n", tt1, tt2, R, R_0, ra, theta_a, rq, theta_q, phi_q);
+    return R;
 }
 
 static inline cubareal R_v (cubareal ra, cubareal theta_a, cubareal rq, cubareal theta_q, cubareal phi_q, cubareal c, cubareal v)
@@ -95,5 +104,8 @@ static inline cubareal R_v (cubareal ra, cubareal theta_a, cubareal rq, cubareal
     ]
     c*dt == (dz*v - sqrt(Sq(R_0)*Sq(c) - (Sq(R_0) - Sq(dz))*Sq(v)))*c/(Sq(c) - Sq(v))
     */
-    return (dz*v + sqrt(Sq(R_0)*Sq(c) - (Sq(R_0) - Sq(dz))*Sq(v)))*c/(Sq(c) - Sq(v));
+    cubareal R = (dz*v - sqrt(Sq(R_0)*Sq(c) - (Sq(R_0) - Sq(dz))*Sq(v)))*c/(Sq(c) - Sq(v));
+
+    printf("R = %f R0 = %f , ra = %f, theta_a = %f, rq = %f, theta_q = %f, phi_q = %f\n", R, R_0, ra, theta_a, rq, theta_q, phi_q);
+    return R;
 }

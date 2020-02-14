@@ -1172,17 +1172,13 @@ def solve_lagging():
     # print "res3 = ", res3
 
     for i in range (0, len(res3)):
-        print "\n"
+        # print "\n"
         r = simplify(c*res3[i])
-        print r
-        print latex(r)
+        # print r
+        # print latex(r)
         r3 = replace_powers(r)
         s3 = replase_integer_frac(r3)
         print "res3 =",  s3
-
-        print simplify(r.subs(R_0 = 1, a = -1, c = 3, dz = 1))
-        print simplify(r.subs(R_0 = 1, a = -1, c = 3, dz = 0))
-        print simplify(r.subs(R_0 = 1, a = -1, c = 3, dz = -1))
 
     eq4 = eq2.subs(a = 0)
     print "eq4 = ", eq4

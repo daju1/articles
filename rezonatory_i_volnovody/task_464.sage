@@ -2,6 +2,32 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+
+mu = var('mu')
+assume(mu>0)
+epsilon = var('epsilon')
+assume(epsilon>0)
+
+s = var ('s')
+assume(s>0)
+
+kappa = var ('kappa')
+assume(kappa>0)
+
+k = var ('k')
+
+a = var('a')
+assume(a>0)
+
+x = var('x')
+y = var('y')
+z = var('z')
+
+c = var('c')
+assume(c>0)
+omega = var('omega')
+
+
 # rot E = i * omega / c * H
 # rot H = - i * epsilon * omega / c * epsilon * E
 # mu = 1
@@ -15,7 +41,6 @@ sys.setdefaultencoding('utf8')
 # E = E(x) * exp(k * z)
 
 # подставляя в уравнение Даламбера приходим к обыкновенному дифференциальному уравнению
-
 # diff (E(x), x, 2) + (mu * epsilon * omega^2 / c^2 - k^2) * E(x) = 0
 
 # для диэлектрика
@@ -26,29 +51,27 @@ sys.setdefaultencoding('utf8')
 # - s^2 = (mu * epsilon * omega^2 / c^2 - k^2)
 # diff (E(x), x, 2) - s^2 * E(x) = 0
 
+# исходя из вида дифференциальных уравнений для диэлектрика и вакуума
+# записываем соотнощения для волнового вектора в виде уравнений
+eq_kappa = mu * epsilon * omega^2 / c^2 - k^2 == kappa^2
+# eq_s     = omega^2 / c^2 - k^2 == - s^2
+eq_s     = omega^2 / c^2 + s^2 == k^2
+
+
 E = function('E')(x)
-kappa = var ('kappa')
-assume(kappa>0)
-x = var('x')
-z = var('z')
+
 
 de1 = diff (E, x, 2) + kappa^2 * E == 0
 E_dielectric = desolve(de1, E, ivar = x)
 print E_dielectric
 # _K2*cos(kappa*x) + _K1*sin(kappa*x)
 
-k = var ('k')
-s = var ('s')
-assume(s>0)
+
 de2 = diff (E, x, 2) - s^2 * E == 0
 E_vacuum = desolve(de2, E, ivar = x)
 print E_vacuum
 # _K1*e^(s*x) + _K2*e^(-s*x)
 
-
-
-a = var('a')
-epsilon = var('epsilon')
 _B1_z = var ('_B1_z')
 _B2_z = var ('_B2_z')
 _A1_z = var ('_A1_z')
@@ -86,8 +109,7 @@ print "eqEx_ma =", eqEx_ma
 # eqEx_a  = (_B2_x*cos(a*kappa)  + _B1_x*sin(a*kappa))  * epsilon == _A1_x*e^(a*s) + _A2_x*e^(-a*s)
 # eqEx_ma = (_B2_x*cos(-a*kappa) + _B1_x*sin(-a*kappa)) * epsilon == _A2_x*e^(a*s) + _A1_x*e^(-a*s)
 
-c = var('c')
-omega = var('omega')
+
 # H_y = c / (I * omega) * (diff(E_x, z) - diff(E_z, x))
 
 H_dielectric_y (x) = c / (I * omega) * (I*k*E_dielectric_x (x) - diff(E_dielectric_z (x), x))
@@ -134,3 +156,49 @@ res = [
 ]
 '''
 
+
+res = solve([eqEz_a, eqEx_a, eqHy_a, _B2_z==0, _B1_x==0, _A1_z==0, _A1_x==0, eq_s, eq_kappa, s > 0, c > 0, a > 0, omega > 0],
+    #_B1_z,
+    _B2_z,
+    _A1_z,
+    _A2_z,
+
+    _B1_x,
+    _B2_x,
+    _A1_x,
+    _A2_x,
+    kappa, s
+    )
+print "res =", res
+
+'''
+res = [
+[
+    I*_B2_x*k*cos(a*kappa)*e^(a*s) - _B1_z*kappa*cos(a*kappa)*e^(a*s) - I*_A2_x*k - _A2_z*s == 0,
+    -c^2*k^2 + c^2*s^2 + omega^2 == 0,
+    -c^2*k^2 - c^2*kappa^2 + epsilon*mu*omega^2 == 0,
+    -_B1_z*e^(a*s)*sin(a*kappa) + _A2_z == 0,
+    -_B2_x*epsilon*cos(a*kappa)*e^(a*s) + _A2_x == 0
+]
+]
+'''
+
+eqB = I*_B2_x*k*cos(a*kappa)*e^(a*s) - _B1_z*kappa*cos(a*kappa)*e^(a*s) - I*_A2_x*k - _A2_z*s == 0
+
+eq_BB = eqB \
+    .subs(_A2_z = _B1_z*e^(a*s)*sin(a*kappa)) \
+    .subs(_A2_x = _B2_x*epsilon*cos(a*kappa)*e^(a*s))
+
+print "eq_BB =", eq_BB
+
+print solve ([eq_BB], _B2_x)
+Bx = -(_B1_z*kappa*cos(a*kappa) + _B1_z*s*sin(a*kappa))/((I*epsilon - I)*k*cos(a*kappa))
+print Bx.subs(s = sqrt(c^2*k^2 - omega^2)/c)
+
+print solve([
+    I*_B2_x*k*cos(a*kappa)*e^(a*s) - _B1_z*kappa*cos(a*kappa)*e^(a*s) - I*_A2_x*k - _A2_z*s == 0,
+    -c^2*k^2 + c^2*s^2 + omega^2 == 0,
+    -c^2*k^2 - c^2*kappa^2 + epsilon*mu*omega^2 == 0,
+    -_B1_z*e^(a*s)*sin(a*kappa) + _A2_z == 0,
+    -_B2_x*epsilon*cos(a*kappa)*e^(a*s) + _A2_x == 0
+], kappa, s)

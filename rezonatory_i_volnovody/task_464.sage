@@ -195,10 +195,33 @@ print solve ([eq_BB], _B2_x)
 Bx = -(_B1_z*kappa*cos(a*kappa) + _B1_z*s*sin(a*kappa))/((I*epsilon - I)*k*cos(a*kappa))
 print Bx.subs(s = sqrt(c^2*k^2 - omega^2)/c)
 
-print solve([
-    I*_B2_x*k*cos(a*kappa)*e^(a*s) - _B1_z*kappa*cos(a*kappa)*e^(a*s) - I*_A2_x*k - _A2_z*s == 0,
-    -c^2*k^2 + c^2*s^2 + omega^2 == 0,
-    -c^2*k^2 - c^2*kappa^2 + epsilon*mu*omega^2 == 0,
-    -_B1_z*e^(a*s)*sin(a*kappa) + _A2_z == 0,
-    -_B2_x*epsilon*cos(a*kappa)*e^(a*s) + _A2_x == 0
-], kappa, s)
+# print solve([
+#     I*_B2_x*k*cos(a*kappa)*e^(a*s) - _B1_z*kappa*cos(a*kappa)*e^(a*s) - I*_A2_x*k - _A2_z*s == 0,
+#     -c^2*k^2 + c^2*s^2 + omega^2 == 0,
+#     -c^2*k^2 - c^2*kappa^2 + epsilon*mu*omega^2 == 0,
+#     -_B1_z*e^(a*s)*sin(a*kappa) + _A2_z == 0,
+#     -_B2_x*epsilon*cos(a*kappa)*e^(a*s) + _A2_x == 0
+# ], kappa, s)
+
+
+M = matrix(SR, 6, 6,
+[
+    [ epsilon*cos(a*kappa),  epsilon*sin(a*kappa),                   0,                   0,     -e^(-a*s),           0 ],
+    [                    0,                     0,        cos(a*kappa),        sin(a*kappa),             0,   -e^(-a*s) ],
+    [     I*k*cos(a*kappa),      I*k*sin(a*kappa),  kappa*sin(a*kappa), -kappa*cos(a*kappa), -I*k*e^(-a*s), -s*e^(-a*s) ],
+
+    [ epsilon*cos(a*kappa), -epsilon*sin(a*kappa),                   0,                   0,     -e^(-a*s),           0 ],
+    [                    0,                     0,        cos(a*kappa),       -sin(a*kappa),             0,   -e^(-a*s) ],
+    [     I*k*cos(a*kappa),     -I*k*sin(a*kappa), -kappa*sin(a*kappa), -kappa*cos(a*kappa), -I*k*e^(-a*s), +s*e^(-a*s) ],
+
+])
+
+print M
+
+mdet = M.det()
+print mdet
+# 8*I*epsilon^2*k*s*cos(a*kappa)^2*e^(-2*a*s)*sin(a*kappa)^2 - 8*I*epsilon^2*k*kappa*cos(a*kappa)*e^(-2*a*s)*sin(a*kappa)^3 - 8*I*epsilon*k*s*cos(a*kappa)^2*e^(-2*a*s)*sin(a*kappa)^2 + 8*I*epsilon*k*kappa*cos(a*kappa)*e^(-2*a*s)*sin(a*kappa)^3
+
+print solve([mdet == 0], s)
+# s == kappa*sin(a*kappa)/cos(a*kappa)
+#it seems wrong

@@ -60,10 +60,10 @@ eq_s     = omega^2 / c^2 + s^2 == k^2
 # решаем полученные обыкновенные дифференциальные уравнения
 E = function('E')(x)
 
-de1 = diff (E, x, 2) + kappa^2 * E == 0
-E_dielectric = desolve(de1, E, ivar = x)
-de2 = diff (E, x, 2) - s^2 * E == 0
-E_vacuum = desolve(de2, E, ivar = x)
+de_dielectric = diff (E, x, 2) + kappa^2 * E == 0
+E_dielectric = desolve(de_dielectric, E, ivar = x)
+de_vacuum  = diff (E, x, 2) - s^2 * E == 0
+E_vacuum = desolve(de_vacuum, E, ivar = x)
 
 # получая таким образом выражения для электрического поля в диэлектрике и в вакууме
 print E_dielectric

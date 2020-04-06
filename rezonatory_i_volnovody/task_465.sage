@@ -28,18 +28,27 @@ assume(c>0)
 omega = var('omega')
 sigma = var('sigma')
 
+# запишем уравнения Максвелла для монохроматической волны
 
-# rot E = i * mu * omega / c * H
-# rot H = 4*pi*j - i * epsilon * omega / c * epsilon * E
+# rot E = i * omega / c * mu * H
+# rot H = 4*pi/c*j - i * omega / c * epsilon * E
+
+# применяя операцию ротор к первому уравнению
+# rot rot E = grad div E - Laplasian E = i * omega / c * mu * rot H
+
+# и подставляя rot H из второго уравнения
+grad div E - Laplasian E = i * omega / c * mu * (4*pi/c*j - i * omega / c * epsilon * E)
+grad div E - Laplasian E = i * omega / c * mu * 4*pi/c*j  + omega / c * mu * omega / c * epsilon * E
+grad div E - Laplasian E = i * omega / c^2 * mu * 4*pi * j  + mu * epsilon * omega^2 / c^2 * E
 
 # Laplasian E - grad div E + mu * epsilon * omega^2 / c^2 * E  = - mu * i * omega / c^2 * 4*pi*j
 # в металле
 # j = E * sigma
 # Laplasian E - grad div E + mu * epsilon * omega^2 / c^2 * E  + mu * i * omega / c^2 * 4*pi * sigma * E = 0
 
+# полагая grad div E = 0
 
-# уравнение Даламбера
-# mu * epsilon / c^2 * diff(E, t, 2) - Laplasian E = 0
+# получаем уравнение Даламбера в виде
 # Laplasian E + (mu * epsilon * omega^2 / c^2  + mu * i * omega / c^2 * 4 * pi * sigma ) * E = 0
 
 # Ищем решение в виде

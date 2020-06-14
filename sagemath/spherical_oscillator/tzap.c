@@ -593,7 +593,7 @@ distance get_s(timevalue t_zap, velocity v0, acceleration a0)
 	if (t_zap < g_t_start)
 	{
 		s = v0*(t_zap - g_t_start);
-		DBG_INFO("get_s1 t_zap=%Lf a0=%Lf returns %Lf\n", t_zap, a0, s);
+		DBG_INFO("get_s1 t_zap=%0.20Lf a0=%Lf returns %0.20Lf\n", t_zap, a0, s);
 		return s;
 	}
 #endif
@@ -712,6 +712,8 @@ velocity get_v_common(charge q, timevalue t, velocity v0, acceleration a0)
 	return v;
 }
 
+int g_max_j = 0;
+
 /* численный расчёта запаздывающего момента */
 int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, coordinate r_min, timevalue * t2, coordinate * r1)
 {
@@ -721,15 +723,17 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 #else
 
 #ifdef SI
-	long double epsilon = 1.0e-16;
-	long double epsilon_dr = 1.0e-16;
+	long double epsilon_dr = 1.0e-32;
+	long double epsilon_dR = 1.0e-12;
 #else
-	long double epsilon = 1.0e-12;
-	long double epsilon_dr = 1.0e-8;
+	long double epsilon_dr = 1.0e-12;
+	long double epsilon_dR = 1.0e-8;
 #endif
 	timevalue t1;
 	*t2 = t;
 	timespan dt;
+	distance dr;
+
 	velocity v1,v2;
 	coordinate R, R_pre = LDBL_MAX;
 	distance dR, dR_pre = LDBL_MAX;
@@ -786,7 +790,7 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 		v1 = get_v_ex2(t1, v0, q);
 		v2 = get_v_ex2(*t2, v0, q);
 #endif
-		DBG_INFO("t2=%Lf t1=%Lf t=%Lf v1 = %Lf, v2 = %Lf, v = %Lf, R=%Lf dR=%Le dR_pre=%Le ", *t2, t1, t, v1, v2, v, R, dR, dR_pre);
+		DBG_INFO("t2=%Lf t1=%Lf t=%Lf v1 = %Lf, v2 = %Lf, R=%Lf dR=%Le dR_pre=%Le ", *t2, t1, t, v1, v2, R, dR, dR_pre);
 		if (v1 >= g_c || v2 >= g_c)
 		{
 			velocity v;
@@ -818,26 +822,32 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 				dR = g_c*(t-t1) - R_tmp;
 				DBG_INFO("t2 = %Lf ", *t2);
 
-				n *= 0.9;
+				n *= 0.1;
 				DBG_INFO("n = %Lf ", n);
 				++j;
+				DBG_INFO("j = %d ", j);
+				if (g_max_j < j)
+					g_max_j = j;
+				DBG_INFO("g_max_j = %d ", g_max_j);
 			}
-			while (fabs(dR) > fabs(dR_pre));
+			while (fabs(dR) > fabs(dR_pre) && j < 1000000);
 
 			R = R_tmp;
 		}
 #endif
 		dt = t1 - *t2;
 		DBG_INFO("dt=%Le \n", dt);
+		dr = g_c * dt;
+		DBG_INFO("dr=%Le \n", dr);
 		dR_pre = dR;
 		R_pre = R;
 
 		DBG_INFO("\n");
 		++i;
 	}
-	while (fabs(dt) > epsilon);
+	while (fabs(dR) > epsilon_dR && fabs(dr) > epsilon_dr);
 
-	DBG_INFO("fabs(t1 - t2) = %Le fabs(t - t2) = %Le calc_tzap() result=%Lf\n", fabs(t1 - *t2), fabs(t - *t2), *t2);
+	DBG_INFO("fabs(t1 - t2) = %e fabs(t - t2) = %e calc_tzap() result=%Lf\n", fabs(t1 - *t2), fabs(t - *t2), *t2);
 #endif
 	return error;
 }

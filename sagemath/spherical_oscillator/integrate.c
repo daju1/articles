@@ -30,6 +30,7 @@ int calc_R_lw(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 //#define DBG_INFO printf
 	int err, error = 0;
 	velocity v;
+	distance R_zap;
 
 	/* численный расчёта запаздывающего момента */
 	coordinate r1_zap;
@@ -57,6 +58,19 @@ int calc_R_lw(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 	*pR_zap = get_R(R0, *pr_zap, theta); /* расстояние от заряда до точки наблюдения в запаздывающий момент времени */
 	DBG_INFO("r_zap = %Lf ", *pr_zap);
 	DBG_INFO("R_zap = %Lf ", *pR_zap);
+	R_zap = g_c * (t-*pt_zap);
+
+	if (fabs(R_zap - *pR_zap) >= 1e-10)
+	{
+		printf("r_zap = %Lf\n", *pr_zap);
+		printf("*pR_zap = %Lf\n", *pR_zap);
+		printf("R_zap = %Lf\n", R_zap);
+		printf("dR_zap = %e\n", fabs(R_zap - *pR_zap));
+		//assert(0);
+		int * p = 0;
+		*p += 1;
+	}
+
 #ifdef ALGORITHM_VERSION_0
 	v = get_v(q, *pt_zap, v0, a0);
 #endif
@@ -128,7 +142,7 @@ field get_E_minus_grad_phi_R0(angle theta, velocity v_zap, distance R_zap, long 
 	DBG_INFO("E_minus_grad_phi_R0 = %0.25Lf\n", E_minus_grad_phi_R0);
 	E_minus_grad_phi_R0 *= multiplier_E;
 #endif
-	DBG_INFO("E_minus_grad_phi_R0 = %0.25e\n", E_minus_grad_phi_R0);
+	DBG_INFO("E_minus_grad_phi_R0 = %0.25Le\n", E_minus_grad_phi_R0);
 	return E_minus_grad_phi_R0;
 }
 
@@ -142,7 +156,7 @@ field get_E_minus_grad_phi_R0(angle theta, velocity v_zap, distance R_zap, long 
 /*
 E_minus_1_c_dA_dt__R__0 := proc (q, t__zap, r__0, v__0, a__0, R__0, theta) options operator, arrow;
 cos(theta)*sigma(q, r__0)*
-(
+(g_c
 v__r(t__zap, r__0, v__0, a__0)*(R__zap(t__zap, r__0, v__0, a__0, R__0, theta)*(v__r(t__zap, r__0, v__0, a__0)^2/c-aR__zap(t__zap, r__0, v__0, a__0)/c-c)/K__zap(t__zap, r__0, v__0, a__0, R__0, theta)+c)/c^2
 - a__r(t__zap, r__0, v__0, a__0)*R__zap(t__zap, r__0, v__0, a__0, R__0, theta)/c^2
 )

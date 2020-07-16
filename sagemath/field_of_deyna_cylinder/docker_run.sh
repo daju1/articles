@@ -6,7 +6,7 @@ PROJECT_ROOT=${PWD}
 DISPLAY=$(env | grep DISPLAY= | sed 's/DISPLAY=//')
 export DISPLAY=$DISPLAY
 
-docker run -it --rm -v ${PROJECT_ROOT}:/tmp/build \
+docker run -it --rm --name sage_container -v ${PROJECT_ROOT}:/tmp/build \
     -v /home/${USER}/.ssh/id_rsa:/home/${USER}/.ssh/id_rsa \
     -v /home/${USER}/.ssh/id_rsa.pub:/home/${USER}/.ssh/id_rsa.pub \
     -v /home/${USER}/.ssh/known_hosts:/home/${USER}/.ssh/known_hosts \

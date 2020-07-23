@@ -1,6 +1,9 @@
 import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
+try:
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+except:
+    pass
 import numpy as np
 
 
@@ -8,7 +11,23 @@ attach("float_formatting.sage")
 
 
 def get_integrand_view(f):
+    print ("get_integrand_view f = ", f)
+    try:
+        print ("get_integrand_view f(x) = ", f(x))
+    except ex:
+        print ("Exception ex = ", ex)	
+        
     return f(x)
+
+class my_dummy_integral:
+    f = None
+    a = None
+    b = None
+    def __init__(self, f, a, b):
+        print ("my_dummy_integral ", f, a, b)
+        self.f = f
+        self.a = a
+        self.b = b
 
 
 def my_numerical_integral(f, a, b):
@@ -22,24 +41,27 @@ def my_numerical_integral(f, a, b):
 
     to_call_integration = True
 
-    if None == f:
+    if type(f) is my_dummy_integral:
         to_call_integration = False
 
     import inspect
     stack = inspect.stack()
     for frame in stack:
         func_name = frame[3]
-        print "func_name = ", func_name
+        print ("func_name = ", func_name)
         if ('get_integrand_view' == func_name):
             to_call_integration = False
             break;
 
-    print "stack = ", stack
-    print "f = ", f
-    print "integrand = ", get_integrand_view(f)
-    print "a = ", a
-    print "b = ", b
-    print "to_call_integration = ", to_call_integration
+    print ("stack = ", stack)
+    print ("f = ", f)
+    try:
+        print ("integrand = ", get_integrand_view(f))
+    except Exception as ex:
+        print ("Exception ex = ", ex)
+    print ("a = ", a)
+    print ("b = ", b)
+    print ("to_call_integration = ", to_call_integration)
 
     # file = open('field_of_deyna_cylinder_my_numerical_integral.txt', 'a')
     file = open(log_fn, 'a')
@@ -48,7 +70,10 @@ def my_numerical_integral(f, a, b):
     file.write('\n')
     file.write("f = " + str(f))
     file.write('\n')
-    file.write("integrand = " + str(get_integrand_view(f)))
+    try:
+        file.write("integrand = " + str(get_integrand_view(f)))
+    except Exception as ex:
+        file.write("Exception ex = " + str(ex))
     file.write('\n')
     file.write("a = " + str(a) + ", b = " + str(b))
     file.write('\n')
@@ -57,13 +82,13 @@ def my_numerical_integral(f, a, b):
     file.close()
 
     if not to_call_integration:
-        return None
+        return my_dummy_integral(f,a,b)
 
     try:
         integral = integrate.quad(f, a, b)
         # integral = numerical_integral(f, a, b)
 
-        print "integral = ", integral
+        print ("integral = ", integral)
 
         # file = open(log_fn, 'a')
         file = open(log_fn, 'a')
@@ -77,11 +102,14 @@ def my_numerical_integral(f, a, b):
 
     except Exception as ex:
 
-        print "Exception ex = ", str(ex)
-        print "f = ", f
-        print "integrand = ", get_integrand_view(f)
-        print "a = ", a
-        print "b = ", b
+        print ("Exception ex = ", str(ex))
+        print ("f = ", f)
+        try:
+            print ("integrand = ", get_integrand_view(f))
+        except Exception as ex2:
+            print ("Exception ex2 = ", ex2)
+        print ("a = ", a)
+        print ("b = ", b)
 
         file = open(log_fn, 'a')
         file.write('\n')
@@ -89,7 +117,10 @@ def my_numerical_integral(f, a, b):
         file.write('\n')
         file.write("f = " + str(f))
         file.write('\n')
-        file.write("integrand = " + str(get_integrand_view(f)))
+        try:
+            file.write("integrand = " + str(get_integrand_view(f)))
+        except Exception as ex2:
+            file.write("Exception ex2 = " + str(ex2))
         file.write('\n')
         file.write("a = " + str(a) + ", b = " + str(b))
         file.write('\n\n')
@@ -99,9 +130,11 @@ def my_numerical_integral(f, a, b):
         if 'unable to simplify to float approximation' == str(ex):
             raise ex
 
+        raise ex
+
         integral = numerical_integral(f, a, b)
 
-        print "integral = ", integral
+        print ("integral = ", integral)
 
         file = open(log_fn, 'a')
         file.write('\n')
@@ -110,7 +143,7 @@ def my_numerical_integral(f, a, b):
         file.close()
 
         result = integral[0]
-        print "result = ", result
+        print ("result = ", result)
         return result
 
 
@@ -138,9 +171,9 @@ rja2 = (rj-ra)^2+(zj-za)^2
 module = - 4*rj*ra / rja2
 
 I_phi_j = 2 * elliptic_f(phi/2, module) / sqrt(rja2)
-print "I_phi_j =", I_phi_j
+print ("I_phi_j =", I_phi_j)
 I_phi_j_diff_phi = I_phi_j.diff(phi)
-print "I_phi_j_diff_phi =", I_phi_j_diff_phi
+print ("I_phi_j_diff_phi =", I_phi_j_diff_phi)
 # I_phi_j.diff(phi) = 1/(sqrt(4*ra*rj*sin(1/2*phi)^2/((ra - rj)^2 + (za - zj)^2) + 1)*sqrt((ra - rj)^2 + (za - zj)^2))
 # sage: I_phi_j.diff(phi)
 #                                 1                                
@@ -156,7 +189,7 @@ print "I_phi_j_diff_phi =", I_phi_j_diff_phi
 # I_phi_j.diff(phi) = 1/(sqrt(4*ra*rj*sin(1/2*phi)^2/((ra - rj)^2 + (za - zj)^2) + 1)*sqrt((ra - rj)^2 + (za - zj)^2))
 
 I_phi_j_diff_phi_substituted = I_phi_j_diff_phi.substitute((sin(1/2*phi)^2)==(1-cos(phi))/2)
-print "I_phi_j_diff_phi_substituted =", I_phi_j_diff_phi_substituted
+print ("I_phi_j_diff_phi_substituted =", I_phi_j_diff_phi_substituted)
 # I_phi_j.diff(phi) = 1/(sqrt(4*ra*rj*sin(1/2*phi)^2/((ra - rj)^2 + (za - zj)^2) + 1)*sqrt((ra - rj)^2 + (za - zj)^2))
 # sage: (I_phi_j.diff(phi).substitute((sin(1/2*phi)^2)==(1-cos(phi))/2))
 #                                 1                                
@@ -167,13 +200,13 @@ print "I_phi_j_diff_phi_substituted =", I_phi_j_diff_phi_substituted
 #   /              2            2                                  
 # \/      (ra - rj)  + (za - zj)                                   
 
-print "I_phi_j_diff_phi_substituted.full_simplify() =", I_phi_j_diff_phi_substituted.full_simplify()
+print ("I_phi_j_diff_phi_substituted.full_simplify() =", I_phi_j_diff_phi_substituted.full_simplify())
 # I_phi_j_diff_phi_substituted.full_simplify() = 1/(sqrt(ra^2 - 2*ra*rj + rj^2 + za^2 - 2*za*zj + zj^2)*sqrt(-(2*ra*rj*cos(phi) - ra^2 - rj^2 - za^2 + 2*za*zj - zj^2)/(ra^2 - 2*ra*rj + rj^2 + za^2 - 2*za*zj + zj^2)))
 
-print "sqrt(I_phi_j_diff_phi_substituted^2) =", sqrt(I_phi_j_diff_phi_substituted^2)
+print ("sqrt(I_phi_j_diff_phi_substituted^2) =", sqrt(I_phi_j_diff_phi_substituted^2))
 # sqrt(I_phi_j_diff_phi_substituted^2) = sqrt(-1/(((ra - rj)^2 + (za - zj)^2)*(2*ra*rj*(cos(phi) - 1)/((ra - rj)^2 + (za - zj)^2) - 1)))
 
-print "sqrt(I_phi_j_diff_phi_substituted^2).full_simplify() =", sqrt(I_phi_j_diff_phi_substituted^2).full_simplify()
+print ("sqrt(I_phi_j_diff_phi_substituted^2).full_simplify() =", sqrt(I_phi_j_diff_phi_substituted^2).full_simplify())
 # sqrt(I_phi_j_diff_phi_substituted^2).full_simplify() = sqrt(-1/(2*ra*rj*cos(phi) - ra^2 - rj^2 - za^2 + 2*za*zj - zj^2))
 # sage: sqrt(I_phi_j_diff_phi_substituted^2).full_simplify()
 #     ______________________________________________________
@@ -183,19 +216,19 @@ print "sqrt(I_phi_j_diff_phi_substituted^2).full_simplify() =", sqrt(I_phi_j_dif
 #\/    - ra  + 2*ra*rj*cos(phi) - rj  - za  + 2*za*zj - zj  
 
 
-print "elliptic_kc(0.5)=", elliptic_kc(0.5)
+print ("elliptic_kc(0.5)=", elliptic_kc(0.5))
 # 1.85407467730137
 
-print "elliptic_kc(-0.5)=", elliptic_kc(-0.5)
+print ("elliptic_kc(-0.5)=", elliptic_kc(-0.5))
 # 1.41573720842596
 
 m = var("m")
-print elliptic_kc(m).diff(m)
+print (elliptic_kc(m).diff(m))
 # -1/2*((m - 1)*elliptic_kc(m) + elliptic_ec(m))/((m - 1)*m)
 
 
 Iphi=4*elliptic_kc(module) / sqrt(rja2)
-print "Iphi =", Iphi
+print ("Iphi =", Iphi)
 # Iphi = 4*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2))/sqrt((ra - rj)^2 + (za - zj)^2)
 # sage: %display ascii_art
 # sage: Iphi
@@ -212,14 +245,14 @@ print "Iphi =", Iphi
 # II_phi = definite_integral(1/sqrt(rj^2+ra^2+(zj-za)^2-2*rj*ra*cos(phi)), phi,0,2*pi)
 # print "II_phi =", II_phi
 
-print "Iphi.substitute(rj=1, zj=1, ra=2, za=0) =", Iphi.substitute(rj=1, zj=1, ra=2, za=0).n()
+print ("Iphi.substitute(rj=1, zj=1, ra=2, za=0) =", Iphi.substitute(rj=1, zj=1, ra=2, za=0).n())
 # 2.85516399176746
 
-print "Iphi.substitute(rj=1, zj=1, ra=1, za=-1)", Iphi.substitute(rj=1, zj=1, ra=1, za=-1).n()
+print ("Iphi.substitute(rj=1, zj=1, ra=1, za=-1)", Iphi.substitute(rj=1, zj=1, ra=1, za=-1).n())
 # 2.62205755429212
 
 dIphi_dza = Iphi.diff(za)
-print "dIphi_dza =", dIphi_dza
+print ("dIphi_dza =", dIphi_dza)
 # dIphi_dza = -4*(za - zj)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2))/((ra - rj)^2 + (za - zj)^2)^(3/2) + 4*((4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)))*(za - zj)/(((ra - rj)^2 + (za - zj)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1))
 
 #             //        4*ra*rj            \  /       -4*ra*rj        \    /       -4*ra*rj        \\                /       -4*ra*rj        \
@@ -233,11 +266,11 @@ print "dIphi_dza =", dIphi_dza
 #                      |         2            2    |                            
 #                      \(ra - rj)  + (za - zj)     /                            
 
-print "dIphi_dza.full_simplify() =", dIphi_dza.full_simplify()
+print ("dIphi_dza.full_simplify() =", dIphi_dza.full_simplify())
 
 
 dIphi_dra = Iphi.diff(ra)
-print "dIphi_dra =", dIphi_dra
+print ("dIphi_dra =", dIphi_dra)
 # dIphi_dra = -4*(ra - rj)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2))/((ra - rj)^2 + (za - zj)^2)^(3/2) + 2*sqrt((ra - rj)^2 + (za - zj)^2)*((4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)))*(2*(ra - rj)*ra*rj/((ra - rj)^2 + (za - zj)^2)^2 - rj/((ra - rj)^2 + (za - zj)^2))/(ra*(4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1)*rj)
 
                                                                                 
@@ -271,11 +304,11 @@ if False:
             for z_j in np.arange(0.5, 5, 0.5):
                 for z_a in np.arange(0.5, 5, 0.5):
                     if not ((r_j == r_a) and (z_j == z_a)):
-                        print "dIphi_dza.substitute(rj=", r_j, ", zj=", z_j, ", ra=", r_a, ", za=", z_a, ") = ", dIphi_dza.substitute(rj=r_j, zj=z_j, ra=r_a, za=z_a).n()
-                        #print "dIphi_dra.substitute(rj=", r_j, ", zj=", z_j, ", ra=", r_a, ", za=", z_a, ") = ", dIphi_dra.substitute(rj=r_j, zj=z_j, ra=r_a, za=z_a).n()
+                        print ("dIphi_dza.substitute(rj=", r_j, ", zj=", z_j, ", ra=", r_a, ", za=", z_a, ") = ", dIphi_dza.substitute(rj==r_j, zj==z_j, ra==r_a, za==z_a).n())
+                        #print ("dIphi_dra.substitute(rj=", r_j, ", zj=", z_j, ", ra=", r_a, ", za=", z_a, ") = ", dIphi_dra.substitute(rj==r_j, zj==z_j, ra==r_a, za==z_a).n())
 
-print "dIphi_dza.substitute(rj=1, zj=1, ra=1, za=-1) = ", dIphi_dza.substitute(rj=1, zj=1, ra=1, za=-1).n()
-print "dIphi_dra.substitute(rj=1, zj=1, ra=1, za=-1) = ", dIphi_dra.substitute(rj=1, zj=1, ra=1, za=-1).n()
+print ("dIphi_dza.substitute(rj==1, zj==1, ra==1, za==-1) = ", dIphi_dza.substitute(rj==1, zj==1, ra==1, za==-1).n())
+print ("dIphi_dra.substitute(rj==1, zj==1, ra==1, za==-1) = ", dIphi_dra.substitute(rj==1, zj==1, ra==1, za==-1).n())
 # dIphi_dza.substitute(rj=1, zj=1, ra=1, za=-1) =  0.955049447256928
 # dIphi_dra.substitute(rj=1, zj=1, ra=1, za=-1) =  -0.355979329889132
 
@@ -306,62 +339,73 @@ rj2 = var("rj2")
 
 
 Iphi_js_rj=Iphi*js*rj
-print "Iphi_js_rj =", Iphi_js_rj
+print ("Iphi_js_rj =", Iphi_js_rj)
 
 Iphi_jv_rj=Iphi*jv*rj
-print "Iphi_jv_rj =", Iphi_jv_rj
+print ("Iphi_jv_rj =", Iphi_jv_rj)
 
 
-Iphi_js_rj_diff_za = lambda c_I0, r_j, r_a, z_j, z_a : (Iphi_js_rj.diff(za)).substitute(ra==r_a).substitute(za==z_a).substitute(zj==z_j).substitute(rj==r_j).substitute(cI0==c_I0)
-print "Iphi_js_rj_diff_za(cI0, rj, ra, zj, za) =", Iphi_js_rj_diff_za(cI0, rj, ra, zj, za)
-print ""
+Iphi_js_rj_diff_za_ = lambda c_I0, r_j, r_a, z_j, z_a : (Iphi_js_rj.diff(za)).substitute(ra==r_a).substitute(za==z_a).substitute(zj==z_j).substitute(rj==r_j).substitute(cI0==c_I0)
+print ("Iphi_js_rj_diff_za = lambda cI0, rj, ra, zj, za : ", Iphi_js_rj_diff_za_(cI0, rj, ra, zj, za))
+print ("")
 
 file = open('field_of_deyna_cylinder.txt', 'a')
-file.write("Iphi_js_rj_diff_za(cI0, rj, ra, zj, za) = " + str(Iphi_js_rj_diff_za(cI0, rj, ra, zj, za)))
+file.write("Iphi_js_rj_diff_za = lambda cI0, rj, ra, zj, za : " + str(Iphi_js_rj_diff_za_(cI0, rj, ra, zj, za)))
 file.write('\n\n')
 file.close()
+
 
 # At_diff_za = Iphi_js_rj_diff_za .substitute(zj==zj1) - Iphi_js_rj_diff_za .substitute(zj==zj2)
 # At_diff_za = Iphi_js_rj_diff_za(cI0, rj, ra, zj, za).substitute(zj==zj1) - Iphi_js_rj_diff_za(cI0, rj, ra, zj, za).substitute(zj==zj2)
-At_diff_za = lambda cI0, rj, ra, zj1, zj2, za : Iphi_js_rj_diff_za(cI0, rj, ra, zj1, za) - Iphi_js_rj_diff_za(cI0, rj, ra, zj2, za)
-print "At_diff_za(cI0, rj, ra, zj1, zj2, za) =", At_diff_za(cI0, rj, ra, zj1, zj2, za)
-print ""
+At_diff_za_ = lambda cI0, rj, ra, zj1, zj2, za : Iphi_js_rj_diff_za_(cI0, rj, ra, zj1, za) - Iphi_js_rj_diff_za_(cI0, rj, ra, zj2, za)
+print ("At_diff_za = lambda cI0, rj, ra, zj1, zj2, za : ", At_diff_za_(cI0, rj, ra, zj1, zj2, za))
+print ("")
 # At_diff_za = 4*cI0*(z1 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2))/((ra - rj)^2 + (z1 - za)^2)^(3/2) - 4*cI0*(z2 - za)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2))/((ra - rj)^2 + (z2 - za)^2)^(3/2) - 4*((4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z1 - za)^2)))*cI0*(z1 - za)/(((ra - rj)^2 + (z1 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z1 - za)^2) + 1)) + 4*((4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (z2 - za)^2)))*cI0*(z2 - za)/(((ra - rj)^2 + (z2 - za)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (z2 - za)^2) + 1))
 
 file = open('field_of_deyna_cylinder.txt', 'a')
-file.write("At_diff_za(cI0, rj, ra, zj1, zj2, za) = " + str(At_diff_za(cI0, rj, ra, zj1, zj2, za)))
+file.write("At_diff_za = lambda cI0, rj, ra, zj1, zj2, za : " + str(At_diff_za_(cI0, rj, ra, zj1, zj2, za)))
 file.write('\n\n')
 file.close()
 
-Iphi_js_rj_diff_ra = lambda c_I0, r_j, r_a, z_j, z_a : (Iphi_js_rj.diff(ra)).substitute(ra==r_a).substitute(za==z_a).substitute(zj==z_j).substitute(rj==r_j).substitute(cI0==c_I0)
-print "Iphi_js_rj_diff_ra(cI0, rj, ra, zj, za) =", Iphi_js_rj_diff_ra(cI0, rj, ra, zj, za)
-print ""
+Iphi_js_rj_diff_ra_ = lambda c_I0, r_j, r_a, z_j, z_a : (Iphi_js_rj.diff(ra)).substitute(ra==r_a).substitute(za==z_a).substitute(zj==z_j).substitute(rj==r_j).substitute(cI0==c_I0)
+print ("Iphi_js_rj_diff_ra = lambda cI0, rj, ra, zj, za : ", Iphi_js_rj_diff_ra_(cI0, rj, ra, zj, za))
+print ("")
 
 file = open('field_of_deyna_cylinder.txt', 'a')
-file.write("Iphi_js_rj_diff_ra(cI0, rj, ra, zj, za) = " + str(Iphi_js_rj_diff_ra(cI0, rj, ra, zj, za)))
+file.write("Iphi_js_rj_diff_ra = lambda cI0, rj, ra, zj, za : " + str(Iphi_js_rj_diff_ra_(cI0, rj, ra, zj, za)))
 file.write('\n\n')
 file.close()
 
 # As_diff_ra  =  - Iphi_js_rj_diff_ra.substitute(rj==rj1) + Iphi_js_rj_diff_ra.substitute(rj==rj2)
 # As_diff_ra  =  - Iphi_js_rj_diff_ra(cI0, rj, ra, zj, za).substitute(rj==rj1) + Iphi_js_rj_diff_ra(cI0, rj, ra, zj, za).substitute(rj==rj2)
-As_diff_ra  = lambda cI0, rj1, rj2, ra, zj, za : - Iphi_js_rj_diff_ra(cI0, rj1, ra, zj, za) + Iphi_js_rj_diff_ra(cI0, rj2, ra, zj, za)
-print "As_diff_ra(cI0, rj1, rj2, ra, zj, za) =", As_diff_ra(cI0, rj1, rj2, ra, zj, za)
-print ""
+As_diff_ra_ = lambda cI0, rj1, rj2, ra, zj, za : - Iphi_js_rj_diff_ra_(cI0, rj1, ra, zj, za) + Iphi_js_rj_diff_ra_(cI0, rj2, ra, zj, za)
+print ("As_diff_ra = lambda cI0, rj1, rj2, ra, zj, za : ", As_diff_ra_(cI0, rj1, rj2, ra, zj, za))
+print ("")
 # As_diff_ra  = -4*cI0*(r1 - ra)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2))/((r1 - ra)^2 + (za - zj)^2)^(3/2) + 4*cI0*(r2 - ra)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2))/((r2 - ra)^2 + (za - zj)^2)^(3/2) + 2*sqrt((r1 - ra)^2 + (za - zj)^2)*((4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r1*ra/((r1 - ra)^2 + (za - zj)^2)))*cI0*(2*(r1 - ra)*r1*ra/((r1 - ra)^2 + (za - zj)^2)^2 + r1/((r1 - ra)^2 + (za - zj)^2))/(r1*(4*r1*ra/((r1 - ra)^2 + (za - zj)^2) + 1)*ra) - 2*sqrt((r2 - ra)^2 + (za - zj)^2)*((4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)) - elliptic_ec(-4*r2*ra/((r2 - ra)^2 + (za - zj)^2)))*cI0*(2*(r2 - ra)*r2*ra/((r2 - ra)^2 + (za - zj)^2)^2 + r2/((r2 - ra)^2 + (za - zj)^2))/(r2*(4*r2*ra/((r2 - ra)^2 + (za - zj)^2) + 1)*ra)
 
 
 file = open('field_of_deyna_cylinder.txt', 'a')
-file.write("As_diff_ra(cI0, rj1, rj2, ra, zj, za) = " + str(As_diff_ra(cI0, rj1, rj2, ra, zj, za)))
+file.write("As_diff_ra = lambda cI0, rj1, rj2, ra, zj, za : " + str(As_diff_ra_(cI0, rj1, rj2, ra, zj, za)))
 file.write('\n\n')
 file.close()
 
-Iphi_jv_rj_diff_ra = lambda c_I0, r_j, r_a, z_j, z_a : (Iphi_jv_rj.diff(ra)).substitute(ra==r_a).substitute(za==z_a).substitute(zj==z_j).substitute(rj==r_j).substitute(cI0==c_I0)
-print "Iphi_jv_rj_diff_ra(cI0, rj, ra, zj, za)  =", Iphi_jv_rj_diff_ra(cI0, rj, ra, zj, za)
+Iphi_jv_rj_diff_ra_ = lambda c_I0, r_j, r_a, z_j, z_a : (Iphi_jv_rj.diff(ra)).substitute(ra==r_a).substitute(za==z_a).substitute(zj==z_j).substitute(rj==r_j).substitute(cI0==c_I0)
+print ("Iphi_jv_rj_diff_ra = lambda cI0, rj, ra, zj, za : ", Iphi_jv_rj_diff_ra_(cI0, rj, ra, zj, za))
 
 file = open('field_of_deyna_cylinder.txt', 'a')
-file.write("Iphi_jv_rj_diff_ra(cI0, rj, ra, zj, za) = " + str(Iphi_jv_rj_diff_ra(cI0, rj, ra, zj, za)))
+file.write("Iphi_jv_rj_diff_ra = lambda cI0, rj, ra, zj, za : " + str(Iphi_jv_rj_diff_ra_(cI0, rj, ra, zj, za)))
 file.write('\n\n')
 file.close()
+
+if full_volume_cylinder:
+    Iphi_js_rj_diff_za = lambda cI0, rj, ra, zj, za : -4*cI0*rj*(za - zj)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2))/((ra - rj)^2 + (za - zj)^2)^(3/2) + 4*((4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)))*cI0*rj*(za - zj)/(((ra - rj)^2 + (za - zj)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1))
+    At_diff_za = lambda cI0, rj, ra, zj1, zj2, za : -4*cI0*rj*(za - zj1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj1)^2))/((ra - rj)^2 + (za - zj1)^2)^(3/2) + 4*cI0*rj*(za - zj2)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj2)^2))/((ra - rj)^2 + (za - zj2)^2)^(3/2) + 4*((4*ra*rj/((ra - rj)^2 + (za - zj1)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj1)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (za - zj1)^2)))*cI0*rj*(za - zj1)/(((ra - rj)^2 + (za - zj1)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (za - zj1)^2) + 1)) - 4*((4*ra*rj/((ra - rj)^2 + (za - zj2)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj2)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (za - zj2)^2)))*cI0*rj*(za - zj2)/(((ra - rj)^2 + (za - zj2)^2)^(3/2)*(4*ra*rj/((ra - rj)^2 + (za - zj2)^2) + 1))
+    Iphi_js_rj_diff_ra = lambda cI0, rj, ra, zj, za : -4*cI0*(ra - rj)*rj*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2))/((ra - rj)^2 + (za - zj)^2)^(3/2) + 2*sqrt((ra - rj)^2 + (za - zj)^2)*((4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)))*cI0*(2*(ra - rj)*ra*rj/((ra - rj)^2 + (za - zj)^2)^2 - rj/((ra - rj)^2 + (za - zj)^2))/(ra*(4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1))
+    As_diff_ra = lambda cI0, rj1, rj2, ra, zj, za : 4*cI0*(ra - rj1)*rj1*elliptic_kc(-4*ra*rj1/((ra - rj1)^2 + (za - zj)^2))/((ra - rj1)^2 + (za - zj)^2)^(3/2) - 4*cI0*(ra - rj2)*rj2*elliptic_kc(-4*ra*rj2/((ra - rj2)^2 + (za - zj)^2))/((ra - rj2)^2 + (za - zj)^2)^(3/2) - 2*sqrt((ra - rj1)^2 + (za - zj)^2)*((4*ra*rj1/((ra - rj1)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*ra*rj1/((ra - rj1)^2 + (za - zj)^2)) - elliptic_ec(-4*ra*rj1/((ra - rj1)^2 + (za - zj)^2)))*cI0*(2*(ra - rj1)*ra*rj1/((ra - rj1)^2 + (za - zj)^2)^2 - rj1/((ra - rj1)^2 + (za - zj)^2))/(ra*(4*ra*rj1/((ra - rj1)^2 + (za - zj)^2) + 1)) + 2*sqrt((ra - rj2)^2 + (za - zj)^2)*((4*ra*rj2/((ra - rj2)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*ra*rj2/((ra - rj2)^2 + (za - zj)^2)) - elliptic_ec(-4*ra*rj2/((ra - rj2)^2 + (za - zj)^2)))*cI0*(2*(ra - rj2)*ra*rj2/((ra - rj2)^2 + (za - zj)^2)^2 - rj2/((ra - rj2)^2 + (za - zj)^2))/(ra*(4*ra*rj2/((ra - rj2)^2 + (za - zj)^2) + 1))
+    Iphi_jv_rj_diff_ra = lambda cI0, rj, ra, zj, za : -4*cI0*(ra - rj)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2))/((ra - rj)^2 + (za - zj)^2)^(3/2) + 2*sqrt((ra - rj)^2 + (za - zj)^2)*((4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1)*elliptic_kc(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)) - elliptic_ec(-4*ra*rj/((ra - rj)^2 + (za - zj)^2)))*cI0*(2*(ra - rj)*ra*rj/((ra - rj)^2 + (za - zj)^2)^2 - rj/((ra - rj)^2 + (za - zj)^2))/(ra*(4*ra*rj/((ra - rj)^2 + (za - zj)^2) + 1)*rj)
+else:
+    pass
+
 
 #Av_diff_ra = integrate(Iphi_jv_rj_diff_ra, (rj, rj1, rj2), algorithm="giac")
 Av_diff_ra = lambda cI0, rj1, rj2, ra, zj, za : my_numerical_integral(lambda rj : Iphi_jv_rj_diff_ra(cI0, rj, ra, zj, za), rj1, rj2)
@@ -399,7 +443,7 @@ file.close()
 # At_diff_za_substituted_zj = At_diff_za.substitute(cI0==1, zj1==Zj1, zj2==Zj2)
 # At_diff_za_substituted_zj = At_diff_za(cI0, rj, ra, zj1, zj2, za).substitute(cI0==1, zj1==Zj1, zj2==Zj2)
 At_diff_za_substituted_zj = lambda rj, ra, za : At_diff_za(1, rj, ra, Zj1, Zj2, za)
-# print "At_diff_za_substituted_zj =", At_diff_za_substituted_zj
+# print ("At_diff_za_substituted_zj =", At_diff_za_substituted_zj)
 
 file = open('field_of_deyna_cylinder.txt', 'a')
 file.write('At_diff_za_substituted_zj(rj, ra, za) = ' + str(At_diff_za_substituted_zj(rj, ra, za)))
@@ -411,7 +455,7 @@ file.close()
 # As_diff_ra_substituted_rj = As_diff_ra.substitute(cI0==1, rj1==Rj1, rj2==Rj2)
 # As_diff_ra_substituted_rj = As_diff_ra(cI0, rj1, rj2, ra, zj, za).substitute(cI0==1, rj1==Rj1, rj2==Rj2)
 As_diff_ra_substituted_rj = lambda ra, zj, za : As_diff_ra(1, Rj1, Rj2, ra, zj, za)
-# print "As_diff_ra_substituted_rj =", As_diff_ra_substituted_rj
+# print ("As_diff_ra_substituted_rj =", As_diff_ra_substituted_rj)
 
 file = open('field_of_deyna_cylinder.txt', 'a')
 file.write('As_diff_ra_substituted_rj(ra, zj, za) = ' + str(As_diff_ra_substituted_rj(ra, zj, za)))
@@ -423,7 +467,7 @@ file.close()
 # Av_diff_ra.substitute(cI0==1, rj1==Rj1, rj2==Rj2)
 # Av_diff_ra_substituted_rj = lambda ra, zj, za : Av_diff_ra (cI0, rj1, rj2, ra, zj, za).substitute(cI0==1, rj1==Rj1, rj2==Rj2)
 Av_diff_ra_substituted_rj = lambda ra, zj, za : Av_diff_ra (1, Rj1, Rj2, ra, zj, za)
-print "Av_diff_ra_substituted_rj(1.1, 0.1, 0.9) =", Av_diff_ra_substituted_rj(1.1, 0.1, 0.9)
+print ("Av_diff_ra_substituted_rj(1.1, 0.1, 0.9) =", Av_diff_ra_substituted_rj(1.1, 0.1, 0.9))
 
 file = open('field_of_deyna_cylinder.txt', 'a')
 #file.write('Av_diff_ra_substituted_rj(ra, zj, za) = ' + str(Av_diff_ra_substituted_rj(ra, zj, za)))
@@ -448,11 +492,11 @@ def calc_H_phi( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra):
     # print "Av_diff_ra_substituted_rj_za_ra =", Av_diff_ra_substituted_rj_za_ra
 
     # debug
-    print At_diff_za_substituted_zj_za_ra(rj).substitute(rj == Rj2)
-    print As_diff_ra_substituted_rj_za_ra(zj).substitute(zj == 0)
+    print (At_diff_za_substituted_zj_za_ra(rj).substitute(rj == Rj2))
+    print (As_diff_ra_substituted_rj_za_ra(zj).substitute(zj == 0))
     # print Av_diff_ra_substituted_rj_za_ra.substitute(zj == 0)
     # print Av_diff_ra_substituted_rj_za_ra(0)
-    print Av_diff_ra_substituted_rj(Ra, 0, Za)
+    print (Av_diff_ra_substituted_rj(Ra, 0, Za))
 
     file = open('field_of_deyna_cylinder.txt', 'a')
     file.write("debug calc_H_phi")
@@ -478,7 +522,7 @@ def calc_H_phi( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra):
 
     # Av_diff_ra_num_int = my_numerical_integral( lambda zj : Av_diff_ra_substituted_rj_za_ra(zj), Zj1, Zj2)
     Av_diff_ra_num_int = my_numerical_integral( lambda zj : Av_diff_ra_substituted_rj(Ra, zj, Za), Zj1, Zj2)
-    print "Av_diff_ra_num_int =", Av_diff_ra_num_int
+    print ("Av_diff_ra_num_int =", Av_diff_ra_num_int)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
     file.write("Av_diff_ra_num_int = " + str(Av_diff_ra_num_int))
@@ -492,9 +536,9 @@ def calc_H_phi( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra):
     H_phi_s = - As_v_diff_ra_num_int
 
     H_phi = H_phi_t + H_phi_s
-    print "Ra=", Ra, "Za=", Za, "H_phi_t =", H_phi_t
-    print "Ra=", Ra, "Za=", Za, "H_phi_s =", H_phi_s
-    print "Ra=", Ra, "Za=", Za, "H_phi =", H_phi
+    print ("Ra=", Ra, "Za=", Za, "H_phi_t =", H_phi_t)
+    print ("Ra=", Ra, "Za=", Za, "H_phi_s =", H_phi_s)
+    print ("Ra=", Ra, "Za=", Za, "H_phi =", H_phi)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
     file.write('\n')
@@ -513,20 +557,20 @@ def calc_F_lorenz( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra1
     # At_diff_za_substituted_zj_za = lambda rj, ra : At_diff_za_substituted_zj.substitute(za==Za)
     # At_diff_za_substituted_zj_za = lambda rj, ra : At_diff_za_substituted_zj(rj, ra, za).substitute(za==Za)
     At_diff_za_substituted_zj_za = lambda rj, ra : At_diff_za_substituted_zj(rj, ra, Za)
-    print "At_diff_za_substituted_zj_za =", At_diff_za_substituted_zj_za
+    print ("At_diff_za_substituted_zj_za =", At_diff_za_substituted_zj_za)
 
     # As_diff_ra_substituted_rj_za = lambda ra, zj : As_diff_ra_substituted_rj.substitute(za==Za)
     # As_diff_ra_substituted_rj_za = lambda ra, zj : As_diff_ra_substituted_rj(ra, zj, za).substitute(za==Za)
     As_diff_ra_substituted_rj_za = lambda ra, zj : As_diff_ra_substituted_rj(ra, zj, Za)
-    print "As_diff_ra_substituted_rj_za =", As_diff_ra_substituted_rj_za
+    print ("As_diff_ra_substituted_rj_za =", As_diff_ra_substituted_rj_za)
 
     # Av_diff_ra_substituted_rj_za = Av_diff_ra_substituted_rj.substitute(za==Za)
     Av_diff_ra_substituted_rj_za = lambda ra, zj : Av_diff_ra_substituted_rj(ra, zj, Za)
-    # print "Av_diff_ra_substituted_rj_za =", Av_diff_ra_substituted_rj_za
+    # print ("Av_diff_ra_substituted_rj_za =", Av_diff_ra_substituted_rj_za)
 
     # debug
-    print At_diff_za_substituted_zj_za(rj, ra)
-    print As_diff_ra_substituted_rj_za(ra, zj)
+    print (At_diff_za_substituted_zj_za(rj, ra))
+    print (As_diff_ra_substituted_rj_za(ra, zj))
 
     file = open('field_of_deyna_cylinder.txt', 'a')
     file.write("debug calc_F_lorenz")
@@ -550,7 +594,7 @@ def calc_F_lorenz( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra1
     file.close()
 
     At_diff_za_num_int_ra_int_rj = my_numerical_integral(lambda rj : At_diff_za_num_int_ra(rj), Rj1, Rj2)
-    print "At_diff_za_num_int_ra_int_rj =", At_diff_za_num_int_ra_int_rj
+    print ("At_diff_za_num_int_ra_int_rj =", At_diff_za_num_int_ra_int_rj)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
     file.write("At_diff_za_num_int_ra_int_rj = " + str(At_diff_za_num_int_ra_int_rj))
@@ -567,7 +611,7 @@ def calc_F_lorenz( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra1
     file.close()
 
     As_diff_ra_num_int_ra_int_zj = my_numerical_integral(lambda zj : As_diff_ra_num_int_ra(zj), Zj1, Zj2)
-    print "As_diff_ra_num_int_ra_int_zj  =", As_diff_ra_num_int_ra_int_zj
+    print ("As_diff_ra_num_int_ra_int_zj  =", As_diff_ra_num_int_ra_int_zj)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
     file.write("As_diff_ra_num_int_ra_int_zj = " + str(As_diff_ra_num_int_ra_int_zj))
@@ -582,7 +626,7 @@ def calc_F_lorenz( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra1
     file.close()
 
     Av_diff_ra_num_int_ra_int_zj = my_numerical_integral(lambda zj : Av_diff_ra_num_int_ra(zj), Zj1, Zj2)
-    print "Av_diff_ra_num_int_ra_int_zj  =", Av_diff_ra_num_int_ra_int_zj
+    print ("Av_diff_ra_num_int_ra_int_zj  =", Av_diff_ra_num_int_ra_int_zj)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
     file.write("Av_diff_ra_num_int_ra_int_zj = " + str(Av_diff_ra_num_int_ra_int_zj))
@@ -597,11 +641,11 @@ def calc_F_lorenz( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra1
     F_z_sv = - As_v_diff_ra_num_int_ra_int_zj
     F_z = F_z_t + F_z_sv
 
-    print "Ra1=", Ra1, "Ra2=", Ra2, "Za=", Za, "F_z_t =", F_z_t
-    print "Ra1=", Ra1, "Ra2=", Ra2, "Za=", Za, "F_z_s =", F_z_s
-    print "Ra1=", Ra1, "Ra2=", Ra2, "Za=", Za, "F_z_v =", F_z_v
-    print "Ra1=", Ra1, "Ra2=", Ra2, "Za=", Za, "F_z_sv =", F_z_sv
-    print "Ra1=", Ra1, "Ra2=", Ra2, "Za=", Za, "F_z =", F_z
+    print ("Ra1=", Ra1, "Ra2=", Ra2, "Za=", Za, "F_z_t =", F_z_t)
+    print ("Ra1=", Ra1, "Ra2=", Ra2, "Za=", Za, "F_z_s =", F_z_s)
+    print ("Ra1=", Ra1, "Ra2=", Ra2, "Za=", Za, "F_z_v =", F_z_v)
+    print ("Ra1=", Ra1, "Ra2=", Ra2, "Za=", Za, "F_z_sv =", F_z_sv)
+    print ("Ra1=", Ra1, "Ra2=", Ra2, "Za=", Za, "F_z =", F_z)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
     file.write('\n')
@@ -623,7 +667,7 @@ def calc_F_lorenz_cylinder(dz):
     # расчет силы Лоренца, действующей на ближайжий (правый) торец пробного цилиндра расположенного левее на расстоянии
     Za = Zj1 - dz
     F_lorenz_left_cylinder_right_t = calc_F_lorenz( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra1, Ra2)
-    print "F_lorenz_left_cylinder_right_t =", F_lorenz_left_cylinder_right_t
+    print ("F_lorenz_left_cylinder_right_t =", F_lorenz_left_cylinder_right_t)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
     file.write("calc_F_lorenz_cylinder dz = " + str(dz) + ", Za = " + str(Za))
@@ -635,10 +679,10 @@ def calc_F_lorenz_cylinder(dz):
     # расчет силы Лоренца, действующей на удалённый (левый) торец пробного цилиндра расположенного левее на расстоянии
     Za = Zj1 - DZ - dz
     F_lorenz_left_cylinder_left_t = calc_F_lorenz( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra1, Ra2)
-    print "F_lorenz_left_cylinder_left_t =", F_lorenz_left_cylinder_left_t
+    print ("F_lorenz_left_cylinder_left_t =", F_lorenz_left_cylinder_left_t)
 
     F_lorenz_cylinder = - F_lorenz_left_cylinder_right_t[0] + F_lorenz_left_cylinder_left_t[0]
-    print "F_lorenz_cylinder =", F_lorenz_cylinder
+    print ("F_lorenz_cylinder =", F_lorenz_cylinder)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
     file.write("calc_F_lorenz_cylinder dz = " + str(dz) + ", Za = " + str(Za))
@@ -685,7 +729,7 @@ for dz in (0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 1.0, 1.5, 2.0)
 
 
 dir = os.getcwd()  + "/results/horizontal_test_plot"
-print "dir = ", dir
+print ("dir = ", dir)
 
 try:
     os.mkdir(dir)
@@ -704,22 +748,22 @@ params = \
 
 p = list_plot(plot_data_f)
 pname = folder + "F_lorenz_cylinder" + params + ".png"
-print pname
+print (pname)
 p.save(pname)
 
 p = list_plot(plot_data_h)
 pname = folder + "H_phi" + params + ".png"
-print pname
+print (pname)
 p.save(pname)
 
 p = list_plot(plot_data_h_t)
 pname = folder + "H_phi_t" + params + ".png"
-print pname
+print (pname)
 p.save(pname)
 
 p = list_plot(plot_data_h_s)
 pname = folder + "H_phi_s" + params + ".png"
-print pname
+print (pname)
 p.save(pname)
 
 """
@@ -846,7 +890,7 @@ for Ra in np.arange(Rj1, Rj2+0.1, 0.1):
             pass
 
     dir = os.getcwd()  + "/results/horizontal_plot"
-    print "dir = ", dir
+    print ("dir = ", dir)
 
     try:
         os.mkdir(dir)
@@ -867,17 +911,17 @@ for Ra in np.arange(Rj1, Rj2+0.1, 0.1):
 
     p = list_plot(plot_data_h)
     pname = folder + "H_phi" + params + ".png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(plot_data_h_t)
     pname = folder + "H_phi_t" + params + ".png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(plot_data_h_s)
     pname = folder + "H_phi_s" + params + ".png"
-    print pname
+    print (pname)
     p.save(pname)
 
 
@@ -892,7 +936,7 @@ max_Ra = 1.5
 ra_range = [min_Ra, max_Ra]
 ra_range2 = [-max_Ra, max_Ra]
 n_ra = round((max_Ra-min_Ra)/step_Ra) + 1
-print "n_ra =", n_ra
+print ("n_ra =", n_ra)
 
 step_Za = 0.1
 min_Za = -5
@@ -900,7 +944,7 @@ max_Za = 5
 
 za_range = [min_Za, max_Za]
 n_za = round((max_Za-min_Za)/step_Za) + 1
-print "n_za =", n_za
+print ("n_za =", n_za)
 
 
 plot_data = []
@@ -932,23 +976,23 @@ for Ra in np.arange(min_Ra, max_Ra + step_Ra, step_Ra):
         except:
             H_phi = np.nan
             n_nan = n_nan + 1
-        print "nr=", nr
-        print "nz=", nz
+        print ("nr=", nr)
+        print ("nz=", nz)
         arr_H[nr,nz] = H_phi
         arr_H[n_ra*2 - nr,nz] = - H_phi
         nz = nz + 1
     nr = nr + 1
-    print "len(h)=", len(h)
-    print "n_nan=", n_nan
+    print ("len(h)=", len(h))
+    print ("n_nan=", n_nan)
 
-print "nr=", nr
-print "nz=", nz
+print ("nr=", nr)
+print ("nz=", nz)
 
 results_folder = "../articles/sagemath/field_of_deyna_cylinder/results/"
 results_folder = "./results/"
 
-print plot_data
-print arr_H
+print (plot_data)
+print (arr_H)
 
 from sage.plot.contour_plot import ContourPlot
 p = ContourPlot(arr_H, za_range, ra_range2, options=dict(fill=True, contours=np.arange(-10, 10, 0.5)))

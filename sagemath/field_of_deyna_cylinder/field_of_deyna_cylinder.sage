@@ -11,12 +11,6 @@ attach("float_formatting.sage")
 
 
 def get_integrand_view(f):
-    print ("get_integrand_view f = ", f)
-    try:
-        print ("get_integrand_view f(x) = ", f(x))
-    except ex:
-        print ("Exception ex = ", ex)	
-        
     return f(x)
 
 class my_dummy_integral:
@@ -29,15 +23,11 @@ class my_dummy_integral:
         self.a = a
         self.b = b
 
-
 def my_numerical_integral(f, a, b):
     from scipy import integrate
 
     log_fn = 'field_of_deyna_cylinder_my_numerical_integral.txt'
     # log_fn = 'field_of_deyna_cylinder.txt'
-
-    # import traceback
-    # traceback.print_stack()
 
     to_call_integration = True
 
@@ -48,13 +38,12 @@ def my_numerical_integral(f, a, b):
     stack = inspect.stack()
     for frame in stack:
         func_name = frame[3]
-        print ("func_name = ", func_name)
+        # print ("func_name = ", func_name)
         if ('get_integrand_view' == func_name):
             to_call_integration = False
             break;
 
-    print ("stack = ", stack)
-    print ("f = ", f)
+    # print ("stack = ", stack)
     try:
         print ("integrand = ", get_integrand_view(f))
     except Exception as ex:
@@ -66,8 +55,8 @@ def my_numerical_integral(f, a, b):
     # file = open('field_of_deyna_cylinder_my_numerical_integral.txt', 'a')
     file = open(log_fn, 'a')
     file.write('\n')
-    file.write("stack = " + str(stack))
-    file.write('\n')
+    # file.write("stack = " + str(stack))
+    # file.write('\n')
     file.write("f = " + str(f))
     file.write('\n')
     try:

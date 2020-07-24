@@ -418,6 +418,13 @@ Ra2 = Rj2
 
 DZ = Zj2 - Zj1
 
+params = \
+    "_Rj1=" + float_formatting(Rj1) + \
+    "_Rj2=" + float_formatting(Rj2) + \
+    "_Zj1=" + float_formatting(Zj1) + \
+    "_Zj2=" + float_formatting(Zj2) + \
+    "_full_volume=" + str(full_volume_cylinder)
+
 file = open('field_of_deyna_cylinder.txt', 'a')
 file.write("sizes of cylinder")
 file.write('\n')
@@ -727,12 +734,7 @@ except:
 
 folder = dir + "/"
 
-params = \
-    "_Rj1=" + float_formatting(Rj1) + \
-    "_Rj2=" + float_formatting(Rj2) + \
-    "_Zj1=" + float_formatting(Zj1) + \
-    "_Zj2=" + float_formatting(Zj2) + \
-    "_full_volume=" + str(full_volume_cylinder) + \
+params_H = params + \
     "_Ra=" + float_formatting(Ra)
 
 p = list_plot(plot_data_f)
@@ -741,17 +743,17 @@ print (pname)
 p.save(pname)
 
 p = list_plot(plot_data_h)
-pname = folder + "H_phi" + params + ".png"
+pname = folder + "H_phi" + params_H + ".png"
 print (pname)
 p.save(pname)
 
 p = list_plot(plot_data_h_t)
-pname = folder + "H_phi_t" + params + ".png"
+pname = folder + "H_phi_t" + params_H + ".png"
 print (pname)
 p.save(pname)
 
 p = list_plot(plot_data_h_s)
-pname = folder + "H_phi_s" + params + ".png"
+pname = folder + "H_phi_s" + params_H + ".png"
 print (pname)
 p.save(pname)
 

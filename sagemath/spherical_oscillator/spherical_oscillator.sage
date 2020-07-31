@@ -58,7 +58,7 @@ def plots_spherical_oscillator_phi_R0(q, t1, t2, dt, min_R0, max_R0, step_R0, Rn
         "_Rneg=" + float_formatting(Rneg) + "_Rpos= " + float_formatting(Rpos) + \
         "_v0neg=" + float_formatting(v0neg) + "_v0pos=" + float_formatting(v0pos) + \
         "_a0neg=" + float_formatting(a0neg) + "_a0pos=" + float_formatting(a0pos) + \
-        "c=" + float_formatting(c) + "_t=" + float_formatting(t1) + ".." + float_formatting(t2) + \
+        "c=" + float_formatting(c) + "_t=" + float_formatting(t1) + ".." + float_formatting(dt) + ".." + float_formatting(t2) + \
         ".png"
     print (pname)
     p.save(pname)
@@ -119,14 +119,18 @@ v0neg = -1.0/3.0*c
 v0pos = 1.0/6.0*c
 v0neg = 1.0/3.0*c
 
-for t in np.arange(t1, t2, dt):
-    plot_spherical_oscillator_phi_R0(q, t, min_R0, max_R0, step_R0, Rneg, v0neg, a0neg, r_min, Rpos, v0pos, a0pos, r_min )
-plots_spherical_oscillator_phi_R0(q, t1, t2, dt, min_R0, max_R0, step_R0, Rneg, v0neg, a0neg, r_min, Rpos, v0pos, a0pos, r_min)
+#for t in np.arange(t1, t2, dt):
+#    plot_spherical_oscillator_phi_R0(q, t, min_R0, max_R0, step_R0, Rneg, v0neg, a0neg, r_min, Rpos, v0pos, a0pos, r_min )
+#plots_spherical_oscillator_phi_R0(q, t1, t2, dt, min_R0, max_R0, step_R0, Rneg, v0neg, a0neg, r_min, Rpos, v0pos, a0pos, r_min)
 
 # Скалярный потенциал Лиенара Вихерта c учётом и без учёта запаздывания сферического конденсатора, в котором положительная обкладка разлетается наружу, а отрицательная обкладка схлопывается внутрь. Обе обкладки движутся навстречу друг другу. Скорости обкладок  и. Потенциальная яма внутри положительной обкладки при учёте запаздывания оказывается глубже, чем без учёта. Интересный момент, что при учёте запаздывания излом потенциальной кривой в области внутренней положительно заряженной вкладки практически полностью исчёз.
 v0pos = 1.0/3.0*c
-v0neg = -1.0/3.0*c
-#plot_spherical_oscillator_phi_R0(q, t, min_R0, max_R0, step_R0, Rneg, v0neg, a0neg, r_min, Rpos, v0pos, a0pos, r_min )
+v0neg = -2.0/3.0*c
+dt = 0.1
+t2 = 0.5
+for t in np.arange(t1, t2, dt):
+    plot_spherical_oscillator_phi_R0(q, t, min_R0, max_R0, step_R0, Rneg, v0neg, a0neg, r_min, Rpos, v0pos, a0pos, r_min )
+plots_spherical_oscillator_phi_R0(q, t1, t2, dt, min_R0, max_R0, step_R0, Rneg, v0neg, a0neg, r_min, Rpos, v0pos, a0pos, r_min)
 
 t = 0
 Rneg=1.0/3.0*c

@@ -60,7 +60,7 @@ int calc_R_lw(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 	DBG_INFO("R_zap = %Lf ", *pR_zap);
 	R_zap = g_c * (t-*pt_zap);
 
-	if (fabs(R_zap - *pR_zap) >= 1e-10)
+	if (fabs(R_zap - *pR_zap) >= 1e-8)
 	{
 		printf("r_zap = %Lf\n", *pr_zap);
 		printf("*pR_zap = %Lf\n", *pR_zap);

@@ -1,7 +1,9 @@
 import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
-
+try:
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+except:
+    pass
 import numpy as np
 
 attach("tzap.spyx")
@@ -39,12 +41,12 @@ def plot_spherical_oscillator_phi_R0(q, t, min_R0, max_R0, step_R0, Rneg, v0neg,
 
     p = list_plot (phi_lw_data)
     pname = "results/spherical_oscillator_phi" + \
-        "_t=" + float_formatting(t) + \
         "_Rneg=" + float_formatting(Rneg) + "_Rpos= " + float_formatting(Rpos) + \
         "_v0neg=" + float_formatting(v0neg) + "_v0pos=" + float_formatting(v0pos) + \
         "_a0neg=" + float_formatting(a0neg) + "_a0pos=" + float_formatting(a0pos) + \
+        "c=" + float_formatting(c) + "_t=" + float_formatting(t) + \
         ".png"
-    print pname
+    print (pname)
     p.save(pname)
 
 
@@ -53,13 +55,21 @@ def plots_spherical_oscillator_phi_R0(q, t1, t2, dt, min_R0, max_R0, step_R0, Rn
 
     p = list_plot (phi_lw_data)
     pname = "results/spherical_oscillators_phi" + \
-        "_t=" + float_formatting(t1) + ".." + float_formatting(t2) + \
         "_Rneg=" + float_formatting(Rneg) + "_Rpos= " + float_formatting(Rpos) + \
         "_v0neg=" + float_formatting(v0neg) + "_v0pos=" + float_formatting(v0pos) + \
         "_a0neg=" + float_formatting(a0neg) + "_a0pos=" + float_formatting(a0pos) + \
+        "c=" + float_formatting(c) + "_t=" + float_formatting(t1) + ".." + float_formatting(t2) + \
         ".png"
-    print pname
+    print (pname)
     p.save(pname)
+
+dir = os.getcwd()  + "/results"
+print ("dir = ", dir)
+
+try:
+    os.mkdir(dir)
+except:
+    pass
 
 q = 1
 r_min = 0.1
@@ -81,10 +91,10 @@ v0neg = 0
 
 a0pos = 0.05*c
 a0neg = -0.15*c
-plot_spherical_oscillator_phi_R0(q, t, min_R0, max_R0, step_R0, Rneg, v0neg, a0neg, r_min, Rpos, v0pos, a0pos, r_min )
-plot_spherical_capacitor_tzap_theta(q, t, min_R0, max_R0, step_R0, Rpos, v0pos, a0pos)
+#plot_spherical_oscillator_phi_R0(q, t, min_R0, max_R0, step_R0, Rneg, v0neg, a0neg, r_min, Rpos, v0pos, a0pos, r_min )
+#plot_spherical_capacitor_tzap_theta(q, t, min_R0, max_R0, step_R0, Rpos, v0pos, a0pos)
 step_R0 = 0.1/3.0*c
-plot_spherical_capacitor_tzap_R0(q, t, min_R0, max_R0, step_R0, Rpos, v0pos, a0pos)
+#plot_spherical_capacitor_tzap_R0(q, t, min_R0, max_R0, step_R0, Rpos, v0pos, a0pos)
 
 t1 = 0.0
 dt = 1.0
@@ -108,7 +118,10 @@ v0neg = -1.0/3.0*c
 # Результат расчёта по формуле 116 скалярного потенциала Лиенара Вихерта c учётом запаздывания сферического конденсатора, в котором обе обкладки - как внешняя отрицательная  так и внутренняя положительная разлетаются наружу. Скорости обкладок  и. Начальная фаза центрально-симметричного взрыва. Для сравнения на том же графике приведён результат расчёта по формуле 19 без учёта запаздывания
 v0pos = 1.0/6.0*c
 v0neg = 1.0/3.0*c
-#plot_spherical_oscillator_phi_R0(q, t, min_R0, max_R0, step_R0, Rneg, v0neg, a0neg, r_min, Rpos, v0pos, a0pos, r_min )
+
+for t in np.arange(t1, t2, dt):
+    plot_spherical_oscillator_phi_R0(q, t, min_R0, max_R0, step_R0, Rneg, v0neg, a0neg, r_min, Rpos, v0pos, a0pos, r_min )
+plots_spherical_oscillator_phi_R0(q, t1, t2, dt, min_R0, max_R0, step_R0, Rneg, v0neg, a0neg, r_min, Rpos, v0pos, a0pos, r_min)
 
 # Скалярный потенциал Лиенара Вихерта c учётом и без учёта запаздывания сферического конденсатора, в котором положительная обкладка разлетается наружу, а отрицательная обкладка схлопывается внутрь. Обе обкладки движутся навстречу друг другу. Скорости обкладок  и. Потенциальная яма внутри положительной обкладки при учёте запаздывания оказывается глубже, чем без учёта. Интересный момент, что при учёте запаздывания излом потенциальной кривой в области внутренней положительно заряженной вкладки практически полностью исчёз.
 v0pos = 1.0/3.0*c

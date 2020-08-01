@@ -713,6 +713,135 @@ def calc_F_lorenz_cylinder(dz):
 dr = 0.01
 dz = 0.04
 
+dir = os.getcwd()  + "/results/radial_test_plot"
+print ("dir = ", dir)
+
+try:
+    os.mkdir(dir)
+except:
+    pass
+
+plot_data_H = []
+plot_data_Hr = []
+plot_data_H_t = []
+plot_data_H_s = []
+plot_data_Hr_t = []
+plot_data_Hr_s = []	
+
+if not full_volume_cylinder:
+    for Za in np.arange(0, Zj2, 0.1):
+        plot_data_h = []
+        plot_data_hr = []
+        plot_data_h_t = []
+        plot_data_h_s = []
+        plot_data_hr_t = []
+        plot_data_hr_s = []
+        for Ra in np.arange(Rj1+dr, Rj2-dr, dr):
+            h = calc_H_phi( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra)
+            plot_data_h += [(Ra, h[0])]
+            plot_data_hr += [(Ra, h[0]*Ra)]
+
+            plot_data_h_t += [(Ra, h[1])]
+            plot_data_h_s += [(Ra, h[2])]
+
+            plot_data_hr_t += [(Ra, h[1]*Ra)]
+            plot_data_hr_s += [(Ra, h[2]*Ra)]
+
+        plot_data_H += plot_data_h
+        plot_data_Hr += plot_data_hr
+
+        plot_data_H_t += plot_data_h_t
+        plot_data_H_s += plot_data_h_s
+
+        plot_data_Hr_t += plot_data_hr_t
+        plot_data_Hr_s += plot_data_hr_s
+
+        dir = os.getcwd()  + "/results/radial_test_plot/Za=" + float_formatting(Za)
+        print ("dir = ", dir)
+
+        try:
+            os.mkdir(dir)
+        except:
+            pass
+
+        folder = dir + "/"
+
+        params_H = params + \
+            "_Za=" + float_formatting(Za)
+
+
+        p = list_plot(plot_data_h)
+        pname = folder + "H_phi" + params_H + ".png"
+        print (pname)
+        p.save(pname)
+
+        p = list_plot(plot_data_hr)
+        pname = folder + "H_phi_Ra" + params_H + ".png"
+        print (pname)
+        p.save(pname)
+
+        p = list_plot(plot_data_h_t)
+        pname = folder + "H_phi_t" + params_H + ".png"
+        print (pname)
+        p.save(pname)
+
+        p = list_plot(plot_data_h_s)
+        pname = folder + "H_phi_s" + params_H + ".png"
+        print (pname)
+        p.save(pname)
+
+        p = list_plot(plot_data_hr_t)
+        pname = folder + "H_phi_t_Ra" + params_H + ".png"
+        print (pname)
+        p.save(pname)
+
+        p = list_plot(plot_data_hr_s)
+        pname = folder + "H_phi_s_Ra" + params_H + ".png"
+        print (pname)
+        p.save(pname)
+
+
+dir = os.getcwd()  + "/results/radial_test_plot"
+print ("dir = ", dir)
+
+try:
+    os.mkdir(dir)
+except:
+    pass
+
+folder = dir + "/"
+
+params_H = params
+
+p = list_plot(plot_data_H)
+pname = folder + "H_phi" + params_H + ".png"
+print (pname)
+p.save(pname)
+
+p = list_plot(plot_data_Hr)
+pname = folder + "H_phi_Ra" + params_H + ".png"
+print (pname)
+p.save(pname)
+
+p = list_plot(plot_data_H_t)
+pname = folder + "H_phi_t" + params_H + ".png"
+print (pname)
+p.save(pname)
+
+p = list_plot(plot_data_H_s)
+pname = folder + "H_phi_s" + params_H + ".png"
+print (pname)
+p.save(pname)
+
+p = list_plot(plot_data_Hr_t)
+pname = folder + "H_phi_t_Ra" + params_H + ".png"
+print (pname)
+p.save(pname)
+
+p = list_plot(plot_data_Hr_s)
+pname = folder + "H_phi_s_Ra" + params_H + ".png"
+print (pname)
+p.save(pname)
 '''
 Za = 0
 Ra = (Rj1 + Rj2) / 2

@@ -1,6 +1,9 @@
 import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
+try:
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+except:
+    pass
 
 import numpy as np
 
@@ -34,7 +37,7 @@ dt = 0.5
 dt_all = 2.0
 '''
 
-def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_min, r0_p_max, v0_p_max, a0_p_max, r0_n_min, v0_n_min, a0_n_min, r0_n_max, v0_n_max, a0_n_max, step_R0, min_R0, max_R0, r_min):
+def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_min, r0_p_max, v0_p_max, a0_p_max, r0_n_min, v0_n_min, a0_n_min, r0_n_max, v0_n_max, a0_n_max, step_R0, min_R0, max_R0, r_min, use_dbl_integration = False):
     all_plot_data_phi = []
     all_plot_data_phi_p = []
     all_plot_data_phi_n = []
@@ -88,12 +91,22 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
         r_n_max_met = r_n_max < max_R0 and r_n_max > min_R0
 
         for R0_i in np.arange(min_R0, max_R0, step_R0):
-            if True:
+            if True == use_dbl_integration:
                 (phi_p, A_p, E1_p, E2_p, error_p) = dbl_phi_and_E_lw(+q, t_i, R0_i, r0_p_min, v0_p_min, a0_p_min, r0_p_max, v0_p_max, a0_p_max, r_min)
                 (phi_n, A_n, E1_n, E2_n, error_n) = dbl_phi_and_E_lw(-q, t_i, R0_i, r0_n_min, v0_n_min, a0_n_min, r0_n_max, v0_n_max, a0_n_max, r_min)
-            if  False:
-                (phi_p, A_p, E1_p, E2_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, r0, v0_p, a0_p, r_min)
-                (phi_n, A_n, E1_n, E2_n, error_n) = phi_and_E_lw(-q, t_i, R0_i, r0, v0_n, a0_n, r_min)
+            else:
+                r0_p = 0.5 * (r0_p_min + r0_p_max)
+                r0_n = 0.5 * (r0_n_min + r0_n_max)
+
+                v0_p = 0.5 * (v0_p_min + v0_p_max)
+                v0_n = 0.5 * (v0_n_min + v0_n_max)
+
+                a0_p = 0.5 * (a0_p_min + a0_p_max)
+                a0_n = 0.5 * (a0_n_min + a0_n_max)
+
+                (phi_p, A_p, E1_p, E2_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, r0_p, v0_p, a0_p, r_min)
+                (phi_n, A_n, E1_n, E2_n, error_n) = phi_and_E_lw(-q, t_i, R0_i, r0_n, v0_n, a0_n, r_min)
+
             print (phi_p, A_p, E1_p, E2_p, error_p, r_p_min, r_p_max)
             print (phi_n, A_n, E1_n, E2_n, error_n, r_n_min, r_n_max)
 
@@ -138,11 +151,14 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             all_plot_data_E2_p += plot_data_E2_p
             all_plot_data_E2_n += plot_data_E2_n
 
-        dir = os.getcwd()  + "/results/t=" + float_formatting(t_i)
-        print "dir = ", dir
+        dir = os.getcwd()  + "/results/spherical_explosion_radial_snapshot/"
+        if True == use_dbl_integration:
+            dir += "dbl_integration_on_volume/"
+        dir += "t=" + float_formatting(t_i)
+        print ("dir = ", dir)
 
         try:
-            os.mkdir(dir)
+            os.makedirs(dir)
         except:
             pass
 
@@ -151,120 +167,123 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
         if len(plot_data_phi) > 0:
             p = list_plot(plot_data_phi)
             pname = folder + "spherical_explosion_phi_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_phi, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_phi_p) > 0:
             p = list_plot(plot_data_phi_p)
             pname = folder + "spherical_explosion_phi_p_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_phi_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_phi_n) > 0:
             p = list_plot(plot_data_phi_n)
             pname = folder + "spherical_explosion_phi_n_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_phi_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_A) > 0:
             p = list_plot(plot_data_A)
             pname = folder + "spherical_explosion_A_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_A, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_A_p) > 0:
             p = list_plot(plot_data_A_p)
             pname = folder + "spherical_explosion_A_p_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_A_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_A_n) > 0:
             p = list_plot(plot_data_A_n)
             pname = folder + "spherical_explosion_A_n_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_A_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E) > 0:
             p = list_plot(plot_data_E)
             pname = folder + "spherical_explosion_E_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_E, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E_p) > 0:
             p = list_plot(plot_data_E_p)
             pname = folder + "spherical_explosion_E_p_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_E_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E_n) > 0:
             p = list_plot(plot_data_E_n)
             pname = folder + "spherical_explosion_E_n_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_E_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E1) > 0:
             p = list_plot(plot_data_E1)
             pname = folder + "spherical_explosion_E1_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_E1, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E1_p) > 0:
             p = list_plot(plot_data_E1_p)
             pname = folder + "spherical_explosion_E1_p_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_E1_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E1_n) > 0:
             p = list_plot(plot_data_E1_n)
             pname = folder + "spherical_explosion_E1_n_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_E1_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E2) > 0:
             p = list_plot(plot_data_E2)
             pname = folder + "spherical_explosion_E2_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_E2, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E2_p) > 0:
             p = list_plot(plot_data_E2_p)
             pname = folder + "spherical_explosion_E2_p_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_E2_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E2_n) > 0:
             p = list_plot(plot_data_E2_n)
             pname = folder + "spherical_explosion_E2_n_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_E2_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
         if len(plot_data_E_E1_E2) > 0:
             p = list_plot(plot_data_E_E1_E2)
             pname = folder + "spherical_explosion_E_E1_E2_R0" + "_t=" + float_formatting(t_i) + ".png"
-            print pname
+            print (pname)
             plot_r_of_sphere(plot_data_E_E1_E2, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
-    dir = os.getcwd()  + "/results/all_t"
-    print "dir = ", dir
+    dir = os.getcwd()  + "/results/spherical_explosion_radial_snapshot/"
+    if True == use_dbl_integration:
+        dir += "dbl_integration_on_volume/"
+    dir += "all_t"
+    print ("dir = ", dir)
 
     try:
-        os.mkdir(dir)
+        os.makedirs(dir)
     except:
         pass
 
@@ -272,79 +291,79 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
 
     p = list_plot(all_plot_data_phi)
     pname = folder + "spherical_explosion_all_phi_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(all_plot_data_phi_p)
     pname = folder + "spherical_explosion_all_phi_p_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(all_plot_data_phi_n)
     pname = folder + "spherical_explosion_all_phi_n_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
 
     p = list_plot(all_plot_data_A)
     pname = folder + "spherical_explosion_all_A_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(all_plot_data_A_p)
     pname = folder + "spherical_explosion_all_A_p_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(all_plot_data_A_n)
     pname = folder + "spherical_explosion_all_A_n_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
 
     p = list_plot(all_plot_data_E)
     pname = folder + "spherical_explosion_all_E_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(all_plot_data_E_p)
     pname = folder + "spherical_explosion_all_E_p_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(all_plot_data_E_n)
     pname = folder + "spherical_explosion_all_E_n_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(all_plot_data_E1)
     pname = folder + "spherical_explosion_all_E1_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(all_plot_data_E1_p)
     pname = folder + "spherical_explosion_all_E1_p_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(all_plot_data_E1_n)
     pname = folder + "spherical_explosion_all_E1_n_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(all_plot_data_E2)
     pname = folder + "spherical_explosion_all_E2_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(all_plot_data_E2_p)
     pname = folder + "spherical_explosion_all_E2_p_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
     p = list_plot(all_plot_data_E2_n)
     pname = "spherical_explosion_all_E2_n_R0.png"
-    print pname
+    print (pname)
     p.save(pname)
 
 # spherical_explosion_radial_snapshot(q, t1, t2, dt, r0, v0_p, v0_n, a0_p, a0_n, step_R0, min_R0, max_R0, r_min)

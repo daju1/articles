@@ -6,7 +6,7 @@
 //#define ALGORITHM_VERSION_1
 //#define ALGORITHM_VERSION_2
 
-//#define SI
+#define SI
 #ifdef SI
 //#define USE_NORM
 #define LIGHT_VELONCITY 299792458.0

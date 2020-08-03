@@ -1,6 +1,9 @@
 import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
+try:
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+except:
+    pass
 import numpy as np
 
 dir = os.getcwd()  + "/results"
@@ -82,8 +85,8 @@ V__Cu_sgs = pi*0.1e-1^2*.5
 # см^3
 
 M__Cu_sgs = 8.92*V__Cu_sgs
-print "M__Cu_sgs = ", M__Cu_sgs.n()
-print "should be 0.001401150324"
+print ("M__Cu_sgs = ", M__Cu_sgs.n())
+print ("should be 0.001401150324")
 # г
 
 M__molar_sgs = 63.546
@@ -101,8 +104,8 @@ a(t) = 1+1.607*t/10^5+.403*t^2/10^8
 
 p = plot(a(t), (t, 0 , 625))
 # p.show()
-print "a(2567) = ",  a(2567)
-print "should be 1.067807331"
+print ("a(2567) = ",  a(2567))
+print ("should be 1.067807331")
 
 # Для нагревания до температуры плавления нужно затратить
 # Для вычисления затрат энергии для нагревания до температуры плавления были взяты табличные данные теплоёмкости меди при постоянном давлении в из
@@ -121,26 +124,26 @@ list_plot(tab1_Cp_T)
 # при умножении на массу меди получено 0.653 Дж. Затраты энергии на плавление 0.287 Дж
 
 c__p = spline(tab1_Cp_T)
-print "c__p = ", c__p
+print ("c__p = ", c__p)
 
 p = plot(c__p, (300, 1357.6))
 p.save("results/copper_c__p.png")
 
 Q__nagrev_do_T_pl = c__p.definite_integral(300, 1357.6)
-print "Q__nagrev_do_T_pl = ", Q__nagrev_do_T_pl
-print "should be 466024.2040"
+print ("Q__nagrev_do_T_pl = ", Q__nagrev_do_T_pl)
+print ("should be 466024.2040")
 # Дж/кг
 
 c__p(1357)
-print "c__p(1357)= ", c__p(1357)
-print "should be 525.001217859185"
+print ("c__p(1357)= ", c__p(1357))
+print ("should be 525.001217859185")
 
 c__p_exptrapotation = c__p(1357)*M__molar_sgs*10^(-3)
-print "c__p_exptrapotation= ", c__p_exptrapotation
-print "should be 33.3617273900798"
+print ("c__p_exptrapotation= ", c__p_exptrapotation)
+print ("should be 33.3617273900798")
 
-print (0.1e-2*Q__nagrev_do_T_pl*M__Cu_sgs).n()
-print "should be .6529699644"
+print ((0.1e-2*Q__nagrev_do_T_pl*M__Cu_sgs).n())
+print ("should be .6529699644")
 
 # 1357.6 K  8.00* г/см3 - данные нуждаются в уточнении
 # 1400  К    7,98  г/см3
@@ -164,14 +167,14 @@ T__i = 7093
 rho__crit = 1.95
 
 V__Cu_sgs__crit = M__Cu_sgs/rho__crit
-print "V__Cu_sgs__crit = ", V__Cu_sgs__crit.n()
-print "should be 0.7185386277e-3"
+print ("V__Cu_sgs__crit = ", V__Cu_sgs__crit.n())
+print ("should be 0.7185386277e-3")
 # см^3
 
 # Рассчитываем первоначальный радиус как радиус шара меди в критическом состоянии объёма
 R__i = 0.1e-1*((3*V__Cu_sgs__crit/(4*pi))^(1/3)).n()
-print "R__i = ", R__i
-print "should be 0.5556318983e-3"
+print ("R__i = ", R__i)
+print ("should be 0.5556318983e-3")
 # м
 
 # Энергия ионизации
@@ -190,16 +193,16 @@ print "should be 0.5556318983e-3"
 
 
 Q__pl = 13.01224*10^3*nu__Cu
-print "Q__pl = ", Q__pl.n()
-print "should be .2869119109"
+print ("Q__pl = ", Q__pl.n())
+print ("should be .2869119109")
 
 Q__isp = 304.6*10^3*nu__Cu
-print "Q__isp = ", Q__isp.n()
-print "should be 6.716243174"
+print ("Q__isp = ", Q__isp.n())
+print ("should be 6.716243174")
 
 Q__nagrev = (7093-300)*c__p_exptrapotation*nu__Cu
-print "Q__nagrev = ", Q__nagrev.n()
-print "should be 4.99696902105744"
+print ("Q__nagrev = ", Q__nagrev.n())
+print ("should be 4.99696902105744")
 
 # На рисунке 15 статьи Менде кроме отрицательного и положительного импульсов виден некий колебательный процесс период которого составляет порядка 800 мкс. Кроме того на рисунке 11 кроме напряжения и тока разряда также виден колебательный процесс с аналогичным периодом. Что особенно интересно: в момент отрицательного импульса на рисунке 15 расстояние между горбами (период) колебательного процесса увеличивается и составляет уже величину порядка 1200 мкс.
 
@@ -212,8 +215,8 @@ n__e = 3*m__e/(4*pi*q__e^2*(1.2*10^(-3))^2)
 
 
 Q__ionization = 745*10^3*nu__Cu
-print "Q__ionization = ", Q__ionization.n()
-print "should be 16.42679305"
+print ("Q__ionization = ", Q__ionization.n())
+print ("should be 16.42679305")
 
 # Затраты на нагрев жидкой меди до состояния критического пара оценить достаточно сложно поэтому
 # я попытаюсь приблизительно оценить их как затраты на нагрев при постоянном давлении (4.998208105 Дж)
@@ -221,50 +224,50 @@ print "should be 16.42679305"
 # расчётного критического давления (450 атмосфер)
 
 V__Cu_1atm = nu__Cu*N__A*k*T__i/10^5
-print "V__Cu_1atm = ", V__Cu_1atm.n()
-print "should be 0.1300352340e-4"
+print ("V__Cu_1atm = ", V__Cu_1atm.n())
+print ("should be 0.1300352340e-4")
 # м^3
 
 V__Cu_450atm = nu__Cu*N__A*k*T__i/(450*10^5)
-print "V__Cu_450atm = ", V__Cu_450atm.n()
-print "should be 2.889671867*10^(-8)"
+print ("V__Cu_450atm = ", V__Cu_450atm.n())
+print ("should be 2.889671867*10^(-8)")
 
 V__Cu__crit = M__Cu_sgs*10^(-6)/rho__crit
-print "V__Cu__crit = ", V__Cu__crit.n()
-print "should be 7.185386277*10^(-10)"
+print ("V__Cu__crit = ", V__Cu__crit.n())
+print ("should be 7.185386277*10^(-10)")
 
 V = var("V")
 A = integrate(nu__Cu*N__A*k*T__i/V, (V, V__Cu__crit, V__Cu_1atm))
-print "A = ", A.n()
-print "should be 12.74801905"
+print ("A = ", A.n())
+print ("should be 12.74801905")
 
 integrate(nu__Cu*N__A*k*T__i/V, (V, V__Cu_450atm , V__Cu_1atm))
 7.944174390
 
 # Таким образом остаток энергии, который идёт на разогрев уже ионизированной плазмы равен
 Delta_E = E__c-Q__pl-Q__isp-Q__nagrev-Q__ionization-A
-print "Delta_E = ", Delta_E.n()
-print "should be 93.8250637789426"
+print ("Delta_E = ", Delta_E.n())
+print ("should be 93.8250637789426")
 #Дж
 
 # Промежуток времени в течение которого происходит нагрев ионизированной плазмы равен
 Delta_t = 500*Delta_E*10^(-6)/E__c
-print "Delta_t = ", Delta_t.n()
-print "should be 0.347500236218306e-3"
+print ("Delta_t = ", Delta_t.n())
+print ("should be 0.347500236218306e-3")
 
 # Максимальная разность температур, которая может быть сообщена ионизированной плазме равна
 Delta_T = Delta_E/(c__p_exptrapotation*nu__Cu)
-print "Delta_T = ", Delta_T.n()
-print "should be 1.27548050741264*10^5"
+print ("Delta_T = ", Delta_T.n())
+print ("should be 1.27548050741264*10^5")
 
 # Максимальная температура, до которой может быть нагрета ионизированная плазма равна
 T__e = Delta_T + T__i
-print "T__e = ", T__e.n()
-print "should be 1.34641050741264*10^5"
+print ("T__e = ", T__e.n())
+print ("should be 1.34641050741264*10^5")
 
 # В температурных единицах 1 эВ соответствует 1,160 452 21(67)⋅10^4 кельвин (см. постоянная Больцмана).
-print (T__e/(1.16045221*10^4)).n()
-print "should be 11.6024640725366"
+print ((T__e/(1.16045221*10^4)).n())
+print ("should be 11.6024640725366")
 
 # Наилучшее совпадение с даными эксперимента даст расчёт при начальной плотности 1 кг/м3 и начальной температуре 5 эВ
 dNdv__0(m, v, T) = pi*N__i*2^(1/2)*(m/(pi*k*T))^(3/2)*v^2*exp(-(1/2)*m*v^2/(k*T))
@@ -272,47 +275,47 @@ dNdv__0(m, v, T) = pi*N__i*2^(1/2)*(m/(pi*k*T))^(3/2)*v^2*exp(-(1/2)*m*v^2/(k*T)
 # интегрируем
 v = var("v")
 # (integrate(dNdv__0(m__e, v, T__e), (v, 0, infinity) ))/N__i
-1.000000000
+# 1.000000000
 
 # (integrate(dNdv__0(m__Cu, v, T__e), (v, 0, infinity) ))/N__i
-1.000000000
+# 1.000000000
 
 
-print (V__Cu_sgs__crit*10^(-6)).n()
-print "should be 7.185386277*10^(-10)"
+print ((V__Cu_sgs__crit*10^(-6)).n())
+print ("should be 7.185386277*10^(-10)")
 
 r = var("r")
-print (integrate(4*pi*r*r, (r, 0, R__i))).n()
-print "should be 7.185386273*10^(-10)"
+print ((integrate(4*pi*r*r, (r, 0, R__i))).n())
+print ("should be 7.185386273*10^(-10)")
 
 # Пусть в конце фазы разогрева первоначальная плазма имеет радиус R__i а изначальная плотность частиц равна
 n__i = N__i/(integrate(4*pi*r^2, (r, 0, R__i)))
-print "n__i = ", n__i
-1.847979889*10^28
+print ("n__i = ", n__i)
+# 1.847979889*10^28
 
 # Для распределения радиальной компоненты скорости частиц примем следующее соотношение:
 # Тепловая скорость частиц
 
 v__T(m, T) = sqrt(2*k*T/m)
-print v__T(m__e, T__i)
-print "should be 4.636895888*10^5"
-print v__T(m__e, T__i)/c
-print "should be 0.1546701981e-2"
+print (v__T(m__e, T__i))
+print ("should be 4.636895888*10^5")
+print (v__T(m__e, T__i)/c)
+print ("should be 0.1546701981e-2")
 
-print (v__T(m__e, T__e)).n()
-print "should be 2.02023137241212*10^6"
-print (v__T(m__e, T__e)/c).n()
-print "should be 0.673876649829570e-2"
+print ((v__T(m__e, T__e)).n())
+print ("should be 2.02023137241212*10^6")
+print ((v__T(m__e, T__e)/c).n())
+print ("should be 0.673876649829570e-2")
 
-print v__T(m__Cu, T__i)
-print "should be 1357.554508"
-print v__T(m__Cu, T__i)/c
-print "should be 0.4528314411e-5"
+print (v__T(m__Cu, T__i))
+print ("should be 1357.554508")
+print (v__T(m__Cu, T__i)/c)
+print ("should be 0.4528314411e-5")
 
-print (v__T(m__Cu, T__e)).n()
-print "should be 5914.67712890453"
-print (v__T(m__Cu, T__e)).n()
-print "should be 0.197292392489224e-4"
+print ((v__T(m__Cu, T__e)).n())
+print ("should be 5914.67712890453")
+print ((v__T(m__Cu, T__e)).n())
+print ("should be 0.197292392489224e-4")
 
 # Для распределения радиальной компоненты начальной скорости частиц
 # будем исходить из следующих соображений - в поверхностном слое взрывающегося шара
@@ -328,8 +331,8 @@ phi = var("phi")
 half_sphere_S = integrate(r*integrate(r*sin(theta), (phi, 0, 2*pi)),(theta, 0, pi/2))
 half_sphere_S_cos_theta = integrate(r*integrate(r*sin(theta), (phi, 0, 2*pi))*cos(theta),(theta, 0, pi/2))
 alpha = half_sphere_S_cos_theta / half_sphere_S
-print "alpha = ", alpha
-print "should be 1/2"
+print ("alpha = ", alpha)
+print ("should be 1/2")
 
 # для нахождения коэффициента преобразования средней тепловой скорости частиц в радиальную
 # для внутреннего слоя нужно интегрировать косинус зенитного угла по полной сфере направлений скоростей
@@ -338,7 +341,7 @@ print "should be 1/2"
 sphere_S = integrate(r*integrate(r*sin(theta), (phi, 0, 2*pi)),(theta, 0, pi))
 sphere_S_cos_theta = integrate(r * integrate(r*sin(theta), (phi, 0, 2*pi))*cos(theta),(theta, 0, pi))
 alpha = sphere_S_cos_theta / sphere_S
-print "alpha = ", alpha
+print ("alpha = ", alpha)
 
 # но с учётом коэффициента поглощения /или замедления/ частиц при прохождении частицы через шар плазмы
 # из точки определяемой r__0 на оси z в направлении определяемом углами theta и phi
@@ -346,33 +349,33 @@ print "alpha = ", alpha
 # sphere_S = integrate(r*integrate(r*sin(theta), (phi, 0, 2*pi)),(theta, 0, pi))
 # sphere_S_cos_theta = integrate(zamedlenie(r__0, R_sphere, theta) * r * integrate(r*sin(theta), (phi, 0, 2*pi))*cos(theta),(theta, 0, pi))
 # alpha = sphere_S_cos_theta / sphere_S
-# print "alpha = ", alpha
+# print ("alpha = ", alpha)
 
 # для простоты расчёта можно в первом приближении применить линейную аппроксимацию для радиальной скорости частиц в виде:
 alpha = 0.5
 v__0r(r__0, R_init, m, T) = (alpha * r__0 / R_init) * v__T(m, T)
-print v__0r(r__0, R__i, m, T)
+print (v__0r(r__0, R__i, m, T))
 
 # Здесь r__0 радиус слоя заряженных частиц в начальный момент времени
 
 # Для распределения радиальной компоненты теплового ускорения в начальный момент времени взрыва примем аппросксимацию в виде
 a__0r(r__0, R_init, m, T) = Delta_T.n()*(alpha * r__0 / R_init)*(diff(v__T(m, T), T))/(Delta_t.n())
-print a__0r(r__0, R_init, m, T)
+print (a__0r(r__0, R_init, m, T))
 
 r0 = var("r0")
-print a__0r(r0, R__i, m, T)
-print "should be 0.433908765869441e-3*r0/(sqrt(T/m)*m)"
+print (a__0r(r0, R__i, m, T))
+print ("should be 0.433908765869441e-3*r0/(sqrt(T/m)*m)")
 
 # Уравнения радиального движения слоя заряженных частиц
 # r(t, r__0, R_init, m, T) = r__0 + v__0r(r__0, R_init, m, T)*t+(1/2)*a__0r(r__0, R_init, m, T)*t^2
-# print r(t, r__0, R__i, m, T)
+# print (r(t, r__0, R__i, m, T))
 
 # предполагая линейный характер роста температуры со временем
 # исходя из зависимости для радиальной скорости частиц от радиальной координаты и температуры
 # можно получить зависимость радиальной скорости частиц от радиальной координаты и времени
 t = var("t")
 v_r_t(t, r__0, R_init, m) = (v__0r(r__0, R_init, m, T)).substitute(T == T__i+t*(T__e-T__i)/Delta_t)
-print "v_r_t = ", v_r_t(t, r__0, R_init, m)
+print ("v_r_t = ", v_r_t(t, r__0, R_init, m))
 
 # в упрощённом алгоритме в котором взрыв эмулируется сферическим конденсатором
 # требуется зависимость скорости и ускорения обкладки от времени
@@ -380,11 +383,11 @@ v_t(t, m) = v_r_t(t, (1/2)*R__i, R__i, m) - v_r_t(0, (1/2)*R__i, R__i, m)
 # v_t(t, m) = v_r_t(t, t / Delta_t * R__i, R__i, m) - v_r_t(0, 0, R__i, m)
 a_t(t, m) = diff(v_t (t, m), t)
 
-print "v_t =", v_t(t, m)
+print ("v_t =", v_t(t, m))
 
-print "a_t =", a_t(t, m)
+print ("a_t =", a_t(t, m))
 
-print "a_t 0 m__e =", a_t(0, m__e).n()
+print ("a_t 0 m__e =", a_t(0, m__e).n())
 
 p = plot(v_t(t, m__e) / c, (t, 0, Delta_t))
 p.save("results/v_c_t_e.png")
@@ -393,13 +396,13 @@ p.save("results/a_t_e.png")
 
 # Мощность взрыва
 power = Delta_E.n()/Delta_t.n()
-print "power = ", power
+print ("power = ", power)
 
 
 attach("tzap.spyx")
 
 q = q__e * N__i
-print "q = ", q.n(), "кулон"
+print ("q = ", q.n(), "кулон")
 
 m_pos = m__Cu * N__i
 m_neg = m__e  * N__i
@@ -434,11 +437,11 @@ a0_pos_max = a__0r(R__i, R__i, m__Cu, (T__i + T__e) / 2).n()
 a0_neg_max = a__0r(R__i, R__i, m__e, (T__i + T__e) / 2).n()
 
 
-print "a0_pos_min = ", a0_pos_min
-print "a0_neg_min = ", a0_neg_min
+print ("a0_pos_min = ", a0_pos_min)
+print ("a0_neg_min = ", a0_neg_min)
 
-print "a0_pos_max = ", a0_pos_max
-print "a0_neg_max = ", a0_neg_max
+print ("a0_pos_max = ", a0_pos_max)
+print ("a0_neg_max = ", a0_neg_max)
 
 # a0_pos = a_t(Delta_t/2, m__Cu).n()
 # a0_neg = a_t(Delta_t/2, m__e).n()
@@ -472,11 +475,14 @@ max_R0 = r0 + 100.0 * step_R0
 # with SI
 t1 = 0
 t2 = Delta_t # "should be 0.347500236218306e-3"
-dt = 0.00001
+dt = 0.000001
 
 attach("spherical_explosion_time_evaluation.sage")
-# spherical_explosion_time_evaluation(q, t1, t2, dt, r0_pos_min, v0_pos_min, a0_pos_min, r0_pos_max, v0_pos_max, a0_pos_max, r0_neg_min, v0_neg_min, a0_neg_min, r0_neg_max, v0_neg_max, a0_neg_max, step_R0, min_R0, max_R0, r_min)
+use_dbl_integration = False
+spherical_explosion_time_evaluation(q, t1, t2, dt, r0_pos_min, v0_pos_min, a0_pos_min, r0_pos_max, v0_pos_max, a0_pos_max, r0_neg_min, v0_neg_min, a0_neg_min, r0_neg_max, v0_neg_max, a0_neg_max, step_R0, min_R0, max_R0, r_min)
 
+use_dbl_integration = True
+spherical_explosion_time_evaluation(q, t1, t2, dt, r0_pos_min, v0_pos_min, a0_pos_min, r0_pos_max, v0_pos_max, a0_pos_max, r0_neg_min, v0_neg_min, a0_neg_min, r0_neg_max, v0_neg_max, a0_neg_max, step_R0, min_R0, max_R0, r_min, use_dbl_integration)
 
 step_R0 = 100*r0
 min_R0 = r0 + step_R0
@@ -485,11 +491,14 @@ max_R0 = r0 + 1000.0 * step_R0
 # with SI
 t1 = 0
 t2 = Delta_t # "should be 0.347500236218306e-3"
-dt = 0.00005
+dt = 0.00001
 
 attach("spherical_explosion_radial_snapshot.sage")
+use_dbl_integration = False
 spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_pos_min, v0_pos_min, a0_pos_min, r0_pos_max, v0_pos_max, a0_pos_max, r0_neg_min, v0_neg_min, a0_neg_min, r0_neg_max, v0_neg_max, a0_neg_max, step_R0, min_R0, max_R0, r_min)
 
+use_dbl_integration = True
+spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_pos_min, v0_pos_min, a0_pos_min, r0_pos_max, v0_pos_max, a0_pos_max, r0_neg_min, v0_neg_min, a0_neg_min, r0_neg_max, v0_neg_max, a0_neg_max, step_R0, min_R0, max_R0, r_min, use_dbl_integration)
 
 
 

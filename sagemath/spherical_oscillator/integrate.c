@@ -183,7 +183,137 @@ field get_E_minus_1_c_dA_dt_R0(angle theta, velocity v_zap, acceleration a_zap, 
 	return E_minus_1_c_dA_dt_R0;
 }
 
+field get_E(angle theta, timevalue t, timevalue t_zap, coordinate R0, coordinate r_zap, velocity v_zap, acceleration a_zap)
+{
+	//Радиус Лиенара Вихерта в сферической системе координат через запаздывающий момент вычисляется как
+
+	//	\[{ {R}^ {*}} = c\left(t - t' \right)-\frac{v}{c}\left( {{R}_{0}}\cos \theta -r \right)\]
+	distance R_lw_zap = g_c * (t - t_zap) - (v_zap / g_c) * (R0 * cos(theta) - r_zap);
+	distance R_lw_zap_2 = R_lw_zap * R_lw_zap;
+	distance R_lw_zap_3 = R_lw_zap_2 * R_lw_zap;
+
+
+	// $$\frac{dE}{dq}=\frac{\left( {{R}_{0}}-\left( r+\left( t-{t}' \right)v \right)\cos \left( \theta  \right) \right)}{{{R}^{*}}^{3}}\left( 1+\frac{a\left( {{R}_{0}}\cos \theta -r \right)}{{{c}^{2}}}-\frac{{{v}^{2}}}{{{c}^{2}}} \right)-a\cos \left( \theta  \right)\frac{\left( t-{t}' \right)}{c{{R}^{*}}^{2}}$$
+
+	field E = (R0 - (r_zap + (t - t_zap) * v_zap) * cos(theta))
+		/ (R_lw_zap_3)
+		* (1.0 + (a_zap * (R0*cos(theta) - r_zap) - v_zap * v_zap) / (g_c * g_c))
+		- a_zap * cos(theta) * (t - t_zap) / (g_c * R_lw_zap_2);
+#ifndef USE_NORM
+	DBG_INFO("E = %0.25Lf\n", E);
+	E *= multiplier_E;
+#endif
+	DBG_INFO("E = %0.25Lf\n", E);
+	return E;
+}
+
 //#define OLD_DS_THETA_ALG
+
+
+
+int integrand_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, angle theta, field * pE_minus_grad_phi_R0, field *pE_minus_1_c_dA_dt_R0, field *pE, coordinate r_min, potential *phi, potential *A)
+{
+	int err, error = 0;
+
+	timevalue t_zap;
+	coordinate r_zap;
+	distance R_zap;
+	distance R_lw_zap;
+
+	velocity v_zap;
+	acceleration a_zap;
+	long double aR_zap;
+	long double cos_alpha_zap;
+	field E_minus_grad_varphi_R0;
+	field E_minus_1_c_dA_dt_R0;
+	field E;
+
+	DBG_INFO("integrand_phi_and_E(q=%Lf t=%Lf, R0=%0.20Lf, r0=%0.20Lf, v0=%0.10Lf, a0=%0.10Lf)\n", q, t, R0, r0, v0, a0);
+
+	*phi = 0.0;
+	*A = 0.0;
+	*pE_minus_grad_phi_R0 = 0.0;
+	*pE_minus_1_c_dA_dt_R0 = 0.0;
+	*pE = 0.0;
+
+
+		err = calc_R_lw(q, t, R0, r0, v0, a0, theta, &t_zap, &r_zap, &R_zap, r_min, &R_lw_zap);
+		if (0 != err)
+		{
+			error += 1;
+		}
+#ifdef ALGORITHM_VERSION_0
+		v_zap = get_v(q, t_zap, v0, a0);
+		a_zap = get_a(q, t_zap, a0);
+#endif
+#ifdef ALGORITHM_VERSION_1
+		v_zap = get_v_ex1(t_zap, v0, q);
+		a_zap = get_a_ex1(t_zap, q);
+#endif
+#ifdef ALGORITHM_VERSION_2
+		v_zap = get_v_ex2(t_zap, v0, q);
+		a_zap = get_a_ex2(t_zap, q);
+#endif
+		DBG_INFO("v_zap = %Lf ", v_zap);
+		DBG_INFO("a_zap = %Lf ", a_zap);
+
+		aR_zap = get_aR_zap(R0, theta, r_zap, a_zap);
+		DBG_INFO("aR_zap = %Lf ", aR_zap);
+		cos_alpha_zap = get_cos_alpha_zap(R0, theta, r_zap, R_zap);
+		DBG_INFO("cos_alpha_zap = %Lf ", cos_alpha_zap);
+		E_minus_grad_varphi_R0 = get_E_minus_grad_phi_R0(theta, v_zap, R_zap, aR_zap, R_lw_zap, cos_alpha_zap);
+		E_minus_1_c_dA_dt_R0 = get_E_minus_1_c_dA_dt_R0(theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap);
+		E = get_E(theta, t, t_zap, R0, r_zap, v_zap, a_zap);
+
+
+		DBG_INFO("theta = %Lf "
+			"r_zap = %0.6Le "
+			"R_zap %0.6Le "
+			"R_lw_zap %0.6Le "
+			"v_zap = %0.6Le "
+			"t_zap = %0.6Le "
+			"a_zap = %0.6Le "
+			"aR_zap = %0.6Le "
+			"E1 %Lf "
+			"E2 %0.20Lf "
+			"E %0.20Le "
+			"\n"
+			, theta
+			, r_zap
+			, R_zap
+			, R_lw_zap
+			, v_zap
+			, t_zap
+			, a_zap
+			, aR_zap
+			, E_minus_grad_varphi_R0
+			, E_minus_1_c_dA_dt_R0
+			, E
+		);
+
+		if (0.0 != R_lw_zap) {
+			*phi = 1.0 / R_lw_zap;
+			*A = 1.0 * cos(theta) * v_zap / (g_c * R_lw_zap);
+			*pE_minus_grad_phi_R0 = E_minus_grad_varphi_R0;
+			*pE_minus_1_c_dA_dt_R0 = E_minus_1_c_dA_dt_R0;
+			*pE = E;
+			DBG_INFO("phi = %Lf ", *phi);
+			DBG_INFO("E1 = %Lf ", *pE_minus_grad_phi_R0);
+			DBG_INFO("E2 = %Lf ", *pE_minus_1_c_dA_dt_R0);
+			DBG_INFO("E2 = %Lf ", *pE);
+		}
+		else
+		{
+			DBG_INFO("0.0 != R_lw_zap ");
+		}
+
+	DBG_INFO("phi = %Lf E1 = %Lf E2 = %Lf\n", *phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0);
+
+
+	printf("t = %Lf theta = %Lf t_zap = %Lf phi = %Lf E1 = %Lf E2 = %Lf E = %Lf\n", t, theta, t_zap, *phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0, *pE);
+	return error;
+}
+
 
 /* скалярный потенциал Лиенара Вихерта зарядов равномерно распределённых по сферической поверхности радиуса r0 и движущихся из центра. */
 /*
@@ -263,7 +393,7 @@ int integral_phi(charge q, timevalue t, coordinate R0, coordinate r0, velocity v
 	return error;
 }
 
-int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, field * pE_minus_grad_phi_R0, field *pE_minus_1_c_dA_dt_R0, coordinate r_min, potential *phi, potential *A)
+int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, acceleration a0, field * pE_minus_grad_phi_R0, field *pE_minus_1_c_dA_dt_R0, field *pE, coordinate r_min, potential *phi, potential *A)
 {
 	int err, error = 0;
 	int i;
@@ -280,6 +410,7 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 	long double cos_alpha_zap;
 	field E_minus_grad_varphi_R0;
 	field E_minus_1_c_dA_dt_R0;
+	field E;
 
 	int N = 10000;
 	angle dtheta = Pi / N;
@@ -291,8 +422,9 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 	long double S = 0.0;
 	DBG_INFO("integral_phi_and_E(q=%Lf t=%Lf, R0=%0.20Lf, r0=%0.20Lf, v0=%0.10Lf, a0=%0.10Lf)\n", q, t, R0, r0, v0, a0);
 
-	*pE_minus_grad_phi_R0 = 0.0;
+	*pE_minus_grad_phi_R0  = 0.0;
 	*pE_minus_1_c_dA_dt_R0 = 0.0;
+	*pE                    = 0.0;
 
 	for (i = 1; i <= N; ++i)
 	{
@@ -323,7 +455,8 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 		cos_alpha_zap = get_cos_alpha_zap(R0, theta, r_zap, R_zap);
 		DBG_INFO("cos_alpha_zap = %Lf ", cos_alpha_zap);
 		E_minus_grad_varphi_R0 = get_E_minus_grad_phi_R0 (theta, v_zap, R_zap, aR_zap, R_lw_zap, cos_alpha_zap);
-		E_minus_1_c_dA_dt_R0   = get_E_minus_1_c_dA_dt_R0(theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap);
+		E_minus_1_c_dA_dt_R0 = get_E_minus_1_c_dA_dt_R0(theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap);
+		E = get_E(theta, t, t_zap, R0, r_zap, v_zap, a_zap);
 
 		// 2*Pi*r^2*sin(theta)
 #ifdef OLD_DS_THETA_ALG
@@ -369,9 +502,11 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 			*A                     += dS_dtheta * dtheta * cos(theta) * v_zap / (g_c * R_lw_zap);
 			*pE_minus_grad_phi_R0  += dS_dtheta * dtheta * E_minus_grad_varphi_R0;
 			*pE_minus_1_c_dA_dt_R0 += dS_dtheta * dtheta * E_minus_1_c_dA_dt_R0;
+			*pE                    += dS_dtheta * dtheta * E;
 			DBG_INFO("phi = %Lf ", *phi);
 			DBG_INFO("E1 = %Lf ", *pE_minus_grad_phi_R0);
 			DBG_INFO("E2 = %Lf ", *pE_minus_1_c_dA_dt_R0);
+			DBG_INFO("E2 = %Lf ", *pE);
 		}
 		else
 		{
@@ -395,13 +530,14 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 	*A                     *= sigma;
 	*pE_minus_grad_phi_R0  *= sigma;
 	*pE_minus_1_c_dA_dt_R0 *= sigma;
+	*pE                    *= sigma;
 
-	//printf("phi = %Lf E1 = %Lf E2 = %Lf\n", *phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0);
+	printf("phi = %Lf E1 = %Lf E2 = %Lf E = %Lf\n", *phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0, *pE);
 	return error;
 }
 
 
-int dbl_integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0_min, velocity v0_min, acceleration a0_min, coordinate r0_max, velocity v0_max, acceleration a0_max, field * pE_minus_grad_phi_R0, field *pE_minus_1_c_dA_dt_R0, coordinate r_min, potential *phi, potential *A)
+int dbl_integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0_min, velocity v0_min, acceleration a0_min, coordinate r0_max, velocity v0_max, acceleration a0_max, field * pE_minus_grad_phi_R0, field *pE_minus_1_c_dA_dt_R0, field *pE, coordinate r_min, potential *phi, potential *A)
 {
 	int error = 0;
 	int j;
@@ -414,8 +550,9 @@ int dbl_integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0_m
 	*phi = 0.0;
 	*A = 0.0;
 
-	*pE_minus_grad_phi_R0 = 0.0;
+	*pE_minus_grad_phi_R0  = 0.0;
 	*pE_minus_1_c_dA_dt_R0 = 0.0;
+	*pE                    = 0.0;
 
 	coordinate r0_pre = r0_min;
 	long double V_of_q = 4.0 / 3.0 * Pi * ( (r0_max * r0_max * r0_max) - (r0_min * r0_min * r0_min) );
@@ -429,13 +566,14 @@ int dbl_integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0_m
 		charge dV_of_q = 4.0 / 3.0 * Pi * ( (r0 * r0 * r0) - (r0_pre * r0_pre * r0_pre) );
 		charge dq = q * dV_of_q / V_of_q;
 
-		field dE_minus_grad_phi_R0 = 0.0;
+		field dE_minus_grad_phi_R0  = 0.0;
 		field dE_minus_1_c_dA_dt_R0 = 0.0;
-		potential dphi = 0.0;
-		potential dA = 0.0;
+		field dE                    = 0.0;
+		potential dphi              = 0.0;
+		potential dA                = 0.0;
 
 
-		integral_phi_and_E(dq, t, R0, r0, v0, a0, &dE_minus_grad_phi_R0, &dE_minus_1_c_dA_dt_R0, r_min, &dphi, &dA);
+		integral_phi_and_E(dq, t, R0, r0, v0, a0, &dE_minus_grad_phi_R0, &dE_minus_1_c_dA_dt_R0, &dE, r_min, &dphi, &dA);
 
 		printf("dq = %Le\n", dq);
 		printf("q = %Lf\n", q);
@@ -443,13 +581,14 @@ int dbl_integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0_m
 		printf("dV_of_q = %Le V_of_q = %Le\n", dV_of_q, V_of_q);
 		printf("r0 = %Lf v0 = %Lf a0 = %Lf\n", r0, v0, a0);
 
-		printf("dphi = %Lf dA = %Le dE1 = %Lf dE2 = %Lf\n", dphi, dA, dE_minus_grad_phi_R0, dE_minus_1_c_dA_dt_R0);
+		printf("dphi = %Lf dA = %Le dE1 = %Lf dE2 = %Lf dE = %Lf\n", dphi, dA, dE_minus_grad_phi_R0, dE_minus_1_c_dA_dt_R0, dE);
 
 		*phi                   += dphi;
 		*A                     += dA;
 		*pE_minus_grad_phi_R0  += dE_minus_grad_phi_R0;
 		*pE_minus_1_c_dA_dt_R0 += dE_minus_1_c_dA_dt_R0;
-		printf("phi = %Lf A = %Le E1 = %Lf E2 = %Lf\n", *phi, *A, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0);
+		*pE                    += dE;
+		printf("phi = %Lf A = %Le E1 = %Lf E2 = %Lf E = %Lf\n", *phi, *A, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0, *pE);
 
 		r0_pre = r0;
 	}

@@ -30,6 +30,7 @@ typedef long double angle;
 
 
 velocity get_c();
+long double get_multiplier_E();
 #ifdef ALGORITHM_VERSION_0
 
 void init_array_0();

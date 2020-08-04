@@ -17,7 +17,7 @@ int test_v0()
 	coordinate r_zap;
 	distance R_zap, R_lw_zap;
 	potential phi_lw, A_lw;
-	field E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0;
+	field E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0, E;
 
 	/* Текущий момент */
 	timevalue t = 5;
@@ -39,7 +39,7 @@ int test_v0()
 	coordinate r;
 
 	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/2.0, /*r0*/2.0, /*v0*/g_c/3.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw);
-	printf("\nphi_lw = %0.10Lf error = %d r = %Lf\n", phi_lw, error, r);
+	printf("\nphi_lw = %0.10Lf error = %d\n", phi_lw, error);
 	#ifdef CALC_LW_WITHOUT_LAGGING
 	printf ("should be -0.4315231087\n\n");
 	#else
@@ -47,7 +47,7 @@ int test_v0()
 	#endif
 
 	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/2.0, /*r0*/2.0, /*v0*/0.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw);
-	printf("\nphi_lw = %0.10Lf error = %d r = %Lf\n", phi_lw, error, r);
+	printf("\nphi_lw = %0.10Lf error = %d\n", phi_lw, error);
 	#ifdef CALC_LW_WITHOUT_LAGGING
 	printf ("should be -0.5\n\n");
 	#else
@@ -58,7 +58,7 @@ int test_v0()
 	printf("t_zap = %Lf\n", t_zap);
 
 	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/0.0, /*r0*/2.0, /*v0*/g_c/3.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw);
-	printf("\nphi_lw = %0.10Lf error = %d r = %Lf\n", phi_lw, error, r);
+	printf("\nphi_lw = %0.10Lf error = %d\n", phi_lw, error);
 	#ifdef CALC_LW_WITHOUT_LAGGING
 	printf ("should be -0.375\n\n");
 	#else
@@ -66,7 +66,7 @@ int test_v0()
 	#endif
 
 	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/1.0, /*r0*/2.0, /*v0*/g_c/3.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw);
-	printf("\nphi_lw = %0.10Lf error = %d r = %Lf\n", phi_lw, error, r);
+	printf("\nphi_lw = %0.10Lf error = %d\n", phi_lw, error);
 	#ifdef CALC_LW_WITHOUT_LAGGING
 	printf ("should be -0.38348\n\n");
 	#else
@@ -74,7 +74,7 @@ int test_v0()
 	#endif
 
 	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/3.0, /*r0*/2.0, /*v0*/g_c/3.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw);
-	printf("\nphi_lw = %0.10Lf error = %d r = %Lf\n", phi_lw, error, r);
+	printf("\nphi_lw = %0.10Lf error = %d\n", phi_lw, error);
 	#ifdef CALC_LW_WITHOUT_LAGGING
 	printf ("should be -0.31720\n\n");
 	#else
@@ -83,7 +83,7 @@ int test_v0()
 
 
 	error = integral_phi(/*q*/-1, /*t*/0, /*R0*/0.0, /*r0*/2.0, /*v0*/1.0*g_c/3.0, /*a0*/0.0, /*r_min*/0.1, &phi_lw);
-	printf("\nphi_lw = %0.10Lf error = %d r = %Lf\n", phi_lw, error, r);
+	printf("\nphi_lw = %0.10Lf error = %d\n", phi_lw, error);
 #ifndef CALC_LW_WITHOUT_LAGGING
 	printf("should be -0.5\n\n");
 #endif
@@ -153,13 +153,13 @@ return 0;
 	int(2*Pi*r(t, r__0, v__0, a__0)^2*sin(theta)*sigma(q, r__0)/K__zap(tzap(t, r__0, v__0, a__0, R__0, theta), r__0, v__0, a__0, R__0, theta), theta = 0 .. Pi) end proc;*/
 	error = integral_phi(q, t, R0, r0, v0, a0, r_min, &phi_lw);
 	printf("phi_lw = %Lf\n", phi_lw);
-	error = integral_phi_and_E(q, t, R0, r0, v0, a0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &A_lw);
+	error = integral_phi_and_E(q, t, R0, r0, v0, a0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, &E, r_min, &phi_lw, &A_lw);
 	printf("phi_lw = %Lf E1=%Lf E2 = %Lf\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	/*infinity error result*/
 	error = integral_phi(q, t, -1.0000000000000142, 1, 0, 0, r_min, &phi_lw);
 	printf("phi_lw = %Lf\n", phi_lw);
-	phi_lw = integral_phi_and_E(q, t, -1.0000000000000142, 1, 0, 0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &A_lw);
+	phi_lw = integral_phi_and_E(q, t, -1.0000000000000142, 1, 0, 0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, &E, r_min, &phi_lw, &A_lw);
 	printf("phi_lw = %Lf E1=%Lf E2 = %Lf\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	/*hung
@@ -180,7 +180,7 @@ return 0;
 
 	error = integral_phi(-q, 5.0, -1.5, 2.0, 0.0, 1.0, r_min, &phi_lw);
 	printf("phi_lw = %Lf\n", phi_lw);
-	error = integral_phi_and_E(-q, 5.0, -1.5, 2.0, 0.0, 1.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &A_lw);
+	error = integral_phi_and_E(-q, 5.0, -1.5, 2.0, 0.0, 1.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, &E, r_min, &phi_lw, &A_lw);
 	printf("phi_lw = %Lf E1=%Lf E2 = %Lf\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	{
@@ -202,8 +202,8 @@ return 0;
 			{
 				printf("ti=%03.1f R0_i=%03.1f ", ti, R0_i);
 
-				error = integral_phi_and_E(+q, ti, R0_i, r0, v0_p, a0_p, &E1_p, &E2_p, r_min, &phi_p, &A_p);
-				error = integral_phi_and_E(-q, ti, R0_i, r0, v0_n, a0_n, &E1_n, &E2_n, r_min, &phi_n, &A_n);
+				error = integral_phi_and_E(+q, ti, R0_i, r0, v0_p, a0_p, &E1_p, &E2_p, &E_p, r_min, &phi_p, &A_p);
+				error = integral_phi_and_E(-q, ti, R0_i, r0, v0_n, a0_n, &E1_n, &E2_n, &E_n, r_min, &phi_n, &A_n);
 				//printf("phi_p = %Lf ", phi_p);
 				//printf("phi_n = %Lf ", phi_n);
 
@@ -231,10 +231,10 @@ return 0;
 			}
 			printf("\n");
 		}
-		error = integral_phi_and_E(q, t, R0, r0, 0.0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &A_lw);
+		error = integral_phi_and_E(q, t, R0, r0, 0.0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, &E, r_min, &phi_lw, &A_lw);
 		printf("phi_lw = %Lf E1=%Lf E2 = %Lf\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
-		error = integral_phi_and_E(-q, t, R0, r0, 0.0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, r_min, &phi_lw, &A_lw);
+		error = integral_phi_and_E(-q, t, R0, r0, 0.0, 0.0, &E_minus_grad_phi_R0, &E_minus_1_c_dA_dt_R0, &E, r_min, &phi_lw, &A_lw);
 		printf("phi_lw = %Lf E1=%Lf E2 = %Lf\n", phi_lw, E_minus_grad_phi_R0, E_minus_1_c_dA_dt_R0);
 
 	}

@@ -96,33 +96,36 @@ int calc_E(charge q, timevalue t, coordinate R0,
 			velocity v0_pos, velocity v0_neg,
 			acceleration a0_pos, acceleration a0_neg,
 			coordinate r_min_pos, coordinate r_min_neg,
-			field * E_minus_grad_phi_R0_pos, field * E_minus_1_c_dA_dt_R0_pos,
-			field * E_minus_grad_phi_R0_neg, field * E_minus_1_c_dA_dt_R0_neg,
+			field * E_minus_grad_phi_R0_pos, field * E_minus_1_c_dA_dt_R0_pos, field * E_pos,
+			field * E_minus_grad_phi_R0_neg, field * E_minus_1_c_dA_dt_R0_neg, field * E_neg,
 			field * E1, field * E2, field * E)
 {
-	int error = 0, err;
+	int error = 0;
 	potential phi_lw_pos, A_lw_pos;
 	potential phi_lw_neg, A_lw_neg;
 
 	printf("\n");
-	error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, a0_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos, r_min_pos, &phi_lw_pos, &A_lw_pos);
+	error = integral_phi_and_E(+q, t, R0, r0_pos, v0_pos, a0_pos, E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos, E_pos, r_min_pos, &phi_lw_pos, &A_lw_pos);
 	printf("pos err = %d phi_lw = %Lf E1=%Lf E2 = %0.20Lf\n", error, phi_lw_pos, *E_minus_grad_phi_R0_pos, *E_minus_1_c_dA_dt_R0_pos);
 
 	printf("\n");
-	error = integral_phi_and_E(-q, t, R0, r0_neg, v0_neg, a0_neg, E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg, r_min_neg, &phi_lw_neg, &A_lw_neg);
+	error = integral_phi_and_E(-q, t, R0, r0_neg, v0_neg, a0_neg, E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg, E_neg, r_min_neg, &phi_lw_neg, &A_lw_neg);
 	printf("neg err = %d phi_lw = %Lf E1=%Lf E2 = %0.20Lf\n", error, phi_lw_neg, *E_minus_grad_phi_R0_neg, *E_minus_1_c_dA_dt_R0_neg);
 
 	*E1 = *E_minus_grad_phi_R0_pos + *E_minus_grad_phi_R0_neg;
 	*E2 = *E_minus_1_c_dA_dt_R0_pos + *E_minus_1_c_dA_dt_R0_neg;
 
-	*E = *E1 + *E2;
+	//*E = *E1 + *E2;
+	*E = *E_pos + *E_neg;
+
+	return error;
 }
 
 
 int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordinate r0_neg, velocity v0_pos, velocity v0_neg, acceleration a0_pos, acceleration a0_neg, timespan t_a0, coordinate r_min_pos, coordinate r_min_neg)
 {
-	printf("sizeof(double) %ld\n", sizeof(double));
-	printf("sizeof(long double) %ld\n", sizeof(long double));
+	printf("sizeof(double) %zd\n", sizeof(double));
+	printf("sizeof(long double) %zd\n", sizeof(long double));
 
 	printf ("nr = %d ", get_nr());
 	printf ("nt = %d\n", get_nt());
@@ -153,8 +156,8 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 		int error = 0, err;
 		//potential phi_lw_pos;
 		//potential phi_lw_neg;
-		field E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos;
-		field E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg;
+		field E_minus_grad_phi_R0_pos, E_minus_1_c_dA_dt_R0_pos, E_pos;
+		field E_minus_grad_phi_R0_neg, E_minus_1_c_dA_dt_R0_neg, E_neg;
 		coordinate r_pos;
 		coordinate r_neg;
 		field E1, E2, E;
@@ -172,8 +175,8 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 				v0_pos, v0_neg,
 				a0_pos, a0_neg,
 				r_min_pos, r_min_neg,
-				&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos,
-				&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
+				&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos, &E_pos,
+				&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg, &E_neg,
 				&E1, &E2, &E);
 			if (fabs(E) > 1e-20){
 #if 1
@@ -258,9 +261,9 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 
 
 		//
-		field E_pos, E_neg; // электрическое поле в облаасти нахождения положительной и отрицательной обкладки
-		field E1_pos, E1_neg; // электрическое поле в облаасти нахождения положительной и отрицательной обкладки
-		field E2_pos, E2_neg; // электрическое поле в облаасти нахождения положительной и отрицательной обкладки
+		field Ea_pos, Ea_neg; // электрическое поле в облаасти нахождения положительной и отрицательной обкладки
+		field E1a_pos, E1a_neg; // электрическое поле в облаасти нахождения положительной и отрицательной обкладки
+		field E2a_pos, E2a_neg; // электрическое поле в облаасти нахождения положительной и отрицательной обкладки
 
 		printf("\nCalc E on positive side");
 
@@ -270,9 +273,9 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 			v0_pos, v0_neg,
 			a0_pos, a0_neg,
 			r_min_pos, r_min_neg,
-			&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos,
-			&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
-			&E1_pos, &E2_pos, &E_pos);
+			&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos, &E_pos,
+			&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg, &E_neg,
+			&E1a_pos, &E2a_pos, &Ea_pos);
 
 		printf(
 			"R0_pos = %0.10Lf t = %0.10Lf "
@@ -301,9 +304,9 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 			v0_pos, v0_neg,
 			a0_pos, a0_neg,
 			r_min_pos, r_min_neg,
-			&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos, 
-			&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg,
-			&E1_neg, &E2_neg, &E_neg);
+			&E_minus_grad_phi_R0_pos, &E_minus_1_c_dA_dt_R0_pos, &E_pos,
+			&E_minus_grad_phi_R0_neg, &E_minus_1_c_dA_dt_R0_neg, &E_neg,
+			&E1a_neg, &E2a_neg, &Ea_neg);
 
 		printf(
 			"R0_neg = %0.10Lf t = %0.10Lf "
@@ -325,8 +328,8 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 			);
 
 		printf(
-			"E_pos = % 0.20Le, E_neg = % 0.20Le (E_pos - E_neg) = % 0.20Le\n"
-			, E_pos, E_neg, (E_pos - E_neg)
+			"Ea_pos = % 0.20Le, Ea_neg = % 0.20Le (Ea_pos - Ea_neg) = % 0.20Le\n"
+			, Ea_pos, Ea_neg, (Ea_pos - Ea_neg)
 			);
 
 		if (v_n_t < get_nt() - 1)
@@ -389,6 +392,7 @@ int do_v1_calc_priv(charge q, mass m_pos, mass m_neg, coordinate r0_pos, coordin
 			printf("dt = %Le\n", dt);
 		}
 	}
+	return 0;
 }
 
 

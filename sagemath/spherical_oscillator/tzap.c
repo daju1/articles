@@ -4,6 +4,7 @@
 #include <float.h>
 #include <assert.h>
 #include "tzap.h"
+//#define USE_DEBUG
 #include "dbg_info.h"
 #include "stdlib.h"
 
@@ -226,6 +227,11 @@ void init_array_2(int v_N_r0, int v_N_t, double * a0_pos, velocity * v0_pos, dou
 velocity get_c()
 {
 	return g_c;
+}
+
+long double get_multiplier_E()
+{
+	return multiplier_E;
 }
 
 #ifdef ALGORITHM_VERSION_1
@@ -723,8 +729,11 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 #else
 
 #ifdef SI
-	long double epsilon_dr = 1.0e-32;
-	long double epsilon_dR = 1.0e-12;
+	//long double epsilon_dr = 1.0e-32;
+	//long double epsilon_dR = 1.0e-12;
+
+	long double epsilon_dr = 1.0e-8;
+	long double epsilon_dR = 1.0e-8;
 #else
 	long double epsilon_dr = 1.0e-12;
 	long double epsilon_dR = 1.0e-8;
@@ -841,6 +850,8 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 		DBG_INFO("dr=%Le \n", dr);
 		dR_pre = dR;
 		R_pre = R;
+
+		printf("while dR %Le > epsilon_dR %Le && dr %Le > epsilon_dr %Le\n", dR, epsilon_dR, dr, epsilon_dr);
 
 		DBG_INFO("\n");
 		++i;

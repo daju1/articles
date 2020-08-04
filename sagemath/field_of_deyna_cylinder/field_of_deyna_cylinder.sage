@@ -8,146 +8,7 @@ import numpy as np
 
 
 attach("float_formatting.sage")
-
-def print_stack(stack):
-    print ("print_stack")
-    for frame in stack:
-        file = frame[1]
-        line = frame[2]
-        func_name = frame[3]
-        code_context = frame[4]
-        print ("file = ", file)
-        print ("line = ", line)
-        print ("func_name = ", func_name)
-        print ("code_context = ", code_context)
-
-def get_integrand_view(f):
-    return f(x)
-
-class my_dummy_integral:
-    f = None
-    a = None
-    b = None
-    def __init__(self, f, a, b):
-        print ("my_dummy_integral ", f, a, b)
-        self.f = f
-        self.a = a
-        self.b = b
-
-def my_numerical_integral(f, a, b):
-    from scipy import integrate
-
-    log_fn = 'field_of_deyna_cylinder_my_numerical_integral.txt'
-    # log_fn = 'field_of_deyna_cylinder.txt'
-
-    to_call_integration = True
-
-    if type(f) is my_dummy_integral:
-        to_call_integration = False
-
-    import inspect
-    stack = inspect.stack()
-    for frame in stack:
-        func_name = frame[3]
-        # print ("func_name = ", func_name)
-        if ('get_integrand_view' == func_name):
-            to_call_integration = False
-            break;
-
-    try:
-        print ("integrand = ", get_integrand_view(f))
-    except Exception as ex:
-        print ("Exception ex = ", ex)
-    print ("a = ", a)
-    print ("b = ", b)
-    print ("to_call_integration = ", to_call_integration)
-
-    # file = open('field_of_deyna_cylinder_my_numerical_integral.txt', 'a')
-    file = open(log_fn, 'a')
-    file.write('\n')
-
-    file.write("f = " + str(f))
-    file.write('\n')
-    try:
-        file.write("integrand = " + str(get_integrand_view(f)))
-    except Exception as ex:
-        file.write("Exception ex = " + str(ex))
-    file.write('\n')
-    file.write("a = " + str(a) + ", b = " + str(b))
-    file.write('\n')
-    file.write("to_call_integration = " + str(to_call_integration))
-    file.write('\n\n')
-    file.close()
-
-    if not to_call_integration:
-        print ("")
-        return my_dummy_integral(f,a,b)
-
-    try:
-        integral = integrate.quad(f, a, b)
-        # integral = numerical_integral(f, a, b)
-
-        print ("integral = ", integral)
-        print ("")
-
-        # file = open(log_fn, 'a')
-        file = open(log_fn, 'a')
-        file.write('\n')
-        file.write("integral = " + str(integral))
-        file.write('\n\n')
-        file.close()
-
-        result = integral[0]
-        return result
-
-    except Exception as ex:
-
-        print ("Exception ex = ", str(ex))
-        # print ("f = ", f)
-        if to_call_integration:
-            try:
-                print ("integrand = ", get_integrand_view(f))
-            except Exception as ex2:
-                print ("Exception ex2 = ", ex2)
-            print ("a = ", a)
-            print ("b = ", b)
-            stack = inspect.stack()
-            print_stack(stack)
-
-        file = open(log_fn, 'a')
-        file.write('\n')
-        file.write("Exception ex = " + str(ex))
-        file.write('\n')
-        file.write("f = " + str(f))
-        file.write('\n')
-        try:
-            file.write("integrand = " + str(get_integrand_view(f)))
-        except Exception as ex2:
-            file.write("Exception ex2 = " + str(ex2))
-        file.write('\n')
-        file.write("a = " + str(a) + ", b = " + str(b))
-        file.write('\n\n')
-        file.write('\n\n')
-        file.close()
-
-        if 'unable to simplify to float approximation' == str(ex):
-            raise ex
-
-        raise ex
-
-        integral = numerical_integral(f, a, b)
-
-        print ("integral = ", integral)
-
-        file = open(log_fn, 'a')
-        file.write('\n')
-        file.write("integral = " + str(integral))
-        file.write('\n\n')
-        file.close()
-
-        result = integral[0]
-        print ("result = ", result)
-        return result
+attach("num_int.sage")
 
 
 zj = var("zj")
@@ -415,7 +276,7 @@ else:
 
 
 #Av_diff_ra = integrate(Iphi_jv_rj_diff_ra, (rj, rj1, rj2), algorithm="giac")
-Av_diff_ra = lambda cI0, rj1, rj2, ra, zj, za : my_numerical_integral(lambda rj : Iphi_jv_rj_diff_ra(cI0, rj, ra, zj, za), rj1, rj2)
+Av_diff_ra = lambda cI0, rj1, rj2, ra, zj, za : num_int(lambda rj : Iphi_jv_rj_diff_ra(cI0, rj, ra, zj, za), rj1, rj2)
 # print "Av_diff_ra  =", Av_diff_ra(cI0, rj1, rj2, ra, zj, za)
 
 
@@ -530,12 +391,12 @@ def calc_H_phi( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra):
     As_diff_ra_num_int = (As_diff_ra_substituted_rj_za_ra(zj)).nintegral(zj, Zj1, Zj2)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
-    file.write("Av_diff_ra_num_int = my_numerical_integral( lambda zj : Av_diff_ra_substituted_rj(Ra, zj, Za), Zj1, Zj2)")
+    file.write("Av_diff_ra_num_int = num_int( lambda zj : Av_diff_ra_substituted_rj(Ra, zj, Za), Zj1, Zj2)")
     file.write('\n\n')
     file.close()
 
-    # Av_diff_ra_num_int = my_numerical_integral( lambda zj : Av_diff_ra_substituted_rj_za_ra(zj), Zj1, Zj2)
-    Av_diff_ra_num_int = my_numerical_integral( lambda zj : Av_diff_ra_substituted_rj(Ra, zj, Za), Zj1, Zj2)
+    # Av_diff_ra_num_int = num_int( lambda zj : Av_diff_ra_substituted_rj_za_ra(zj), Zj1, Zj2)
+    Av_diff_ra_num_int = num_int( lambda zj : Av_diff_ra_substituted_rj(Ra, zj, Za), Zj1, Zj2)
     print ("Av_diff_ra_num_int =", Av_diff_ra_num_int)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
@@ -600,15 +461,15 @@ def calc_F_lorenz( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra1
     jt_substituted_cI0(ra) = jt(1 , ra)
     print("jt_substituted_cI0 = ", jt_substituted_cI0(ra))
 
-    At_diff_za_num_int_ra = lambda Rj : my_numerical_integral(lambda ra : (2*pi*jt_substituted_cI0(ra)*ra*At_diff_za_substituted_zj_za(Rj, ra)), Ra1, Ra2)
+    At_diff_za_num_int_ra = lambda Rj : num_int(lambda ra : (2*pi*jt_substituted_cI0(ra)*ra*At_diff_za_substituted_zj_za(Rj, ra)), Ra1, Ra2)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
-    file.write("At_diff_za_num_int_ra_int_rj = my_numerical_integral(lambda rj : At_diff_za_num_int_ra(rj), Rj1, Rj2)")
+    file.write("At_diff_za_num_int_ra_int_rj = num_int(lambda rj : At_diff_za_num_int_ra(rj), Rj1, Rj2)")
     # file.write("At_diff_za_num_int_ra(rj) = " + str(At_diff_za_num_int_ra(rj)))
     file.write('\n\n')
     file.close()
 
-    At_diff_za_num_int_ra_int_rj = my_numerical_integral(lambda rj : At_diff_za_num_int_ra(rj), Rj1, Rj2)
+    At_diff_za_num_int_ra_int_rj = num_int(lambda rj : At_diff_za_num_int_ra(rj), Rj1, Rj2)
     print ("At_diff_za_num_int_ra_int_rj =", At_diff_za_num_int_ra_int_rj)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
@@ -617,15 +478,15 @@ def calc_F_lorenz( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra1
     file.close()
 
     #As_v_diff_ra_num_int_int = (As_diff_ra_substituted_rj_za - Av_diff_ra  ).nintegral(ra,Ra1,Ra2).nintegral(zj, Zj1, Zj2)
-    As_diff_ra_num_int_ra = lambda Zj : my_numerical_integral(lambda ra : (2*pi*jt_substituted_cI0(ra)*ra*(As_diff_ra_substituted_rj_za(ra, Zj) ) ), Ra1, Ra2)
+    As_diff_ra_num_int_ra = lambda Zj : num_int(lambda ra : (2*pi*jt_substituted_cI0(ra)*ra*(As_diff_ra_substituted_rj_za(ra, Zj) ) ), Ra1, Ra2)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
-    file.write("As_diff_ra_num_int_ra_int_zj = my_numerical_integral(lambda zj : As_diff_ra_num_int_ra(zj), Zj1, Zj2)")
+    file.write("As_diff_ra_num_int_ra_int_zj = num_int(lambda zj : As_diff_ra_num_int_ra(zj), Zj1, Zj2)")
     #file.write("As_diff_ra_num_int_ra(zj) = " + str(As_diff_ra_num_int_ra(zj)))
     file.write('\n\n')
     file.close()
 
-    As_diff_ra_num_int_ra_int_zj = my_numerical_integral(lambda zj : As_diff_ra_num_int_ra(zj), Zj1, Zj2)
+    As_diff_ra_num_int_ra_int_zj = num_int(lambda zj : As_diff_ra_num_int_ra(zj), Zj1, Zj2)
     print ("As_diff_ra_num_int_ra_int_zj  =", As_diff_ra_num_int_ra_int_zj)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
@@ -633,14 +494,14 @@ def calc_F_lorenz( At_diff_za_substituted_zj, As_diff_ra_substituted_rj, Za, Ra1
     file.write('\n\n')
     file.close()
 
-    Av_diff_ra_num_int_ra = lambda Zj : my_numerical_integral(lambda ra : (2*pi*jt_substituted_cI0(ra)*ra*(Av_diff_ra_substituted_rj_za(ra, Zj) ) ), Ra1, Ra2)
+    Av_diff_ra_num_int_ra = lambda Zj : num_int(lambda ra : (2*pi*jt_substituted_cI0(ra)*ra*(Av_diff_ra_substituted_rj_za(ra, Zj) ) ), Ra1, Ra2)
 
     file = open('field_of_deyna_cylinder.txt', 'a')
-    file.write("Av_diff_ra_num_int_ra_int_zj = my_numerical_integral(lambda zj : Av_diff_ra_num_int_ra(zj), Zj1, Zj2)")
+    file.write("Av_diff_ra_num_int_ra_int_zj = num_int(lambda zj : Av_diff_ra_num_int_ra(zj), Zj1, Zj2)")
     file.write('\n\n')
     file.close()
 
-    Av_diff_ra_num_int_ra_int_zj = my_numerical_integral(lambda zj : Av_diff_ra_num_int_ra(zj), Zj1, Zj2)
+    Av_diff_ra_num_int_ra_int_zj = num_int(lambda zj : Av_diff_ra_num_int_ra(zj), Zj1, Zj2)
     print ("Av_diff_ra_num_int_ra_int_zj =", Av_diff_ra_num_int_ra_int_zj)
 
     file = open('field_of_deyna_cylinder.txt', 'a')

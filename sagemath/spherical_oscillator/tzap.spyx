@@ -1,5 +1,6 @@
 cdef extern from "tzap.c":
     long double get_c()
+    long double get_multiplier_E()
     long double get_dr()
     void set_dr(long double dr)
     void set_r_finish(long double r_finish)
@@ -10,9 +11,10 @@ cdef extern from "tzap.c":
 
 
 cdef extern from "integrate.c":
+    int integrand_phi_and_E(long double q, long double t, long double R0, long double r0, long double v0, long double a0, long double theta, long double * pE_minus_grad_phi_R0, long double *pE_minus_1_c_dA_dt_R0, long double *pE, long double r_min, long double *phi, long double *A)
     int integral_phi(long double q, long double t, long double R0, long double r0, long double v0, long double a0, long double r_min, long double * result)
-    int integral_phi_and_E(long double q, long double t, long double R0, long double r0, long double v0, long double a0, long double * pE_minus_grad_phi_R0, long double *pE_minus_1_c_dA_dt_R0, long double r_min, long double *phi, long double *A)
-    int dbl_integral_phi_and_E(long double q, long double t, long double R0, long double r0_min, long double v0_min, long double a0_min, long double r0_max, long double v0_max, long double a0_max, long double * pE_minus_grad_phi_R0, long double *pE_minus_1_c_dA_dt_R0, long double r_min, long double *phi, long double *A)
+    int integral_phi_and_E(long double q, long double t, long double R0, long double r0, long double v0, long double a0, long double * pE_minus_grad_phi_R0, long double *pE_minus_1_c_dA_dt_R0, long double *pE, long double r_min, long double *phi, long double *A)
+    int dbl_integral_phi_and_E(long double q, long double t, long double R0, long double r0_min, long double v0_min, long double a0_min, long double r0_max, long double v0_max, long double a0_max, long double * pE_minus_grad_phi_R0, long double * pE, long double *pE_minus_1_c_dA_dt_R0, long double r_min, long double *phi, long double *A)
 
 cdef extern from "calc.c":
     int do_v1_calc(long double q, long double m_pos, long double m_neg, long double r0_pos, long double r0_neg, long double v0_pos, long double v0_neg, long double a0_pos, long double a0_neg, long double t_a0)
@@ -20,6 +22,10 @@ cdef extern from "calc.c":
 def get_light_veloncity():
     cdef long double c = get_c()
     return c
+
+def get_electric_field_multiplier():
+    cdef long double m = get_multiplier_E()
+    return m
 
 def get_dr_py():
     cdef long double dr = get_dr()
@@ -35,7 +41,25 @@ def tzap(q, t, R0, r0, v0, a0, theta, r_min):
     cdef long double t2;
     cdef long double r1;
     cdef error = calc_tzap(q, t, R0, r0, v0, a0, theta, r_min, &t2, &r1)
-    return t2
+    return (t2, r1)
+
+def phi_and_E_integrand(q, t, R0, r0, v0, a0, theta, r_min):
+    cdef long double E1
+    cdef long double E2
+    cdef long double E
+    cdef long double phi
+    cdef long double A
+    cdef error = integrand_phi_and_E(q, t, R0, r0, v0, a0, theta, &E1, &E2, &E, r_min, &phi, &A)
+    return (phi, A, E1, E2, E, error)
+
+def phi_and_E_lw(q, t, R0, r0, v0, a0, r_min):
+    cdef long double E1
+    cdef long double E2
+    cdef long double E
+    cdef long double phi
+    cdef long double A
+    cdef error = integral_phi_and_E(q, t, R0, r0, v0, a0, &E1, &E2, &E, r_min, &phi, &A)
+    return (phi, A, E1, E2, E, error)
 
 def phi_lw(q, t, R0, r0, v0, a0, r_min):
     cdef long double result;
@@ -45,18 +69,20 @@ def phi_lw(q, t, R0, r0, v0, a0, r_min):
 def phi_and_E_lw(q, t, R0, r0, v0, a0, r_min):
     cdef long double E1
     cdef long double E2
+    cdef long double E
     cdef long double phi
     cdef long double A
-    cdef error = integral_phi_and_E(q, t, R0, r0, v0, a0, &E1, &E2, r_min, &phi, &A)
-    return (phi, A, E1, E2, error)
+    cdef error = integral_phi_and_E(q, t, R0, r0, v0, a0, &E1, &E2, &E, r_min, &phi, &A)
+    return (phi, A, E1, E2, E, error)
 
 def dbl_phi_and_E_lw(q, t, R0, r0_min, v0_min, a0_min, r0_max, v0_max, a0_max, r_min):
     cdef long double E1
     cdef long double E2
+    cdef long double E
     cdef long double phi
     cdef long double A
-    cdef error = dbl_integral_phi_and_E(q, t, R0, r0_min, v0_min, a0_min, r0_max, v0_max, a0_max, &E1, &E2, r_min, &phi, &A)
-    return (phi, A, E1, E2, error)
+    cdef error = dbl_integral_phi_and_E(q, t, R0, r0_min, v0_min, a0_min, r0_max, v0_max, a0_max, &E1, &E2, &E, r_min, &phi, &A)
+    return (phi, A, E1, E2, E, error)
 
 def v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0):
     cdef error = do_v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0)

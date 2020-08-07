@@ -24,3 +24,6 @@ def float_formatting(float_value):
 def suffix(t, r0, a0):
     return "_r0=" + float_formatting(r0) + "_a0=" + float_formatting(a0) + "_t=" + float_formatting(t)
 
+def suffix_trvaR(t, r0, v0, a0, R0):
+    return "_R0=" + float_formatting(R0) + "_r0=" + float_formatting(r0) + "_v0=" + float_formatting(v0) + "_a0=" + float_formatting(a0) + "_t=" + float_formatting(t)
+

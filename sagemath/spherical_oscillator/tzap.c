@@ -732,8 +732,8 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 	//long double epsilon_dr = 1.0e-32;
 	//long double epsilon_dR = 1.0e-12;
 
-	long double epsilon_dr = 1.0e-8;
-	long double epsilon_dR = 1.0e-8;
+	long double epsilon_dr = 1.0e-7;
+	long double epsilon_dR = 1.0e-7;
 #else
 	long double epsilon_dr = 1.0e-12;
 	long double epsilon_dR = 1.0e-8;
@@ -817,7 +817,7 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 		assert(v1 < g_c);
 		assert(v2 < g_c);
 #if 1
-		long double n = 0.9;
+		long double n = 0.5;
 		if (i > 1 && fabs(dR) - fabs(dR_pre) < epsilon_dr)
 		{
 			int j = 0;
@@ -831,7 +831,7 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 				dR = g_c*(t-t1) - R_tmp;
 				DBG_INFO("t2 = %Lf ", *t2);
 
-				n *= 0.1;
+				n *= 0.5;
 				DBG_INFO("n = %Lf ", n);
 				++j;
 				DBG_INFO("j = %d ", j);
@@ -839,9 +839,10 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 					g_max_j = j;
 				DBG_INFO("g_max_j = %d ", g_max_j);
 			}
-			while (fabs(dR) > fabs(dR_pre) && j < 1000000);
+			while (fabs(dR) > 0.5 * fabs(dR_pre) && j < 1000);
 
 			R = R_tmp;
+			*t2 = t - R / g_c;
 		}
 #endif
 		dt = t1 - *t2;
@@ -851,12 +852,13 @@ int calc_tzap(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 		dR_pre = dR;
 		R_pre = R;
 
-		printf("while dR %Le > epsilon_dR %Le && dr %Le > epsilon_dr %Le\n", dR, epsilon_dR, dr, epsilon_dr);
+		//printf("i = %d ", i);
+		//printf("while dR %Le > epsilon_dR %Le && dr %Le > epsilon_dr %Le\n", dR, epsilon_dR, dr, epsilon_dr);
 
 		DBG_INFO("\n");
 		++i;
 	}
-	while (fabs(dR) > epsilon_dR && fabs(dr) > epsilon_dr);
+	while (fabs(dR) > epsilon_dR && fabs(dr) > epsilon_dr && i < 10000);
 
 	DBG_INFO("fabs(t1 - t2) = %e fabs(t - t2) = %e calc_tzap() result=%Lf\n", fabs(t1 - *t2), fabs(t - *t2), *t2);
 #endif

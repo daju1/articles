@@ -59,6 +59,16 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
     all_plot_data_E2 = []
     all_plot_data_E2_p = []
     all_plot_data_E2_n = []
+
+    all_plot_data_k_p = []
+    all_plot_data_k_n = []
+
+    all_plot_data_k1_p = []
+    all_plot_data_k1_n = []
+
+    all_plot_data_k2_p = []
+    all_plot_data_k2_n = []
+
     for t_i in np.arange(t1, t2, dt):
         plot_data_phi = []
         plot_data_phi_p = []
@@ -83,6 +93,15 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
         plot_data_E2_p = []
         plot_data_E2_n = []
         plot_data_E_E1_E2 = []
+
+        plot_data_k_p = []
+        plot_data_k_n = []
+
+        plot_data_k1_p = []
+        plot_data_k1_n = []
+
+        plot_data_k2_p = []
+        plot_data_k2_n = []
 
         r_p_min = get_r_of_sphere(+q, t_i, r0_p_min, v0_p_min, a0_p_min, r_min)
         r_p_max = get_r_of_sphere(+q, t_i, r0_p_max, v0_p_max, a0_p_max, r_min)
@@ -111,11 +130,33 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
                 a0_p = 0.5 * (a0_p_min + a0_p_max)
                 a0_n = 0.5 * (a0_n_min + a0_n_max)
 
-                (phi_p, A_p, E1_p, E2_p, E_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, r0_p, v0_p, a0_p, r_min)
-                (phi_n, A_n, E1_n, E2_n, E_n, error_n) = phi_and_E_lw(-q, t_i, R0_i, r0_n, v0_n, a0_n, r_min)
+                # (phi_p, A_p, E1_p, E2_p, E_p, error_p) = phi_and_E_lw(+q, t_i, R0_i, r0_p, v0_p, a0_p, r_min)
+                # (phi_n, A_n, E1_n, E2_n, E_n, error_n) = phi_and_E_lw(-q, t_i, R0_i, r0_n, v0_n, a0_n, r_min)
 
-            print (phi_p, A_p, E1_p, E2_p, E_p, error_p, r_p_min, r_p_max)
-            print (phi_n, A_n, E1_n, E2_n, E_n, error_n, r_n_min, r_n_max)
+                attach("calc_E_with_num_int.sage")
+                print ("q_p = ", +q, "t = ", t_i, "R0 = ", R0_i, "r0_p = ", r0_p, "v0_p = ", v0_p, "a0_p = ", a0_p, "r_min =", r_min)
+                print ("q_n = ", -q, "t = ", t_i, "R0 = ", R0_i, "r0_n = ", r0_n, "v0_n = ", v0_n, "a0_n = ", a0_n, "r_min =", r_min)
+ 
+                k_p   = k_E     (+q, t_i, R0_i, r0_p, v0_p, a0_p, r_min)
+                k_n   = k_E     (-q, t_i, R0_i, r0_n, v0_n, a0_n, r_min)
+                k1_p  = k_E1    (+q, t_i, R0_i, r0_p, v0_p, a0_p, r_min)
+                k1_n  = k_E1    (-q, t_i, R0_i, r0_n, v0_n, a0_n, r_min)
+                k2_p  = k_E2    (+q, t_i, R0_i, r0_p, v0_p, a0_p, r_min)
+                k2_n  = k_E2    (-q, t_i, R0_i, r0_n, v0_n, a0_n, r_min)
+                phi_p = int_phi (+q, t_i, R0_i, r0_p, v0_p, a0_p, r_min)
+                phi_n = int_phi (-q, t_i, R0_i, r0_n, v0_n, a0_n, r_min)
+                A_p   = int_A   (+q, t_i, R0_i, r0_p, v0_p, a0_p, r_min)
+                A_n   = int_A   (-q, t_i, R0_i, r0_n, v0_n, a0_n, r_min)
+                E_p   = int_E   (+q, t_i, R0_i, r0_p, v0_p, a0_p, r_min)
+                E_n   = int_E   (-q, t_i, R0_i, r0_n, v0_n, a0_n, r_min)
+                E1_p  = int_E1  (+q, t_i, R0_i, r0_p, v0_p, a0_p, r_min)
+                E1_n  = int_E1  (-q, t_i, R0_i, r0_n, v0_n, a0_n, r_min)
+                E2_p  = int_E2  (+q, t_i, R0_i, r0_p, v0_p, a0_p, r_min)
+                E2_n  = int_E2  (-q, t_i, R0_i, r0_n, v0_n, a0_n, r_min)
+
+
+            print (phi_p, A_p, E1_p, E2_p, E_p, r_p_min, r_p_max)
+            print (phi_n, A_n, E1_n, E2_n, E_n, r_n_min, r_n_max)
 
             plot_data_phi += [(R0_i, phi_p + phi_n)]
             plot_data_phi_p += [(R0_i, phi_p)]
@@ -141,6 +182,16 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
                 plot_data_E2_n += [(R0_i, E2_n)]
                 plot_data_E_E1_E2 += [(R0_i, E1_p + E2_p + E1_n + E2_n), (R0_i, E1_p + E1_n), (R0_i, E2_p + E2_n)]
 
+                plot_data_k_p += [(R0_i, k_p)]
+                plot_data_k_n += [(R0_i, k_n)]
+
+                plot_data_k1_p += [(R0_i, k1_p)]
+                plot_data_k1_n += [(R0_i, k1_n)]
+
+                plot_data_k2_p += [(R0_i, k2_p)]
+                plot_data_k2_n += [(R0_i, k2_n)]
+
+
         if True: #abs(t_i/dt_all) > dt/2:
             all_plot_data_phi += plot_data_phi
             all_plot_data_phi_p += plot_data_phi_p
@@ -164,7 +215,16 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             all_plot_data_E2_p += plot_data_E2_p
             all_plot_data_E2_n += plot_data_E2_n
 
-        dir = os.getcwd()  + "/results_lw/spherical_explosion_radial_snapshot/"
+            all_plot_data_k_p += plot_data_k_p
+            all_plot_data_k_n += plot_data_k_n
+
+            all_plot_data_k1_p += plot_data_k1_p
+            all_plot_data_k1_n += plot_data_k1_n
+
+            all_plot_data_k2_p += plot_data_k2_p
+            all_plot_data_k2_n += plot_data_k2_n
+
+        dir = os.getcwd()  + "/results_num_int/spherical_explosion_radial_snapshot/"
         if True == use_dbl_integration:
             dir += "dbl_integration_on_volume/"
         dir += "t=" + float_formatting(t_i)
@@ -240,6 +300,48 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             plot_r_of_sphere(plot_data_E_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
+        if len(plot_data_k_p) > 0:
+            p = list_plot(plot_data_k_p)
+            pname = folder + "spherical_explosion_k_p_R0" + "_t=" + float_formatting(t_i) + ".png"
+            print (pname)
+            plot_r_of_sphere(plot_data_k_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
+            p.save(pname)
+
+        if len(plot_data_k_n) > 0:
+            p = list_plot(plot_data_k_n)
+            pname = folder + "spherical_explosion_k_n_R0" + "_t=" + float_formatting(t_i) + ".png"
+            print (pname)
+            plot_r_of_sphere(plot_data_k_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
+            p.save(pname)
+
+        if len(plot_data_k1_p) > 0:
+            p = list_plot(plot_data_k1_p)
+            pname = folder + "spherical_explosion_k1_p_R0" + "_t=" + float_formatting(t_i) + ".png"
+            print (pname)
+            plot_r_of_sphere(plot_data_k1_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
+            p.save(pname)
+
+        if len(plot_data_k1_n) > 0:
+            p = list_plot(plot_data_k1_n)
+            pname = folder + "spherical_explosion_k1_n_R0" + "_t=" + float_formatting(t_i) + ".png"
+            print (pname)
+            plot_r_of_sphere(plot_data_k1_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
+            p.save(pname)
+
+        if len(plot_data_k2_p) > 0:
+            p = list_plot(plot_data_k2_p)
+            pname = folder + "spherical_explosion_k2_p_R0" + "_t=" + float_formatting(t_i) + ".png"
+            print (pname)
+            plot_r_of_sphere(plot_data_k2_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
+            p.save(pname)
+
+        if len(plot_data_k2_n) > 0:
+            p = list_plot(plot_data_k2_n)
+            pname = folder + "spherical_explosion_k2_n_R0" + "_t=" + float_formatting(t_i) + ".png"
+            print (pname)
+            plot_r_of_sphere(plot_data_k2_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
+            p.save(pname)
+
         if len(plot_data_E1) > 0:
             p = list_plot(plot_data_E1)
             pname = folder + "spherical_explosion_E1_R0" + "_t=" + float_formatting(t_i) + ".png"
@@ -289,7 +391,7 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             plot_r_of_sphere(plot_data_E_E1_E2, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, r_p_min, r_p_max, r_n_min, r_n_max)
             p.save(pname)
 
-    dir = os.getcwd()  + "/results_lw/spherical_explosion_radial_snapshot/"
+    dir = os.getcwd()  + "/results_num_int/spherical_explosion_radial_snapshot/"
     if True == use_dbl_integration:
         dir += "dbl_integration_on_volume/"
     dir += "all_t"
@@ -376,6 +478,38 @@ def spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
 
     p = list_plot(all_plot_data_E2_n)
     pname = "spherical_explosion_all_E2_n_R0.png"
+    print (pname)
+    p.save(pname)
+
+    p = list_plot(all_plot_data_k_p)
+    pname = folder + "spherical_explosion_all_k_p_R0.png"
+    print (pname)
+    p.save(pname)
+
+    p = list_plot(all_plot_data_k_n)
+    pname = folder + "spherical_explosion_all_k_n_R0.png"
+    print (pname)
+    p.save(pname)
+
+
+    p = list_plot(all_plot_data_k1_p)
+    pname = folder + "spherical_explosion_all_k1_p_R0.png"
+    print (pname)
+    p.save(pname)
+
+    p = list_plot(all_plot_data_k1_n)
+    pname = folder + "spherical_explosion_all_k1_n_R0.png"
+    print (pname)
+    p.save(pname)
+
+
+    p = list_plot(all_plot_data_k2_p)
+    pname = folder + "spherical_explosion_all_k2_p_R0.png"
+    print (pname)
+    p.save(pname)
+
+    p = list_plot(all_plot_data_k2_n)
+    pname = folder + "spherical_explosion_all_k2_n_R0.png"
     print (pname)
     p.save(pname)
 

@@ -67,8 +67,8 @@ int calc_R_lw(charge q, timevalue t, coordinate R0, coordinate r0, velocity v0, 
 		printf("R_zap = %Lf\n", R_zap);
 		printf("dR_zap = %e\n", fabs(R_zap - *pR_zap));
 		//assert(0);
-		int * p = 0;
-		*p += 1;
+		//int * p = 0;
+		//*p += 1;
 	}
 
 #ifdef ALGORITHM_VERSION_0
@@ -310,7 +310,7 @@ int integrand_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, vel
 	DBG_INFO("phi = %Lf E1 = %Lf E2 = %Lf\n", *phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0);
 
 
-	printf("t = %Lf theta = %Lf t_zap = %Lf phi = %Lf E1 = %Lf E2 = %Lf E = %Lf\n", t, theta, t_zap, *phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0, *pE);
+	printf("t = %Lf theta = %Lf t_zap = %Le r_zap = %Le v_zap = %Le a_zap = %Le phi = %Le E1 = %Le E2 = %Le E = %Le\n", t, theta, t_zap, r_zap, v_zap, a_zap, *phi, *pE_minus_grad_phi_R0, *pE_minus_1_c_dA_dt_R0, *pE);
 	return error;
 }
 
@@ -468,7 +468,7 @@ int integral_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, velo
 #endif
 		S += dS_dtheta * dtheta;
 		//printf("S = %Lf S0 = %Lf\n", S, S0);
-		DBG_INFO("dS_dtheta = %Lf ", dS_dtheta);
+		DBG_INFO("dS_dtheta = %Le ", dS_dtheta);
 
 		if (i % 1000 == 0)
 		if (0.0 != E_minus_1_c_dA_dt_R0)

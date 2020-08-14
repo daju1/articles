@@ -124,25 +124,24 @@ plot_gauss_theorem_t_E    (q, trange, R0, r0, v0, a0, r_min)
 
 # these are half values from results of copper_explosion_lw.sage
 q_p =  2.12744210611535
-t =  0 
-R0 =  0.05611882173240373
 r0_p =  0.000277815949170315 
 v0_p =  0.000000000000000 
 a0_p =  2.77810674609282e6 
 r_min = 0.0000555631898340631
 
 q_n =  -2.12744210611535 
-t =  0 
-R0 =  0.05611882173240373 *10
 r0_n =  0.000277815949170315 
 v0_n =  0.000000000000000 
 a0_n =  9.48896834491850e8 
 r_min = 0.0000555631898340631
 
+R0 =  0.15
+
 t1 = 0
 Delta_t =  0.000347500236321034
 t2 = Delta_t
 dt = 0.000001
+
 trange = np.arange(t1, t2, dt)
 '''
 folder = get_folder(t2, r0_p, v0_p, a0_p, R0)
@@ -188,9 +187,11 @@ a0_neg_max =  1.89779366898370e9
 
 q =  2.12744210611535
 
-step_R0 = 100*r0_pos_max
-min_R0 = r0_pos_max + step_R0
-max_R0 = r0_pos_max + 100.0 * step_R0
+# step_R0 = 100*r0_pos_max
+step_R0 = 0.05
+
+min_R0 = step_R0
+max_R0 = 20.0 * step_R0
 
 
 attach("spherical_explosion_time_evaluation.sage")

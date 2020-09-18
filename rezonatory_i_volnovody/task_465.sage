@@ -1,6 +1,9 @@
 import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
+try:
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+except:
+    pass
 
 
 mu = var('mu')
@@ -37,9 +40,9 @@ sigma = var('sigma')
 # rot rot E = grad div E - Laplasian E = i * omega / c * mu * rot H
 
 # и подставляя rot H из второго уравнения
-grad div E - Laplasian E = i * omega / c * mu * (4*pi/c*j - i * omega / c * epsilon * E)
-grad div E - Laplasian E = i * omega / c * mu * 4*pi/c*j  + omega / c * mu * omega / c * epsilon * E
-grad div E - Laplasian E = i * omega / c^2 * mu * 4*pi * j  + mu * epsilon * omega^2 / c^2 * E
+# grad div E - Laplasian E = i * omega / c * mu * (4*pi/c*j - i * omega / c * epsilon * E)
+# grad div E - Laplasian E = i * omega / c * mu * 4*pi/c*j  + omega / c * mu * omega / c * epsilon * E
+# grad div E - Laplasian E = i * omega / c^2 * mu * 4*pi * j  + mu * epsilon * omega^2 / c^2 * E
 
 # Laplasian E - grad div E + mu * epsilon * omega^2 / c^2 * E  = - mu * i * omega / c^2 * 4*pi*j
 # в металле
@@ -77,7 +80,7 @@ de_metall  = diff (E, x, 2) + (mu * epsilon * omega^2 / c^2 + mu * I * omega / c
 E_metall = desolve(de_metall, E, ivar = x)
 
 # получая таким образом выражения для электрического поля в диэлектрике и в металле
-print E_dielectric
+print (E_dielectric)
 # _K2*cos(kappa*x) + _K1*sin(kappa*x)
-print E_metall
+print (E_metall)
 # _K2*cos(1/2*sqrt(-4*c^2*k^2 + 4*epsilon*mu*omega^2 + 16*I*pi*mu*omega*sigma)*x/c) + _K1*sin(1/2*sqrt(-4*c^2*k^2 + 4*epsilon*mu*omega^2 + 16*I*pi*mu*omega*sigma)*x/c)

@@ -76,11 +76,13 @@ print (E_vacuum)
 
 _B1_z = var ('_B1_z')
 _B2_z = var ('_B2_z')
-_A_z = var ('_A_z')
+_A1_z = var ('_A1_z')
+_A2_z = var ('_A2_z')
 
 _B1_x = var ('_B1_x')
 _B2_x = var ('_B2_x')
-_A_x = var ('_A_x')
+_A1_x = var ('_A1_x')
+_A2_x = var ('_A2_x')
 
 # E_dielectric_z = E_dielectric.subs(var('_K1'), _B1_z).subs(var('_K2'), _B2_z)
 
@@ -89,12 +91,12 @@ E_dielectric_z (x) = _B1_z*cos(kappa*x) + _B2_z*sin(kappa*x)
 E_dielectric_x (x) = _B1_x*cos(kappa*x) + _B2_x*sin(kappa*x)
 
 # x > a
-E_vacuum2_z (x) = _A_z*e^(-s*x)
-E_vacuum2_x (x) = _A_x*e^(-s*x)
+E_vacuum2_z (x) = _A2_z*e^(-s*x)
+E_vacuum2_x (x) = _A2_x*e^(-s*x)
 
 # x < -a
-E_vacuum1_z (x) = -_A_z*e^(s*x)
-E_vacuum1_x (x) = _A_x*e^(s*x)
+E_vacuum1_z (x) = _A1_z*e^(s*x)
+E_vacuum1_x (x) = _A1_x*e^(s*x)
 
 # выражения для магнитного поля в диэлектрике и в вакууме
 # H_y = c / (I * omega * mu) * (diff(E_x, z) - diff(E_z, x))
@@ -194,6 +196,10 @@ def GenerateMatrix(equsys, vars):
     A=matrix(SR, [[(equ.lhs() - equ.rhs()).coefficient(v) for v in vars] for equ in equsys])
     return A
 
+def GenerateMatrixSubs(equsys, vars, vars_subs):
+    A=matrix(SR, [[(equ.lhs() - equ.rhs()).subs(vars_subs).coefficient(v) for v in vars] for equ in equsys])
+    return A
+
 def GenerateMatrixMult(equsys, vars):
     A=matrix(SR, [[(equ.lhs() - equ.rhs()).coefficient(v) * v for v in vars] for equ in equsys])
     return A
@@ -208,6 +214,9 @@ def reduceDependedRows(M):
     print ("M.pivot_rows() =", M_pivot_rows)
 
     M_rows = M.rows()
+    for row in M_rows:
+        print ("row =", row)
+
     reduced_list = []
     for r in M_pivot_rows:
         print ("M_rows[", r, "] =", M_rows[r])
@@ -219,12 +228,12 @@ def reduceDependedRows(M):
     print("reduced_M.det() =", reduced_M_det)
     return reduced_M
 
-eqsys_boundary_conditions = [eqEx_a,  eqEz_a,  eqHy_a*(-I)*omega/c,
-                             eqEx_ma, eqEz_ma, eqHy_ma*(-I)*omega/c,
+eqsys_boundary_conditions = [eqEx_a,  eqEz_a,  # eqHy_a*(-I)*omega/c,
+                             eqEx_ma, eqEz_ma, # eqHy_ma*(-I)*omega/c,
                             ]
 
 
-vars = [_B1_x, _B2_x, _B1_z, _B2_z, _A_x, _A_z]
+vars = [_B1_x, _B2_x, _B1_z, _B2_z, _A1_x, _A2_x, _A1_z, _A2_z]
 
 M = GenerateMatrix(eqsys_boundary_conditions, vars)
 print ("")
@@ -232,7 +241,7 @@ print ("")
 print ("M =")
 print (M)
 print ("")
-print (M.det())
+# print (M.det())
 print ("")
 print ("M.rows()", M.rows())
 print ("")
@@ -240,7 +249,7 @@ print ("M.nrows()", M.nrows())
 print ("M.ncols()", M.ncols())
 print ("")
 print ("M.rank()", M.rank())
-print ("M.det()", M.det())
+# print ("M.det()", M.det())
 print ("M.pivot_rows() =", M.pivot_rows())
 
 
@@ -271,6 +280,12 @@ eqsys_rotH_dielectric = [eq_rot_H_dielectric_x*(-I)*omega/c,
                          eq_rot_H_dielectric_z*(-I)*omega/c,
                         ]
 
+eqsys_rotH_vacuum = [ # eq_rot_H_vacuum1_x*(-I)*omega/c,
+                      eq_rot_H_vacuum2_x*(-I)*omega/c,
+                      # eq_rot_H_vacuum1_z*(-I)*omega/c,
+                      eq_rot_H_vacuum2_z*(-I)*omega/c,
+                    ]
+
 M = GenerateMatrix(eqsys_rotH_dielectric, vars)
 print ("")
 print ("")
@@ -291,7 +306,8 @@ print ("M.pivot_rows() =", M.pivot_rows())
 #         eq_rot_H_dielectric_z*(-I)*omega/c,
 #        ]
 
-M = GenerateMatrix(eqsys_boundary_conditions + eqsys_rotH_dielectric, vars)
+'''
+M = GenerateMatrix(eqsys_boundary_conditions + eqsys_rotH_dielectric + eqsys_rotH_vacuum, vars)
 print ("")
 print ("")
 print ("M =")
@@ -308,10 +324,24 @@ print ("M.pivot_rows() =", M.pivot_rows())
 
 print ("")
 reduced_M = reduceDependedRows(M)
-reduced_M_det = reduced_M.det()
+# reduced_M_det = reduced_M.det()
 print ("")
-print (solve([reduced_M_det == 0], s))
+# print (solve([reduced_M_det == 0], s))
+'''
 
+def rot_H_solve(M_rotH, vars):
+    x = vector(SR, vars)
+    y = vector(SR, [0, 0])
+    eqns = [(M_rotH*x)[index] == y[index] for index in [0,1]]
+    print(eqns)
+
+    for index in [0,1]:
+        eq = eqns[index]
+        # print(eq)
+        print(solve(eq, vars[0]))
+        # print(solve(eq, vars[1]))
+        print(eq_kappa)
+        print(eq_s)
 
 
 # чётные
@@ -321,27 +351,27 @@ even_vars_dielectric = [_B1_x, _B2_z]
 
 even_M_rotH_dielectric = GenerateMatrix(eqsys_rotH_dielectric, even_vars_dielectric)
 print ("")
-print ("")
 print ("even_M_rotH_dielectric =")
 print (even_M_rotH_dielectric)
 print ("")
 
-x = vector(SR, even_vars_dielectric)
-y = vector(SR, [0, 0])
-eqns = [(even_M_rotH_dielectric*x)[index] == y[index] for index in [0,1]]
-print(eqns)
+rot_H_solve(even_M_rotH_dielectric, even_vars_dielectric)
 
-for index in [0,1]:
-    eq = eqns[index]
-    # print(eq)
-    print(solve(eq, even_vars_dielectric[0]))
-    # print(solve(eq, even_vars_dielectric[1]))
-    print(eq_kappa)
+eqsys_even = [_A1_z == - _A2_z, _A1_x == _A2_x]
+even_vars_vacuum = [_A2_x, _A2_z]
 
-even_vars = [_B1_x, _B2_z, _A_x, _A_z]
+even_M_rotH_vacuum = GenerateMatrixSubs(eqsys_rotH_vacuum, even_vars_vacuum,  eqsys_even)
+print ("")
+print ("even_M_rotH_vacuum =")
+print (even_M_rotH_vacuum)
+print ("")
+
+rot_H_solve(even_M_rotH_vacuum, even_vars_vacuum)
 
 
-even_M = GenerateMatrix(eqsys_boundary_conditions + eqsys_rotH_dielectric, even_vars)
+even_vars = [_B1_x, _B2_z, _A2_x, _A2_z]
+
+even_M = GenerateMatrixSubs(eqsys_boundary_conditions + eqsys_rotH_dielectric + eqsys_rotH_vacuum, even_vars,  eqsys_even)
 print ("")
 print ("")
 print ("even_M =")
@@ -409,11 +439,33 @@ print (solve([mdet == 0], s))
 
 
 # нечётные
-odd_vars = [_B2_x, _B1_z, _A_x, _A_z]
+odd_vars = [_B2_x, _B1_z, _A2_x, _A2_z]
+eqsys_odd = [_A1_z == _A2_z, _A1_x == -_A2_x]
+odd_vars_dielectric = [_B2_x, _B1_z]
+
+
+odd_M_rotH_dielectric = GenerateMatrix(eqsys_rotH_dielectric, odd_vars_dielectric)
+print ("")
+print ("odd_M_rotH_dielectric =")
+print (odd_M_rotH_dielectric)
+print ("")
+
+rot_H_solve(odd_M_rotH_dielectric, odd_vars_dielectric)
+
+odd_vars_vacuum = [_A2_x, _A2_z]
+
+odd_M_rotH_vacuum = GenerateMatrixSubs(eqsys_rotH_vacuum, odd_vars_vacuum,  eqsys_odd)
+print ("")
+print ("odd_M_rotH_vacuum =")
+print (odd_M_rotH_vacuum)
+print ("")
+
+rot_H_solve(odd_M_rotH_vacuum, odd_vars_vacuum)
 
 
 
-odd_M = GenerateMatrix(eqsys_boundary_conditions + eqsys_rotH_dielectric, odd_vars)
+
+odd_M = GenerateMatrixSubs(eqsys_boundary_conditions + eqsys_rotH_dielectric + eqsys_rotH_vacuum, odd_vars, eqsys_odd)
 print ("")
 print ("")
 print ("odd_M =")
@@ -430,32 +482,6 @@ print("odd_reduced_M.det() =", odd_reduced_M_det)
 
 print (solve([odd_reduced_M_det == 0], s))
 # s == kappa*sin(a*kappa)/(mu*cos(a*kappa))
-
-
-
-'''
-res = solve([eq_rot_H_dielectric_x,
-             eq_rot_H_dielectric_z,
-             eq_rot_H_vacuum1_x,
-             eq_rot_H_vacuum2_x,
-             eq_rot_H_vacuum1_z,
-             eq_rot_H_vacuum2_z,
-             eqEz_a, eqEz_ma,
-             eqEx_a, eqEx_ma,
-             eqHy_a, eqHy_ma,
-             eq_s, eq_kappa,
-             _B1_z==0, _B2_x==0,
-             s > 0, c > 0, a > 0, omega > 0
-             ],
-    _B1_x,
-
-    #kappa, s
-    )
-print ("res =", res)
-
-
-'''
-
 
 
 

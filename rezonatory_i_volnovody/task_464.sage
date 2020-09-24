@@ -463,8 +463,6 @@ print ("even_A =", even_A)
 even_A = ((even_A[0].rhs()/e^(a*s)).subs(even_disp_eq).full_simplify())*e^(a*s)
 print ("even_A =", even_A)
 
-#even_A.subs(
-
 
 # нечётные
 odd_vars = [_B2_x, _B1_z, _A2_x, _A2_z]
@@ -514,9 +512,55 @@ odd_reduced_M_det = odd_reduced_M.det()
 print ("")
 print("odd_reduced_M.det() =", odd_reduced_M_det)
 
-print (solve([odd_reduced_M_det == 0], s))
+odd_disp_eq = solve([odd_reduced_M_det == 0], s)
+print ("odd_disp_eq =", odd_disp_eq)
+
 # s == -kappa*cos(a*kappa)/(epsilon*sin(a*kappa))
 
+odd_H_dielectric_y (x) = H_dielectric_y (x).subs(odd_res_rotH_dielectric[0]).subs(odd_eqs_dielectric).subs(solve(eq_kappa,k^2)).full_simplify()
+odd_H_vacuum1_y    (x) = H_vacuum1_y    (x).subs(eqsys_odd).subs(odd_res_rotH_vacuum[0]).subs(solve(eq_s,k^2)).full_simplify()
+odd_H_vacuum2_y    (x) = H_vacuum2_y    (x).subs(eqsys_odd).subs(odd_res_rotH_vacuum[0]).subs(solve(eq_s,k^2)).full_simplify()
+
+print ("")
+print ("odd_H_dielectric_y (x) ", odd_H_dielectric_y (x))
+print ("odd_H_vacuum1_y (x) =", odd_H_vacuum1_y (x))
+print ("odd_H_vacuum2_y (x) =", odd_H_vacuum2_y (x))
+print ("")
+
+
+odd_E_dielectric_z (x) = E_dielectric_z (x).subs(odd_res_rotH_dielectric[0]).subs(odd_eqs_dielectric).subs(solve(eq_kappa,k^2)).full_simplify()
+odd_E_dielectric_x (x) = E_dielectric_x (x).subs(odd_res_rotH_dielectric[0]).subs(odd_eqs_dielectric).subs(solve(eq_kappa,k^2)).full_simplify()
+
+# x > a
+odd_E_vacuum2_z (x) = E_vacuum2_z (x).subs(eqsys_odd).subs(odd_res_rotH_vacuum[0]).subs(solve(eq_s,k^2)).full_simplify()
+odd_E_vacuum2_x (x) = E_vacuum2_x (x).subs(eqsys_odd).subs(odd_res_rotH_vacuum[0]).subs(solve(eq_s,k^2)).full_simplify()
+
+# x < -a
+odd_E_vacuum1_z (x) = E_vacuum1_z (x).subs(eqsys_odd).subs(odd_res_rotH_vacuum[0]).subs(solve(eq_s,k^2)).full_simplify()
+odd_E_vacuum1_x (x) = E_vacuum1_x (x).subs(eqsys_odd).subs(odd_res_rotH_vacuum[0]).subs(solve(eq_s,k^2)).full_simplify()
+
+
+print ("odd_E_dielectric_z (x) =", odd_E_dielectric_z (x))
+print ("odd_E_dielectric_x (x) =", odd_E_dielectric_x (x))
+print ("")
+
+print ("odd_E_vacuum2_z (x) =", odd_E_vacuum2_z (x))
+print ("odd_E_vacuum2_x (x) =", odd_E_vacuum2_x (x))
+print ("")
+
+print ("odd_E_vacuum1_z (x) =", odd_E_vacuum1_z (x))
+print ("odd_E_vacuum1_x (x) =", odd_E_vacuum1_x (x))
+print ("")
+
+# тангенциальная компонента напряженности магнитного поля
+odd_eqHy_a  = odd_H_vacuum2_y (a)  == odd_H_dielectric_y (a)
+odd_eqHy_ma = odd_H_vacuum1_y (-a) == odd_H_dielectric_y (-a)
+
+
+odd_A = solve (odd_eqHy_a, _A2_z)
+print ("odd_A =", odd_A)
+odd_A = ((odd_A[0].rhs()/e^(a*s)).subs(odd_disp_eq).full_simplify())*e^(a*s)
+print ("odd_A =", odd_A)
 
 
 

@@ -329,19 +329,45 @@ print ("")
 # print (solve([reduced_M_det == 0], s))
 '''
 
-def rot_H_solve(M_rotH, vars):
+def rot_H_solve(M_rotH, vars, eq_s_or_kappa, s_or_kappa):
     x = vector(SR, vars)
     y = vector(SR, [0, 0])
     eqns = [(M_rotH*x)[index] == y[index] for index in [0,1]]
     print(eqns)
+    res = []
 
     for index in [0,1]:
         eq = eqns[index]
         # print(eq)
-        print(solve(eq, vars[0]))
+        sol = solve(eq, vars[0])
+        print("sol=", sol[0])
         # print(solve(eq, vars[1]))
-        print(eq_kappa)
-        print(eq_s)
+        print("eq_s_or_kappa =", eq_s_or_kappa)
+        sol_s_or_kappa_2 = solve(eq_s_or_kappa, s_or_kappa^2)
+        print("sol_s_or_kappa_2[0].rhs()=", sol_s_or_kappa_2[0].rhs())
+        print("")
+        s = sol[0].rhs().collect(vars[1])
+        ans1 = s.subs(sol_s_or_kappa_2[0].rhs()*c^2==sol_s_or_kappa_2[0].lhs()*c^2)
+        ans2 = s.subs(-sol_s_or_kappa_2[0].rhs()*c^2==-sol_s_or_kappa_2[0].lhs()*c^2)
+
+        ans = ans1
+        if ans1.number_of_operands() > ans2.number_of_operands():
+            ans = ans2
+        print(ans)
+        if omega in ans.arguments():
+            print(ans.arguments())
+            sol_omega_2 = solve(eq_s_or_kappa, omega^2)
+            print("sol_omega_2 =", sol_omega_2[0].rhs())
+            som = ans.subs(omega^2 == sol_omega_2[0].rhs())
+            print("som =", som)
+            som = som.full_simplify()
+            print("som =", som)
+            res.append(vars[0] == som)
+        else:
+            res.append(vars[0] == ans)
+
+        print("")
+    return res
 
 
 # чётные
@@ -355,7 +381,10 @@ print ("even_M_rotH_dielectric =")
 print (even_M_rotH_dielectric)
 print ("")
 
-rot_H_solve(even_M_rotH_dielectric, even_vars_dielectric)
+print ("")
+even_res_rotH_dielectric = rot_H_solve(even_M_rotH_dielectric, even_vars_dielectric, eq_kappa, kappa)
+print ("even_res_rotH_dielectric =", even_res_rotH_dielectric)
+# even_res_rotH_dielectric = [_B1_x == I*_B2_z*k/kappa, _B1_x == I*_B2_z*k/kappa]
 
 eqsys_even = [_A1_z == - _A2_z, _A1_x == _A2_x]
 even_vars_vacuum = [_A2_x, _A2_z]
@@ -366,12 +395,14 @@ print ("even_M_rotH_vacuum =")
 print (even_M_rotH_vacuum)
 print ("")
 
-rot_H_solve(even_M_rotH_vacuum, even_vars_vacuum)
+even_res_rotH_vacuum = rot_H_solve(even_M_rotH_vacuum, even_vars_vacuum, eq_s, s)
+print ("even_res_rotH_vacuum =", even_res_rotH_vacuum)
+# even_res_rotH_vacuum = [_A2_x == I*_A2_z*k/s, _A2_x == I*_A2_z*k/s]
 
 
 even_vars = [_B1_x, _B2_z, _A2_x, _A2_z]
 
-even_M = GenerateMatrixSubs(eqsys_boundary_conditions + eqsys_rotH_dielectric + eqsys_rotH_vacuum, even_vars,  eqsys_even)
+even_M = GenerateMatrixSubs(eqsys_boundary_conditions + even_res_rotH_dielectric + even_res_rotH_vacuum, even_vars,  eqsys_even)
 print ("")
 print ("")
 print ("even_M =")
@@ -380,23 +411,11 @@ print ("")
 even_reduced_M = reduceDependedRows(even_M)
 even_reduced_M_det = even_reduced_M.det()
 
-print ("")
-print("even_reduced_M.det() =", even_reduced_M_det)
-
-
-M = matrix(SR, 4, 4,
-[
-    [                                 var("M11"),                     0,      var("M13"),              0 ],
-    [                                          0,            var("M22"),               0,     var("M24") ],
-    [                             I*k*var("M31"),            var("M32"), -I*k*var("M33"),  -s*var("M34") ],
-    [ -k^2*var("a41")+epsilon*omega^2*var("b41"),       -I*k*var("M42"),               0,               0]
-])
-mdet = M.det()
-print ("")
-print (mdet)
 
 print ("")
 print (solve([even_reduced_M_det == 0], s))
+# s == kappa*sin(a*kappa)/(epsilon*cos(a*kappa))
+
 # s == -(c^2*epsilon*k^2*kappa*cos(a*kappa) - epsilon*kappa*omega^2*cos(a*kappa))/(c^2*k^2*sin(a*kappa) - epsilon*omega^2*sin(a*kappa))
 
 
@@ -450,7 +469,10 @@ print ("odd_M_rotH_dielectric =")
 print (odd_M_rotH_dielectric)
 print ("")
 
-rot_H_solve(odd_M_rotH_dielectric, odd_vars_dielectric)
+odd_res_rotH_dielectric = rot_H_solve(odd_M_rotH_dielectric, odd_vars_dielectric, eq_kappa, kappa)
+print ("odd_res_rotH_dielectric =", odd_res_rotH_dielectric)
+# odd_res_rotH_dielectric = [_B2_x == -I*_B1_z*k/kappa, _B2_x == -I*_B1_z*k/kappa]
+
 
 odd_vars_vacuum = [_A2_x, _A2_z]
 
@@ -460,12 +482,13 @@ print ("odd_M_rotH_vacuum =")
 print (odd_M_rotH_vacuum)
 print ("")
 
-rot_H_solve(odd_M_rotH_vacuum, odd_vars_vacuum)
+odd_res_rotH_vacuum = rot_H_solve(odd_M_rotH_vacuum, odd_vars_vacuum, eq_s, s)
+print ("odd_res_rotH_vacuum =", odd_res_rotH_vacuum)
+# odd_res_rotH_vacuum = [_A2_x == I*_A2_z*k/s, _A2_x == I*_A2_z*k/s]
 
 
 
-
-odd_M = GenerateMatrixSubs(eqsys_boundary_conditions + eqsys_rotH_dielectric + eqsys_rotH_vacuum, odd_vars, eqsys_odd)
+odd_M = GenerateMatrixSubs(eqsys_boundary_conditions + odd_res_rotH_dielectric + odd_res_rotH_vacuum, odd_vars, eqsys_odd)
 print ("")
 print ("")
 print ("odd_M =")
@@ -481,7 +504,8 @@ print ("")
 print("odd_reduced_M.det() =", odd_reduced_M_det)
 
 print (solve([odd_reduced_M_det == 0], s))
-# s == kappa*sin(a*kappa)/(mu*cos(a*kappa))
+# s == -kappa*cos(a*kappa)/(epsilon*sin(a*kappa))
+
 
 
 

@@ -371,9 +371,11 @@ def rot_H_solve(M_rotH, vars, eq_s_or_kappa, s_or_kappa):
 
 
 # чётные
+even_vars = [_B1_x, _B2_z, _A2_x, _A2_z]
+eqsys_even = [_A1_z == - _A2_z, _A1_x == _A2_x]
 
 even_vars_dielectric = [_B1_x, _B2_z]
-
+even_eqs_dielectric = [_B2_x == 0, _B1_z == 0]
 
 even_M_rotH_dielectric = GenerateMatrix(eqsys_rotH_dielectric, even_vars_dielectric)
 print ("")
@@ -386,7 +388,6 @@ even_res_rotH_dielectric = rot_H_solve(even_M_rotH_dielectric, even_vars_dielect
 print ("even_res_rotH_dielectric =", even_res_rotH_dielectric)
 # even_res_rotH_dielectric = [_B1_x == I*_B2_z*k/kappa, _B1_x == I*_B2_z*k/kappa]
 
-eqsys_even = [_A1_z == - _A2_z, _A1_x == _A2_x]
 even_vars_vacuum = [_A2_x, _A2_z]
 
 even_M_rotH_vacuum = GenerateMatrixSubs(eqsys_rotH_vacuum, even_vars_vacuum,  eqsys_even)
@@ -400,7 +401,6 @@ print ("even_res_rotH_vacuum =", even_res_rotH_vacuum)
 # even_res_rotH_vacuum = [_A2_x == I*_A2_z*k/s, _A2_x == I*_A2_z*k/s]
 
 
-even_vars = [_B1_x, _B2_z, _A2_x, _A2_z]
 
 even_M = GenerateMatrixSubs(eqsys_boundary_conditions + even_res_rotH_dielectric + even_res_rotH_vacuum, even_vars,  eqsys_even)
 print ("")
@@ -413,54 +413,65 @@ even_reduced_M_det = even_reduced_M.det()
 
 
 print ("")
-print (solve([even_reduced_M_det == 0], s))
+even_disp_eq = solve([even_reduced_M_det == 0], s)
+print ("even_disp_eq =", even_disp_eq)
+
 # s == kappa*sin(a*kappa)/(epsilon*cos(a*kappa))
 
-# s == -(c^2*epsilon*k^2*kappa*cos(a*kappa) - epsilon*kappa*omega^2*cos(a*kappa))/(c^2*k^2*sin(a*kappa) - epsilon*omega^2*sin(a*kappa))
+even_H_dielectric_y (x) = H_dielectric_y (x).subs(even_res_rotH_dielectric[0]).subs(even_eqs_dielectric).subs(solve(eq_kappa,k^2)).full_simplify()
+even_H_vacuum1_y    (x) = H_vacuum1_y    (x).subs(eqsys_even).subs(even_res_rotH_vacuum[0]).subs(solve(eq_s,k^2)).full_simplify()
+even_H_vacuum2_y    (x) = H_vacuum2_y    (x).subs(eqsys_even).subs(even_res_rotH_vacuum[0]).subs(solve(eq_s,k^2)).full_simplify()
+
+print ("")
+print ("even_H_dielectric_y (x) ", even_H_dielectric_y (x))
+print ("even_H_vacuum1_y (x) =", even_H_vacuum1_y (x))
+print ("even_H_vacuum2_y (x) =", even_H_vacuum2_y (x))
+print ("")
 
 
-# sage: %display ascii_art
+even_E_dielectric_z (x) = E_dielectric_z (x).subs(even_res_rotH_dielectric[0]).subs(even_eqs_dielectric).subs(solve(eq_kappa,k^2)).full_simplify()
+even_E_dielectric_x (x) = E_dielectric_x (x).subs(even_res_rotH_dielectric[0]).subs(even_eqs_dielectric).subs(solve(eq_kappa,k^2)).full_simplify()
 
-#  / 2          2                                         2             \ 
-# -\c *epsilon*k *kappa*cos(a*kappa) - epsilon*kappa*omega *cos(a*kappa)/ 
-# ------------------------------------------------------------------------
-#              2  2                             2                         
-#             c *k *sin(a*kappa) - epsilon*omega *sin(a*kappa) 
+# x > a
+even_E_vacuum2_z (x) = E_vacuum2_z (x).subs(eqsys_even).subs(even_res_rotH_vacuum[0]).subs(solve(eq_s,k^2)).full_simplify()
+even_E_vacuum2_x (x) = E_vacuum2_x (x).subs(eqsys_even).subs(even_res_rotH_vacuum[0]).subs(solve(eq_s,k^2)).full_simplify()
+
+# x < -a
+even_E_vacuum1_z (x) = E_vacuum1_z (x).subs(eqsys_even).subs(even_res_rotH_vacuum[0]).subs(solve(eq_s,k^2)).full_simplify()
+even_E_vacuum1_x (x) = E_vacuum1_x (x).subs(eqsys_even).subs(even_res_rotH_vacuum[0]).subs(solve(eq_s,k^2)).full_simplify()
 
 
+print ("even_E_dielectric_z (x) =", even_E_dielectric_z (x))
+print ("even_E_dielectric_x (x) =", even_E_dielectric_x (x))
+print ("")
+
+print ("even_E_vacuum2_z (x) =", even_E_vacuum2_z (x))
+print ("even_E_vacuum2_x (x) =", even_E_vacuum2_x (x))
+print ("")
+
+print ("even_E_vacuum1_z (x) =", even_E_vacuum1_z (x))
+print ("even_E_vacuum1_x (x) =", even_E_vacuum1_x (x))
+print ("")
+
+# тангенциальная компонента напряженности магнитного поля
+even_eqHy_a  = even_H_vacuum2_y (a)  == even_H_dielectric_y (a)
+even_eqHy_ma = even_H_vacuum1_y (-a) == even_H_dielectric_y (-a)
 
 
+even_A = solve (even_eqHy_a, _A2_z)
+print ("even_A =", even_A)
+even_A = ((even_A[0].rhs()/e^(a*s)).subs(even_disp_eq).full_simplify())*e^(a*s)
+print ("even_A =", even_A)
 
-M = matrix(SR, 4, 4,
-[
-    [ epsilon*cos(a*kappa),                     0,     -e^(-a*s),           0 ],
-    [                    0,          sin(a*kappa),             0,   -e^(-a*s) ],
-    [     I*k*cos(a*kappa),   -kappa*cos(a*kappa), -I*k*e^(-a*s), -s*e^(-a*s) ],
-    [                kappa,                  -I*k,             0,            0]
-])
-#                       Bx,                    Bz,            Ax,            Az
-
-mdet = M.det()
-print (mdet)
-# -epsilon*k^2*cos(a*kappa)*e^(-2*a*s) + k^2*cos(a*kappa)*e^(-2*a*s) + kappa^2*cos(a*kappa)*e^(-2*a*s) + kappa*s*e^(-2*a*s)*sin(a*kappa)
-
-print (solve([mdet == 0], s))
-
-# s == ((epsilon - 1)*k^2 - kappa^2)*cos(a*kappa)/(kappa*sin(a*kappa))
-
-# sage: %display ascii_art
-
-# sage: ((epsilon - 1)*k^2 - kappa^2)*cos(a*kappa)/(kappa*sin(a*kappa))
-# / 2                      2\             
-# \k *(epsilon - 1) - kappa /*cos(a*kappa)
-# ----------------------------------------
-#            kappa*sin(a*kappa)    
+#even_A.subs(
 
 
 # нечётные
 odd_vars = [_B2_x, _B1_z, _A2_x, _A2_z]
 eqsys_odd = [_A1_z == _A2_z, _A1_x == -_A2_x]
+
 odd_vars_dielectric = [_B2_x, _B1_z]
+odd_eqs_dielectric = [_B1_x == 0, _B2_z == 0]
 
 
 odd_M_rotH_dielectric = GenerateMatrix(eqsys_rotH_dielectric, odd_vars_dielectric)

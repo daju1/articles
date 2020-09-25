@@ -60,6 +60,12 @@ eq_kappa = mu * epsilon * omega^2 / c^2 - k^2 == kappa^2
 # eq_s     = omega^2 / c^2 - k^2 == - s^2
 eq_s     = omega^2 / c^2 + s^2 == k^2
 
+eq_kappa_s = eq_kappa.subs(solve(eq_s, k^2)).full_simplify()
+print("eq_kappa_s =", eq_kappa_s)
+
+eq_s_kappa = eq_s.subs(solve(eq_kappa, k^2)).full_simplify()
+print("eq_s_kappa =", eq_s_kappa)
+
 # решаем полученные обыкновенные дифференциальные уравнения
 E = function('E')(x)
 
@@ -462,6 +468,128 @@ even_A = solve (even_eqHy_a, _A2_z)
 print ("even_A =", even_A)
 even_A = ((even_A[0].rhs()/e^(a*s)).subs(even_disp_eq).full_simplify())*e^(a*s)
 print ("even_A =", even_A)
+
+even_eq_kappa = eq_kappa_s.subs(even_disp_eq).full_simplify()
+print("even_eq_kappa =", even_eq_kappa)
+
+even_sol_kappa = solve(even_eq_kappa, kappa)
+print("even_sol_kappa =", even_sol_kappa)
+
+# sgs
+A = 0.1
+kappa_A_max = 13*pi.n()/2
+s_A_max = 20
+digit_values = [omega == 2*pi.n()*10^11, mu == 1, epsilon == 5, c == 299792458 * 100]
+
+even_sol_kappa_d = even_sol_kappa[0].subs(digit_values)
+print("even_sol_kappa_d =", even_sol_kappa_d)
+
+even_disp_eq_d = even_disp_eq[0].subs(digit_values)
+print ("even_disp_eq_d =", even_disp_eq_d)
+
+even_disp_eq_da = even_disp_eq_d * a
+print ("even_disp_eq_da =", even_disp_eq_da)
+
+print (even_disp_eq_d.rhs().subs(a * kappa == x).subs(kappa == x))
+
+r = omega / c * sqrt(epsilon * mu - 1)
+print ("r =", r)
+
+r = r.subs(digit_values)
+print ("r =", r)
+
+even_disp_eq_fa = lambda x : even_disp_eq_d.rhs().subs(kappa * a == x).subs(kappa == x)
+p = plot([even_disp_eq_fa, sqrt((r * A)^2 - x^2)], (x, 0, kappa_A_max), ymin = 0, ymax = s_A_max)
+p.save("even_disp_eq_fa.png")
+
+
+even_disp_eq_f = lambda x : even_disp_eq_d.rhs().subs(kappa == x).subs(a == A)
+p = plot([even_disp_eq_f, sqrt((r)^2 - x^2)], (x, 0, kappa_A_max / A), ymin = 0, ymax = s_A_max / A)
+p.save("even_disp_eq_f.png")
+
+
+even_f = lambda x : even_disp_eq_f(x) - sqrt((r)^2 - x^2)
+print (f)
+p = plot(even_f, (0, kappa_A_max / A), ymin = - s_A_max / A, ymax = s_A_max / A)
+p.save("even_f.png")
+
+even_kappa_sol = find_root(even_f(x) == 0, 0, pi/2/A)
+print("even_kappa_sol", even_kappa_sol)
+
+even_s_sol = even_disp_eq_d.rhs()
+print("even_s_sol =", even_s_sol)
+
+even_s_sol = even_s_sol.subs(kappa == even_kappa_sol)
+print("even_s_sol =", even_s_sol)
+
+even_s_sol = even_s_sol.subs(a == A)
+print("even_s_sol =", even_s_sol)
+
+even_k_sol = solve(eq_kappa, k)
+print("even_k_sol =", even_k_sol)
+
+even_k_sol = abs(even_k_sol[0].rhs()).subs(digit_values).subs(kappa == even_kappa_sol)
+print("even_k_sol =", even_k_sol)
+
+p = plot(even_E_dielectric_z (x).subs(_B2_z == 1, kappa == even_kappa_sol), (x, 0, A))
+p.save("even_E_dielectric_z.png")
+p = plot(even_E_dielectric_x (x).subs(_B2_z == 1, kappa == even_kappa_sol, k = even_k_sol).imag(), (x, 0, A))
+p.save("even_E_dielectric_x.png")
+p = plot(even_H_dielectric_y (x).subs(_B2_z == 1, kappa == even_kappa_sol).subs(digit_values).imag(), (x, 0, A))
+p.save("even_H_dielectric_y.png")
+
+# Abraham force
+# (epsilon * mu - 1) / (4 * pi * c) * ([E x H]).diff(t)
+# (epsilon * mu - 1) / (4 * pi * c) * ([E.diff(t) x H] + [E x H.diff(t)])
+# ([a x b])_x = a_y * b_z - a_z * b_y
+# f_x = (epsilon * mu - 1) / (4 * pi * c) * (-E_z.diff(t) * H_y - E_z * H_y.diff(t))
+# E_z.diff(t) = -I * omega * E_z
+# H_y.diff(t) = -I * omega * H_y
+# f_x = (epsilon * mu - 1) / (4 * pi * c) * (E_z * H_y + E_z * H_y) * I * omega
+# f_x = (epsilon * mu - 1) / (2 * pi * c) * (E_z * H_y) * I * omega
+
+f_x(x) = (epsilon * mu - 1) / (2 * pi * c) * (even_E_dielectric_z (x) * even_H_dielectric_y (x)) * I * omega
+print("f_x =", f_x(x))
+# f_x = -1/2*(epsilon*mu - 1)*_B2_z^2*epsilon*omega^2*cos(kappa*x)*sin(kappa*x)/(pi*c^2*kappa)
+
+f_x(x) = f_x(x).subs(digit_values)
+print("f_x =", f_x(x))
+
+f_x(x) = f_x(x).subs(_B2_z == 1, kappa == even_kappa_sol)
+print("f_x =", f_x(x))
+p = plot(f_x(x), (x, -A, A))
+p.save("f_x.png")
+
+F_x = integrate(f_x(x), (x, 0, A))
+print("F_x =", F_x)
+# F_x = -9.774789731929044/pi
+
+
+# superconductor force
+f_superconductor = - (even_H_dielectric_y (0)^2) / (8* pi)
+print("f_superconductor =", f_superconductor)
+# f_superconductor = 1/8*_B2_z^2*epsilon^2*omega^2/(pi*c^2*kappa^2)
+
+f_superconductor = f_superconductor.subs(digit_values).subs(_B2_z == 1, kappa == even_kappa_sol)
+print("f_superconductor =", f_superconductor)
+# f_superconductor = 6.14483801317679/pi
+
+
+# vacuum field impuls
+# 1 / (4 * pi * c) * ([E x H])
+# p_x = 1 / (4 * pi * c) * (- E_z * H_y)
+
+p_x(x) = - 1 / (4 * pi * c) * even_E_vacuum2_z (x) * even_H_vacuum2_y (x)
+print("p_x =", p_x(x))
+
+p_x(x) = p_x(x).subs( _A2_z == even_A)
+print("p_x =", p_x(x))
+
+p_x(x) = p_x(x).subs( s == even_s_sol).subs(digit_values).subs(_B2_z == 1, kappa == even_kappa_sol, a == A)
+print("p_x =", p_x(x))
+P_x = integrate(p_x(x), (x, A, infinity))
+print("P_x", P_x)
+# P_x -(5.665029595810918e-14*I)/pi
 
 
 # нечётные

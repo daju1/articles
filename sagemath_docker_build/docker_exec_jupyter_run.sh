@@ -1,1 +1,1 @@
-docker exec -it sage_build_container --env PROJECT_ROOT=${PWD} /bin/bash ${PWD}/sage_jupyter_run.sh
+docker exec -it --env PROJECT_ROOT=${PWD} sage_build_container  /bin/bash ${PWD}/sage_jupyter_run.sh

@@ -509,7 +509,7 @@ p.save("even_disp_eq_f.png")
 
 
 even_f = lambda x : even_disp_eq_f(x) - sqrt((r)^2 - x^2)
-print (f)
+print ("even_f(x) =",even_f(x))
 p = plot(even_f, (0, kappa_A_max / A), ymin = - s_A_max / A, ymax = s_A_max / A)
 p.save("even_f.png")
 

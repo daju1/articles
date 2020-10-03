@@ -7,13 +7,13 @@ DISPLAY=$(env | grep DISPLAY= | sed 's/DISPLAY=//')
 export DISPLAY=$DISPLAY
 PROJECT_ROOT=${PWD}
 DOCKER_IMAGE=ubuntu_sage_build:18.04
-WORK_DIR=$(dirname ${PWD})
+PROJECTS_DIR=$(dirname ${PWD})
 
 docker run -it --rm --name sage_build_container --cap-add=NET_ADMIN --device /dev/net/tun \
     --workdir=${PWD} \
     -p 8888:8888 \
     -v /home/${USER}/.local:/home/${USER}/.local \
-    -v ${WORK_DIR}:${PROJECT_ROOT}/work \
+    -v ${PROJECTS_DIR}:${PROJECTS_DIR} \
     -v ${PROJECT_ROOT}:${PROJECT_ROOT} \
     -v /opt/output/target/root:/opt/output/target/root \
     -v /home/${USER}/.ssh/id_rsa:/home/${USER}/.ssh/id_rsa \

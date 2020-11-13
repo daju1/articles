@@ -51,7 +51,7 @@ RUN apt-get -y install pandoc #(to convert Jupyter notebooks to pdf)
 # RUN apt-get -y install libavdevice-dev #(to produce animations)
 
 USER ${USER_NAME}
-WORKDIR ${PROJECT_PATH}
+# WORKDIR ${PROJECT_PATH}
 
 CMD ["/bin/bash"]
 

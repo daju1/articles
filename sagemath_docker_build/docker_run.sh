@@ -13,7 +13,7 @@ docker run -it --rm --name sage_build_container --cap-add=NET_ADMIN --device /de
     --workdir=${PWD} \
     -p 8888:8888 \
     -v /home/${USER}/.local:/home/${USER}/.local \
-    -v ${PROJECTS_DIR}:${PROJECTS_DIR} \
+    -v ${PROJECTS_DIR}:${PROJECT_ROOT}/work \
     -v ${PROJECT_ROOT}:${PROJECT_ROOT} \
     -v /opt/output/target/root:/opt/output/target/root \
     -v /home/${USER}/.ssh/id_rsa:/home/${USER}/.ssh/id_rsa \

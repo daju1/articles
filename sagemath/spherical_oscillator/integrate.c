@@ -8,6 +8,8 @@
 #include "dbg_info.h"
 #include "integrate.h"
 
+#define DBG_INFO printf
+
 extern velocity g_c;
 extern timevalue * v_t;
 extern long double multiplier_E;
@@ -191,6 +193,7 @@ field get_E(angle theta, timevalue t, timevalue t_zap, coordinate R0, coordinate
 	distance R_lw_zap = g_c * (t - t_zap) - (v_zap / g_c) * (R0 * cos(theta) - r_zap);
 	distance R_lw_zap_2 = R_lw_zap * R_lw_zap;
 	distance R_lw_zap_3 = R_lw_zap_2 * R_lw_zap;
+	DBG_INFO("R_lw_zap = %0.25Lf\n", R_lw_zap);
 
 
 	// $$\frac{dE}{dq}=\frac{\left( {{R}_{0}}-\left( r+\left( t-{t}' \right)v \right)\cos \left( \theta  \right) \right)}{{{R}^{*}}^{3}}\left( 1+\frac{a\left( {{R}_{0}}\cos \theta -r \right)}{{{c}^{2}}}-\frac{{{v}^{2}}}{{{c}^{2}}} \right)-a\cos \left( \theta  \right)\frac{\left( t-{t}' \right)}{c{{R}^{*}}^{2}}$$
@@ -264,6 +267,15 @@ int integrand_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, vel
 		E_minus_grad_varphi_R0 = get_E_minus_grad_phi_R0(theta, v_zap, R_zap, aR_zap, R_lw_zap, cos_alpha_zap);
 		E_minus_1_c_dA_dt_R0 = get_E_minus_1_c_dA_dt_R0(theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap);
 		E = get_E(theta, t, t_zap, R0, r_zap, v_zap, a_zap);
+
+
+		if (fabs(E_minus_grad_varphi_R0 + E_minus_1_c_dA_dt_R0 - E) > 1e-6)
+		{
+			printf("fabs(E_minus_grad_varphi_R0 + E_minus_1_c_dA_dt_R0 - E) = %e\n", fabs(E_minus_grad_varphi_R0 + E_minus_1_c_dA_dt_R0 - E));
+			printf("E1 = %Le E2 = %Le E = %Le\n", E_minus_grad_varphi_R0, E_minus_1_c_dA_dt_R0, E);
+			//int * p = 0;
+			//p += 1;
+		}
 
 
 		DBG_INFO("theta = %Lf "

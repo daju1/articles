@@ -109,10 +109,10 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
         plot_data_A_p = []
         plot_data_A_n = []
 
-        plot_data_E_ = []
+        plot_data_E12 = []
         plot_data_E = []
-        plot_data_E__p = []
-        plot_data_E__n = []
+        plot_data_E12_p = []
+        plot_data_E12_n = []
         plot_data_E_p = []
         plot_data_E_n = []
 
@@ -123,9 +123,12 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
         plot_data_E2_p = []
         plot_data_E2_n = []
         plot_data_E_E1_E2 = []
+        plot_data_E12_E1_E2 = []
 
         plot_data_k_p = []
         plot_data_k_n = []
+        plot_data_k12_p = []
+        plot_data_k12_n = []
         plot_data_dk = []
 
         plot_data_k1_p = []
@@ -241,10 +244,10 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             plot_data_A_n += [(t_i, A_n)]
 
             if r_n_max < R0_i - step_R0:
-                plot_data_E_ += [(t_i, E1_p + E2_p + E1_n + E2_n)]
+                plot_data_E12 += [(t_i, E1_p + E2_p + E1_n + E2_n)]
                 plot_data_E += [(t_i, E_p + E_n)]
-                plot_data_E__p += [(t_i, E1_p + E2_p)]
-                plot_data_E__n += [(t_i, E1_n + E2_n)]
+                plot_data_E12_p += [(t_i, E1_p + E2_p)]
+                plot_data_E12_n += [(t_i, E1_n + E2_n)]
                 plot_data_E_p += [(t_i, E_p)]
                 plot_data_E_n += [(t_i, E_n)]
 
@@ -254,10 +257,14 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
                 plot_data_E2 += [(t_i, E2_p + E2_n)]
                 plot_data_E2_p += [(t_i, E2_p)]
                 plot_data_E2_n += [(t_i, E2_n)]
-                plot_data_E_E1_E2 += [(t_i, E1_p + E2_p + E1_n + E2_n), (t_i, E1_p + E1_n), (t_i, E2_p + E2_n)]
+                plot_data_E_E1_E2 += [(t_i, E_p + E_n), (t_i, E1_p + E1_n), (t_i, E2_p + E2_n)]
+                plot_data_E12_E1_E2 += [(t_i, E1_p + E2_p + E1_n + E2_n), (t_i, E1_p + E1_n), (t_i, E2_p + E2_n)]
 
                 plot_data_k_p += [(t_i, k_p)]
                 plot_data_k_n += [(t_i, k_n)]
+                plot_data_k12_p += [(t_i, k1_p + k2_p)]
+                plot_data_k12_n += [(t_i, k1_n + k2_n)]
+
                 plot_data_dk += [(t_i, k_p - k_n)]
                 plot_data_k1_p += [(t_i, k1_p)]
                 plot_data_k1_n += [(t_i, k1_n)]
@@ -274,10 +281,10 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
         all_plot_data_A_p += plot_data_A_p
         all_plot_data_A_n += plot_data_A_n
 
-        all_plot_data_E_ += plot_data_E_
+        all_plot_data_E_ += plot_data_E12
         all_plot_data_E += plot_data_E
-        all_plot_data_E__p += plot_data_E__p
-        all_plot_data_E__n += plot_data_E__n
+        all_plot_data_E__p += plot_data_E12_p
+        all_plot_data_E__n += plot_data_E12_n
         all_plot_data_E_p += plot_data_E_p
         all_plot_data_E_n += plot_data_E_n
 
@@ -428,13 +435,33 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             plot_r_of_sphere(plot_data_A_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
             p.save(pname)
 
+        if len(plot_data_E12) > 0:
+            p = list_plot(plot_data_E12)
+            pname = folder + "spherical_explosion_E12_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            print (pname)
+            plot_r_of_sphere(plot_data_E12, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
+            p.save(pname, title="$Electric field E_1 + E_2 at R_0 = " + float_formatting(R0_i) + "$", axes_labels=['$t$', '$E_1 + E_2$'])
+
+        if len(plot_data_E12_p) > 0:
+            p = list_plot(plot_data_E12_p)
+            pname = folder + "spherical_explosion_E12_p_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            print (pname)
+            plot_r_of_sphere(plot_data_E12_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
+            p.save(pname)
+
+        if len(plot_data_E12_n) > 0:
+            p = list_plot(plot_data_E12_n)
+            pname = folder + "spherical_explosion_E12_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            print (pname)
+            plot_r_of_sphere(plot_data_E12_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
+            p.save(pname)
 
         if len(plot_data_E) > 0:
             p = list_plot(plot_data_E)
             pname = folder + "spherical_explosion_E_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print (pname)
             plot_r_of_sphere(plot_data_E, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
-            p.save(pname)
+            p.save(pname, title="$Electric field E at R_0 = " + float_formatting(R0_i) + "$", axes_labels=['$t$', '$E$'])
 
         if len(plot_data_E_p) > 0:
             p = list_plot(plot_data_E_p)
@@ -450,19 +477,34 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             plot_r_of_sphere(plot_data_E_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
             p.save(pname)
 
+        if len(plot_data_k12_p) > 0:
+            p = list_plot(plot_data_k12_p)
+            pname = folder + "spherical_explosion_k12_p_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            print (pname)
+            plot_r_of_sphere(plot_data_k12_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
+            p.save(pname, title="$Gauss theorem multiplier for positive charge (" + str(min(plot_data_k12_p)) + "..." + str(max(plot_data_k12_p)) + ")$", axes_labels=['$t$', '$k_p$'])
+
+        if len(plot_data_k12_n) > 0:
+            p = list_plot(plot_data_k12_n)
+            pname = folder + "spherical_explosion_k12_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            print (pname)
+            plot_r_of_sphere(plot_data_k12_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
+            p.save(pname, title="$Gauss theorem multiplier for negative charge (" + str(min(plot_data_k12_n)) + "..." + str(max(plot_data_k12_n)) + ")$", axes_labels=['$t$', '$k_n$'])
+
+
         if len(plot_data_k_p) > 0:
             p = list_plot(plot_data_k_p)
             pname = folder + "spherical_explosion_k_p_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print (pname)
             plot_r_of_sphere(plot_data_k_p, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
-            p.save(pname)
+            p.save(pname, title="$Gauss theorem multiplier for positive charge (" + str(min(plot_data_k_p)[1]) + "..." + str(max(plot_data_k_p)[1]) + ")$", axes_labels=['$t$', '$k_p$'])
 
         if len(plot_data_k_n) > 0:
             p = list_plot(plot_data_k_n)
             pname = folder + "spherical_explosion_k_n_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print (pname)
             plot_r_of_sphere(plot_data_k_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
-            p.save(pname)
+            p.save(pname, title="$Gauss theorem multiplier for negative charge (" + str(min(plot_data_k_n)[1]) + "..." + str(max(plot_data_k_n)[1]) + ")$", axes_labels=['$t$', '$k_n$'])
 
         if len(plot_data_dk) > 0:
             p = list_plot(plot_data_dk)
@@ -555,6 +597,13 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             plot_r_of_sphere(plot_data_E2_n, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
             p.save(pname)
 
+        if len(plot_data_E12_E1_E2) > 0:
+            p = list_plot(plot_data_E12_E1_E2)
+            pname = folder + "spherical_explosion_E12_E1_E2_t" + "_R0=" + float_formatting(R0_i) + ".png"
+            print (pname)
+            plot_r_of_sphere(plot_data_E12_E1_E2, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
+            p.save(pname)
+
         if len(plot_data_E_E1_E2) > 0:
             p = list_plot(plot_data_E_E1_E2)
             pname = folder + "spherical_explosion_E_E1_E2_t" + "_R0=" + float_formatting(R0_i) + ".png"
@@ -606,6 +655,11 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
     print (pname)
     p.save(pname)
 
+
+    p = list_plot(all_plot_data_E_)
+    pname = folder + "spherical_explosion_all_E__t.png"
+    print (pname)
+    p.save(pname)
 
     p = list_plot(all_plot_data_E)
     pname = folder + "spherical_explosion_all_E_t.png"

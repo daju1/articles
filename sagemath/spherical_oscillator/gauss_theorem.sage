@@ -13,7 +13,7 @@ m = get_electric_field_multiplier()
 
 
 def get_folder(t, r0, v0, a0, R0):
-    dir = os.getcwd()  + "/results/gauss_theorem/"
+    dir = os.getcwd()  + "/results_num_int/gauss_theorem/"
     dir += suffix_trvaR(t, r0, v0, a0, R0)
     print ("dir = ", dir)
 
@@ -86,7 +86,7 @@ def plot_gauss_theorem_t_E(q, trange, R0, r0, v0, a0, r_min):
         data_E2_int_E2 += [(t, iE2)]
 
     p = list_plot (data_k)
-    p.save(folder + "gauss_theorem_k" + suffix(t2, r0, a0) + ".png")
+    p.save(folder + "gauss_theorem_k" + suffix(t2, r0, a0) + ".png", title="$Gauss theorem multiplier (" + str(min(data_k)[1]) + "..." + str(max(data_k)[1]) + ")$", axes_labels=['$t$', '$k$'])
 
     p = list_plot (data_E)
     p.save(folder + "gauss_theorem_E" + suffix(t2, r0, a0) + ".png")
@@ -104,20 +104,21 @@ def plot_gauss_theorem_t_E(q, trange, R0, r0, v0, a0, r_min):
     p.save(folder + "gauss_theorem_E2_int_E2" + suffix(t2, r0, a0) + ".png")
 
 '''
-q = 1
-R0 = 1 * c
-r0 = 0.1 * c
-v0 = 0
-a0 = 0.05 * c
-r_min = 0.01
-t1 = 0
-t2 = 5
-dt = 0.1
-trange = np.arange(t1, t2, dt)
+if False:
+    q = 1
+    R0 = 1 * c
+    r0 = 0.1 * c
+    v0 = 0
+    a0 = 0.05 * c
+    r_min = 0.01
+    t1 = 0
+    t2 = 5
+    dt = 0.1
+    trange = np.arange(t1, t2, dt)
 
-folder = get_folder(t2, r0, v0, a0, R0)
-plot_gauss_theorem_theta_E(q, trange, R0, r0, v0, a0, r_min)
-plot_gauss_theorem_t_E    (q, trange, R0, r0, v0, a0, r_min)
+    folder = get_folder(t2, r0, v0, a0, R0)
+    plot_gauss_theorem_theta_E(q, trange, R0, r0, v0, a0, r_min)
+    plot_gauss_theorem_t_E    (q, trange, R0, r0, v0, a0, r_min)
 
 '''
 
@@ -139,11 +140,11 @@ R0 =  0.15
 
 t1 = 0
 Delta_t =  0.000347500236321034
-t2 = Delta_t
+t2 = Delta_t/2
 dt = 0.000001
 
 trange = np.arange(t1, t2, dt)
-'''
+
 folder = get_folder(t2, r0_p, v0_p, a0_p, R0)
 plot_gauss_theorem_theta_E(q_p, trange, R0, r0_p, v0_p, a0_p, r_min)
 plot_gauss_theorem_t_E    (q_p, trange, R0, r0_p, v0_p, a0_p, r_min)
@@ -152,24 +153,25 @@ folder = get_folder(t2, r0_n, v0_n, a0_n, R0)
 plot_gauss_theorem_theta_E(q_n, trange, R0, r0_n, v0_n, a0_n, r_min)
 plot_gauss_theorem_t_E    (q_n, trange, R0, r0_n, v0_n, a0_n, r_min)
 
+'''
+if False:
+    r0_pos_min = r0
+    v0_pos_min = 0
+    a0_pos_min = a0
+    r0_pos_max = r0
+    v0_pos_max = 0
+    a0_pos_max = a0
 
-r0_pos_min = r0
-v0_pos_min = 0
-a0_pos_min = a0
-r0_pos_max = r0
-v0_pos_max = 0
-a0_pos_max = a0
+    r0_neg_min = r0
+    v0_neg_min = 0
+    a0_neg_min = 2 * a0
+    r0_neg_max = r0
+    v0_neg_max = 0
+    a0_neg_max = 2 * a0
 
-r0_neg_min = r0
-v0_neg_min = 0
-a0_neg_min = 2 * a0
-r0_neg_max = r0
-v0_neg_max = 0
-a0_neg_max = 2 * a0
-
-step_R0 = R0/2
-min_R0 = R0
-max_R0 = 2 * R0
+    step_R0 = R0/2
+    min_R0 = R0
+    max_R0 = 2 * R0
 '''
 # these are results of copper_explosion_lw.sage
 r0_pos_min =  0.000000000000000
@@ -180,10 +182,10 @@ r0_neg_max =  0.000555631898340631
 v0_pos_min =  0
 v0_neg_min =  0
 
-#v0_pos_max =  0
-#v0_neg_max =  0
-v0_pos_max =  678.777253763262
-v0_neg_max =  231844.794418677
+v0_pos_max =  0
+v0_neg_max =  0
+#v0_pos_max =  678.777253763262
+#v0_neg_max =  231844.794418677
 
 a0_pos_min =  0.000000000000000
 a0_neg_min =  0.000000000000000
@@ -193,10 +195,10 @@ a0_neg_max =  1.89779366898370e9
 q =  2.12744210611535
 
 # step_R0 = 100*r0_pos_max
-step_R0 = 0.05
+step_R0 = 0.025
 
-min_R0 = step_R0
-max_R0 = 20.0 * step_R0
+min_R0 = 0.1
+max_R0 = 30.0 * step_R0
 
 
 attach("spherical_explosion_time_evaluation.sage")

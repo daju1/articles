@@ -399,7 +399,6 @@ power = Delta_E.n()/Delta_t.n()
 print ("power = ", power)
 
 
-attach("tzap.spyx")
 
 q = (q__e * N__i).n()
 print ("q = ", q, "кулон")
@@ -424,14 +423,17 @@ print ("r0_neg_min = ", r0_neg_min)
 print ("r0_pos_max = ", r0_pos_max)
 print ("r0_neg_max = ", r0_neg_max)
 
-# v0_pos = 0
-# v0_neg = 0
-
 v0_pos_min = 0
 v0_neg_min = 0
 
 v0_pos_max = 0
 v0_neg_max = 0
+
+#v0_pos_min = v__0r(0.0, R__i, m__Cu, T__i).n()
+#v0_neg_min = v__0r(0.0, R__i, m__e,  T__i).n()
+
+#v0_pos_max = v__0r(R__i, R__i, m__Cu, T__i).n()
+#v0_neg_max = v__0r(R__i, R__i, m__e,  T__i).n()
 
 print ("v0_pos_min = ", v0_pos_min)
 print ("v0_neg_min = ", v0_neg_min)
@@ -439,14 +441,11 @@ print ("v0_neg_min = ", v0_neg_min)
 print ("v0_pos_max = ", v0_pos_max)
 print ("v0_neg_max = ", v0_neg_max)
 
-# a0_pos = a__0r(R__i / 2, R__i, m__Cu, (T__i + T__e) / 2).n()
-# a0_neg = a__0r(R__i / 2, R__i, m__e, (T__i + T__e) / 2).n()
-
 a0_pos_min = a__0r(0.0, R__i, m__Cu, (T__i + T__e) / 2).n()
-a0_neg_min = a__0r(0.0, R__i, m__e, (T__i + T__e) / 2).n()
+a0_neg_min = a__0r(0.0, R__i, m__e,  (T__i + T__e) / 2).n()
 
 a0_pos_max = a__0r(R__i, R__i, m__Cu, (T__i + T__e) / 2).n()
-a0_neg_max = a__0r(R__i, R__i, m__e, (T__i + T__e) / 2).n()
+a0_neg_max = a__0r(R__i, R__i, m__e,  (T__i + T__e) / 2).n()
 
 
 print ("a0_pos_min = ", a0_pos_min)
@@ -470,14 +469,14 @@ t_a0 = Delta_t.n()
 r_finish = r0_neg_max * 2
 dr = r_finish / 100
 
-set_dr_py(dr)
-set_r_finish_py(r_finish)
-
-# v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0)
 
 step_R0 = 100*r0
 min_R0 = r0 + step_R0
 max_R0 = r0 + 100.0 * step_R0
+
+step_R0 = 0.05
+min_R0 = step_R0
+max_R0 = 20.0 * step_R0
 
 # without SI
 # t1 = 0
@@ -488,6 +487,13 @@ max_R0 = r0 + 100.0 * step_R0
 t1 = 0
 t2 = Delta_t # "should be 0.347500236218306e-3"
 dt = 0.000001
+
+
+attach("tzap.spyx")
+set_dr_py(dr)
+set_r_finish_py(r_finish)
+
+# v1_calc(q, m_pos, m_neg, r0_pos, r0_neg, v0_pos, v0_neg, a0_pos, a0_neg, t_a0)
 
 attach("spherical_explosion_time_evaluation.sage")
 use_dbl_integration = False
@@ -502,7 +508,7 @@ max_R0 = r0 + 100.0 * step_R0
 
 # with SI
 t1 = 0
-t2 = Delta_t # "should be 0.347500236218306e-3"
+t2 = Delta_t.n() # "should be 0.347500236218306e-3"
 dt = 0.01
 
 attach("spherical_explosion_radial_snapshot.sage")
@@ -511,22 +517,4 @@ spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_pos_min, v0_pos_min, a0_po
 
 #use_dbl_integration = True
 #spherical_explosion_radial_snapshot(q, t1, t2, dt, r0_pos_min, v0_pos_min, a0_pos_min, r0_pos_max, v0_pos_max, a0_pos_max, r0_neg_min, v0_neg_min, a0_neg_min, r0_neg_max, v0_neg_max, a0_neg_max, step_R0, min_R0, max_R0, r_min, use_dbl_integration)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

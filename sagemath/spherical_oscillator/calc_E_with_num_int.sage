@@ -1,4 +1,4 @@
-attach("../field_of_deyna_cylinder/num_int.sage")
+attach("num_int.sage")
 
 def phi_and_E_integrand_phi(q, t, R0, r0, v0, a0, theta, r_min):
     (phi, A, E1, E2, E, error) = phi_and_E_integrand(q, t, R0, r0, v0, a0, theta, r_min)

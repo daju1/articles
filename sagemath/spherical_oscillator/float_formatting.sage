@@ -10,7 +10,7 @@ def float_formatting(float_value):
         print ("log(10.0)=", log(10.0))
         print ("log(decimal_part)/log(10.0)=", log(decimal_part)/log(10.0))
         print ("floor(log(decimal_part)/log(10.0)=", floor(log(decimal_part)/log(10.0)))
-        digits_after_point = 0 - floor(log(decimal_part)/log(10.0))
+        digits_after_point = 2 - floor(log(decimal_part)/log(10.0))
     print ("digits_after_point=", digits_after_point)
     format_string_float_value = "str_float_value = '%1." + str(digits_after_point) + "f' % (" + str(float_value) + ")"
     format_string = "{:1." + str(digits_after_point) + "f}"

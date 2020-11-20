@@ -188,18 +188,18 @@ field get_E_minus_1_c_dA_dt_R0(angle theta, velocity v_zap, acceleration a_zap, 
 
 field get__E(angle theta, velocity v_zap, acceleration a_zap, distance R_zap, long double aR_zap, distance R_lw_zap, long double cos_alpha_zap)
 {
-	field E_minus_grad_phi_R0 =
+	field E =
 		(
 			((cos_alpha_zap - v_zap * cos(theta) / g_c) * R_zap) * (1.0 + (aR_zap - v_zap * v_zap) / (g_c * g_c))
 			- a_zap*cos(theta) * R_zap * R_lw_zap / (g_c * g_c)
 		)
 		/ (R_lw_zap * R_lw_zap * R_lw_zap);
 #ifndef USE_NORM
-	DBG_INFO("E_minus_grad_phi_R0 = %0.25Lf\n", E_minus_grad_phi_R0);
-	E_minus_grad_phi_R0 *= multiplier_E;
+	DBG_INFO("E = %0.25Lf\n", E);
+	E *= multiplier_E;
 #endif
-	DBG_INFO("E_minus_grad_phi_R0 = %0.25Le\n", E_minus_grad_phi_R0);
-	return E_minus_grad_phi_R0;
+	DBG_INFO("E = %0.25Le\n", E);
+	return E;
 }
 
 field get_E(angle theta, timevalue t, timevalue t_zap, coordinate R0, coordinate r_zap, velocity v_zap, acceleration a_zap)

@@ -8,7 +8,7 @@
 #include "dbg_info.h"
 #include "integrate.h"
 
-#define DBG_INFO printf
+//#define DBG_INFO printf
 
 extern velocity g_c;
 extern timevalue * v_t;
@@ -285,12 +285,12 @@ int integrand_phi_and_E(charge q, timevalue t, coordinate R0, coordinate r0, vel
 		E_minus_1_c_dA_dt_R0 = get_E_minus_1_c_dA_dt_R0(theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap);
 		E_ = get_E(theta, t, t_zap, R0, r_zap, v_zap, a_zap);
 
-E = get__E(theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap, cos_alpha_zap);
-if (fabs(E - E_) > 1e-12)
-{
-printf("E = %Le E_ = %Le\n", E, E_);
-printf("dEE_ = %Le\n", fabs(E-E_));
-}
+		E = get__E(theta, v_zap, a_zap, R_zap, aR_zap, R_lw_zap, cos_alpha_zap);
+		if (fabs(E - E_) > 1e-12)
+		{
+			printf("E = %Le E_ = %Le\n", E, E_);
+			printf("dEE_ = %e\n", fabs(E-E_));
+		}
 
 		if (fabs(E_minus_grad_varphi_R0 + E_minus_1_c_dA_dt_R0 - E) > 1e-6)
 		{

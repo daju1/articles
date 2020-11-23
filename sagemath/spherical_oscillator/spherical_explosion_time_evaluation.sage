@@ -440,7 +440,7 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             pname = folder + "spherical_explosion_E12_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print (pname)
             plot_r_of_sphere(plot_data_E12, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
-            p.save(pname, title="$Electric field E_1 + E_2 at R_0 = " + float_formatting(R0_i) + "$", axes_labels=['$t$', '$E_1 + E_2$'])
+            p.save(pname, title="$E_1 + E_2 ( R_0 = " + float_formatting(R0_i) + ")$", axes_labels=['$t$', '$E_1 + E_2$'])
 
         if len(plot_data_E12_p) > 0:
             p = list_plot(plot_data_E12_p)
@@ -461,7 +461,7 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             pname = folder + "spherical_explosion_E_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print (pname)
             plot_r_of_sphere(plot_data_E, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
-            p.save(pname, title="$Electric field E at R_0 = " + float_formatting(R0_i) + "$", axes_labels=['$t$', '$E$'])
+            p.save(pname, title="$E (R_0 = " + float_formatting(R0_i) + ")$", axes_labels=['$t$', '$E$'])
 
         if len(plot_data_E_p) > 0:
             p = list_plot(plot_data_E_p)
@@ -560,7 +560,7 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             pname = folder + "spherical_explosion_E1_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print (pname)
             plot_r_of_sphere(plot_data_E1, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
-            p.save(pname)
+            p.save(pname, title="$E_1 (R_0 = " + float_formatting(R0_i) + ")$", axes_labels=['$t$', '$E_1$'])
 
         if len(plot_data_E1_p) > 0:
             p = list_plot(plot_data_E1_p)
@@ -581,7 +581,7 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             pname = folder + "spherical_explosion_E2_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print (pname)
             plot_r_of_sphere(plot_data_E2, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
-            p.save(pname)
+            p.save(pname, title="$E_2 (R_0 = " + float_formatting(R0_i) + ")$", axes_labels=['$t$', '$E_2$'])
 
         if len(plot_data_E2_p) > 0:
             p = list_plot(plot_data_E2_p)
@@ -609,7 +609,7 @@ def spherical_explosion_time_evaluation(q, t1, t2, dt, r0_p_min, v0_p_min, a0_p_
             pname = folder + "spherical_explosion_E_E1_E2_t" + "_R0=" + float_formatting(R0_i) + ".png"
             print (pname)
             plot_r_of_sphere(plot_data_E_E1_E2, p, r_p_min_met, r_p_max_met, r_n_min_met, r_n_max_met, t_r_p_min, t_r_p_max, t_r_n_min, t_r_n_max)
-            p.save(pname)
+            p.save(pname, title="$E, E_1, E_2 (R_0 = " + float_formatting(R0_i) + ")$", axes_labels=['$t$', '$E, E_1, E_2$'])
 
     dir = os.getcwd()  + "/results_num_int/spherical_explosion_time_evaluation/"
     if True == use_dbl_integration:

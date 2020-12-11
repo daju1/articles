@@ -227,19 +227,19 @@ $$\vec{dE} = \frac{dq}{{{R}^{*}}^{3}}\left( \left(\vec{R}-\frac{R}{c}\vec{v} \ri
 
 $$dE = \frac{dq}{{{R}^{*}}^{3}} \left( \left({R'\cos \left( \alpha  \right)'}-\frac{R'}{c}{v'\cos \left( \theta  \right)} \right) \left(1 + \frac{\vec{R}\vec{a}}{c^2} - \frac{v^2}{c^2} \right) - {a' \cos \left( \theta  \right)}\frac{{R}^{*}R'}{c^2} \right)$$
 
- Подставляя выражения для $R'=c\left( t-t' \right)$ и $\cos \left( \alpha  \right)'$
+% Подставляя выражения для $R'=c\left( t-t' \right)$ и $\cos \left( \alpha  \right)'$
 
 
 % $$\vec{dE} = \frac{dq}{{{R}^{*}}^{3}} \left( \left({R}_{0}-r \left( t' \right)\cos \left( \theta  \right) - \left( t-t' \right) {v'\cos \left( \theta  \right)} \right) \left(1 + \frac{\vec{R}\vec{a}}{c^2} - \frac{v^2}{c^2} \right) - {a' \cos \left( \theta  \right)}\frac{{R}^{*}\left( t-t' \right)}{c} \right)$$
 
 % $$\overrightarrow{dE}=\frac{dq}{{{R}^{*}}^{3}}\left( \left( {{R}_{0}}-\left( r\left( {{t}'} \right)+\left( t-{t}' \right){v}' \right)\cos \left( \theta  \right) \right)\left( 1+\frac{\vec{R}\vec{a}}{{{c}^{2}}}-\frac{{{v}^{2}}}{{{c}^{2}}} \right)-{a}'\cos \left( \theta  \right)\frac{{{R}^{*}}\left( t-{t}' \right)}{c} \right)$$
 
-$$\frac{dE}{dq}=\frac{\left( {{R}_{0}}-\left( r\left( {{t}'} \right)+\left( t-{t}' \right)v\left( {{t}'} \right) \right)\cos \left( \theta  \right) \right)}{{{R}^{*}}^{3}}\left( 1+\frac{\vec{R}\vec{a}}{{{c}^{2}}}-\frac{{{v}^{2}}}{{{c}^{2}}} \right)-a\left( {{t}'} \right)\cos \left( \theta  \right)\frac{\left( t-{t}' \right)}{c{{R}^{*}}^{2}}$$
+%$$\frac{dE}{dq}=\frac{\left( {{R}_{0}}-\left( r\left( {{t}'} \right)+\left( t-{t}' \right)v\left( {{t}'} \right) \right)\cos \left( \theta  \right) \right)}{{{R}^{*}}^{3}}\left( 1+\frac{\vec{R}\vec{a}}{{{c}^{2}}}-\frac{{{v}^{2}}}{{{c}^{2}}} \right)-a\left( {{t}'} \right)\cos \left( \theta  \right)\frac{\left( t-{t}' \right)}{c{{R}^{*}}^{2}}$$
 
-подставляя выражение для $\vec{R}\vec{a}=a\left( {{t}'} \right)\left( {{R}_{0}}\cos \theta -r\left( t' \right) \right)$
+%подставляя выражение для $\vec{R}\vec{a}=a\left( {{t}'} \right)\left( {{R}_{0}}\cos \theta -r\left( t' \right) \right)$
 
 
-$$\frac{dE}{dq}=\frac{\left( {{R}_{0}}-\left( r+\left( t-{t}' \right)v \right)\cos \left( \theta  \right) \right)}{{{R}^{*}}^{3}}\left( 1+\frac{a\left( {{R}_{0}}\cos \theta -r \right)}{{{c}^{2}}}-\frac{{{v}^{2}}}{{{c}^{2}}} \right)-a\cos \left( \theta  \right)\frac{\left( t-{t}' \right)}{c{{R}^{*}}^{2}}$$
+%$$\frac{dE}{dq}=\frac{\left( {{R}_{0}}-\left( r+\left( t-{t}' \right)v \right)\cos \left( \theta  \right) \right)}{{{R}^{*}}^{3}}\left( 1+\frac{a\left( {{R}_{0}}\cos \theta -r \right)}{{{c}^{2}}}-\frac{{{v}^{2}}}{{{c}^{2}}} \right)-a\cos \left( \theta  \right)\frac{\left( t-{t}' \right)}{c{{R}^{*}}^{2}}$$
 
 В данном выражении величины $r$, $v$ и $a$, зависящие от координаты $\theta$ источника поля вычисляются для запаздывающего момента времени $t'$.
 
@@ -353,7 +353,14 @@ $$\frac{dE}{dq}=\frac{\left( {{R}_{0}}-\left( r+\left( t-{t}' \right)v \right)\c
 
 Для нахождения коэффициента преобразования средней тепловой скорости частиц в радиальную для поверхностного слоя взрывающегося шара достаточно проинтегрировать косинус зенитного угла $\theta$ по полусфере направлений скоростей в сферической системе координат
 
-$\alpha =\frac{\int\limits_{0}^{\pi /2}{r\int\limits_{0}^{2\pi }{r\ \sin \left( \theta  \right)d\varphi d\theta }}}{\int\limits_{0}^{\pi /2}{r\int\limits_{0}^{2\pi }{r\ \sin \left( \theta  \right)d\varphi \cos \left( \theta  \right)d\theta }}}$
+$\alpha =\frac{\int\limits_{0}^{\pi /2}{r\int\limits_{0}^{2\pi }{r\ \sin \left( \theta  \right)d\varphi \cos \left( \theta  \right)d\theta }}}{\int\limits_{0}^{\pi /2}{r\int\limits_{0}^{2\pi }{r\ \sin \left( \theta  \right)d\varphi d\theta }}}$
+
+%phi = var("phi")
+%half_sphere_S                   = integrate(r*integrate(r*sin(theta), (phi, 0, 2*pi))                   ,(theta, 0, pi/2))
+%half_sphere_S_cos_theta = integrate(r*integrate(r*sin(theta), (phi, 0, 2*pi))*cos(theta),(theta, 0, pi/2))
+%alpha = half_sphere_S_cos_theta / half_sphere_S
+%print ("alpha = ", alpha)
+%print ("should be 1/2")
 
 Исходя из этих соображений принимаем в распределении радиальной компоненты скорости частиц коэффициент пропорциональности равным $$\alpha = 0.5$$
 
@@ -440,9 +447,9 @@ $$d{{q}_{\exp eriment}}=\frac{4\pi {{\varepsilon }_{0}}U}{\frac{1}{{{r}_{1}}^{2}
 
 
 Оценка дополнительного заряда по формулам скалярно-векторного потенциала Менде
-$$d{{q}_{memde}}(m,q,T,{{N}_{i}})=q{{N}_{i}}\cosh \left( \frac{{{v}_{T}}\left( m,T \right)}{c} \right)$$
+$$d{{q}_{mende}}(m,q,T,{{N}_{i}})=q{{N}_{i}}\cosh \left( \frac{{{v}_{T}}\left( m,T \right)}{c} \right)$$
 
-$$d{{q}_{memde}}({{m}_{e}},-{{q}_{e}},{{T}_{1}},{{N}_{i}})+d{{q}_{memde}}({{m}_{Cu}},{{q}_{e}},{{T}_{1}},{{N}_{i}})=-0.2544\cdot {{10}^{-5}}\ $$
+$$d{{q}_{mende}}({{m}_{e}},-{{q}_{e}},{{T}_{1}},{{N}_{i}})+d{{q}_{mende}}({{m}_{Cu}},{{q}_{e}},{{T}_{1}},{{N}_{i}})=-0.2544\cdot {{10}^{-5}}\ $$
 
 приводит к результату, завышенному на 8-9 порядков. 
 

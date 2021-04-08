@@ -1,0 +1,9 @@
+include ./cuba.mk
+
+OBJ = calc_gradient_sphere_mass.o main.o
+
+all : calc_gradient_sphere_mass
+
+calc_gradient_sphere_mass: $(OBJ)
+	$(info OBJ=$(OBJ))
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)

@@ -25,6 +25,14 @@ SUAVE RESULT:   1.19688515 +- 0.00328190        p = 1.000
 UAVE RESULT:   nregions 50     neval 50000     fail 1
 SUAVE RESULT:   11.96885154 +- 0.03281897       p = 1.000
 
+make -f cuba.mk clean && ll && make -f Makefile-calc_gradient_sphere_mass all && ./calc_gradient_sphere_mass
+
+Iteration 44:  517000 integrand evaluations so far
+[1] 0.400202 +- 0.000444129  	chisq 6.04122 (43 df)
+VEGAS RESULT:	neval 517000	fail 1
+VEGAS RESULT:	0.40020154 +- 0.00044413	p = 0.000
+
+
 calc_proton_mass results:
 
 

@@ -47,8 +47,11 @@ RUN apt-get -y install texlive-xetex #(to convert Jupyter notebooks to pdf)
 RUN apt-get -y install pandoc #(to convert Jupyter notebooks to pdf)
 # RUN apt-get -y install dvipng #(to render text with LaTeX in Matplotlib)
 # RUN apt-get -y install default-jdk #(to run the Jmol 3D viewer from the console and generate images for 3D plots in the documentation)
-# RUN apt-get -y install ffmpeg #(to produce animations)
+RUN apt-get -y install ffmpeg #(to produce animations)
 # RUN apt-get -y install libavdevice-dev #(to produce animations)
+
+RUN apt-get -y install texlive-lang-cyrillic
+# RUN apt-get -y install texlive-full
 
 USER ${USER_NAME}
 # WORKDIR ${PROJECT_PATH}

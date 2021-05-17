@@ -3,7 +3,7 @@
 set -e
 set -x
 
-SAGE_VER=9.1
+SAGE_VER=9.3
 SAGE_DIR=sage-${SAGE_VER}
 SAGE_TAR=$SAGE_DIR.tar.gz
 WORK_DIR=`pwd`

@@ -47,6 +47,26 @@ static inline cubareal Se(cubareal x) {
 static inline cubareal Ei(cubareal x) {
   return x*x*x*x*x*x*x*x;
 }
+
+static inline cubareal Ni(cubareal x) {
+  return x*x*x*x*x*x*x*x*x;
+}
+
+static inline cubareal Te(cubareal x) {
+  return x*x*x*x*x*x*x*x*x*x;
+}
+
+static inline cubareal El(cubareal x) {
+  return x*x*x*x*x*x*x*x*x*x*x;
+}
+
+static inline cubareal Tw(cubareal x) {
+  return x*x*x*x*x*x*x*x*x*x*x*x;
+}
+
+
+
+
 //z - координаты заряда и точки наблюдения
 static inline cubareal zq (cubareal rq, cubareal theta_q)
 {

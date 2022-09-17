@@ -30,10 +30,10 @@ return
 }
 
 
-//F_Rp_integrand(u, n_x, n_y, a, k_m)
-// -1/4*((2*n_y - 2*floor(n_y) - 1)*(n_x*n_y/((n_x^2 + n_y^2 + u^2)^(3/2)*(pi^4*(n_x^2 + n_y^2 + u^2)^2/(a^4*k_m^4) + 1)) + 16*pi^4*sqrt(n_x^2 + n_y^2 + u^2)*n_x*n_y/(a^4*k_m^4*(pi^4*(n_x^2 + n_y^2 + u^2)^2/(a^4*k_m^4) + 1)^2) - 32*pi^8*(n_x^2 + n_y^2 + u^2)^(5/2)*n_x*n_y/(a^8*k_m^8*(pi^4*(n_x^2 + n_y^2 + u^2)^2/(a^4*k_m^4) + 1)^3)) - 4*n_x/(sqrt(n_x^2 + n_y^2 + u^2)*(pi^4*(n_x^2 + n_y^2 + u^2)^2/(a^4*k_m^4) + 1)) + 16*pi^4*(n_x^2 + n_y^2 + u^2)^(3/2)*n_x/(a^4*k_m^4*(pi^4*(n_x^2 + n_y^2 + u^2)^2/(a^4*k_m^4) + 1)^2))*(2*n_x - 2*floor(n_x) - 1)
+//result_force_Fn_integrand(u, n_x, n_y, a, k_m)
+// 1/4*((32*pi^8*(n_x^2 + n_y^2 + u^2)^(5/2)*n_x*n_y/((pi^4*(n_x^2 + n_y^2 + u^2)^2/k_m^4 + 1)^3*k_m^8) - 16*pi^4*sqrt(n_x^2 + n_y^2 + u^2)*n_x*n_y/((pi^4*(n_x^2 + n_y^2 + u^2)^2/k_m^4 + 1)^2*k_m^4) - n_x*n_y/((pi^4*(n_x^2 + n_y^2 + u^2)^2/k_m^4 + 1)*(n_x^2 + n_y^2 + u^2)^(3/2)))*(2*n_y - 2*floor(n_y) - 1) - 16*pi^4*(n_x^2 + n_y^2 + u^2)^(3/2)*n_x/((pi^4*(n_x^2 + n_y^2 + u^2)^2/k_m^4 + 1)^2*k_m^4) + 4*n_x/((pi^4*(n_x^2 + n_y^2 + u^2)^2/k_m^4 + 1)*sqrt(n_x^2 + n_y^2 + u^2)))*(2*n_x - 2*floor(n_x) - 1)
 
-static inline cubareal F_Rp_integrand (cubareal u, cubareal n_x, cubareal n_y, cubareal k_m)
+static inline cubareal result_force_Fn_integrand (cubareal u, cubareal n_x, cubareal n_y, cubareal k_m)
 {
 	return
 1/4*((32*Ei(pi)*pow((Sq(n_x) + Sq(n_y) + Sq(u)),(5.0/2))*n_x*n_y/(Cb(Qu(pi)*Sq(Sq(n_x) + Sq(n_y) + Sq(u))/Qu(k_m) + 1)*Ei(k_m)) - 16*Qu(pi)*sqrt(Sq(n_x) + Sq(n_y) + Sq(u))*n_x*n_y/(Sq(Qu(pi)*Sq(Sq(n_x) + Sq(n_y) + Sq(u))/Qu(k_m) + 1)*Qu(k_m)) - n_x*n_y/((Qu(pi)*Sq(Sq(n_x) + Sq(n_y) + Sq(u))/Qu(k_m) + 1)*pow((Sq(n_x) + Sq(n_y) + Sq(u)),(3.0/2))))*(2*n_y - 2*floor(n_y) - 1) - 16*Qu(pi)*pow((Sq(n_x) + Sq(n_y) + Sq(u)),(3.0/2))*n_x/(Sq(Qu(pi)*Sq(Sq(n_x) + Sq(n_y) + Sq(u))/Qu(k_m) + 1)*Qu(k_m)) + 4*n_x/((Qu(pi)*Sq(Sq(n_x) + Sq(n_y) + Sq(u))/Qu(k_m) + 1)*sqrt(Sq(n_x) + Sq(n_y) + Sq(u))))*(2*n_x - 2*floor(n_x) - 1)
@@ -80,7 +80,7 @@ int Integrand(const int *ndim, const cubareal xx[],
     // f = lim_2_Rpx_Fn_integrand (u * 1000, n_x * UP_LIMIT, n_y * UP_LIMIT );
     // f = F_Rp_integrand (u * 1000, n_x * UP_LIMIT, n_y * UP_LIMIT, 10);
     f = Rpy_Rpx_integrand (u * 1000, n_x * UP_LIMIT, n_y * UP_LIMIT, FLT_MAX);
-    // f = F_Rp_integrand_p2 (u * 1000, n_x * UP_LIMIT, n_y * UP_LIMIT, FLT_MAX);
+    // f = result_force_Fn_integrand_p2 (u * 1000, n_x * UP_LIMIT, n_y * UP_LIMIT, FLT_MAX);
     // f = two_Rpx_Fn_integrand (u * 1000, n_x * UP_LIMIT, n_y * UP_LIMIT, FLT_MAX);
 
     return 0;

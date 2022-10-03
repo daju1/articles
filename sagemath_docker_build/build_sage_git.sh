@@ -59,8 +59,10 @@ cd $SAGE_DIR
 
 ./bootstrap
 
-./configure  --prefix=$SAGE_LOCAL #--enable-build-as-root
+./configure  --prefix=$SAGE_LOCAL --disable-doc #--enable-build-as-root
 # MAKE='make -jNUM' make
 make -j$(nproc)
 sudo make install
 
+cd sage
+./sage -i fricas

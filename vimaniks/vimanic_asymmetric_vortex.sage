@@ -358,37 +358,47 @@ print(al(t))
 
 # In[22]:
 
-
-def find_newton_root(f,x,xn, max_steps=20):
+def find_newton_root(f,x,xn, max_steps=20, debug = False):
+    if debug:
+        print("find_newton_root f =", f)
     df = f.diff(x)
-    #print ("f", f)
-    #print ("df", df)
-    #print ("f/df", f/df)
+    if debug:
+        print ("df", df)
+        print ("f/df", f/df)
     step = 1.0
     #NewtonIt = lambda x_, step : x_-step*(f/df).subs(x == x_)
     #xn=(a+b)/2;                      # initial guess
     
     def NewtonIt(_x, step):
-        #print("_x", _x)
+        if debug:
+            print("_x", _x)
         delta = (f/df).subs(x == _x)
-        #print("delta", delta)
-        #print("step", step)
+        if debug:
+            print("delta", delta)
+            print("step", step)
         step_delta = step*delta
-        #print("step_delta", step_delta)
+        if debug:
+            print("step_delta", step_delta)
 
         res = _x-step_delta
-        #print ("_x-step_delta", _x-step_delta)
-        #print ("res", res)
+        if debug:
+            print ("_x-step_delta", _x-step_delta)
+            print ("res", res)
         return res
 
-    #print (xn)
+    if debug:
+        print ("xn", xn)
     for i in range(max_steps):
-        #xn=N(NewtonIt(xn, step), digits=32)
+        #xn=N(NewtonIt(xn, step), digits=32)\n",
+        if float != type(xn):
+            xn = xn.n()
         xn=NewtonIt(xn, step)
-        #print ("xn", xn)
-        
-        f_n = f.subs(x == xn)
-        #print ("f_n",f_n)
+        if debug:
+            print ("xn", xn)
+
+        if debug:
+            f_n = f.subs(x == xn)
+            print ("f_n", f_n)
         #step *= 0.999
 
     return xn
@@ -423,11 +433,13 @@ def find_root_recursive(func,a,b,tol=0.000000000001):
             if logging:
                 print(str(ex))
                 print ("a = ", a, "b = ", b)
+                print ("func = ", func)
                 print ("func(a) =", func.subs(free_variable==a))
                 print ("func(b) =", func.subs(free_variable==b))
                 #exec("print(func(" + preparse(str(free_variable)) + "=a))")
                 #exec("print(func(" + preparse(str(free_variable)) + "=b))")
         pass
+    L.sort()
     return L
 
 
@@ -487,7 +499,7 @@ def tlag_symbolic(x, y, z, t, s):
         if logging:
             print("t2_roots =", t2_roots)
         if len(t2_roots) > 0:
-            t2_root = t2_roots[0]
+            t2_root = t2_roots[len(t2_roots)-1]
             t2 = find_newton_root(f = eq_tau, x = tau, xn = t2_root)
         else:
             if logging:
@@ -829,9 +841,9 @@ def cals_sum_F(n, S, R_l, R_r, alpha0_l = 0, alpha0_r = 0, omega_l = omega_d, om
 
 # In[68]:
 
-
-for iA in range(0, 16+1):
-    Ai = iA * 2*pi / 16
+N = 16
+for iA in range(0, N+1):
+    Ai = iA * 2*pi / N
     print(Ai)
 
 
@@ -842,8 +854,8 @@ S_sum_Fx = []
 S_sum_Fy = []
 S_sum_F_alpha_l = []
 S_sum_F_alpha_r = []
-for iA in range(0, 16):
-    Ai = iA * 2*pi / 16
+for iA in range(0, N):
+    Ai = iA * 2*pi / N
     F_alpha = cals_sum_F(n=1, S=S, R_l=R_l, R_r=R_r, alpha0_l=Ai, to_animate = False)
     print(Ai, F_alpha[0], F_alpha[1], F_alpha[2], F_alpha[3])
     S_sum_Fx += [(Ai, F_alpha[0])]

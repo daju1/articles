@@ -1,0 +1,8 @@
+                def __call__(self, renderer, gc, tpath, affine, rgbFace):
+                    paths = self.get_paths(renderer)
+                    if (len(paths) > self._n):
+                        path = paths[self._n]
+                        vert1, code1 = path.vertices, path.codes
+                        import numpy as np
+
+                        return np.array_equal(vert1, tpath.vertices) and np.array_equal(code1,   tpath.codes)

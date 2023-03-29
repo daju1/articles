@@ -66,3 +66,19 @@ sudo make install
 
 cd sage
 ./sage -i fricas
+
+
+# https://stackoverflow.com/questions/40607370/make-pdf-in-jupyter-notebook-with-russian-letters
+# $HOME/.local/share/jupyter/nbconvert/templates/latex/base.tex.j2
+
+# \usepackage[T2A]{fontenc}
+# \usepackage[utf8]{inputenc}
+# \usepackage[english, russian]{babel}
+
+# ((( super() )))
+# \usepackage{wrapfig}
+# \usepackage[rightcaption]{sidecap}
+# \providecommand{\keywords}[1]{\textbf{\textit{Keywords:}} #1}
+
+# \author{A. Yu. Drozdov}
+

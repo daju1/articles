@@ -409,11 +409,6 @@ Casimir effect, discovered in the seminal paper by Casimir
 quantum and relativistic phenomenon caused by the zero-point
 oscillations of quantized fields.
 
-Both infinite quantities were made finite through the use of a procedure
-called regularization. After subtraction, the regularization was
-removed, leaving a finite result, which leads to the Casimir force
-formula.
-
 The Casimir effect in its simplest form is the pushing in of a pair of
 neutral, parallel conducting plates resulting from the modification of
 the electromagnetic vacuum by the boundaries.
@@ -1035,10 +1030,6 @@ shown that the effect should also be observed at a finite height of the
 ribs, although the dependence of the effect on this height may be the
 subject of further research.
 
-The final actual height of the walls will make some correction to the
-value of the result obtained (which may be a topic for further
-research), but the fundamental conclusion will not change.
-
 Regarding criticism: Hrvoje \cite{Hrvoje2016} consider the Casimir
 effect not as a consequence of the existence of virtual quantum photons,
 but as only a manifestation of the London-van der Waals dispersion
@@ -1056,16 +1047,9 @@ details}\label{appendix-a.-integration-details}
 
     \[f\left(\frac{k}{k_m}\right) = \frac{1}{\frac{k^{4}}{k_{m}^{4}} + 1}\]
 
-    \(k_m\) may be defined by \(f(1) = 1/2\).
-
-    which is unity for \(k << k_m\) but tends to zero sufficiently rapidly
-for \((k/k_m)\, \rightarrow\,\infty\).
-
     Starting from
 
     \[F\left(u, n_x, n_y, a, k_m\right) = \sqrt{n_{x}^{2} + n_{y}^{2} + u^{2}} f\left(\frac{\pi \sqrt{n_{x}^{2} + n_{y}^{2} + u^{2}}}{a k_{m}}\right)\]
-
-%\[F\left(u, n_x, n_y, a, k_m\right) = \frac{\sqrt{n_{x}^{2} + n_{y}^{2} + u^{2}}}{\frac{\pi^{4} {\left(n_{x}^{2} + n_{y}^{2} + u^{2}\right)}^{2}}{a^{4} k_{m}^{4}} + 1}\]
 
     By introducing a variable
 
@@ -1482,17 +1466,19 @@ integral and it is therefore easily seen that energy is given by
 \(\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S}\) of the whole system is
 given by
 
-\[\begin{array}{l}
-\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S} = \frac{\hbar\,c}{a^2\,\pi}\Bigg\{l\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] + \\
+\[\begin{array}{lr}
+\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S} =
+\begin{array}{c}\frac{\hbar\,c}{a^2\,\pi}\Bigg\{l\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] + \\
 (L-l)\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\Bigg\}
-\end{array}\]
+\end{array}\end{array}\]
 
 and interaction
 \(\frac{F}{S} = \frac{d}{dl} \,\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S}\)
 is:
 
-\[\begin{array}{l}\frac{F}{S} = \frac{\hbar\,c}{a^2\,\pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] - \\
-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\Bigg\}\end{array}\]
+\[\begin{array}{lr}\frac{F}{S} =
+\begin{array}{c}\frac{\hbar\,c}{a^2\,\pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] - \\
+\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\Bigg\}\end{array}\end{array}\]
 
     So using Hamiltonian mechanics approach I see that formula for the force
 to perfectly conducting honeycomb on a plate \({F}/{S}\) is the same

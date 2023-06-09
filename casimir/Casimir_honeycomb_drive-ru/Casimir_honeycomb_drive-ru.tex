@@ -505,8 +505,8 @@
     Теперь мы можем найти удельную плотность энергии \(E/V\), где
 \(V = V_{small} = a^2 L/2\):
 
-    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,L/2}\frac{1}{2}\int\limits_{0}^{\infty}\left[{\sqrt{k_z^2}+2\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}}\right]\frac{L/2}{\pi}\,dk_z\)
-(маленькая полость, одна сотовая ячейка),
+    % \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,L/2}\frac{1}{2}\int\limits_{0}^{\infty}\left[{\sqrt{k_z^2}+2\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}}\right]\frac{L/2}{\pi}\,dk_z\)
+% (маленькая полость, одна сотовая ячейка),
 
     \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\left[{\frac{1}{2}\sqrt{k_z^2}+\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}}\right]\,dk_z\)
 (маленькая полость, одна сотовая ячейка),
@@ -542,8 +542,8 @@
     \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{L^3/2}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dn_x\,dn_y\,\frac{L/2}{\pi}\,dk_z\)
 (большая полость: между чистой плоскостью и гранью \(xy\)),
 
-    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dk_z\right]\,dn_x\,dn_y\)
-(большая полость: между чистой плоскостью и гранью \(xy\)),
+    % \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dk_z\right]\,dn_x\,dn_y\)
+% (большая полость: между чистой плоскостью и гранью \(xy\)),
 
     \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\)
 (большая полость: между чистой плоскостью и гранью \(xy\)),
@@ -554,23 +554,27 @@
     \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\)
 (большая полость: между чистой плоскостью и гранью \(xy\)),
 
+    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\)
+(большая полость: между чистой плоскостью и гранью \(xy\)),
+
     \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,\pi}\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right]\)
 (маленькая полость, одна сотовая ячейка),
 
     легко видеть, что наша энергия взаимодействия определяется выражением
 
-    \[\begin{array}{lr}
-\delta\,\frac{E}{V} = 
-\begin{array}{c}
-\frac{\hbar\,c}{a^2\,\pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] - \\
-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\Bigg\}
-\end{array}\end{array}\]
+%    \[\begin{array}{lr}
+%\delta\,\frac{E}{V} =
+%\begin{array}{c}
+%\frac{\hbar\,c}{a^2\,\pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] - \\
+%\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\Bigg\}
+%\end{array}\end{array}\]
 
-    \[\begin{array}{lr}
+    \begin{equation} \label{eq:1}
+\begin{array}{lr}
 \delta\,\frac{E}{V} =
 \begin{array}{c}
 \frac{\hbar\,c}{a^2\,\pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] - \\ \int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\Bigg\}
-\end{array}\end{array}\]
+\end{array}\end{array}\end{equation}
 
     
 
@@ -751,7 +755,15 @@ $\int\limits_{n_y}^{} {\sum\limits_{n_x}^{}}^{B}\,G = 0$ \\
 
 $\int\limits_{n_y}^{} \underset{n_x}{R_{p}}\,G = {\sum_{j_{x}=a_{x}}^{b_{x} - 1} \int_{a_{y}}^{b_{y}} \int_{0}^{1} \frac{1}{2} \, {\left(2 \, v_{n_{x}} - 1\right)} \mathrm{D}_{0}\left(G\right)\left(j_{x} + v_{n_{x}}, n_{y}\right)\,{d v_{n_{x}}}\,{d n_{y}}}$ \\
 
-\hline\hline
+\hline
+
+\end{tabular}
+\end{center}
+
+    \begin{center}
+\begin{tabular}{ | l | }
+
+\hline
 
 $\underset{n_y}{H_{\sum}}\,\int\limits_{n_x}^{}\,G = \frac{1}{2} \, \int_{a_{x}}^{b_{x}} G\left(n_{x}, a_{y}\right)\,{d n_{x}}$ \\
 
@@ -761,7 +773,15 @@ $\underset{n_y}{H_{\sum}}\,{\sum\limits_{n_x}^{}}^{B}\,G = 0$ \\
 
 $\underset{n_y}{H_{\sum}}\,\underset{n_x}{R_{p}}\,G = {\sum_{j_{n_{x}}=a_{x}}^{b_{x} - 1} \frac{1}{4} \, \int_{0}^{1} \left(2 \, v_{n_{x}} - 1 \right) \mathrm{D}_{0}\left(G\right)\left(j_{n_{x}} + v_{n_{x}}, a_{y}\right)\,{d v_{n_{x}}} }$ \\
 
-\hline\hline
+\hline
+
+\end{tabular}
+\end{center}
+
+    \begin{center}
+\begin{tabular}{ | l | }
+
+\hline
 
 ${\sum\limits_{n_y}^{}}^{B}\,\int\limits_{n_x}^{}\,G = 0$ \\
 
@@ -771,7 +791,15 @@ ${\sum\limits_{n_y}^{}}^{B}\,{\sum\limits_{n_x}^{}}^{B}\,G = 0$ \\
 
 ${\sum\limits_{n_y}^{}}^{B}\,\underset{n_x}{R_{p}}\,G = 0$ \\
 
-\hline\hline
+\hline
+
+\end{tabular}
+\end{center}
+
+    \begin{center}
+\begin{tabular}{ | l | }
+
+\hline
 
 $\underset{n_y}{R_{p}}\,\int\limits_{n_x}^{}\,G = {\sum_{j_{x}=a_{x}}^{b_{x} - 1} \int_{a_{y}}^{b_{y}} \int_{0}^{1} \frac{1}{2} \, {\left(2 \, v_{n_{x}} - 1\right)} \mathrm{D}_{0}\left(G\right)\left(j_{x} + v_{n_{x}}, n_{y}\right)\,{d v_{n_{x}}}\,{d n_{y}}}$ \\
 
@@ -1005,43 +1033,52 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
     Tuo Qu, Fang Liu, Yuechai Lin, Yidong Huang \cite{Tuo2019} сообщили о
 производстве золотых наносот размером около 2 мкм.
 
-Согласно полученной в данной работе формуле, такие соты должны иметь
+    Согласно полученной в данной работе формуле, такие соты должны иметь
 разность плотностей энергии Казимира около
 \(\delta\left(E/V\right) = 0.0136/({2^4}) = 0.0008555\,dyne/cm^2 = 0.0008555 \cdot 10^4 = 8.55\,dyne/m^2\),
 то есть 8.55 дин на квадратный метр панели, что уже является вполне
 приемлемой величиной для практического использования ожидаемого эффекта
 для коррекции спутниковых орбит.
 
-Единственное, что следует отметить, это то, что, согласно моему методу
+    Единственное, что следует отметить, это то, что, согласно моему методу
 расчета, полученная формула дает \(\delta\left(E/V\right)\), вычисленную
 не для общей площади поверхности сот, а для части площади панели,
 занятой углублениями (за вычетом части площади сот, занимаемой
 стенками).
 
-Это не означает необходимости стремиться делать очень тонкие стенки сот,
+    Это не означает необходимости стремиться делать очень тонкие стенки сот,
 так как с уменьшением толщины стенки будет уменьшаться и значение
 \(k_m\).
 
-Кроме того, слабым местом моего расчета является неявное предположение о
-бесконечном значении высоты стенок сот, в то время как реальная высота
-стенок будет конечной.
+    Для простоты расчётов были проанализированы наносоты квадратной формы,
+но полученный результат может быть с некоторой неизвестной пока поправкой
+использован для оценки эффекта Казимира в сотах другой формы, например
+шестигранной, цилиндрической и др., изготовление которых является технологически
+более простой задачей, однако строгий расчёт полей других форм сот был бы более
+сложен. Кроме того донышко сот может быть не обязательно плоским, а например
+сферически вогнутым, что тоже не должно принципиально отразиться на величине тяги.
 
-В то же время, используя подход Антипина (см. приложение D), можно
+    Кроме того, тяга Казимира ожидается не только в металлических сотах,
+но и в диэлектрических сотах, поскольку эффект Казимира в диэлектриках хорошо известен.
+
+    В работе было использовано неявное предположение о бесконечном значении
+высоты стенок сот, в то время как реальная высота стенок будет конечной.
+
+    В то же время, используя подход Антипина (см. приложение D), можно
 показать, что эффект должен наблюдаться также и при конечной высоте
 ребер, хотя зависимость эффекта от этой высоты может быть объектом
 дальнейших исследований.
 
-По поводу критики: Hrvoje \cite{Hrvoje2016} рассматривает эффект
+    По поводу критики: Hrvoje \cite{Hrvoje2016} рассматривает эффект
 Казимира не как следствие существования виртуальных квантовых фотонов, а
 лишь как проявление дисперсионных сил Лондона-Ван-дер-Ваальса.
 
-Хочу отметить, что постановка эксперимента по измерению силы тяги,
+    Хочу отметить, что постановка эксперимента по измерению силы тяги,
 создаваемой наноячейками, выращенными на металле, могла бы послужить
 своего рода критическим экспериментом по выяснению того, какая из точек
 зрения на природу сил Казимира соответствует действительности.
 
-    \section{Приложение A. Детали
-интегрирования}\label{ux43fux440ux438ux43bux43eux436ux435ux43dux438ux435-a.-ux434ux435ux442ux430ux43bux438-ux438ux43dux442ux435ux433ux440ux438ux440ux43eux432ux430ux43dux438ux44f}
+    \section{Приложение A. Детали интегрирования}\label{ux43fux440ux438ux43bux43eux436ux435ux43dux438ux435-a.-ux434ux435ux442ux430ux43bux438-ux438ux43dux442ux435ux433ux440ux438ux440ux43eux432ux430ux43dux438ux44f}
 
     Воспользуемся функцией регуляризации в виде
 
@@ -1483,7 +1520,7 @@ B_1 = -\frac{\pi^{2} B_{2} n_{x} n_{y}}{a^{2} k_{z}^{2} + \pi^{2} n_{x}^{2}}\]
 
     Таким образом, используя подход гамильтоновой механики, я вижу, что
 формула для силы, воздействующей на идеально проводящие соты на пластине
-\({F}/{S}\), такая же, как и для разности удельных плотностей энергии на
+\({F}/{S}\), такая же, как и формула \ref{eq:1} для разности удельных плотностей энергии на
 разных ее сторонах \(\delta\left({E}/{V}\right)\).
 
     \begin{wrapfigure}{r}{0.5\textwidth}

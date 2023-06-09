@@ -504,8 +504,8 @@ Thus we find
     Now we can find the specific energy density \(E/V\), where
 \(V = V_{small} = a^2 L/2\):
 
-    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,L/2}\frac{1}{2}\int\limits_{0}^{\infty}\left[{\sqrt{k_z^2}+2\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}}\right]\frac{L/2}{\pi}\,dk_z\)
-(small cavity, one honeycomb cell),
+    % \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,L/2}\frac{1}{2}\int\limits_{0}^{\infty}\left[{\sqrt{k_z^2}+2\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}}\right]\frac{L/2}{\pi}\,dk_z\)
+% (small cavity, one honeycomb cell),
 
     \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\left[{\frac{1}{2}\sqrt{k_z^2}+\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}}\right]\,dk_z\)
 (small cavity, one honeycomb cell),
@@ -542,8 +542,8 @@ integral and it is therefore easily seen that energy is given by
     \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{L^3/2}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dn_x\,dn_y\,\frac{L/2}{\pi}\,dk_z\)
 (large cavity beetween pure plane and \(xy\) face),
 
-    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dk_z\right]\,dn_x\,dn_y\)
-(large cavity beetween pure plane and \(xy\) face),
+    % \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dk_z\right]\,dn_x\,dn_y\)
+% (large cavity beetween pure plane and \(xy\) face),
 
     \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\)
 (large cavity beetween pure plane and \(xy\) face),
@@ -554,23 +554,27 @@ integral and it is therefore easily seen that energy is given by
     \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\)
 (large cavity beetween pure plane and \(xy\) face),
 
+    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\)
+(large cavity beetween pure plane and \(xy\) face),
+
     \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,\pi}\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right]\)
 (small cavity, one honeycomb cell),
 
     it is therefore easily seen that our interaction energy is given by
 
-    \[\begin{array}{lr}
-\delta\,\frac{E}{V} =
-\begin{array}{c}
-\frac{\hbar\,c}{a^2\,\pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] - \\
-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\Bigg\}
-\end{array}\end{array}\]
+%    \[\begin{array}{lr}
+%\delta\,\frac{E}{V} =
+%\begin{array}{c}
+%\frac{\hbar\,c}{a^2\,\pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] - \\
+%\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\Bigg\}
+%\end{array}\end{array}\]
 
-    \[\begin{array}{lr}
+    \begin{equation} \label{eq:1}
+\begin{array}{lr}
 \delta\,\frac{E}{V} =
 \begin{array}{c}
 \frac{\hbar\,c}{a^2\,\pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] - \\ \int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\Bigg\}
-\end{array}\end{array}\]
+\end{array}\end{array}\end{equation}
 
     
 
@@ -749,7 +753,15 @@ $\int\limits_{n_y}^{} {\sum\limits_{n_x}^{}}^{B}\,G = 0$ \\
 
 $\int\limits_{n_y}^{} \underset{n_x}{R_{p}}\,G = {\sum_{j_{x}=a_{x}}^{b_{x} - 1} \int_{a_{y}}^{b_{y}} \int_{0}^{1} \frac{1}{2} \, {\left(2 \, v_{n_{x}} - 1\right)} \mathrm{D}_{0}\left(G\right)\left(j_{x} + v_{n_{x}}, n_{y}\right)\,{d v_{n_{x}}}\,{d n_{y}}}$ \\
 
-\hline\hline
+\hline
+
+\end{tabular}
+\end{center}
+
+    \begin{center}
+\begin{tabular}{ | l | }
+
+\hline
 
 $\underset{n_y}{H_{\sum}}\,\int\limits_{n_x}^{}\,G = \frac{1}{2} \, \int_{a_{x}}^{b_{x}} G\left(n_{x}, a_{y}\right)\,{d n_{x}}$ \\
 
@@ -759,7 +771,15 @@ $\underset{n_y}{H_{\sum}}\,{\sum\limits_{n_x}^{}}^{B}\,G = 0$ \\
 
 $\underset{n_y}{H_{\sum}}\,\underset{n_x}{R_{p}}\,G = {\sum_{j_{n_{x}}=a_{x}}^{b_{x} - 1} \frac{1}{4} \, \int_{0}^{1} \left(2 \, v_{n_{x}} - 1 \right) \mathrm{D}_{0}\left(G\right)\left(j_{n_{x}} + v_{n_{x}}, a_{y}\right)\,{d v_{n_{x}}} }$ \\
 
-\hline\hline
+\hline
+
+\end{tabular}
+\end{center}
+
+    \begin{center}
+\begin{tabular}{ | l | }
+
+\hline
 
 ${\sum\limits_{n_y}^{}}^{B}\,\int\limits_{n_x}^{}\,G = 0$ \\
 
@@ -769,7 +789,15 @@ ${\sum\limits_{n_y}^{}}^{B}\,{\sum\limits_{n_x}^{}}^{B}\,G = 0$ \\
 
 ${\sum\limits_{n_y}^{}}^{B}\,\underset{n_x}{R_{p}}\,G = 0$ \\
 
-\hline\hline
+\hline
+
+\end{tabular}
+\end{center}
+
+    \begin{center}
+\begin{tabular}{ | l | }
+
+\hline
 
 $\underset{n_y}{R_{p}}\,\int\limits_{n_x}^{}\,G = {\sum_{j_{x}=a_{x}}^{b_{x} - 1} \int_{a_{y}}^{b_{y}} \int_{0}^{1} \frac{1}{2} \, {\left(2 \, v_{n_{x}} - 1\right)} \mathrm{D}_{0}\left(G\right)\left(j_{x} + v_{n_{x}}, n_{y}\right)\,{d v_{n_{x}}}\,{d n_{y}}}$ \\
 
@@ -1004,44 +1032,55 @@ unfeasable and might be of a certain interest.
 about the production of gold nano-honeycomb with a size of about 2
 microns.
 
-According to the formula received in this work such honeycomb should
+    According to the formula received in this work such honeycomb should
 have the difference Casimir energy densities about
 \(\delta\left(E/V\right) = 0.0136/({2^4}) = 0.0008555\,dyne/cm^2 = 0.0008555 \cdot 10^4 = 8.55\,dyne/m^2\),
 that is 8.55 dynes per square meter of the panel, which is already quite
 an acceptable value for the practical use of the expected effect for
 correcting satellite orbits.
 
-The only thing to point out is that, according to my method of
+    The only thing to point out is that, according to my method of
 calculation, the resulting formula gives \(\delta\left(E/V\right)\)
 calculated not for the total surface area of the honeycombs, but for
 part of the panel's area occupied by recesses (minus the part of the
 honeycomb area occupied by walls).
 
-This does not mean the need to strive to make very thin walls of the
+    This does not mean the need to strive to make very thin walls of the
 honeycomb, because with a decrease in the wall thickness, the value of
 \(k_m\) will also decrease.
 
-In addition, the weak point of my calculation is the implicit assumption
-of the infinite value of the height of the walls of the honeycombs,
-while the real height of the walls will be finite.
+    For simplicity of calculations, square-shaped nanocells were analyzed,
+but the result obtained can be used, with some so far unknown correction,
+to estimate the Casimir effect in honeycombs of a different shape,
+for example, hexagonal, cylindrical, etc. honeycomb shape would be more complex.
+In addition, the bottom of the honeycomb may not necessarily be flat, but,
+for example, spherically concave, which should also not fundamentally affect
+the magnitude of the thrust.
 
-At the same time, using the Antipin approach (see Appendix D), it can be
+    In addition, Casimir thrust is expected not only in metal honeycombs,
+but also in dielectric honeycombs, because the Casimir effect in dielectrics
+is well known.
+
+    In the work, an implicit assumption was used about the infinite value of
+the height of the walls of the honeycombs, while the real height of the
+walls will be finite.
+
+    At the same time, using the Antipin approach (see Appendix D), it can be
 shown that the effect should also be observed at a finite height of the
 ribs, although the dependence of the effect on this height may be the
 subject of further research.
 
-Regarding criticism: Hrvoje \cite{Hrvoje2016} consider the Casimir
+    Regarding criticism: Hrvoje \cite{Hrvoje2016} consider the Casimir
 effect not as a consequence of the existence of virtual quantum photons,
 but as only a manifestation of the London-van der Waals dispersion
 forces.
 
-I want to note that setting up an experiment to measure the thrust force
+    I want to note that setting up an experiment to measure the thrust force
 produced by nanocells grown on metal plate could serve as a kind of critical
 experiment to find out which of the points of view on the nature of the
 Casimir forces corresponds to reality.
 
-    \section{Appendix A. Integration
-details}\label{appendix-a.-integration-details}
+    \section{Appendix A. Integration details}\label{appendix-a.-integration-details}
 
     Let's use the regularization function in the form
 
@@ -1481,7 +1520,7 @@ is:
 \int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\Bigg\}\end{array}\end{array}\]
 
     So using Hamiltonian mechanics approach I see that formula for the force
-to perfectly conducting honeycomb on a plate \({F}/{S}\) is the same
+to perfectly conducting honeycomb on a plate \({F}/{S}\) is the same as formula \ref{eq:1}
 which is received for the difference of specific energy density on its
 different sides \(\delta\left({E}/{V}\right)\).
 
@@ -1621,7 +1660,7 @@ https://www.dwc.knaw.nl/DL/publications/PU00018547.pdf}
 \textit{Antipin A. V. (2012). RU 2 610 018 C2. Method for propulsion of bodies by Casimir effect and/or its analogue.}
 
 \bibitem{Bikyalis1968}
-\textit{A.Bikyalis (1968). Euler-Maclaurin summation formula for a function of many variables.  Lietuvos matematikos rinkinys. Литовский математический сборник. p.681
+\textit{A.Bikyalis (1968). Euler-Maclaurin summation formula for a function of many variables.  Lietuvos matematikos rinkinys. p.681
 https://www.journals.vu.lt/LMJ/article/view/20600/19701}
 
 \bibitem{Tuo2019}

@@ -1203,26 +1203,26 @@ expression of \(\alpha_1\) and \(\beta_1\).
 
     \(\begin{array}{r} \int F\left(t, n_{xy}, ak_m\right) dt = -\frac{\mathit{ak}_{m}^{4} n_{\mathit{xy}}^{2}}{4 \, {\left(\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}\right)}} \Bigg(\frac{2 \, \arctan\left(\frac{\alpha_{1} + 2 \, t}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} + \\ \frac{2 \, \arctan\left(-\frac{\alpha_{1} - 2 \, t}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} - \frac{\log\left(\alpha_{1} t + t^{2} + \beta_{1}\right)}{\alpha_{1}} + \frac{\log\left(-\alpha_{1} t + t^{2} + \beta_{1}\right)}{\alpha_{1}}\Bigg) \end{array}\)
 
-    And after substitution of \(t\) value
-\(\int F\left(n, n_{xy}, ak_m\right) dn\) is:
+%    And after substitution of \(t\) value
+% \(\int F\left(n, n_{xy}, ak_m\right) dn\) is:
 
-    \(\begin{array}{r} \int F\left(n, n_{xy}, ak_m\right) dn = -\frac{\mathit{ak}_{m}^{4} n_{\mathit{xy}}^{2}}{4 \, {\left(\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}\right)}} \Bigg(\frac{2 \, \arctan\left(\frac{\alpha_{1} + \frac{2 \, n}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}}}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} + \\ \frac{2 \, \arctan\left(-\frac{\alpha_{1} - \frac{2 \, n}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}}}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} - \frac{\log\left(\frac{\alpha_{1} n}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}} + \beta_{1} + \frac{n^{2}}{n^{2} - n_{\mathit{xy}}^{2}}\right)}{\alpha_{1}} + \frac{\log\left(-\frac{\alpha_{1} n}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}} + \beta_{1} + \frac{n^{2}}{n^{2} - n_{\mathit{xy}}^{2}}\right)}{\alpha_{1}}\Bigg) \end{array}\)
+%    \(\begin{array}{r} \int F\left(n, n_{xy}, ak_m\right) dn = -\frac{\mathit{ak}_{m}^{4} n_{\mathit{xy}}^{2}}{4 \, {\left(\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}\right)}} \Bigg(\frac{2 \, \arctan\left(\frac{\alpha_{1} + \frac{2 \, n}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}}}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} + \\ \frac{2 \, \arctan\left(-\frac{\alpha_{1} - \frac{2 \, n}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}}}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} - \frac{\log\left(\frac{\alpha_{1} n}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}} + \beta_{1} + \frac{n^{2}}{n^{2} - n_{\mathit{xy}}^{2}}\right)}{\alpha_{1}} + \frac{\log\left(-\frac{\alpha_{1} n}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}} + \beta_{1} + \frac{n^{2}}{n^{2} - n_{\mathit{xy}}^{2}}\right)}{\alpha_{1}}\Bigg) \end{array}\)
 
-    Checking that found integral is true by differentiation:
+%    Checking that found integral is true by differentiation:
 
-    \[\left( \int F\left(n, n_{xy}, ak_m\right) dn \right)' = \frac{\sqrt{n^{2} - n_{\mathit{xy}}^{2}} \mathit{ak}_{m}^{4} n^{2}}{\pi^{4} n^{6} + \mathit{ak}_{m}^{4} n^{2} - {\left(\pi^{4} n^{4} + \mathit{ak}_{m}^{4}\right)} n_{\mathit{xy}}^{2}}\]
+%     \[\left( \int F\left(n, n_{xy}, ak_m\right) dn \right)' = \frac{\sqrt{n^{2} - n_{\mathit{xy}}^{2}} \mathit{ak}_{m}^{4} n^{2}}{\pi^{4} n^{6} + \mathit{ak}_{m}^{4} n^{2} - {\left(\pi^{4} n^{4} + %  % \mathit{ak}_{m}^{4}\right)} n_{\mathit{xy}}^{2}}\]
 
-\[F\left(n, n_{xy}, ak_m\right)= \frac{n^{2}}{{\left(\frac{\pi^{4} n^{4}}{\mathit{ak}_{m}^{4}} + 1\right)} \sqrt{n^{2} - n_{\mathit{xy}}^{2}}}\]
+% \[F\left(n, n_{xy}, ak_m\right)= \frac{n^{2}}{{\left(\frac{\pi^{4} n^{4}}{\mathit{ak}_{m}^{4}} + 1\right)} \sqrt{n^{2} - n_{\mathit{xy}}^{2}}}\]
 
-\[\left( \int F\left(n, n_{xy}, ak_m\right) dn \right)'-F\left(n, n_{xy}, ak_m\right) = 0\]
+% \[\left( \int F\left(n, n_{xy}, ak_m\right) dn \right)'-F\left(n, n_{xy}, ak_m\right) = 0\]
 
-    So, we received true expression of integral
-\(\int F\left(n, n_{xy}, ak_m\right) dn\)
+%    So, we received true expression of integral
+% \(\int F\left(n, n_{xy}, ak_m\right) dn\)
 
-Now using its \(t_a\) and \(t_b\) limits we found the following
-integral:
+% Now using its \(t_a\) and \(t_b\) limits we found the following
+% integral:
 
-    \(\begin{array}{r}  G\left(n_{xy}\right) = \int\limits_{0}^{\infty}\sqrt{n_{xy}^2+u^2}\, f\left(\frac{\pi\sqrt{n_{xy}^2+u^2}}{a\,k_m}\right)\,d{u} = \\  -\frac{\mathit{ak}_{m}^{4} n_{\mathit{xy}}^{2} {\left(\frac{2 \, \arctan\left(\frac{\alpha_{1} + 2}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} + \frac{2 \, \arctan\left(-\frac{\alpha_{1} - 2}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} - \frac{\log\left(\alpha_{1} + \beta_{1} + 1\right)}{\alpha_{1}} + \frac{\log\left(-\alpha_{1} + \beta_{1} + 1\right)}{\alpha_{1}}\right)}}{4 \, {\left(\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}\right)}} \\ +\frac{\pi \mathit{ak}_{m}^{4} n_{\mathit{xy}}^{2}}{2 \, {\left(\pi^{4} \sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}} n_{\mathit{xy}}^{4} + \sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}} \mathit{ak}_{m}^{4}\right)}} \end{array}\)
+    % \(\begin{array}{r}  G\left(n_{xy}\right) = \int\limits_{0}^{\infty}\sqrt{n_{xy}^2+u^2}\, f\left(\frac{\pi\sqrt{n_{xy}^2+u^2}}{a\,k_m}\right)\,d{u} = \\  -\frac{\mathit{ak}_{m}^{4} n_{\mathit{xy}}^{2} {\left(\frac{2 \, \arctan\left(\frac{\alpha_{1} + 2}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} + \frac{2 \, \arctan\left(-\frac{\alpha_{1} - 2}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} - \frac{\log\left(\alpha_{1} + \beta_{1} + 1\right)}{\alpha_{1}} + \frac{\log\left(-\alpha_{1} + \beta_{1} + 1\right)}{\alpha_{1}}\right)}}{4 \, {\left(\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}\right)}} \\ +\frac{\pi \mathit{ak}_{m}^{4} n_{\mathit{xy}}^{2}}{2 \, {\left(\pi^{4} \sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}} n_{\mathit{xy}}^{4} + \sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}} \mathit{ak}_{m}^{4}\right)}} \end{array}\)
 
     \section{Appendix B. Electromagnetic pressure
 calculation}\label{appendix-b.-electromagnetic-pressure-calculation}

@@ -1,25 +1,29 @@
 % \documentclass[11pt]{article}
 \documentclass[twoside]{article}
 
-%\usepackage[T2A]{fontenc}
-%\usepackage[utf8]{inputenc}
-%\usepackage[english, russian]{babel}
+\usepackage[T2A]{fontenc}   % Standard package for selecting font encodings
+\usepackage[utf8]{inputenc} % Accept different input encodings
+\usepackage[english, ukrainian]{babel}
 
+\usepackage{indentfirst}    % Indent first paragraph after section header
 
-\usepackage{multicol}
-\usepackage{orcidlink}
-\usepackage{fancyhdr}
+\usepackage{sectsty}        % Control sectional headers
+\allsectionsfont{\mdseries\scshape\textbf}
 
-\usepackage[breakable]{tcolorbox}
-    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+\usepackage{multicol}       % Intermix single and multiple columns
+\usepackage{orcidlink}      % Insert hyperlinked ORCiD logo
+\usepackage{fancyhdr}       % Extensive control of page headers and footers
+
+%\usepackage[breakable]{tcolorbox}
+%    \usepackage{parskip}   % Stop auto-indenting (to mimic markdown behaviour)
     
-    \usepackage{iftex}
-    \ifPDFTeX
-    	\usepackage[T1]{fontenc}
-    	\usepackage{mathpazo}
-    \else
-    	\usepackage{fontspec}
-    \fi
+%    \usepackage{iftex}
+%    \ifPDFTeX
+%    	\usepackage[T1]{fontenc}
+%    	\usepackage{mathpazo} % Fonts to typeset mathematics to match Palatino
+%    \else
+%    	\usepackage{fontspec} % Advanced font selection in XELATEX and LuaLATEX
+%s    \fi
 
     % Basic figure setup, for now with no caption control since it's done
     % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
@@ -85,7 +89,8 @@
 \usepackage[rightcaption]{sidecap}
 \providecommand{\keywords}[1]{\textbf{\textit{Keywords:}} #1}
 
-\author{A. Yu. Drozdov\,\orcidlink{0009-0004-1386-4534}}
+\author{A.Yu. Drozdov\,\orcidlink{0009-0004-1386-4534} \\ \\ \textit{V.N. Karazin Kharkiv National University, 61022, Svoboda Sq. 4, Kharkiv, Ukraine} \\ \textit{E-mail: \href{mailto:me@somewhere.com}{me@somewhere.com}} \\ \\ Received on April 17, 2023. Reviewed on May 10, 2023. \\
+Accepted for publication on May 22, 2023. \\ \\ }
 
     % Colors for the hyperref package
     \definecolor{urlcolor}{rgb}{0,.145,.698}
@@ -96,7 +101,8 @@
     
     % Document parameters
     % Document title
-    \title{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate.}
+    \title{\textbf{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate.}}
+    \date{} % clear date
 
     % Exact colors from NB
     \definecolor{incolor}{HTML}{303F9F}
@@ -128,7 +134,19 @@
     
     \geometry{verbose,includehead,
 nomarginpar,% We don't want any margin paragraphs
-tmargin=1cm,bmargin=1.5cm,lmargin=0.5cm,rmargin=0.5cm}
+tmargin=2.51cm,bmargin=3cm,lmargin=2cm,rmargin=2cm}
+
+\setlength{\columnsep}{0.5cm}
+
+%\fancypagestyle{firststyle} % новый стиль
+%{
+%\fancyfootoffset[R]{-12cm} % так можно регулировать ширину колонтитула
+%\fancyfoot[L]{текст-слева}
+%\renewcommand{\footrulewidth}{0.3 mm} % толщина отделяющей полоски снизу
+%\renewcommand{\headrulewidth}{0.3 mm} % толщина отделяющей полоски сверху
+%}
+
+
     
 \begin{document}
 
@@ -138,38 +156,47 @@ tmargin=1cm,bmargin=1.5cm,lmargin=0.5cm,rmargin=0.5cm}
 %... then configure it.
 \fancyhead{} % clear all header fields
 %\fancyhead[RO,LE]{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate.}
-\fancyhead[CO,CE]{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate.}
+\fancyhead[CE]{{\it Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate.}}
+\fancyhead[CO]{A.Yu. Drozdov}
 % \fancyhead[E]{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate.}% This triggers a warning!
+
+\renewcommand{\headrulewidth}{0pt} % remove the top horizontal rule
 
 \fancyfoot{} % clear all footer fields
 \fancyfoot[LE,RO]{\thepage}
-\fancyfoot[LO,RE]{The journal of V.N. Karazin Kharkiv National University. Series "Physics" Iss. 38, 2023}
+\fancyfoot[LO,RE]{The Journal of V.N. Karazin Kharkiv National University. Series “Physics” Iss. 38, 2023\\Вісник ХНУ імені В.Н. Каразіна, серія «Фізика», вип. 38, 2023}
 \fancyfoot[CO,CE]{}
 % \fancyfoot[E]{\thepage}% This triggers a warning!
 
+% \thispagestyle{firststyle}
 
     \maketitle
+\vspace{-16mm}
+%\tableofcontents
     
     % \title{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate.}
 
-% 1 Харківський національний університет імені В.Н. Каразіна, 61022, майдан Свободи. 4, Харків, Україна
-
-    \begin{abstract}
+% \textit{Харківський національний університет імені В.Н. Каразіна, 61022, майдан Свободи. 4, Харків, Україна}
+\vspace{3.5mm}
+%    \begin{abstract}
+% \section*{\centering{Abstract}}
+% \addcontentsline{toc}{section}{\protect\numberline{}Abstract}
 
 By analogy with the classical one dimensional two body Casimir effect, when the pushing in Casimir forces acts on each of the two plates as the difference in electromagnetic pressures of zero-point quantum vacuum oscillations on opposite sides of each of the plates, due to the fact that the geometry vacuum resonator in the inner and outer regions is different, one can try to create a difference in electromagnetic pressures of quantum vacuum oscillations on different sides of only one plate due to the difference in the geometry of vacuum resonators on both sides of it. To do this, nanocells must be grown on one of the surfaces of a smooth metal plate.
 
 Two dimensional one body Casimir effect on square-shaped nanocells was analyzed in this work. As result it was found that the formula for force per unit and for energy density difference per square unit $F/S \approx \delta\left(E/V\right) = R\left(a k_m\right)\cdot\left(\hbar\,c\,\pi/{a^4}\right)$ is very similar to the formula of the classical Casimir effect except for the proportionality factor's value.
 
-\end{abstract}
+%\end{abstract}
 
-%    \begin{keywords}
+\begin{keywords}
 Two dimensional one body Casimir effect
-% \end{keywords}
+\end{keywords}
 
 
 \begin{multicols}{2}
 
-    \section{Introduction}\label{introduction}
+    \section*{\centering{INTRODUCTION}}\label{introduction}
+\vspace{-3.5mm}
 
 Introduction by Planck in 1911 of half-quanta in the context of
 black-body radiation become a precondition of the Casimir effect
@@ -207,8 +234,9 @@ configuration of perfectly conducting nano honeycomb.
 %\label{fig:honeycomb_box_L}
 % \end{wrapfigure}
 
-    \section{Two dimensional Casimir's
-approach}\label{two-dimensional-casimirs-approach}
+    \section*{\centering{Two dimensional Casimir's
+approach}}\label{two-dimensional-casimirs-approach}
+\vspace{-3.5mm}
 
 % \begin{multicols}{2}
 
@@ -217,8 +245,6 @@ conducting walls and let a perfectly conducting square plate with side
 \(L\) be placed in this cavity parallel to the \(xy\) face and let us
 imagine the situation in which this plate is at a very large, say
 \(L/2\) distance a from the \(xy\) face.
-
-\includegraphics[width=0.42\textwidth]{honeycomb_box_L.png}
 
 
 One side of this perfectly conducting square plate is a pure plane and
@@ -237,6 +263,12 @@ will be shown to have a well defined value and this value will be
 interpreted as the interaction between the plate and the both remote
 \(xy\) faces.
 
+\begin{figure}
+% , natwidth=432, natheight=390
+\includegraphics[width=0.42\textwidth]{honeycomb_box_L.png}
+\caption{}{\centering{\textbf{Fig.1.} Cubic cavity with a plate covered by honeycomb}}
+\label{fig:honeycomb_box_L}
+\end{figure}
 
 
     The possible vibrations inside cavities defined by
@@ -274,7 +306,8 @@ importance since for very large \(L/2\) we may regard \(k_z\) as
 continuous variable, replacing summation over \(n_z\) with integration.
 Thus we find
 
-    \(\sum\frac{\hbar\omega}{2} = \frac{\hbar\,c}{2}\int\limits_{0}^{\infty}\left[{\sqrt{k_z^2}+2\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}}\right]d{n_z}\)
+\noindent
+\(E = \frac{\hbar\,c}{2}\int\limits_{0}^{\infty}\left[{\sqrt{k_z^2}+2\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{\frac{n_x^2 \pi^2}{a^2}+\frac{n_y^2 \pi^2}{a^2}+k_z^2}}\right]d{n_z}\)
 (small cavity, one honeycomb cell),
 
     \(dn_z = \frac{L/2}{\pi}\,dk_z\),
@@ -285,24 +318,32 @@ Thus we find
     % \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,L/2}\frac{1}{2}\int\limits_{0}^{\infty}\left[{\sqrt{k_z^2}+2\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}}\right]\frac{L/2}{\pi}\,dk_z\)
 % (small cavity, one honeycomb cell),
 
-    \(\sum\frac{\hbar\omega}{2\,V} = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\left[{\frac{\sqrt{k_z^2}}{2}+\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}}\right] dk_z\)
+\noindent
+\(\frac{E}{V} = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\left[{\frac{\sqrt{k_z^2}}{2}+\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{\frac{n_x^2 \pi^2}{a^2}+\frac{n_y^2 \pi^2}{a^2}+k_z^2}}\right] dk_z\)
 %(small cavity, one honeycomb cell),
 
-    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\left[{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}}\right] dk_z\)
+\(\frac{E}{V} = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\left[{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}}\right] dk_z\)
 %(small cavity, one honeycomb cell),
 
     where the notation \(\left(0\right) 1\) is meant to indicate that the
 term with \(n_x = 0\) and \(n_y = 0\) has to be multiplied by
 \(1\big/2\).
 
-    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,\pi}\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right]\)
+    \(\frac{E}{V} = \frac{\hbar\,c}{a^2\,\pi}\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right]\)
 %(small cavity, one honeycomb cell),
 
     And in case of large cavity for \(k_x\), \(k_y\) this is without
 importance since for very large \(L\) we may regard \(k_x\), \(k_y\) as
 continuous variables. Thus we find
 
-    \(\sum\frac{\hbar\omega}{2} = \frac{\hbar c}{2}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[{\sqrt{k_x^2+k_y^2}+2\sum\limits_{n_z=1}^{\infty}\sqrt{\frac{n_z^2 \pi^2}{(L/2)^2}+k_x^2+k_y^2}}\right]d{n_x}d{n_y}\)
+
+$\begin{array}{c}
+\begin{array}{ll}
+    \sum\frac{\hbar\omega}{2} = & \frac{\hbar c}{2}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\Bigg[\sqrt{k_x^2+k_y^2}\,+ \\
+   & +\,2\sum\limits_{n_z=1}^{\infty}\sqrt{\frac{n_z^2 \pi^2}{(L/2)^2}+k_x^2+k_y^2}\Bigg]d{n_x}d{n_y}
+\end{array}
+\end{array}$
+
 %(large cavity between pure plane and \(xy\) face),
 
     For very large \(L/2\) also this last summation may be replaced by an
@@ -317,25 +358,28 @@ integral and it is therefore easily seen that energy is given by
     Now we can find the specific energy density \(E/V\), where
 \(V = V_{large} = L^3/2\) :
 
-    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{L^3/2}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dn_x\,dn_y\,\frac{L/2}{\pi}\,dk_z\)
+    \(\frac{E}{V} = \frac{\hbar\,c}{L^3/2}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dn_x\,dn_y\,\frac{L/2}{\pi}\,dk_z\)
 %(large cavity between pure plane and \(xy\) face),
 
     % \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dk_z\right]\,dn_x\,dn_y\)
 % (large cavity between pure plane and \(xy\) face),
 
-    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\)
+    \(\frac{E}{V} = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\)
 %(large cavity between pure plane and \(xy\) face),
 
-    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{L}{\pi}dk_x\right)\,\left(\frac{L}{\pi}dk_y\right)\)
+\noindent
+    \(\frac{E}{V} = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{L}{\pi}dk_x\right)\,\left(\frac{L}{\pi}dk_y\right)\)
 %(large cavity between pure plane and \(xy\) face),
 
-    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\)
+\noindent
+    \(\frac{E}{V} = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\)
 %(large cavity between pure plane and \(xy\) face),
 
-    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\)
+    \(\frac{\sum\,\hbar\omega}{2\,V} = \frac{\hbar\,c}{a^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\)
 (large cavity between pure plane and \(xy\) face),
 
-    \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{a^2\,\pi}\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right]\)
+\noindent
+    \(\frac{\sum\,\hbar\omega}{2\,V} = \frac{\hbar\,c}{a^2\,\pi}\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right]\)
 (small cavity, one honeycomb cell),
 
     \({\left(\frac{E}{V}\right)_{small\,cavity} = \frac{\hbar}{a^2} \sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\,\int\limits_{0}^{\infty} {\frac {dk_{z}}{\pi}}\,\omega _{n_x,n_y},}\)
@@ -352,14 +396,17 @@ integral and it is therefore easily seen that energy is given by
 %\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\Bigg\}
 %\end{array}\end{array}\]
 
+\end{multicols}
+
     \begin{equation} \label{eq:1}
 \begin{array}{lr}
 \delta \frac{E}{V} =
 \begin{array}{c}
-\frac{\hbar\,c}{a^2 \pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\int\limits_{0}^{\infty}\sqrt{\frac{n_x^2 \pi^2}{a^2}+\frac{n_y^2 \pi^2}{a^2}+k_z^2}\,dk_z\right] \\ 
--\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\Bigg\}
+\frac{\hbar c}{a^2 \pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\int\limits_{0}^{\infty}\sqrt{\frac{n_x^2 \pi^2}{a^2}+\frac{n_y^2 \pi^2}{a^2}+k_z^2} dk_z\right] % \\ 
+-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right] dn_x dn_y\Bigg\}
 \end{array}\end{array}\end{equation}
 
+\begin{multicols}{2}
 
     This expression is clearly infinite, and to proceed with the
 calculation, it is convenient to introduce a regulator.
@@ -382,17 +429,17 @@ influence of its specific type will be removed by a limit transition.
 \end{multicols}
 
     \begin{equation}
-\begin{array}{lr}
-\delta\,\frac{E}{V} =
 \begin{array}{c}
+\begin{array}{ll}
+\delta\,\frac{E}{V} =
 \frac{\hbar\,c\,\pi}{a^4}\Bigg\{
 \sum\limits_{n_x=\left(0\right)\,1}^{\infty}
 \sum\limits_{n_y=\left(0\right)\,1}^{\infty}
 \int\limits_{0}^{\infty}
-{\sqrt{n_x^2 + n_y^2 + u^2}}
+{\sqrt{n_x^2 + n_y^2 + u^2}} &
 f\left(\frac{\pi\sqrt{n_x^2 + n_y^2 + u^2}}{a\,k_m}\right)
 \,d{u} \\
-- \int\limits_{0}^{\infty}
+\, &- \int\limits_{0}^{\infty}
 \int\limits_{0}^{\infty}
 \int\limits_{0}^{\infty}
 {\sqrt{n_x^2 + n_y^2 + u^2}}
@@ -416,38 +463,36 @@ where the cutting frequency is \(\omega_m = c\,k_m\)
 
     Introducing function:
 
-    \begin{equation}
-F\left(u, n_x, n_y\right) = 
+\noindent
+$F\left(u, n_x, n_y\right) =
 \sqrt{n_x^2 + n_y^2+u^2}\,
-f\left(\frac{\pi\sqrt{n_x^2 + n_y^2+u^2}}{a\,k_m}\right)
-\end{equation}
+f\left(\frac{\pi\sqrt{n_x^2 + n_y^2+u^2}}{a\,k_m}\right)$
 
     we can write:
 
-    \begin{equation}
-\begin{array}{lr}
+\noindent
+$\begin{array}{c}
+\begin{array}{ll}
 \delta\,\frac{E}{V} =
-\begin{array}{c}
 \frac{\hbar\,c\,\pi}{a^4}
-\Bigg\{
+&\Bigg\{
 \sum\limits_{n_x=\left(0\right)\,1}^{\infty}
 \sum\limits_{n_y=\left(0\right)\,1}^{\infty}
 \left(\int\limits_{0}^{\infty}F\left(u, n_x, n_y\right)\,d{u}\right)
 \\
-- \int\limits_{0}^{\infty}
+\, & \,\,\,\,\,\, - \int\limits_{0}^{\infty}
 \int\limits_{0}^{\infty}
 \left(\int\limits_{0}^{\infty}F\left(u, n_x, n_y\right)\,d{u}\right)
 \,d{n_x}\,d{n_y}
 \Bigg\}
 \end{array}
-\end{array}
-\end{equation}
+\end{array}$
 
     And at least, introducing
 
-    \begin{equation}
+    \(
 G\left(n_x, n_y\right) = \int\limits_{0}^{\infty}F\left(u, n_x, n_y\right)\,d{u}
-\end{equation}
+\)
 
     We have
 
@@ -477,7 +522,8 @@ should consider
 
 % \end{multicols}
 
-\section{Euler--Maclaurin 2D formula}\label{eulermaclaurin-2d-formula}
+\section*{\centering{Euler--Maclaurin 2D formula}}\label{eulermaclaurin-2d-formula}
+\vspace{-3.5mm}
 
 % \begin{multicols}{2}
 
@@ -486,17 +532,18 @@ Maclaurin formula twice on \(n_x\) and on \(n_y\). Starting from the following f
 
 % \[{\displaystyle \sum _{i=a}^{b}f(i)=\int\limits_{a}^{b}f(x)\,dx+{\frac {f(a)+f(b)}{2}}+\sum\limits_{k=1}^{\lfloor p/2\rfloor }{\frac {B_{2k}}{(2k)!}}\left(f^{(2k-1)}(b)-f^{(2k-1)}(a)\right)+R_{p},}\]
 
-$\begin{array}{rl}
-\displaystyle \sum _{i=a}^{b}f(i)= & \int_{a}^{b}f(x)\,dx+{\frac {f(a)+f(b)}{2}} + \\
-\\
-%\begin{array}{l}
- & +\sum_{k=1}^{\lfloor p/2\rfloor }{\frac {B_{2k}}{(2k)!}}\left(f^{(2k-1)}(b)-f^{(2k-1)}(a)\right)+R_{p}
-%\end{array}
+$\begin{array}{l}
+\begin{array}{ll}
+\displaystyle \sum _{i=a}^{b}f(i)= \int_{a}^{b}f(x)\,dx+{\frac {f(a)+f(b)}{2}} + & \,\,\,\,
+\end{array}  \\
+\begin{array}{rr}
+\,\,\,\,\,\, & +\sum_{k=1}^{\lfloor p/2\rfloor }{\frac {B_{2k}}{(2k)!}}\left(f^{(2k-1)}(b)-f^{(2k-1)}(a)\right)+R_{p}
+\end{array}
 \end{array}$,
 
-\[{\displaystyle P_{k}(x)=B_{k}\left(x-\lfloor x\rfloor \right),}\]
+\({\displaystyle P_{k}(x)=B_{k}\left(x-\lfloor x\rfloor \right),}\)
 
-\[{\displaystyle R_{p}=(-1)^{p+1}\int_{a}^{b}f^{(p)}(x){\frac {P_{p}(x)}{p!}}\,dx.}\]
+\({\displaystyle R_{p}=(-1)^{p+1}\int_{a}^{b}f^{(p)}(x){\frac {P_{p}(x)}{p!}}\,dx.}\)
 
 or better since we are dealing with a mathematically very complex
 problem of integration that is rather difficult, often oscillating and
@@ -505,18 +552,22 @@ argument due to the presence of the multiplier \((x-\lfloor x\rfloor )\)
 of the function, we will use the fact that the remainder term can also
 be expressed in the form:
 
-\[{\displaystyle R_{p}=(-1)^{p+1}\sum_{j=a}^{b-1} \int _{0}^{1}f^{(p)}(v+j){\frac {B_{p}(v)}{p!}}\,dv.}\]
+\({\displaystyle R_{p}=(-1)^{p+1}\sum_{j=a}^{b-1} \int _{0}^{1}f^{(p)}(v+j){\frac {B_{p}(v)}{p!}}\,dv.}\)
 
 we see that it consists of 4 terms:
 
+\noindent
 integral \(\int\limits_{x}^{}=\int _{x_a}^{x_b}f(x)\,dx\),
 
+\noindent
 half sum \(\underset{x}{H_{\sum}}={\left( {f(x_a)+f(x_b)}\right)/{2}}\),
 
+\noindent
 sum of Bernoulli polynomials
 
 \({\sum\limits_{x}^{}}^{B}=\sum _{k=1}^{\lfloor p/2\rfloor }{\frac {B_{2k}}{(2k)!}}\left(f^{(2k-1)}(x_b)-f^{(2k-1)}(x_a)\right)\),
 
+\noindent
 and the remainder term
 
 \(\underset{x}{R_{p}}=(-1)^{p+1}\sum_{j=x_a}^{x_b-1} \int _{0}^{1}f^{(p)}(v_x+j_x){\frac {B_{p}(v_x)}{p!}}\,dv_x\).
@@ -538,8 +589,9 @@ Euler--Maclaurin marix is symmetric too.
 
 % \end{multicols}
 
-    \section{Summary of Euler--Maclaurin
-2D}\label{summary-of-eulermaclaurin-2d}
+    \section*{\centering{Summary of Euler--Maclaurin
+2D}}\label{summary-of-eulermaclaurin-2d}
+\vspace{-3.5mm}
 
 % \begin{multicols}{2}
 
@@ -629,9 +681,9 @@ G''\left(\widehat{j_{x} + v_{x}}, \widehat{j_{y} + v_{y}}\right)\,{d v_{x}}\,{d 
 
 % \end{multicols}
 
-    \section{\texorpdfstring{A way of calculating
+    \section*{\centering\texorpdfstring{A way of calculating
 \(\delta\left(E/V\right)\)}{A way of calculating \textbackslash{}delta\textbackslash{}left(E/V\textbackslash{}right)}}\label{a-way-of-calculating-deltaleftevright}
-
+\vspace{-3.5mm}
 
 % \begin{multicols}{2}
 
@@ -660,26 +712,46 @@ $\begin{array}{c}
 
     So we have
 
-$\begin{array}{c}
-\sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y} = \\ \frac{1}{4}G\left(0, 0\right) -\frac{1}{2}\sum\limits_{n_y=0}^{\infty}{G\left(0, n_y\right)} -\frac{1}{2}\sum\limits_{n_x=0}^{\infty}{G\left(n_x, 0\right)} + \\
-\sum\limits_{n_x=0}^{\infty}\sum\limits_{n_y=0}^{\infty}{G\left(n_x, n_y\right)} - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y}
+\noindent
+$\begin{array}{l}
+\begin{array}{ll}
+\sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y} = & \, \\
+\end{array} \\
+\begin{array}{c}
+\frac{1}{4}G\left(0, 0\right) -\frac{1}{2}\sum\limits_{n_y=0}^{\infty}{G\left(0, n_y\right)} -\frac{1}{2}\sum\limits_{n_x=0}^{\infty}{G\left(n_x, 0\right)} + \\
+\end{array} \\
+\begin{array}{rr}
+\, & \sum\limits_{n_x=0}^{\infty}\sum\limits_{n_y=0}^{\infty}{G\left(n_x, n_y\right)} - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y}
+\end{array}
 \end{array}$
 
     On the other hand we have found that
 
-\(\sum\limits_{n_x=0}^{\infty} \sum\limits_{n_y=0}^{\infty} G\left(n_x, n_y\right) -\int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y} = \\ \begin{array}{cccc}  \, &  \int\limits_{n_y}^{} \underset{n_x}{H_{\sum}}\,G &  + \int\limits_{n_y}^{}{\sum\limits_{n_x}^{}}^{B}\,G &  + \int\limits_{n_y}^{}\,\underset{n_x}{R_{p}}\,G \\  +\underset{n_y}{H_{\sum}}\,\int\limits_{n_x}^{}\,G &  + \underset{n_y}{H_{\sum}}\,\underset{n_x}{H_{\sum}}\,G &  + \underset{n_y}{H_{\sum}}\,{\sum\limits_{n_x}^{}}^{B}\,G &  + \underset{n_y}{H_{\sum}}\,\underset{n_x}{R_{p}}\,G \\  + {\sum\limits_{n_y}^{}}^{B}\,\int\limits_{n_x}^{}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,\underset{n_x}{H_{\sum}}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,{\sum\limits_{n_x}^{}}^{B}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,\underset{n_x}{R_{p}}\,G \\  + \underset{n_y}{R_{p}}\,\int\limits_{n_x}^{}\,G &  + \underset{n_y}{R_{p}}\,\underset{n_x}{H_{\sum}}\,G &  + \underset{n_y}{R_{p}}\,{\sum\limits_{n_x}^{}}^{B}\,G &  + \underset{n_y}{R_{p}}\,\underset{n_x}{R_{p}}\,G \end{array}\)
+\noindent
+\(\sum\limits_{n_x=0}^{\infty} \sum\limits_{n_y=0}^{\infty} G\left(n_x, n_y\right) -\int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y} = \\
+ \begin{array}{cccc}  \, &  \int\limits_{n_y}^{} \underset{n_x}{H_{\sum}}\,G &  + \int\limits_{n_y}^{}{\sum\limits_{n_x}^{}}^{B}\,G &  + \int\limits_{n_y}^{}\,\underset{n_x}{R_{p}}\,G \\
+  +\underset{n_y}{H_{\sum}}\,\int\limits_{n_x}^{}\,G &  + \underset{n_y}{H_{\sum}}\,\underset{n_x}{H_{\sum}}\,G &  + \underset{n_y}{H_{\sum}}\,{\sum\limits_{n_x}^{}}^{B}\,G &  + \underset{n_y}{H_{\sum}}\,\underset{n_x}{R_{p}}\,G \\
+  + {\sum\limits_{n_y}^{}}^{B}\,\int\limits_{n_x}^{}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,\underset{n_x}{H_{\sum}}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,{\sum\limits_{n_x}^{}}^{B}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,\underset{n_x}{R_{p}}\,G \\
+  + \underset{n_y}{R_{p}}\,\int\limits_{n_x}^{}\,G &  + \underset{n_y}{R_{p}}\,\underset{n_x}{H_{\sum}}\,G &  + \underset{n_y}{R_{p}}\,{\sum\limits_{n_x}^{}}^{B}\,G &  + \underset{n_y}{R_{p}}\,\underset{n_x}{R_{p}}\,G \end{array}\)
 
     where \(\underset{n_y}{H_{\sum}}\,\underset{n_x}{H_{\sum}}\,G\),
 \(\int\limits_{n_y}^{} \underset{n_x}{H_{\sum}}\,G\) and
 \(\underset{n_y}{H_{\sum}}\,\int\limits_{n_x}^{}\,G\) are:
 
+\noindent
     \(\frac{1}{4} \, G\left(a_{x}, a_{y}\right) , \frac{1}{2} \, \int_{a_{y}}^{b_{y}} G\left(a_{x}, n_{y}\right)\,{d n_{y}} , \frac{1}{2} \, \int_{a_{x}}^{b_{x}} G\left(n_{x}, a_{y}\right)\,{d n_{x}}\)
 
     Now using 1D Euler--Maclaurin formula in form:
 
-$\begin{array}{c}
-\displaystyle \sum _{i=a}^{b}f(i)=\int _{a}^{b}f(x)\,dx+{\frac {f(a)+f(b)}{2}}+ \\
+\noindent
+$\begin{array}{l}
+\begin{array}{ll}
+\displaystyle \sum _{i=a}^{b}f(i)=\int _{a}^{b}f(x)\,dx+{\frac {f(a)+f(b)}{2}}+ & \, \\
+\end{array} \\
+\begin{array}{rr}
+\, &
 \sum _{k=1}^{\lfloor p/2\rfloor }{\frac {B_{2k}}{(2k)!}}(f^{(2k-1)}(b)-f^{(2k-1)}(a))+R_{p},
+\end{array}
 \end{array}$
 
     we can see that
@@ -692,7 +764,16 @@ $\begin{array}{c}
 
     will be equal to
 
-    \(\begin{array}{rrllll}  \underset{n_y}{H_{\sum}}\,\underset{n_x}{H_{\sum}}\,G \\  \, &  - \int\limits_{n_y}^{} \underset{n_x}{H_{\sum}}\,G &  - \underset{n_y}{H_{\sum}} \underset{n_x}{H_{\sum}}\,G &  - \frac{1}{2}{\sum\limits_{n_y}^{}}^{B}\,G &  - \frac{1}{2}\underset{n_y}{R_{p}}\,G/2 \\  \,&  - \underset{n_y}{H_{\sum}}\int\limits_{n_x}^{} \,G &  - \underset{n_y}{H_{\sum}} \underset{n_x}{H_{\sum}}\,G &  - \frac{1}{2}{\sum\limits_{n_x}^{}}^{B}\,G &  - \frac{1}{2}\underset{n_x}{R_{p}}\,G/2 \\ \end{array}\)
+\noindent
+\(\begin{array}{l}
+    \begin{array}{l}
+  \underset{n_y}{H_{\sum}} \underset{n_x}{H_{\sum}} G \\
+\end{array} \\
+\begin{array}{rrrrr}
+  \, &  - \int\limits_{n_y}^{} \underset{n_x}{H_{\sum}}\,G &  - \underset{n_y}{H_{\sum}} \underset{n_x}{H_{\sum}}\,G &  - \frac{1}{2}{\sum\limits_{n_y}^{}}^{B}\,G &  - \frac{1}{2}\underset{n_y}{R_{p}}\,G/2 \\
+  \,&  - \underset{n_y}{H_{\sum}}\int\limits_{n_x}^{} \,G &  - \underset{n_y}{H_{\sum}} \underset{n_x}{H_{\sum}}\,G &  - \frac{1}{2}{\sum\limits_{n_x}^{}}^{B}\,G &  - \frac{1}{2}\underset{n_x}{R_{p}}\,G/2 \\
+\end{array}
+\end{array}\)
 
     So we can find
 
@@ -700,6 +781,7 @@ $\begin{array}{c}
 
 using the following formula:
 
+\noindent
     \(\begin{array}{llll}  \,&  \,&  + \int\limits_{n_y}^{}{\sum\limits_{n_x}^{}}^{B}\,G &  + \int\limits_{n_y}^{}\,\underset{n_x}{R_{p}}\,G \\  \,&  \,&  + \underset{n_y}{H_{\sum}}\,{\sum\limits_{n_x}^{}}^{B}\,G &  + \underset{n_y}{H_{\sum}}\,\underset{n_x}{R_{p}}\,G \\  + {\sum\limits_{n_y}^{}}^{B}\,\int\limits_{n_x}^{}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,\underset{n_x}{H_{\sum}}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,{\sum\limits_{n_x}^{}}^{B}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,\underset{n_x}{R_{p}}\,G \\  + \underset{n_y}{R_{p}}\,\int\limits_{n_x}^{}\,G &  + \underset{n_y}{R_{p}}\,\underset{n_x}{H_{\sum}}\,G &  + \underset{n_y}{R_{p}}\,{\sum\limits_{n_x}^{}}^{B}\,G &  + \underset{n_y}{R_{p}}\,\underset{n_x}{R_{p}}\,G \\  \,&  \,&  - \frac{1}{2}{\sum\limits_{n_y}^{}}^{B}\,G &  - \frac{1}{2}\underset{n_y}{R_{p}}\,G \\  \,&  \,&  - \frac{1}{2}{\sum\limits_{n_x}^{}}^{B}\,G &  - \frac{1}{2}\underset{n_x}{R_{p}}\,G \\ \end{array}\)
 
     It is easy to see that all terms without remainder part:
@@ -709,41 +791,52 @@ using the following formula:
     are 0 in sum. And so any possible non zero result should be related with
 remainder part:
 
+\noindent
     \(\begin{array}{r} \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y} = \end{array}\)
 
     \(\begin{array}{llll}  \,&  \,&  \,&  + \int\limits_{n_y}^{}\,\underset{n_x}{R_{p}}\,G \\  \,&  \,&  \,&  + \underset{n_y}{H_{\sum}}\,\underset{n_x}{R_{p}}\,G \\  \,&  \,&  \,&  + {\sum\limits_{n_y}^{}}^{B}\,\underset{n_x}{R_{p}}\,G \\  + \underset{n_y}{R_{p}}\,\int\limits_{n_x}^{}\,G &  + \underset{n_y}{R_{p}}\,\underset{n_x}{H_{\sum}}\,G &  + \underset{n_y}{R_{p}}\,{\sum\limits_{n_x}^{}}^{B}\,G &  + \underset{n_y}{R_{p}}\,\underset{n_x}{R_{p}}\,G \\  \,&  \,&  \,&  - \frac{1}{2}\underset{n_y}{R_{p}}\,G \\  \,&  \,&  \,&  - \frac{1}{2}\underset{n_x}{R_{p}}\,G \\ \end{array}\)
 
     Or using symmetric properties of \(G\) we can rewrite result formula:
 
-    \(\begin{array}{r} \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y} = \end{array}\)
+\noindent
+    \(\begin{array}{r} \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right) d{n_x} d{n_y} = \end{array}\)
 
-    \(+\,2\cdot\underset{n_y}{R_{p}}\,\int\limits_{n_x}^{}\,G +\,2\cdot\underset{n_y}{R_{p}}\,\underset{n_x}{H_{\sum}}\,G +\,2\cdot\underset{n_y}{R_{p}}\,{\sum\limits_{n_x}^{}}^{B}\,G +\,\underset{n_y}{R_{p}}\,\underset{n_x}{R_{p}}\,G -\,\underset{n_y}{R_{p}}\,G\)
+    \(\begin{array}{rr}
+\, & +\,2\cdot\underset{n_y}{R_{p}}\,\int\limits_{n_x}^{}\,G +\,2\cdot\underset{n_y}{R_{p}}\,\underset{n_x}{H_{\sum}}\,G +\,2\cdot\underset{n_y}{R_{p}}\,{\sum\limits_{n_x}^{}}^{B}\,G\,+ \\
+\, & +\,\underset{n_y}{R_{p}}\,\underset{n_x}{R_{p}}\,G -\,\underset{n_y}{R_{p}}\,G
+\end{array}\)
 
     with the following terms:
 
-\(2\cdot\underset{n_y}{R_{p}}\int\limits_{n_x}^{}\,G = 2 {\sum\limits_{j_{x}=a_{x}}^{b_{x} - 1} \int\limits_{a_{y}}^{b_{y}} \int\limits_{0}^{1} \frac{1}{2} \, {\left(2 \, v_{n_{x}} - 1\right)} G'\left(\widehat{j_{x} + v_{n_{x}}}, n_{y}\right)\,{d v_{n_{x}}}\,{d n_{y}}}\)
+\noindent
+\(2 \underset{n_y}{R_{p}}\int\limits_{n_x}^{} G = {\sum\limits_{j_{x}=a_{x}}^{b_{x} - 1} \int\limits_{a_{y}}^{b_{y}} \int\limits_{0}^{1} {\left(2 v_{n_{x}} - 1\right)} G'\left(\widehat{j_{x} + v_{n_{x}}}, n_{y}\right) {d v_{n_{x}}} {d n_{y}}}\)
 
-\(2\cdot\underset{n_y}{R_{p}}\underset{n_x}{H_{\sum}}\,G = 2 {\sum\limits_{j_{n_{y}}=a_{y}}^{b_{y} - 1} \int\limits_{0}^{1} \frac{1}{4} \, {\left(2 \, v_{n_{y}} - 1\right)} G'\left(a_{x}, \widehat{j_{n_{y}} + v_{n_{y}}}\right)\,{d v_{n_{y}}}}\)
+\noindent
+\(2 \underset{n_y}{R_{p}}\underset{n_x}{H_{\sum}} G = {\sum\limits_{j_{n_{y}}=a_{y}}^{b_{y} - 1} \int\limits_{0}^{1}  {\left(v_{n_{y}} - \frac{1}{2}\right)}\,G'\left(a_{x}, \widehat{j_{n_{y}} + v_{n_{y}}}\right) {d v_{n_{y}}}}\)
 
-\(2\cdot\underset{n_y}{R_{p}}{\sum\limits_{n_x}^{}}^{B}\,G = 2 {\sum\limits_{j_{n_{y}}=a_{y}}^{b_{y} - 1} \int\limits_{0}^{1} 0\,{d v_{n_{y}}}} = 0\)
+\(2 \underset{n_y}{R_{p}}{\sum\limits_{n_x}^{}}^{B}\,G = 2 {\sum\limits_{j_{n_{y}}=a_{y}}^{b_{y} - 1} \int\limits_{0}^{1} 0\,{d v_{n_{y}}}} = 0\)
 
 %\(\underset{n_y}{R_{p}}\,\underset{n_x}{R_{p}}G = {\sum\limits_{j_{y}=a_{y}}^{b_{y} - 1} {\sum\limits_{j_{x}=a_{x}}^{b_{x} - 1} \int\limits_{0}^{1} \int\limits_{0}^{1} \frac{1}{4} \, {\left(2 \, v_{y} - 1\right)} {\left(2 \, v_{x} - 1\right)} G''\left(\widehat{j_{x} + v_{x}}, \widehat{j_{y} + v_{y}}\right)\,{d v_{x}}}\,{d v_{y}}}\)
 
+\noindent
 $\begin{array}{lr}
 \underset{n_y}{R_{p}}\,\underset{n_x}{R_{p}}\,G =
 \begin{array}{c}
- \sum\limits_{j_{y}=a_{y}}^{b_{y} - 1} \sum\limits_{j_{x}=a_{x}}^{b_{x} - 1} \int\limits_{0}^{1} \int\limits_{0}^{1}\frac{1}{4} \left(2 \, v_{y} - 1\right)  \left(2 \, v_{x} - 1\right) \cdot \\
-G''\left(\widehat{j_{x} + v_{x}}, \widehat{j_{y} + v_{y}}\right)\,{d v_{x}}\,{d v_{y}}
+ \sum\limits_{j_{y}=a_{y}}^{b_{y} - 1} \sum\limits_{j_{x}=a_{x}}^{b_{x} - 1} \int\limits_{0}^{1} \int\limits_{0}^{1} \left(v_{y} - \frac{1}{2}\right)  \left(v_{x} - \frac{1}{2}\right) \, \cdot \\
+\cdot \, G''\left(\widehat{j_{x} + v_{x}}, \widehat{j_{y} + v_{y}}\right)\,{d v_{x}}\,{d v_{y}}
 \end{array}
 \end{array}$
 
-\(-\underset{n_y}{R_{p}}\,G = -{\sum\limits_{j_{n_{y}}=a_{y}}^{b_{y} - 1} \int\limits_{0}^{1} \frac{1}{2} \, {\left(2 \, v_{n_{y}} - 1\right)} G'\left(n_{x}, \widehat{j_{n_{y}} + v_{n_{y}}}\right)\,{d v_{n_{y}}}}\)
+\noindent
+\(-\underset{n_y}{R_{p}}\,G = -{\sum\limits_{j_{n_{y}}=a_{y}}^{b_{y} - 1} \int\limits_{0}^{1} {\left(v_{n_{y}} - \frac{1}{2}\right)}\,G'\left(n_{x}, \widehat{j_{n_{y}} + v_{n_{y}}}\right)\,{d v_{n_{y}}}}\)
 
     Considering \(\underset{n_y}{R_{p}}\,{\sum\limits_{n_x}^{}}^{B}\,G\)
 should be \(0\), because derivative with respect to \(n_x\) when
 \(n_x = 0\) gives \(0\), and
 \(\,2\cdot\underset{n_y}{R_{p}}\,\underset{n_x}{H_{\sum}}\,G -\,\underset{n_y}{R_{p}}\,G\)
 gives \(0\) in summation, we can simplify result in form:
+
+\end{multicols}
 
     \begin{equation}
 \begin{array}{r}
@@ -753,7 +846,7 @@ G\left(n_x, n_y\right)
 -
 \int\limits_{0}^{\infty}
 \int\limits_{0}^{\infty}
-G\left(n_x, n_y\right)\,d{n_x}\,d{n_y} = \\
+G\left(n_x, n_y\right)\,d{n_x}\,d{n_y} =
 \,2\cdot\underset{n_y}{R_{p}}\,\int\limits_{n_x}^{}\,G 
 +\,\underset{n_y}{R_{p}}\,\underset{n_x}{R_{p}}\,G
 \end{array}
@@ -761,6 +854,7 @@ G\left(n_x, n_y\right)\,d{n_x}\,d{n_y} = \\
 
     or in detailed form:
 
+\noindent
 \begin{equation}
 \begin{array}{r}
 \sum\limits_{n_x=\left(0\right)\,1}^{\infty}
@@ -769,18 +863,20 @@ G\left(n_x, n_y\right)
 -
 \int\limits_{0}^{\infty}
 \int\limits_{0}^{\infty}
-G\left(n_x, n_y\right)\,d{n_x}\,d{n_y} = \\
-{\sum\limits_{j_{x}=0}^{\infty} \int\limits_{n_{y}=0}^{\infty} \int\limits_{v_x=0}^{1}  {\left(2 \, v_{n_{x}} - 1\right)} G'\left(\widehat{j_{x} + v_{n_{x}}}, n_{y}\right) {d v_{n_{x}}} {d n_{y}}} + \\
-\frac{1}{4} \sum\limits_{j_{y}=0}^{\infty} \sum\limits_{j_{x}=0}^{\infty} \int\limits_{0}^{1} \int\limits_{0}^{1} {\left(2 \, v_{y} - 1\right)} {\left(2 \, v_{x} - 1\right)} \cdot \\
-G''\left(\widehat{j_{x} + v_{x}}, \widehat{j_{y} + v_{y}}\right){d v_{x}}{d v_{y}}
+G\left(n_x, n_y\right) d{n_x} d{n_y}  =
+{\sum\limits_{j_{x}=0}^{\infty} \int\limits_{n_{y}=0}^{\infty} \int\limits_{v_x=0}^{1}  {\left(2 \, v_{n_{x}} - 1\right)}\, G'\left(\widehat{j_{x} + v_{n_{x}}}, n_{y}\right) {d v_{n_{x}}} {d n_{y}}} \, + \\
+ + \,\sum\limits_{j_{y}=0}^{\infty} \sum\limits_{j_{x}=0}^{\infty} \int\limits_{0}^{1} \int\limits_{0}^{1} {\left(v_{y} - \frac{1}{2}\right)} {\left(v_{x} - \frac{1}{2}\right)} \, G''\left(\widehat{j_{x} + v_{x}}, \widehat{j_{y} + v_{y}}\right){d v_{x}}{d v_{y}}
 \end{array}
 \end{equation}
 
+\begin{multicols}{2}
+
 % \end{multicols}
 
-    \section{\texorpdfstring{How \(\delta\left(E/V\right)\) depends on
+    \section*{\centering\texorpdfstring{How \(\delta\left(E/V\right)\) depends on
 \(a k_m\)
 ?}{How \textbackslash{}delta\textbackslash{}left(E/V\textbackslash{}right) depends on a k\_m ?}}\label{how-deltaleftevright-depends-on-a-k_m}
+\vspace{-3.5mm}
 
 % \begin{multicols}{2}
 
@@ -791,6 +887,7 @@ as \(a\,k_m\,»\,1\). But now we can investigate how
 
 will depends on \(a k_m\)
 
+\noindent
     \begin{center}
 \begin{tabular}{ | l | c | c | c | }
 \hline
@@ -820,6 +917,14 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 2.75 & -0.0324363 & 2.09102e-05 & 23 \\
 % 3.0 & -0.028986396523536337 & 2.961508478431949e-05 & 23 \\
 3.0 & -0.0289864 & 2.96151e-05 & 23 \\
+
+\hline
+\end{tabular}
+\begin{tabular}{ | l | c | c | c | }
+\hline
+$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
+\hline
+
 % 3.25 & -0.024047951283080123 & 4.0789713256873105e-05 & 23 \\
 3.25 & -0.02404795 & 4.07897e-05 & 23 \\
 % 3.5 & -0.018309169743688476 & 8.561178612309775e-06 & 45 \\
@@ -848,10 +953,16 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 
 \begin{equation}
 \begin{array}{r}
-    \delta\,\frac{E}{V} = \frac{\hbar\,c\,\pi}{a^4} \int\limits_{0}^{\infty} \Bigg\{ \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} F\left(n_x, n_y\right) \\ 
+    \delta\,\frac{E}{V} = \frac{\hbar\,c\,\pi}{a^4} \int\limits_{0}^{\infty} \Bigg\{ \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} F\left(n_x, n_y\right) \,\,\,\,\,\,\,\,\,\,\\ 
 - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} F\left(n_x, n_y\right) d{n_x} d{n_y} \Bigg\} d{u}
 \end{array}
 \end{equation}
+
+\begin{figure}
+\includegraphics[width=0.48\textwidth]{sum_sum_int_int_G_on_a_km.png}
+\caption{}{\centering{\textbf{Fig.2.} How $\delta\left(E/V\right)$ depends on $a k_m$}}
+\label{fig:G_on_a_km}
+\end{figure}
 
     According to our calculation we can see that
 
@@ -885,8 +996,6 @@ properties with well defined limit at \(a\,k_m\,»\,1\). So
 
     where \(a_{\mu}\) is a square side of honeycombs measured in microns.
 
-\includegraphics[width=0.48\textwidth]{sum_sum_int_int_G_on_a_km.png}
-
 
     Can this difference of specific energy density
 \(\delta\left(E/V\right)\) be interpreted as the cause of the force
@@ -899,7 +1008,8 @@ shows that \(F/S \approx \delta\left(E/V\right)\).
 
 % \end{multicols}
 
-    \section{Conclusions}\label{conclusions}
+    \section*{\centering{CONCLUSION}}\label{conclusions}
+\vspace{-3.5mm}
 
 % \begin{multicols}{2}
 
@@ -968,50 +1078,48 @@ Casimir forces corresponds to reality.
 
 \end{multicols}
 
-    \section{Appendix A. Integration details}\label{appendix-a.-integration-details}
-
 \begin{multicols}{2}
+
+    \section*{\centering{Appendix A. Integration details}}\label{appendix-a.-integration-details}
+\vspace{-3.5mm}
 
     Let's use the regularization function in the form
 
     \[f\left(\frac{k}{k_m}\right) = \frac{1}{\frac{k^{4}}{k_{m}^{4}} + 1}\]
 
-    Starting from
+    Starting from \(\begin{array}{c}
+\begin{array}{ll}
+F\left(u, n_x, n_y, a, k_m\right) = & \,\\
+\end{array} \\
+\begin{array}{rr}
+\, & \sqrt{n_{x}^{2} + n_{y}^{2} + u^{2}} f\left(\frac{\pi \sqrt{n_{x}^{2} + n_{y}^{2} + u^{2}}}{a k_{m}}\right)\end{array}
+\end{array}\)
 
-    \[F\left(u, n_x, n_y, a, k_m\right) = \sqrt{n_{x}^{2} + n_{y}^{2} + u^{2}} f\left(\frac{\pi \sqrt{n_{x}^{2} + n_{y}^{2} + u^{2}}}{a k_{m}}\right)\]
 
-    By introducing a variable
+    By introducing a variable \(n_{xy} = \sqrt{n_x^2 + n_y^2}\)
 
-\(n_{xy} = \sqrt{n_x^2 + n_y^2}\)
-
+\noindent
     \(F\left(u, n_{xy}, ak_m\right) = \frac{\sqrt{n_{\mathit{xy}}^{2} + u^{2}}}{\frac{\pi^{4} {\left(n_{\mathit{xy}}^{2} + u^{2}\right)}^{2}}{\mathit{ak}_{m}^{4}} + 1}\)
 
-    we have
-
-\(n = \sqrt{n_x^2 + n_y^2 + u^2} = \sqrt{n_{xy}^2 + u^2}\)
+    we have \(n = \sqrt{n_x^2 + n_y^2 + u^2} = \sqrt{n_{xy}^2 + u^2}\)
 
 And using this variable we can make the following substitution
 
 \(u = \sqrt{n^2 - n_x^2 - n_y^2} = \sqrt{n^2 - n_{xy}^2}\)
 
-\(\frac{du}{dn} = \frac{n}{\sqrt{n^{2} - \mathit{n_{xy}}^{2}}}\)
-
-\(d{u}= \frac{n\,d{n}}{\sqrt{n^{2} - \mathit{n_{xy}}^{2}}}\)
+\(\frac{du}{dn} = \frac{n}{\sqrt{n^{2} - \mathit{n_{xy}}^{2}}}\) $\,\,\,\,\,\,\,\,\,$ \(d{u}= \frac{n\,d{n}}{\sqrt{n^{2} - \mathit{n_{xy}}^{2}}}\)
 
     And now we can rewrite our integral
 
-    \[G\left(n_x, n_y\right) = \int\limits_{0}^{\infty}\sqrt{n_x^2 + n_y^2+u^2}\,
-f\left(\frac{\pi\sqrt{n_x^2 + n_y^2+u^2}}{a\,k_m}\right)\,d{u}, 
-\]
+ \(G\left(n_x, n_y\right) = \int\limits_{0}^{\infty}\sqrt{n_{xy}^2+u^2}\,
+f\left(\frac{\pi\sqrt{n_{xy}^2+u^2}}{a\,k_m}\right)\,d{u},
+\)
 
 changing the integration variable from \(u\) to \(n\)
 
-$
-\begin{array}{r}
-G\left(n_x, n_y\right) = \int\limits_{\sqrt{n_x^2 + n_y^2}}^{\infty}\sqrt{n_x^2 + n_y^2+u^2}  \\
-\cdot f\left(\frac{\pi\sqrt{n_x^2 + n_y^2+u^2}}{a\,k_m}\right)\,dn\,{\frac{n}{\sqrt{n^{2} - n_{x}^{2} - n_{y}^{2}}}}
-\end{array}
-$
+\noindent
+$G\left(n_x, n_y\right) = \int\limits_{n_{xy}}^{\infty}\sqrt{n_{xy}^2+u^2}
+ f\left(\frac{\pi\sqrt{n_{xy}^2+u^2}}{a\,k_m}\right)\,dn\,{\frac{n}{\sqrt{n^{2} - n_{xy}^{2}}}}$
 
     \[
 G\left(n_x, n_y\right) = \int\limits_{n_{xy}}^{\infty}n\,
@@ -1028,18 +1136,14 @@ the following integrand:
 
     Let's use Abel substitution:
 
-\[t = \left(\sqrt{n^2-n_{xy}^2}\right)'\]
-
-    \[t = \frac{n}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}}\]
+\[t = \left(\sqrt{n^2-n_{xy}^2}\right)' \,\,\,\,\,\,\,\,\,\,\, t = \frac{n}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}}\]
 
     and the following limits of integration by \(t\): \(t_a = +\infty\),
 \(t_b = +1\)
 
     Let's write dependency of \(n\) from \(t\)
 
-    \[n^{2} = \frac{n_{\mathit{xy}}^{2} t^{2}}{t^{2} - 1}\]
-
-    \[n = n_{\mathit{xy}} \sqrt{\frac{t^{2}}{t^{2} - 1}}\]
+    \[n^{2} = \frac{n_{\mathit{xy}}^{2} t^{2}}{t^{2} - 1} \,\,\,\,\,\,\,\,\, n = n_{\mathit{xy}} \sqrt{\frac{t^{2}}{t^{2} - 1}}\]
 
     and derivatives:
 
@@ -1074,7 +1178,7 @@ numerator will be:
 
 \[t^{4} - {\left(\alpha_{1}^{2} - 2 \, \beta_{1}\right)} t^{2} + \beta_{1}^{2}\]
 
-    Begin:
+    % Begin:
 
     So we have the following equation
 
@@ -1082,7 +1186,7 @@ numerator will be:
 
 and its solution
 
-\[\beta_{1} = \frac{\mathit{ak}_{m}^{2}}{\sqrt{\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}}}, \alpha_{1} = \sqrt{2} \mathit{ak}_{m} \sqrt{\frac{\mathit{ak}_{m}^{2} + \sqrt{\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}}}{\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}}}\]
+\[\beta_{1} = \frac{\mathit{ak}_{m}^{2}}{\sqrt{\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}}}\], \[\alpha_{1} = \sqrt{2} \mathit{ak}_{m} \sqrt{\frac{\mathit{ak}_{m}^{2} + \sqrt{\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}}}{\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}}}\]
 
     After above determined conversion the integrand can be written as:
 
@@ -1093,7 +1197,8 @@ expression of \(\alpha_1\) and \(\beta_1\).
 
     Determinant is negative. So the integral can be easily taken:
 
-    \(\begin{array}{r} \int F\left(t, n_{xy}, ak_m\right) dt = -\frac{\mathit{ak}_{m}^{4} n_{\mathit{xy}}^{2}}{4 \, {\left(\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}\right)}} \Bigg(\frac{2 \, \arctan\left(\frac{\alpha_{1} + 2 \, t}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} + \\ \frac{2 \, \arctan\left(-\frac{\alpha_{1} - 2 \, t}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} - \frac{\log\left(\alpha_{1} t + t^{2} + \beta_{1}\right)}{\alpha_{1}} + \frac{\log\left(-\alpha_{1} t + t^{2} + \beta_{1}\right)}{\alpha_{1}}\Bigg) \end{array}\)
+\noindent
+    \[\begin{array}{r} \int F\left(t, n_{xy}, ak_m\right) dt = -\frac{\mathit{ak}_{m}^{4} n_{\mathit{xy}}^{2}}{4 \, {\left(\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}\right)}} \Bigg(\frac{2 \, \arctan\left(\frac{\alpha_{1} + 2 \, t}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} + \\ \frac{2 \, \arctan\left(-\frac{\alpha_{1} - 2 \, t}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} - \frac{\log\left(\alpha_{1} t + t^{2} + \beta_{1}\right)}{\alpha_{1}} + \frac{\log\left(-\alpha_{1} t + t^{2} + \beta_{1}\right)}{\alpha_{1}}\Bigg) \end{array}\]
 
 %    And after substitution of \(t\) value
 % \(\int F\left(n, n_{xy}, ak_m\right) dn\) is:
@@ -1117,12 +1222,13 @@ expression of \(\alpha_1\) and \(\beta_1\).
     % \(\begin{array}{r}  G\left(n_{xy}\right) = \int\limits_{0}^{\infty}\sqrt{n_{xy}^2+u^2}\, f\left(\frac{\pi\sqrt{n_{xy}^2+u^2}}{a\,k_m}\right)\,d{u} = \\  -\frac{\mathit{ak}_{m}^{4} n_{\mathit{xy}}^{2} {\left(\frac{2 \, \arctan\left(\frac{\alpha_{1} + 2}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} + \frac{2 \, \arctan\left(-\frac{\alpha_{1} - 2}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} - \frac{\log\left(\alpha_{1} + \beta_{1} + 1\right)}{\alpha_{1}} + \frac{\log\left(-\alpha_{1} + \beta_{1} + 1\right)}{\alpha_{1}}\right)}}{4 \, {\left(\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}\right)}} \\ +\frac{\pi \mathit{ak}_{m}^{4} n_{\mathit{xy}}^{2}}{2 \, {\left(\pi^{4} \sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}} n_{\mathit{xy}}^{4} + \sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}} \mathit{ak}_{m}^{4}\right)}} \end{array}\)
 
 
-\end{multicols}
+%\end{multicols}
 
-    \section{Appendix B. Electromagnetic pressure
-calculation}\label{appendix-b.-electromagnetic-pressure-calculation}
+    \section*{\centering{Appendix B. Electromagnetic pressure
+calculation}}\label{appendix-b.-electromagnetic-pressure-calculation}
+\vspace{-3.5mm}
 
-\begin{multicols}{2}
+%\begin{multicols}{2}
 
     Let's consider rectangular resonator with size \(a \times b \times h\).
 
@@ -1155,7 +1261,8 @@ Field energy density
 \[\frac{E}{V} = \frac{{A_{x}^{2} + A_{y}^{2} + A_{z}^{2}} }{64 \, \pi}\]
 
     Full energy density
-\(\left(\int \frac{E_x^2+E_y^2+E_z^2}{8 \pi}dV + \int \frac{H_x^2+H_y^2+H_z^2}{8 \pi}dV\right)\big/{V}\)
+% \(\left(\int \frac{E_x^2+E_y^2+E_z^2}{8 \pi}dV + \int \frac{H_x^2+H_y^2+H_z^2}{8 \pi}dV\right)\big/{V}\)
+\(\left(\int \frac{|\vec{E}|^2}{8 \pi}dV + \int \frac{|\vec{H}|^2}{8 \pi}dV\right)\big/{V}\)
 is
 
     \[\frac{E}{V} = \frac{{A_{x}^{2} + A_{y}^{2} + A_{z}^{2}}}{32 \, \pi}\]
@@ -1236,8 +1343,8 @@ following solution
 
 \[\frac{E}{V} = \frac{{B_{1}^{2} + B_{2}^{2} + B_{3}^{2}}}{64 \, \pi}\]
 
-    Full field energy density
-\(\left(\int \frac{E_x^2+E_y^2+E_z^2}{8 \pi}dV + \int \frac{H_x^2+H_y^2+H_z^2}{8 \pi}dV\right)\big/{V}\)
+    Full energy density
+\(\left(\int \frac{|\vec{E}|^2}{8 \pi}dV + \int \frac{|\vec{H}|^2}{8 \pi}dV\right)\big/{V}\)
 is
 
     \[\frac{E}{V} = \frac{{B_{1}^{2} + B_{2}^{2} + B_{3}^{2}}}{32 \, \pi}\]
@@ -1298,12 +1405,13 @@ Also we see that if we decrease \(a\) then we have decreased
 
 On the other hand I can show the same result using
 
-\end{multicols}
+% \end{multicols}
 
-    \section{Appendix C. Hamiltonian mechanics
-approach}\label{appendix-c.-hamiltonian-mechanics-approach}
+    \section*{\centering{Appendix C. Hamiltonian mechanics
+approach}}\label{appendix-c.-hamiltonian-mechanics-approach}
+\vspace{-3.5mm}
 
-\begin{multicols}{2}
+% \begin{multicols}{2}
 
     Let us consider a cubic cavity of volume \(L^3\) bounded by perfectly
 conducting walls and let a perfectly conducting square plate with side
@@ -1361,7 +1469,8 @@ importance since for very large \(l\) we may regard \(k_z\) as
 continuous variable, replacing summation over \(n_z\) with integration.
 Thus we find
 
-\(\sum\frac{\hbar\omega}{2} = \frac{\hbar c}{2}\int\limits_{0}^{\infty}\left[{\sqrt{k_z^2}+2\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}}\right]d{n_z}\)
+\noindent
+\(E = \frac{\hbar c}{2}\int\limits_{0}^{\infty}\left[{\sqrt{k_z^2}+2\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{\frac{n_x^2\pi^2}{a^2}+\frac{n_y^2\pi^2}{a^2}+k_z^2}}\right]d{n_z}\)
 % (small cavity, one honeycomb cell),
 
 \(dn_z = \frac{l}{\pi}\,dk_z\).
@@ -1369,17 +1478,27 @@ Thus we find
     Now we can find the specific (per area) energy density \(E/S\), where
 \(S = S_{small} = a^2\):
 
-    \(\sum\frac{\hbar\omega}{2 S} = \frac{\hbar c}{a^2}\int\limits_{0}^{\infty}\left[{\frac{\sqrt{k_z^2}}{2}+\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}}\right]\frac{l}{\pi}\,dk_z\)
+\noindent
+    \(\frac{E}{S} = \frac{\hbar c}{a^2}\int\limits_{0}^{\infty}\left[{\frac{\sqrt{k_z^2}}{2}+\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{\frac{n_x^2\pi^2}{a^2}+\frac{n_y^2\pi^2}{a^2}+k_z^2}}\right]\frac{l}{\pi}dk_z\)
 % (small cavity, one honeycomb cell),
 
-    \(\sum\frac{\hbar\omega}{2 S} = \frac{\hbar c}{a^2 \pi}\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right]\)
+    \(\frac{E}{S} = \frac{\hbar c}{a^2 \pi}\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\int\limits_{0}^{\infty}\sqrt{\frac{n_x^2\pi^2}{a^2}+\frac{n_y^2\pi^2}{a^2}+k_z^2} dk_z\right]\)
 % (small cavity, one honeycomb cell).
 
     And in case of large cavity for \(k_x\), \(k_y\) this is without
 importance since for very large \(L\) we may regard \(k_x\), \(k_y\) as
 continuous variables. Thus we find
 
-\(\sum\frac{\hbar\omega}{2} = \frac{\hbar c}{2}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[{\sqrt{k_x^2+k_y^2}+2\sum\limits_{n_z=1}^{\infty}\sqrt{\frac{n_z^2 \pi^2}{(L-l)^2}+k_x^2+k_y^2}}\right]d{n_x}d{n_y}\)
+\(\begin{array}{l}
+\begin{array}{ll}
+\sum\frac{\hbar\omega}{2} = \frac{\hbar c}{2}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\Bigg[\sqrt{k_x^2+k_y^2}\,+ & \,\\
+\end{array} \\
+\begin{array}{rr}
+\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\, &+\, 2\sum\limits_{n_z=1}^{\infty}\sqrt{\frac{n_z^2 \pi^2}{(L-l)^2}+k_x^2+k_y^2}\Bigg]d{n_x}d{n_y}\end{array}
+\end{array}\)
+
+%\(\sum\frac{\hbar\omega}{2} = \frac{\hbar c}{2}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[{\sqrt{k_x^2+k_y^2}+ \\
+%2\sum\limits_{n_z=1}^{\infty}\sqrt{\frac{n_z^2 \pi^2}{(L-l)^2}+k_x^2+k_y^2}}\right]d{n_x}d{n_y}\)
 % (large cavity between pure plane and \(xy\) face),
 
 For very large \(L-l\) also this last summation may be replaced by an
@@ -1400,10 +1519,12 @@ integral and it is therefore easily seen that energy is given by
 \(\frac{\sum\hbar\omega}{2 S} = \frac{L-l}{L^2\,\pi}\hbar\,c\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dk_z\right]\,dn_x\,dn_y\)
 % (large cavity between pure plane and \(xy\) face),
 
-\(\frac{\sum\hbar\omega}{2\,S} = \frac{L-l}{L^2\,\pi}\hbar\,c\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{L}{\pi}dk_x\right)\,\left(\frac{L}{\pi}dk_y\right)\)
+\noindent
+\(\frac{E}{S} = \frac{L-l}{L^2\,\pi}\hbar\,c\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right] \left(\frac{L}{\pi}dk_x\right) \left(\frac{L}{\pi}dk_y\right)\)
 % (large cavity between pure plane and \(xy\) face),
 
-\(\frac{\sum\hbar\omega}{2\,S} = \frac{L-l}{a^2\,\pi}\hbar\,c\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\)
+\noindent
+\(\frac{E}{S} = \frac{L-l}{a^2\,\pi}\hbar\,c\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right] \left(\frac{a}{\pi}dk_x\right) \left(\frac{a}{\pi}dk_y\right)\)
 % (large cavity between pure plane and \(xy\) face).
 
     It is therefore easily seen that specific (per area) vacuum Hamiltonian
@@ -1420,9 +1541,17 @@ and interaction
 \(\frac{F}{S} = \frac{d}{dl} \,\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S}\)
 is:
 
-\[\begin{array}{lr}\frac{F}{S} =
-\begin{array}{c}\frac{\hbar\,c}{a^2\,\pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] - \\
-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\Bigg\}\end{array}\end{array}\]
+\end{multicols}
+
+%\(\begin{array}{lr}\frac{F}{S} =
+%\begin{array}{c}\frac{\hbar\,c}{a^2\,\pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] - \\
+%\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\Bigg\}\end{array}\end{array}\)
+
+
+\(\frac{F}{S} = \frac{\hbar\,c}{a^2\,\pi}\left\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] -
+\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\right\}\)
+
+\begin{multicols}{2}
 
     So using Hamiltonian mechanics approach I see that formula for the force
 to perfectly conducting honeycomb on a plate \({F}/{S}\) is the same as formula (\ref{eq:1})
@@ -1440,13 +1569,12 @@ different sides \(\delta\left({E}/{V}\right)\).
 
 
 \end{multicols}
-
-    \section{Appendix D. The derivation of the thrust formula for the
-honeycomb basing on the Antipin formula for the thrust of a metal
-angle}\label{appendix-d.-the-derivation-of-the-thrust-formula-for-the-honeycomb-basing-on-the-antipin-formula-for-the-thrust-of-a-metal-angle}
-
 \begin{multicols}{2}
 
+    \section*{\centering{Appendix D. The derivation of the thrust formula for the
+honeycomb basing on the Antipin's formula for the metal
+angle}}\label{appendix-d.-the-derivation-of-the-thrust-formula-for-the-honeycomb-basing-on-the-antipin-formula-for-the-thrust-of-a-metal-angle}
+\vspace{-3.5mm}
 
     Antipin \cite{Antipin2012} gives an estimated calculation of the thrust
 force of the ``corner'' using the Casimir formula, ``with the most
@@ -1454,7 +1582,7 @@ general and natural approximations known as PFA (Proximity Force
 Approximation), or PAA (Pairwise Additive Approximation), calculation
 method \cite{Intravaia2013}, \cite{Rodriguez2011}".
 
-\includegraphics[width=0.48\textwidth]{Antipins_angle_en.png}
+
 
 Casimir's interaction energy is given by
 \[\delta\,E/L^2 = \hbar\,c\frac{\pi^2}{4\,a^3}\left\{\frac{-4}{24\times30}\right\}\]
@@ -1464,9 +1592,16 @@ Casimir's force
 
 Driving force of the metal corner
 
-\[F_{thrust} = 2 \int F_{c} \, sin\, \alpha \,dS\]
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.42\textwidth]{Antipins_angle_en.png}
+\caption{}{\centering{\textbf{Fig.3.} Antipin's angle}}
+\end{center}
+\label{fig:Antipins_angle}
+\end{figure}
 
-\[dS = b\,dz\]
+\[F_{thrust} = 2 \int F_{c} \, sin\, \alpha \,dS, \,\,\,\,\,\,\, dS = b\,dz\]
+
 
 \[F_{thrust} = 2\, \frac{-3\,\pi^2\hbar c b}{4}\int\limits_{z_{min}}^{z_{max}} \left\{\frac{-4}{24\times30}\right\}\frac{sin\, \alpha}{\left(a\left(z\right)\right)^4}dz\]
 
@@ -1561,13 +1696,13 @@ panel of acute angled corners, but technologically the production of
 panels from honeycombs seems to be simpler than the production of panels
 from V-shaped corners.
 
-\end{multicols}
 
     \begin{thebibliography}{99}
 
 \bibitem{Casimir1948}
 \textit{Casimir, H. B. G. (1948). On the attraction between two perfectly conducting plates. Proc. K. Ned. Akad. Wet. B 51, 793–5.
-https://www.dwc.knaw.nl/DL/publications/PU00018547.pdf}
+%https://www.dwc.knaw.nl/DL/publications/PU00018547.pdf
+}
 
 \bibitem{Boyer1968}
 \textit{Boyer, T. H. (1968). Quantum electromagnetic zero-point energy of a conducting spherical shell and Casimir model for a charged particle. Phys. Rev. 174, 1764–76.}
@@ -1577,7 +1712,8 @@ https://www.dwc.knaw.nl/DL/publications/PU00018547.pdf}
 
 \bibitem{Bikyalis1968}
 \textit{A.Bikyalis (1968). Euler-Maclaurin summation formula for a function of many variables.  Lietuvos matematikos rinkinys. p.681
-https://www.journals.vu.lt/LMJ/article/view/20600/19701}
+%https://www.journals.vu.lt/LMJ/article/view/20600/19701
+}
 
 \bibitem{Tuo2019}
 \textit{Tuo Qu, Fang Liu, Yuechai Lin, Yidong Huang, "Metal nano-honeycomb fabricated by colloidal assembly and femtosecond-laser annealing," Proc. SPIE 10841, 9th International Symposium on Advanced Optical Manufacturing and Testing Technologies: Meta-Surface-Wave and Planar Optics, 108410A (30 January 2019); https://doi.org/10.1117/12.2508593}
@@ -1593,6 +1729,7 @@ https://www.journals.vu.lt/LMJ/article/view/20600/19701}
 
 \end{thebibliography}
 
+\end{multicols}
 
     % Add a bibliography block to the postdoc
     

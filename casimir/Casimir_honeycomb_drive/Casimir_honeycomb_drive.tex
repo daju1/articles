@@ -1,5 +1,4 @@
-% \documentclass[11pt]{article}
-\documentclass[twoside]{article}
+\documentclass[twoside, 10pt]{article}
 
 \usepackage[T2A]{fontenc}   % Standard package for selecting font encodings
 \usepackage[utf8]{inputenc} % Accept different input encodings
@@ -14,16 +13,31 @@
 \usepackage{orcidlink}      % Insert hyperlinked ORCiD logo
 \usepackage{fancyhdr}       % Extensive control of page headers and footers
 
-%\usepackage[breakable]{tcolorbox}
-%    \usepackage{parskip}   % Stop auto-indenting (to mimic markdown behaviour)
-    
-%    \usepackage{iftex}
-%    \ifPDFTeX
-%    	\usepackage[T1]{fontenc}
-%    	\usepackage{mathpazo} % Fonts to typeset mathematics to match Palatino
-%    \else
-%    	\usepackage{fontspec} % Advanced font selection in XELATEX and LuaLATEX
-%s    \fi
+\def\myname{A. Drozdov}
+\def\mytitle{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate}
+\def\myissn{2222-5617}
+\def\mydoi{10.26565/2222-5617-2023-38-02}
+\def\myemail{me@somewhere.com}
+\def\ukrvisnyk{Вісник ХНУ імені В.Н. Каразіна, серія «Фізика», вип. 38, p. 30-38 (2023)}
+\def\envisnyk{The Journal of V.N. Karazìn Kharkiv National University. Series “Physics” Iss. 38, p. 15-20 (2023)}
+\def\myworkplace{V.N. Karazin Kharkiv National University, 61022, Svoboda Sq. 4, Kharkiv, Ukraine}
+\def\myorcidlink{0009-0004-1386-4534}
+
+\def\licenseref{http://creativecommons.org/licenses/by/4.0/}
+
+\fancypagestyle{firstpagestyle}{
+% Definition of the header
+\renewcommand{\headrulewidth}{0.6pt}
+\fancyhead[C]{\ukrvisnyk \\ \envisnyk}
+
+
+
+\renewcommand{\footrulewidth}{0.6pt} % bottom horizontal rule
+
+\fancyfoot[L]{${}^{\copyright}$ \myname}
+\fancyfoot[R]{Open Access. This article is licensed under a Creative Commons Attribution 4.0 \\
+\href{\licenseref}{\licenseref}}
+}
 
     % Basic figure setup, for now with no caption control since it's done
     % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
@@ -52,7 +66,7 @@
     \usepackage{upquote} % Upright quotes for verbatim code
     \usepackage{eurosym} % defines \euro
     \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
-    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    % \usepackage{fancyvrb} % verbatim repheadheightlacement that allows latex
     \usepackage{grffile} % extends the file name processing of package graphics 
                          % to support a larger range
     \makeatletter % fix for old versions of grffile with XeLaTeX
@@ -89,19 +103,21 @@
 \usepackage[rightcaption]{sidecap}
 \providecommand{\keywords}[1]{\textbf{\textit{Keywords:}} #1}
 
-\author{A.Yu. Drozdov\,\orcidlink{0009-0004-1386-4534} \\ \\ \textit{V.N. Karazin Kharkiv National University, 61022, Svoboda Sq. 4, Kharkiv, Ukraine} \\ \textit{E-mail: \href{mailto:me@somewhere.com}{me@somewhere.com}} \\ \\ Received on April 17, 2023. Reviewed on May 10, 2023. \\
-Accepted for publication on May 22, 2023. \\ \\ }
+
+
+\author{\myname \,\orcidlink{\myorcidlink}}
 
     % Colors for the hyperref package
     \definecolor{urlcolor}{rgb}{0,.145,.698}
     \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
     \definecolor{citecolor}{rgb}{.12,.54,.11}
 
+  \providecommand{\doi}[1]{DOI: \href{https://doi.org/#1}{#1}}
 
     
     % Document parameters
     % Document title
-    \title{\textbf{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate.}}
+    \title{\textbf{\mytitle.}}
     \date{} % clear date
 
     % Exact colors from NB
@@ -134,53 +150,72 @@ Accepted for publication on May 22, 2023. \\ \\ }
     
     \geometry{verbose,includehead,
 nomarginpar,% We don't want any margin paragraphs
-tmargin=2.51cm,bmargin=3cm,lmargin=2cm,rmargin=2cm}
+tmargin=1.2cm,bmargin=3cm,lmargin=2cm,rmargin=2cm}
 
 \setlength{\columnsep}{0.5cm}
 
-%\fancypagestyle{firststyle} % новый стиль
-%{
-%\fancyfootoffset[R]{-12cm} % так можно регулировать ширину колонтитула
-%\fancyfoot[L]{текст-слева}
-%\renewcommand{\footrulewidth}{0.3 mm} % толщина отделяющей полоски снизу
-%\renewcommand{\headrulewidth}{0.3 mm} % толщина отделяющей полоски сверху
-%}
 
-
-    
 \begin{document}
+
+
+\setcounter{page}{5}
 
 % Set the page style to "fancy"...
 \pagestyle{fancy}
 
 %... then configure it.
 \fancyhead{} % clear all header fields
-%\fancyhead[RO,LE]{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate.}
-\fancyhead[CE]{{\it Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate.}}
-\fancyhead[CO]{A.Yu. Drozdov}
-% \fancyhead[E]{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate.}% This triggers a warning!
+\fancyhead[CE]{{\it \mytitle.}}
+\fancyhead[CO]{\myname}
 
 \renewcommand{\headrulewidth}{0pt} % remove the top horizontal rule
 
 \fancyfoot{} % clear all footer fields
 \fancyfoot[LE,RO]{\thepage}
-\fancyfoot[LO,RE]{The Journal of V.N. Karazin Kharkiv National University. Series “Physics” Iss. 38, 2023\\Вісник ХНУ імені В.Н. Каразіна, серія «Фізика», вип. 38, 2023}
+\fancyfoot[LO,RE]{{\envisnyk}\\{\ukrvisnyk}}
 \fancyfoot[CO,CE]{}
-% \fancyfoot[E]{\thepage}% This triggers a warning!
 
-% \thispagestyle{firststyle}
+$\,$
 
-    \maketitle
-\vspace{-16mm}
-%\tableofcontents
-    
-    % \title{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate.}
 
-% \textit{Харківський національний університет імені В.Н. Каразіна, 61022, майдан Свободи. 4, Харків, Україна}
+\thispagestyle{firstpagestyle}
+
+\vspace{-8mm}
+
+
+\begin{tabular}{lcr}
+\doi{\mydoi}
+& \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\,
+& ISSN \myissn (Print)
+\end{tabular}
+
+\vspace{7mm}
+
+\begin{tabular}{l}
+Original article \\
+In print article \\
+\href{https://doi.org/\mydoi}{https://doi.org/\mydoi} \\
+UDC 576.3/7.002:531/534 \\
+PACS numbers: 81.35. +k \\
+\end{tabular}
+
+    %\maketitle
+
+
+
+\section*{\centering{\textbf{\mytitle}}}
+
+\centerline{{\myname \,\orcidlink{\myorcidlink} }}
+\vspace{3mm}
+\centerline{\textit{\myworkplace}}
+\centerline{\textit{E-mail: \href{mailto:\myemail}{\myemail}}}
+
+\vspace{3mm}
+\centerline{Received on April 17, 2023. Reviewed on May 10, 2023.}
+\centerline{Accepted for publication on May 22, 2023.}
+
 \vspace{3.5mm}
-%    \begin{abstract}
-% \section*{\centering{Abstract}}
-% \addcontentsline{toc}{section}{\protect\numberline{}Abstract}
+
 
 By analogy with the classical one dimensional two body Casimir effect, when the pushing in Casimir forces acts on each of the two plates as the difference in electromagnetic pressures of zero-point quantum vacuum oscillations on opposite sides of each of the plates, due to the fact that the geometry vacuum resonator in the inner and outer regions is different, one can try to create a difference in electromagnetic pressures of quantum vacuum oscillations on different sides of only one plate due to the difference in the geometry of vacuum resonators on both sides of it. To do this, nanocells must be grown on one of the surfaces of a smooth metal plate.
 
@@ -191,6 +226,11 @@ Two dimensional one body Casimir effect on square-shaped nanocells was analyzed 
 \begin{keywords}
 Two dimensional one body Casimir effect
 \end{keywords}
+
+\vspace{5mm}
+
+\noindent
+\textbf{In cites}: \textit{\myname}. \textit{\mytitle}. {\envisnyk}. \href{https://doi.org/\mydoi}{https://doi.org/\mydoi}.
 
 
 \begin{multicols}{2}
@@ -918,12 +958,12 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 % 3.0 & -0.028986396523536337 & 2.961508478431949e-05 & 23 \\
 3.0 & -0.0289864 & 2.96151e-05 & 23 \\
 
-\hline
-\end{tabular}
-\begin{tabular}{ | l | c | c | c | }
-\hline
-$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
-\hline
+%\hline
+%\end{tabular}
+%\begin{tabular}{ | l | c | c | c | }
+%\hline
+%$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
+%\hline
 
 % 3.25 & -0.024047951283080123 & 4.0789713256873105e-05 & 23 \\
 3.25 & -0.02404795 & 4.07897e-05 & 23 \\
@@ -1582,15 +1622,12 @@ general and natural approximations known as PFA (Proximity Force
 Approximation), or PAA (Pairwise Additive Approximation), calculation
 method \cite{Intravaia2013}, \cite{Rodriguez2011}".
 
-
-
 Casimir's interaction energy is given by
 \[\delta\,E/L^2 = \hbar\,c\frac{\pi^2}{4\,a^3}\left\{\frac{-4}{24\times30}\right\}\]
 
 Casimir's force
 \[F_{c} = \hbar\,c\frac{-3\,\pi^2}{4\,a^4}\left\{\frac{-4}{24\times30}\right\}\]
 
-Driving force of the metal corner
 
 \begin{figure}
 \begin{center}
@@ -1599,6 +1636,8 @@ Driving force of the metal corner
 \end{center}
 \label{fig:Antipins_angle}
 \end{figure}
+
+Driving force of the metal corner
 
 \[F_{thrust} = 2 \int F_{c} \, sin\, \alpha \,dS, \,\,\,\,\,\,\, dS = b\,dz\]
 

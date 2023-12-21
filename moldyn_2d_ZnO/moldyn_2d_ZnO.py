@@ -28,6 +28,19 @@ class moldyn():
 
         self.f = [];
         self.w = [];# workaround for bond's potential energy
+
+        self.f_left_boundary = []
+        self.acc_left_boundary = []
+        self.w_left_boundary = []
+        self.f_right_boundary = []
+        self.acc_right_boundary = []
+        self.w_right_boundary = []
+
+        self.dkin_left_boundary = [0.0, 0.0]
+        self.dkin_right_boundary = [0.0, 0.0]
+        self.kin_left_boundary = [0.0, 0.0]
+        self.kin_right_boundary = [0.0, 0.0]
+
         self.crd0 = [];
         self.crd = [];
         self.rc = [];
@@ -73,8 +86,16 @@ class moldyn():
 
                 self.vel.append([0.0, 0.0]);
                 self.acc.append([0.0, 0.0]);
+
                 self.f.append([0.0, 0.0]);
                 self.w.append(0.0);
+
+                self.f_left_boundary.append([0.0, 0.0]);
+                self.acc_left_boundary.append([0.0, 0.0]);
+                self.w_left_boundary.append(0.0);
+                self.f_right_boundary.append([0.0, 0.0]);
+                self.acc_right_boundary.append([0.0, 0.0]);
+                self.w_right_boundary.append(0.0);
 
                 if (row%4) == 0:
                     nb1 = (row - 1, col)
@@ -274,6 +295,13 @@ class moldyn():
     def calc_atom(self, i):
         fx = 0.0
         fy = 0.0
+        w = 0.0
+
+        fy_left_boundary = 0.0
+        wy_left_boundary = 0.0
+        fy_right_boundary = 0.0
+        wy_right_boundary = 0.0
+
         for nbr in self.nbri[i]:
             d  = self.distance  (self.crd[i], self.crd[nbr])
             dx = self.distance_x(self.crd[i], self.crd[nbr])
@@ -289,26 +317,68 @@ class moldyn():
 
             f = k * dl + alpha * dl**2 + beta * dl**3
             # bond's potential energy
-            w = k * dl * dl / 2 + alpha * dl**3 / 3 + beta * dl**4 / 4
+            dw = k * dl * dl / 2 + alpha * dl**3 / 3 + beta * dl**4 / 4
 
             fx += f * cx
             fy += f * cy
-            
-            if by < 0:
-                _f = fy
-                w
+            w  += dw
+
             if by > 0:
-                f_ = fy
-                w
+                fy_left_boundary += fy
+                wy_left_boundary += dw/2
+            if by < 0:
+                fy_right_boundary += fy
+                wy_right_boundary += dw/2
 
         self.f[i][0] = fx
         self.f[i][1] = fy
-        self.w[i] = w/2 # assign to atom half of bond's potential energy
+        self.w[i]    = w/2 # assign to atom half of bond's potential energy
+
+        self.f_left_boundary[i][1]  = fy_left_boundary
+        self.w_left_boundary[i]     = wy_left_boundary
+        self.f_right_boundary[i][1] = fy_right_boundary
+        self.w_right_boundary[i]    = wy_right_boundary
 
     def ComputeForce(self):
         for n1 in range(self.atom_count):
             self.calc_atom(n1)
 
+    def CalcHeatFlow(self):
+        for n2 in [0,1]:
+            self.kin_left_boundary[n2]  += self.dkin_left_boundary[n2]
+            self.kin_right_boundary[n2] += self.dkin_right_boundary[n2]
+            self.dkin_left_boundary[n2]  = 0.0
+            self.dkin_right_boundary[n2] = 0.0
+            for row in [0, self.rows-1]:
+                for col in range(self.cols):
+                    n1 = self.rc2index(row, col)
+                    tmpX = 500.0 * self.mass[n1]
+
+                    acc_n1_n2 = self.f[n1][n2] / self.mass[n1];
+
+                    self.acc_left_boundary[n1][n2]  = self.f_left_boundary[n1][n2] / self.mass[n1];
+                    self.acc_right_boundary[n1][n2] = self.f_right_boundary[n1][n2] / self.mass[n1];
+                    
+                    # current velocity
+                    cur_vel = self.vel[n1][n2]
+                    # current partial kinetic energy
+                    cur_kin = tmpX * cur_vel * cur_vel
+                    
+                    # updated velocity
+                    new_vel = cur_vel + self.tstep1 * self.acc[n1][n2] * 1.0e-6
+                    new_kin = tmpX * new_vel * new_vel
+                    
+                    # velocity updated just by left boundary force
+                    new_vel_left_bound = cur_vel + self.tstep1 * self.acc_left_boundary[n1][n2] * 1.0e-6
+                    new_kin_left_bound = tmpX * new_vel_left_bound * new_vel_left_bound
+                    
+                    # velocity updated just by right boundary force
+                    new_vel_right_bound = cur_vel + self.tstep1 * self.acc_right_boundary[n1][n2] * 1.0e-6
+                    new_kin_right_bound = tmpX * new_vel_right_bound * new_vel_right_bound
+                    
+                    self.dkin_left_boundary[n2]  += (new_kin_left_bound - new_kin) / self.tstep1 * 1.0e+15
+                    self.dkin_right_boundary[n2] += (new_kin_right_bound - new_kin) / self.tstep1 * 1.0e+15
+ 
     def TakeMDStep(self):
         for n1 in range(self.atom_count):
             for n2 in [0,1]:
@@ -321,18 +391,11 @@ class moldyn():
                 self.vel[n1][n2] += self.tstep1 * tmpA * 0.5e-6;
 
         self.ComputeForce()
+        self.CalcHeatFlow()
 
         for n1 in range(self.atom_count):
             for n2 in [0,1]:
-                tmp1 = self.tstep1 * self.vel[n1][n2] * 1.0e-3;
-                tmp2 = self.tstep2 * self.acc[n1][n2] * 0.5e-9;
-
                 self.acc[n1][n2] = self.f[n1][n2] / self.mass[n1];
-                
-                self.acc_[n1][n2] = self.f_[n1][n2] / self.mass[n1];
-                
-                self._acc[n1][n2] = self._f[n1][n2] / self.mass[n1];
-                
                 self.vel[n1][n2] += self.tstep1 * self.acc[n1][n2] * 0.5e-6;
 
     def KineticEnergy(self):

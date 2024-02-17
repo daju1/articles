@@ -335,7 +335,11 @@ where \(n_x\). \(n_y\), \(n_z\) are positive integers;
 
     \(k = \sqrt{k_x^2+k_y^2+k_z^2} = \sqrt{\kappa^2+k_z^2}\).
 
-    \(E = \frac{1}{2}\sum\,\hbar\omega = \hbar\,c\frac{1}{2}\sum\limits_{n_x}^{}\sum\limits_{n_y}^{}\sum\limits_{n_z}^{}k\)
+Let us write the expression for the sum of zero-point energy in general form
+
+\begin{equation} \label{eq:1}
+E = \frac{1}{2}\sum\,\hbar\omega = \hbar\,c\frac{1}{2}\sum\limits_{n_x}^{}\sum\limits_{n_y}^{}\sum\limits_{n_z}^{}k
+\end{equation}
 
     To every \(k_x\), \(k_y\), \(k_z\) correspond two standing waves unless
 one of the \(n_i\) is zero, when there is only one.
@@ -437,7 +441,7 @@ integral and it is therefore easily seen that energy is given by
 
 \end{multicols}
 
-    \begin{equation} \label{eq:1}
+    \begin{equation} \label{eq:2}
 \begin{array}{lr}
 \delta \frac{E}{V} =
 \begin{array}{c}
@@ -467,7 +471,7 @@ influence of its specific type will be removed by a limit transition.
 
 \end{multicols}
 
-    \begin{equation}
+    \begin{equation} \label{eq:3}
 \begin{array}{c}
 \begin{array}{ll}
 \delta\,\frac{E}{V} =
@@ -501,11 +505,12 @@ and \(k_z^2 = u^2 \frac{\pi^2}{a^2}\) we have
 where the cutting frequency is \(\omega_m = c\,k_m\)
 
     Introducing function:
-
 \noindent
-$F\left(u, n_x, n_y\right) =
+\begin{equation} \label{eq:4}
+F = %\left(u, n_x, n_y\right) =
 \sqrt{n_x^2 + n_y^2+u^2}\,
-f\left(\frac{\pi\sqrt{n_x^2 + n_y^2+u^2}}{a\,k_m}\right)$
+f\left(\frac{\pi\sqrt{n_x^2 + n_y^2+u^2}}{a\,k_m}\right)
+\end{equation}
 
     we can write:
 
@@ -528,14 +533,14 @@ $\begin{array}{c}
 \end{array}$
 
     And at least, introducing
-
-    \(
+\noindent
+\begin{equation} \label{eq:5}
 G\left(n_x, n_y\right) = \int\limits_{0}^{\infty}F\left(u, n_x, n_y\right)\,d{u}
-\)
+\end{equation}
 
     We have
 
-    \begin{equation}
+    \begin{equation} \label{eq:6}
 \begin{array}{lr}
 \delta\,\frac{E}{V} =
 \begin{array}{c}
@@ -614,7 +619,7 @@ and the remainder term
 When applying it to \(G\) twice on \(n_x\) and on \(n_y\) we should have
 the following terms which can be represented in the table form:
 
-    \begin{equation}
+    \begin{equation} \label{eq:7}
 \begin{array}{cccc}
  \int\limits_{n_y}^{} \int\limits_{n_x}^{} G  &  \int\limits_{n_y}^{} \underset{n_x}{H_{\sum}}\,G  &  \int\limits_{n_y}^{}{\sum\limits_{n_x}^{}}^{B}\,G  &  \int\limits_{n_y}^{}\,\underset{n_x}{R_{p}}\,G  \\
  \underset{n_y}{H_{\sum}}\,\int\limits_{n_x}^{}\,G &  \underset{n_y}{H_{\sum}}\,\underset{n_x}{H_{\sum}}\,G &  \underset{n_y}{H_{\sum}}\,{\sum\limits_{n_x}^{}}^{B}\,G &  \underset{n_y}{H_{\sum}}\,\underset{n_x}{R_{p}}\,G \\
@@ -957,13 +962,6 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 % 3.0 & -0.028986396523536337 & 2.961508478431949e-05 & 23 \\
 3.0 & -0.0289864 & 2.96151e-05 & 23 \\
 
-%\hline
-%\end{tabular}
-%\begin{tabular}{ | l | c | c | c | }
-%\hline
-%$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
-%\hline
-
 % 3.25 & -0.024047951283080123 & 4.0789713256873105e-05 & 23 \\
 3.25 & -0.02404795 & 4.07897e-05 & 23 \\
 % 3.5 & -0.018309169743688476 & 8.561178612309775e-06 & 45 \\
@@ -972,12 +970,25 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 3.75 & -0.0135918 & 2.185368e-05 & 36 \\
 % 4 & -0.009731507224089121 & 1.4610545561998458e-05 & 45 \\
 4 & -0.00973151 & 1.46105e-05 & 45 \\
+
 % 4.5 & -0.006342700310733549 & 1.9329818693328873e-05 & 48 \\
 4.5 & -0.00634270 & 1.93298e-05 & 48 \\
 % 5 & -0.007323343929996339 & 2.3242272627768528e-05 & 52 \\
 5 & -0.00732334 & 2.32423e-05 & 52 \\
+
 % 6 & -0.012436017530558603 & 2.3732800946523056e-05 & 66 \\
 6 & -0.0124360 & 2.37328e-05 & 66 \\
+
+\hline
+\end{tabular}
+\begin{tabular}{ | l | c | c | c | }
+\hline
+$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
+\hline
+
+
+
+
 % 7 & -0.014209420986523558 & 3.8533275062919475e-05 & 69 \\
 7 & -0.0142094 & 3.85332e-05 & 69 \\
 % 8 & -0.0136610172109347 & 3.293747500025098e-05 & 87 \\
@@ -998,7 +1009,7 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 \end{equation}
 
 \begin{figure}
-\includegraphics[width=0.48\textwidth]{sum_sum_int_int_G_on_a_km.png}
+\includegraphics[width=0.46\textwidth]{sum_sum_int_int_G_on_a_km.png}
 \caption{}{\centering{\textbf{Fig.2.} How $\delta\left(E/V\right)$ depends on $a k_m$}}
 \label{fig:G_on_a_km}
 \end{figure}
@@ -1117,30 +1128,37 @@ Casimir forces corresponds to reality.
 
 \end{multicols}
 
-\begin{multicols}{2}
-
     \section*{\centering{Appendix A. Integration details}}\label{appendix-a.-integration-details}
 \vspace{-3.5mm}
 
+\begin{multicols}{2}
     Let's use the regularization function in the form
 
-    \[f\left(\frac{k}{k_m}\right) = \frac{1}{\frac{k^{4}}{k_{m}^{4}} + 1}\]
+\setcounter{equation}{0}
+\renewcommand{\theequation}{A.\arabic{equation}}
 
-    Starting from \(\begin{array}{c}
-\begin{array}{ll}
-F\left(u, n_x, n_y, a, k_m\right) = & \,\\
-\end{array} \\
-\begin{array}{rr}
-\, & \sqrt{n_{x}^{2} + n_{y}^{2} + u^{2}} f\left(\frac{\pi \sqrt{n_{x}^{2} + n_{y}^{2} + u^{2}}}{a k_{m}}\right)\end{array}
-\end{array}\)
+\begin{equation}
+f\left(\frac{k}{k_m}\right) = \frac{1}{\frac{k^{4}}{k_{m}^{4}} + 1}
+\end{equation}
 
 
-    By introducing a variable \(n_{xy} = \sqrt{n_x^2 + n_y^2}\)
+
+%\(\begin{array}{c}
+%\begin{array}{ll}
+%F\left(u, n_x, n_y, a, k_m\right) = & \,\\
+%\end{array} \\
+%\begin{array}{rr}
+%\, & \sqrt{n_{x}^{2} + n_{y}^{2} + u^{2}} f\left(\frac{\pi \sqrt{n_{x}^{2} + n_{y}^{2} + u^{2}}}{a k_{m}}\right)\end{array}
+%\end{array}\)
+
+
+    Starting from (\ref{eq:4}) and by introducing a variable \(n_{xy} = \sqrt{n_x^2 + n_y^2}\) and \(n = \sqrt{n_x^2 + n_y^2 + u^2} = \sqrt{n_{xy}^2 + u^2}\) we have 
 
 \noindent
-    \(F\left(u, n_{xy}, ak_m\right) = \frac{\sqrt{n_{\mathit{xy}}^{2} + u^{2}}}{\frac{\pi^{4} {\left(n_{\mathit{xy}}^{2} + u^{2}\right)}^{2}}{\mathit{ak}_{m}^{4}} + 1}\)
+\begin{equation}
+F\left(u, n_{xy}, ak_m\right) = \frac{\sqrt{n_{\mathit{xy}}^{2} + u^{2}}}{\frac{\pi^{4} {\left(n_{\mathit{xy}}^{2} + u^{2}\right)}^{2}}{\mathit{ak}_{m}^{4}} + 1}
+\end{equation}
 
-    we have \(n = \sqrt{n_x^2 + n_y^2 + u^2} = \sqrt{n_{xy}^2 + u^2}\)
 
 And using this variable we can make the following substitution
 
@@ -1148,22 +1166,24 @@ And using this variable we can make the following substitution
 
 \(\frac{du}{dn} = \frac{n}{\sqrt{n^{2} - \mathit{n_{xy}}^{2}}}\) $\,\,\,\,\,\,\,\,\,$ \(d{u}= \frac{n\,d{n}}{\sqrt{n^{2} - \mathit{n_{xy}}^{2}}}\)
 
-    And now we can rewrite our integral
+    And now we can rewrite integral (\ref{eq:5}) in form:
 
- \(G\left(n_x, n_y\right) = \int\limits_{0}^{\infty}\sqrt{n_{xy}^2+u^2}\,
+\begin{equation}
+G%\left(n_x, n_y\right)
+ = \int\limits_{0}^{\infty}\sqrt{n_{xy}^2+u^2}\,
 f\left(\frac{\pi\sqrt{n_{xy}^2+u^2}}{a\,k_m}\right)\,d{u},
-\)
+\end{equation}
 
 changing the integration variable from \(u\) to \(n\)
 
-\noindent
-$G\left(n_x, n_y\right) = \int\limits_{n_{xy}}^{\infty}\sqrt{n_{xy}^2+u^2}
- f\left(\frac{\pi\sqrt{n_{xy}^2+u^2}}{a\,k_m}\right)\,dn\,{\frac{n}{\sqrt{n^{2} - n_{xy}^{2}}}}$
+%\noindent
+%$G\left(n_x, n_y\right) = \int\limits_{n_{xy}}^{\infty}\sqrt{n_{xy}^2+u^2}
+% f\left(\frac{\pi\sqrt{n_{xy}^2+u^2}}{a\,k_m}\right)\,dn\,{\frac{n}{\sqrt{n^{2} - n_{xy}^{2}}}}$
 
-    \[
+\begin{equation}
 G\left(n_x, n_y\right) = \int\limits_{n_{xy}}^{\infty}n\,
 f\left(\frac{\pi\,n}{a\,k_m}\right)\,dn\,{\frac{n}{\sqrt{n^{2} - n_{xy}^{2}}}}
-\]
+\end{equation}
 
     Because in this form that integral can be taken analytically. So we have
 the following integrand:
@@ -1261,13 +1281,13 @@ expression of \(\alpha_1\) and \(\beta_1\).
     % \(\begin{array}{r}  G\left(n_{xy}\right) = \int\limits_{0}^{\infty}\sqrt{n_{xy}^2+u^2}\, f\left(\frac{\pi\sqrt{n_{xy}^2+u^2}}{a\,k_m}\right)\,d{u} = \\  -\frac{\mathit{ak}_{m}^{4} n_{\mathit{xy}}^{2} {\left(\frac{2 \, \arctan\left(\frac{\alpha_{1} + 2}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} + \frac{2 \, \arctan\left(-\frac{\alpha_{1} - 2}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}}\right)}{\sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}}} - \frac{\log\left(\alpha_{1} + \beta_{1} + 1\right)}{\alpha_{1}} + \frac{\log\left(-\alpha_{1} + \beta_{1} + 1\right)}{\alpha_{1}}\right)}}{4 \, {\left(\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}\right)}} \\ +\frac{\pi \mathit{ak}_{m}^{4} n_{\mathit{xy}}^{2}}{2 \, {\left(\pi^{4} \sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}} n_{\mathit{xy}}^{4} + \sqrt{-\alpha_{1}^{2} + 4 \, \beta_{1}} \mathit{ak}_{m}^{4}\right)}} \end{array}\)
 
 
-%\end{multicols}
+\end{multicols}
 
     \section*{\centering{Appendix B. Electromagnetic pressure
 calculation}}\label{appendix-b.-electromagnetic-pressure-calculation}
 \vspace{-3.5mm}
 
-%\begin{multicols}{2}
+\begin{multicols}{2}
 
     Let's consider rectangular resonator with size \(a \times b \times h\).
 
@@ -1593,7 +1613,7 @@ is:
 \begin{multicols}{2}
 
     So using Hamiltonian mechanics approach I see that formula for the force
-to perfectly conducting honeycomb on a plate \({F}/{S}\) is the same as formula (\ref{eq:1})
+to perfectly conducting honeycomb on a plate \({F}/{S}\) is the same as formula (\ref{eq:2})
 which is received for the difference of specific energy density on its
 different sides \(\delta\left({E}/{V}\right)\).
 

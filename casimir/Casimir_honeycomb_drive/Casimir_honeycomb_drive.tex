@@ -576,14 +576,16 @@ Maclaurin formula twice on \(n_x\) and on \(n_y\). Starting from the following f
 
 % \[{\displaystyle \sum _{i=a}^{b}f(i)=\int\limits_{a}^{b}f(x)\,dx+{\frac {f(a)+f(b)}{2}}+\sum\limits_{k=1}^{\lfloor p/2\rfloor }{\frac {B_{2k}}{(2k)!}}\left(f^{(2k-1)}(b)-f^{(2k-1)}(a)\right)+R_{p},}\]
 
-$\begin{array}{l}
+    \begin{equation} \label{eq:7}
+\begin{array}{l}
 \begin{array}{ll}
 \displaystyle \sum _{i=a}^{b}f(i)= \int_{a}^{b}f(x)\,dx+{\frac {f(a)+f(b)}{2}} + & \,\,\,\,
 \end{array}  \\
 \begin{array}{rr}
-\,\,\,\,\,\, & +\sum_{k=1}^{\lfloor p/2\rfloor }{\frac {B_{2k}}{(2k)!}}\left(f^{(2k-1)}(b)-f^{(2k-1)}(a)\right)+R_{p}
+\,\,\, & +\,\sum_{k=1}^{\lfloor p/2\rfloor }{\frac {B_{2k}}{(2k)!}}\left(f^{(2k-1)}(b)-f^{(2k-1)}(a)\right)+ \\
+\,\,\, & + \,R_{p}
 \end{array}
-\end{array}$,
+\end{array}\end{equation},
 
 \({\displaystyle P_{k}(x)=B_{k}\left(x-\lfloor x\rfloor \right),}\)
 
@@ -619,7 +621,7 @@ and the remainder term
 When applying it to \(G\) twice on \(n_x\) and on \(n_y\) we should have
 the following terms which can be represented in the table form:
 
-    \begin{equation} \label{eq:7}
+    \begin{equation} \label{eq:8}
 \begin{array}{cccc}
  \int\limits_{n_y}^{} \int\limits_{n_x}^{} G  &  \int\limits_{n_y}^{} \underset{n_x}{H_{\sum}}\,G  &  \int\limits_{n_y}^{}{\sum\limits_{n_x}^{}}^{B}\,G  &  \int\limits_{n_y}^{}\,\underset{n_x}{R_{p}}\,G  \\
  \underset{n_y}{H_{\sum}}\,\int\limits_{n_x}^{}\,G &  \underset{n_y}{H_{\sum}}\,\underset{n_x}{H_{\sum}}\,G &  \underset{n_y}{H_{\sum}}\,{\sum\limits_{n_x}^{}}^{B}\,G &  \underset{n_y}{H_{\sum}}\,\underset{n_x}{R_{p}}\,G \\
@@ -731,43 +733,48 @@ G''\left(\widehat{j_{x} + v_{x}}, \widehat{j_{y} + v_{y}}\right)\,{d v_{x}}\,{d 
 
 % \begin{multicols}{2}
 
-    Let's consider
+    Let's consider the expression
 
-\[
+\begin{equation} \label{eq:9}
 \sum\limits_{n_x=\left(0\right)\,1}^{\infty}
 \sum\limits_{n_y=\left(0\right)\,1}^{\infty}
-G\left(n_x, n_y\right)
+G%\left(n_x, n_y\right)
 -
 \int\limits_{0}^{\infty}
 \int\limits_{0}^{\infty}
-G\left(n_x, n_y\right)\,d{n_x}\,d{n_y}
-\]
+G%\left(n_x, n_y\right)
+\,\,\,d{n_x}\,d{n_y}
+\end{equation}
 
     First we see, that
 
-$\begin{array}{c}
+\begin{equation} \label{eq:10}
+\begin{array}{c}
     \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} {G\left(n_x, n_y\right)} = \\
- \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \left( -\frac{1}{2}G\left(n_x, 0\right) + \sum\limits_{n_y=0}^{\infty}{G\left(n_x, n_y\right)} \right) = \\
- -\frac{1}{2} \left( -\frac{1}{2}G\left(0, 0\right) + \sum\limits_{n_y=0}^{\infty}{G\left(0, n_y\right)} \right) + \\
-\sum\limits_{n_x=0}^{\infty} \left( -\frac{1}{2}G\left(n_x, 0\right) + \sum\limits_{n_y=0}^{\infty}{G\left(n_x, n_y\right)} \right) = \\
- \frac{1}{4}G\left(0, 0\right) - \frac{1}{2}\sum\limits_{n_y=0}^{\infty}{G\left(0, n_y\right)} - \\
+% \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \left( -\frac{1}{2}G\left(n_x, 0\right) + \sum\limits_{n_y=0}^{\infty}{G\left(n_x, n_y\right)} \right) = \\
+% -\frac{1}{2} \left( -\frac{1}{2}G\left(0, 0\right) + \sum\limits_{n_y=0}^{\infty}{G\left(0, n_y\right)} \right) + \\
+%\sum\limits_{n_x=0}^{\infty} \left( -\frac{1}{2}G\left(n_x, 0\right) + \sum\limits_{n_y=0}^{\infty}{G\left(n_x, n_y\right)} \right) = \\
+ \frac{1}{4}G\left(0, 0\right) - \frac{1}{2}\sum\limits_{n_y=0}^{\infty}{G\left(0, n_y\right)}\, - \\
 \frac{1}{2}\sum\limits_{n_x=0}^{\infty}{G\left(n_x, 0\right)} + \sum\limits_{n_x=0}^{\infty}\sum\limits_{n_y=0}^{\infty}{G\left(n_x, n_y\right)}
-\end{array}$
+\end{array}
+\end{equation}
 
     So we have
 
 \noindent
-$\begin{array}{l}
+\(\begin{array}{l}
 \begin{array}{ll}
-\sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y} = & \, \\
+\sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right)
+ - \\
+\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y} = & \, \\
 \end{array} \\
 \begin{array}{c}
-\frac{1}{4}G\left(0, 0\right) -\frac{1}{2}\sum\limits_{n_y=0}^{\infty}{G\left(0, n_y\right)} -\frac{1}{2}\sum\limits_{n_x=0}^{\infty}{G\left(n_x, 0\right)} + \\
+\frac{1}{4}G\left(0, 0\right) -\frac{1}{2}\sum\limits_{n_y=0}^{\infty}{G\left(0, n_y\right)} -\frac{1}{2}\sum\limits_{n_x=0}^{\infty}{G\left(n_x, 0\right)}\, + \\
 \end{array} \\
 \begin{array}{rr}
 \, & \sum\limits_{n_x=0}^{\infty}\sum\limits_{n_y=0}^{\infty}{G\left(n_x, n_y\right)} - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y}
 \end{array}
-\end{array}$
+\end{array}\)
 
     On the other hand we have found that
 
@@ -785,20 +792,20 @@ $\begin{array}{l}
 \noindent
     \(\frac{1}{4} \, G\left(a_{x}, a_{y}\right) , \frac{1}{2} \, \int_{a_{y}}^{b_{y}} G\left(a_{x}, n_{y}\right)\,{d n_{y}} , \frac{1}{2} \, \int_{a_{x}}^{b_{x}} G\left(n_{x}, a_{y}\right)\,{d n_{x}}\)
 
-    Now using 1D Euler--Maclaurin formula in form:
+    Now using 1D Euler--Maclaurin formula in the form (\ref{eq:7}) we can see that:
 
-\noindent
-$\begin{array}{l}
-\begin{array}{ll}
-\displaystyle \sum _{i=a}^{b}f(i)=\int _{a}^{b}f(x)\,dx+{\frac {f(a)+f(b)}{2}}+ & \, \\
-\end{array} \\
-\begin{array}{rr}
-\, &
-\sum _{k=1}^{\lfloor p/2\rfloor }{\frac {B_{2k}}{(2k)!}}(f^{(2k-1)}(b)-f^{(2k-1)}(a))+R_{p},
-\end{array}
-\end{array}$
+%\noindent
+%$\begin{array}{l}
+%\begin{array}{ll}
+%\displaystyle \sum _{i=a}^{b}f(i)=\int _{a}^{b}f(x)\,dx+{\frac {f(a)+f(b)}{2}}+ & \, \\
+%\end{array} \\
+%\begin{array}{rr}
+%\, &
+%\sum _{k=1}^{\lfloor p/2\rfloor }{\frac {B_{2k}}{(2k)!}}(f^{(2k-1)}(b)-f^{(2k-1)}(a))+R_{p},
+%\end{array}
+%\end{array}$
 
-    we can see that
+    
 
     \[
 \frac{1}{4}G\left(0, 0\right)
@@ -819,11 +826,11 @@ $\begin{array}{l}
 \end{array}
 \end{array}\)
 
-    So we can find
+    So we can find expression (\ref{eq:9}) using the following summation:
 
-\(\sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y}\)
+%\(\sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y}\)
 
-using the following formula:
+
 
 \noindent
     \(\begin{array}{llll}  \,&  \,&  + \int\limits_{n_y}^{}{\sum\limits_{n_x}^{}}^{B}\,G &  + \int\limits_{n_y}^{}\,\underset{n_x}{R_{p}}\,G \\  \,&  \,&  + \underset{n_y}{H_{\sum}}\,{\sum\limits_{n_x}^{}}^{B}\,G &  + \underset{n_y}{H_{\sum}}\,\underset{n_x}{R_{p}}\,G \\  + {\sum\limits_{n_y}^{}}^{B}\,\int\limits_{n_x}^{}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,\underset{n_x}{H_{\sum}}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,{\sum\limits_{n_x}^{}}^{B}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,\underset{n_x}{R_{p}}\,G \\  + \underset{n_y}{R_{p}}\,\int\limits_{n_x}^{}\,G &  + \underset{n_y}{R_{p}}\,\underset{n_x}{H_{\sum}}\,G &  + \underset{n_y}{R_{p}}\,{\sum\limits_{n_x}^{}}^{B}\,G &  + \underset{n_y}{R_{p}}\,\underset{n_x}{R_{p}}\,G \\  \,&  \,&  - \frac{1}{2}{\sum\limits_{n_y}^{}}^{B}\,G &  - \frac{1}{2}\underset{n_y}{R_{p}}\,G \\  \,&  \,&  - \frac{1}{2}{\sum\limits_{n_x}^{}}^{B}\,G &  - \frac{1}{2}\underset{n_x}{R_{p}}\,G \\ \end{array}\)
@@ -832,7 +839,7 @@ using the following formula:
 
     \(\begin{array}{llll}  \,&  \,&  + \int\limits_{n_y}^{}{\sum\limits_{n_x}^{}}^{B}\,G \\  \,&  \,&  + \underset{n_y}{H_{\sum}}\,{\sum\limits_{n_x}^{}}^{B}\,G \\  + {\sum\limits_{n_y}^{}}^{B}\,\int\limits_{n_x}^{}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,\underset{n_x}{H_{\sum}}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,{\sum\limits_{n_x}^{}}^{B}\,G\\  \,&  \,&  - \frac{1}{2}{\sum\limits_{n_y}^{}}^{B}\,G \\  \,&  \,&  - \frac{1}{2}{\sum\limits_{n_x}^{}}^{B}\,G \\ \end{array}\)
 
-    are 0 in sum. And so any possible non zero result should be related with
+    are 0 in sum. And so any possible non zero result of expression (\ref{eq:9}) should be related with
 remainder part:
 
 \noindent
@@ -903,11 +910,12 @@ G\left(n_x, n_y\right)\,d{n_x}\,d{n_y} =
 \begin{array}{r}
 \sum\limits_{n_x=\left(0\right)\,1}^{\infty}
 \sum\limits_{n_y=\left(0\right)\,1}^{\infty}
-G\left(n_x, n_y\right)
+G%\left(n_x, n_y\right)
 -
 \int\limits_{0}^{\infty}
 \int\limits_{0}^{\infty}
-G\left(n_x, n_y\right) d{n_x} d{n_y}  =
+G%\left(n_x, n_y\right)
+\,\,\, d{n_x} d{n_y}  =
 {\sum\limits_{j_{x}=0}^{\infty} \int\limits_{n_{y}=0}^{\infty} \int\limits_{v_x=0}^{1}  {\left(2 \, v_{n_{x}} - 1\right)}\, G'\left(\widehat{j_{x} + v_{n_{x}}}, n_{y}\right) {d v_{n_{x}}} {d n_{y}}} \, + \\
  + \,\sum\limits_{j_{y}=0}^{\infty} \sum\limits_{j_{x}=0}^{\infty} \int\limits_{0}^{1} \int\limits_{0}^{1} {\left(v_{y} - \frac{1}{2}\right)} {\left(v_{x} - \frac{1}{2}\right)} \, G''\left(\widehat{j_{x} + v_{x}}, \widehat{j_{y} + v_{y}}\right){d v_{x}}{d v_{y}}
 \end{array}
@@ -925,11 +933,9 @@ G\left(n_x, n_y\right) d{n_x} d{n_y}  =
 % \begin{multicols}{2}
 
     Casimir in his original work has provided his formula in assumption when
-as \(a\,k_m\,»\,1\). But now we can investigate how
+as \(a\,k_m\,>>\,1\). But now we can investigate how the expression (\ref{eq:9}) will depends on \(a k_m\)
 
-\(\sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y}\)
-
-will depends on \(a k_m\)
+%\(\sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y}\)
 
 \noindent
     \begin{center}
@@ -979,12 +985,12 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 % 6 & -0.012436017530558603 & 2.3732800946523056e-05 & 66 \\
 6 & -0.0124360 & 2.37328e-05 & 66 \\
 
-\hline
-\end{tabular}
-\begin{tabular}{ | l | c | c | c | }
-\hline
-$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
-\hline
+%\hline
+%\end{tabular}
+%\begin{tabular}{ | l | c | c | c | }
+%\hline
+%$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
+%\hline
 
 
 
@@ -1188,27 +1194,35 @@ f\left(\frac{\pi\,n}{a\,k_m}\right)\,dn\,{\frac{n}{\sqrt{n^{2} - n_{xy}^{2}}}}
     Because in this form that integral can be taken analytically. So we have
 the following integrand:
 
-    \[F\left(n, n_{xy}, ak_m\right) = \frac{n^{2}}{{\left(\frac{\pi^{4} n^{4}}{\mathit{ak}_{m}^{4}} + 1\right)} \sqrt{n^{2} - n_{\mathit{xy}}^{2}}}\]
+\begin{equation} \label{eq:A5}
+F\left(n, n_{xy}, ak_m\right) = \frac{n^{2}}{{\left(\frac{\pi^{4} n^{4}}{\mathit{ak}_{m}^{4}} + 1\right)} \sqrt{n^{2} - n_{\mathit{xy}}^{2}}}
+\end{equation}
 
     and the following limits of integration by \(n\): \(n_a = n_{xy}\),
 \(n_b = \infty\)
 
     Let's use Abel substitution:
 
-\[t = \left(\sqrt{n^2-n_{xy}^2}\right)' \,\,\,\,\,\,\,\,\,\,\, t = \frac{n}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}}\]
+\begin{equation}
+t = \left(\sqrt{n^2-n_{xy}^2}\right)' \,\,\,\,\,\,\,\,\,\,\, t = \frac{n}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}}
+\end{equation}
 
     and the following limits of integration by \(t\): \(t_a = +\infty\),
 \(t_b = +1\)
 
     Let's write dependency of \(n\) from \(t\)
 
-    \[n^{2} = \frac{n_{\mathit{xy}}^{2} t^{2}}{t^{2} - 1} \,\,\,\,\,\,\,\,\, n = n_{\mathit{xy}} \sqrt{\frac{t^{2}}{t^{2} - 1}}\]
+\begin{equation}
+n^{2} = \frac{n_{\mathit{xy}}^{2} t^{2}}{t^{2} - 1} \,\,\,\,\,\,\,\,\, n = n_{\mathit{xy}} \sqrt{\frac{t^{2}}{t^{2} - 1}}
+\end{equation}
 
     and derivatives:
 
     \[\frac{dt}{dn} = \frac{d}{dn} \left( \frac{n}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}} \right)= -\frac{n^{2}}{{\left(n^{2} - n_{\mathit{xy}}^{2}\right)}^{\frac{3}{2}}} + \frac{1}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}}}\]
 
-    \[\frac{dn}{dt} = -\frac{n^{4} - 2 \, n^{2} n_{\mathit{xy}}^{2} + n_{\mathit{xy}}^{4}}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}} n_{\mathit{xy}}^{2}}\]
+\begin{equation}
+\frac{dn}{dt} = -\frac{n^{4} - 2 \, n^{2} n_{\mathit{xy}}^{2} + n_{\mathit{xy}}^{4}}{\sqrt{n^{2} - n_{\mathit{xy}}^{2}} n_{\mathit{xy}}^{2}}
+\end{equation}
 
     Now we can rewrite the integrand making it depending from \(t\)
 
@@ -1245,7 +1259,7 @@ numerator will be:
 
 and its solution
 
-\[\beta_{1} = \frac{\mathit{ak}_{m}^{2}}{\sqrt{\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}}}\], \[\alpha_{1} = \sqrt{2} \mathit{ak}_{m} \sqrt{\frac{\mathit{ak}_{m}^{2} + \sqrt{\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}}}{\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}}}\]
+\begin{equation}\beta_{1} = \frac{\mathit{ak}_{m}^{2}}{\sqrt{\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}}}\end{equation}, \begin{equation}\alpha_{1} = \sqrt{2} \mathit{ak}_{m} \sqrt{\frac{\mathit{ak}_{m}^{2} + \sqrt{\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}}}{\pi^{4} n_{\mathit{xy}}^{4} + \mathit{ak}_{m}^{4}}}\end{equation}
 
     After above determined conversion the integrand can be written as:
 
@@ -1289,12 +1303,15 @@ calculation}}\label{appendix-b.-electromagnetic-pressure-calculation}
 
 \begin{multicols}{2}
 
+\setcounter{equation}{0}
+\renewcommand{\theequation}{B.\arabic{equation}}
+
     Let's consider rectangular resonator with size \(a \times b \times h\).
 
     \textbf{In electric mode}
 
-\(\nabla\,\vec{E} + \frac{\omega^2}{c^2}\,\vec{E} = 0\) we have the
-following
+\begin{equation}\nabla\,\vec{E} + \frac{\omega^2}{c^2}\,\vec{E} = 0\end{equation} we have the
+following solution
 
 \[E_{x} = A_{x} \cos\left(\frac{\pi n_{x} x}{a}\right) \sin\left(\frac{\pi n_{y} y}{b}\right) \sin\left(k_{z} z\right)\]
 \[E_{y} = A_{y} \cos\left(\frac{\pi n_{y} y}{b}\right) \sin\left(\frac{\pi n_{x} x}{a}\right) \sin\left(k_{z} z\right)\]
@@ -1324,7 +1341,7 @@ Field energy density
 \(\left(\int \frac{|\vec{E}|^2}{8 \pi}dV + \int \frac{|\vec{H}|^2}{8 \pi}dV\right)\big/{V}\)
 is
 
-    \[\frac{E}{V} = \frac{{A_{x}^{2} + A_{y}^{2} + A_{z}^{2}}}{32 \, \pi}\]
+\begin{equation}\frac{E}{V} = \frac{{A_{x}^{2} + A_{y}^{2} + A_{z}^{2}}}{32 \, \pi}\end{equation}
 
     Electromagnetic pressure
 \(\left({\int \frac {H_x^2+H_y^2}{8 \pi} dS}\right)\big/{S}\) on \(xy\)
@@ -1332,11 +1349,13 @@ plate is
 
 \end{multicols}
 
-    \[\frac{f_z}{S} = -\frac{2 \, \pi A_{x} A_{z} a b^{2} k_{z} n_{x} - \pi^{2} A_{z}^{2} b^{2} n_{x}^{2} + 2 \, \pi A_{y} A_{z} a^{2} b k_{z} n_{y} - \pi^{2} A_{z}^{2} a^{2} n_{y}^{2} - {\left(A_{x}^{2} + A_{y}^{2}\right)} a^{2} b^{2} k_{z}^{2}}{32 \, {\left(\pi a^{2} b^{2} k_{z}^{2} + \pi^{3} b^{2} n_{x}^{2} + \pi^{3} a^{2} n_{y}^{2}\right)}}\]
+\renewcommand{\theequation}{B.\arabic{equation}}
+
+\begin{equation}\frac{f_z}{S} = -\frac{2 \, \pi A_{x} A_{z} a b^{2} k_{z} n_{x} - \pi^{2} A_{z}^{2} b^{2} n_{x}^{2} + 2 \, \pi A_{y} A_{z} a^{2} b k_{z} n_{y} - \pi^{2} A_{z}^{2} a^{2} n_{y}^{2} - {\left(A_{x}^{2} + A_{y}^{2}\right)} a^{2} b^{2} k_{z}^{2}}{32 \, {\left(\pi a^{2} b^{2} k_{z}^{2} + \pi^{3} b^{2} n_{x}^{2} + \pi^{3} a^{2} n_{y}^{2}\right)}}\end{equation}
 
     Their relation \(\frac{f_z/S}{E/V}\) is
 
-    \[\frac{f_z/S}{E/V} = \frac{A_{x}^{2} a^{2} b^{2} k_{z}^{2} + A_{y}^{2} a^{2} b^{2} k_{z}^{2} - 2 \, \pi A_{x} A_{z} a b^{2} k_{z} n_{x} + \pi^{2} A_{z}^{2} b^{2} n_{x}^{2} - 2 \, \pi A_{y} A_{z} a^{2} b k_{z} n_{y} + \pi^{2} A_{z}^{2} a^{2} n_{y}^{2}}{{\left(a^{2} b^{2} k_{z}^{2} + \pi^{2} b^{2} n_{x}^{2} + \pi^{2} a^{2} n_{y}^{2}\right)} {\left(A_{x}^{2} + A_{y}^{2} + A_{z}^{2}\right)}}\]
+\begin{equation}\frac{f_z/S}{E/V} = \frac{A_{x}^{2} a^{2} b^{2} k_{z}^{2} + A_{y}^{2} a^{2} b^{2} k_{z}^{2} - 2 \, \pi A_{x} A_{z} a b^{2} k_{z} n_{x} + \pi^{2} A_{z}^{2} b^{2} n_{x}^{2} - 2 \, \pi A_{y} A_{z} a^{2} b k_{z} n_{y} + \pi^{2} A_{z}^{2} a^{2} n_{y}^{2}}{{\left(a^{2} b^{2} k_{z}^{2} + \pi^{2} b^{2} n_{x}^{2} + \pi^{2} a^{2} n_{y}^{2}\right)} {\left(A_{x}^{2} + A_{y}^{2} + A_{z}^{2}\right)}}\end{equation}
 
 \begin{multicols}{2}
 
@@ -1353,7 +1372,7 @@ A_{y} = -\frac{A_{z} a^{2} b k_{z} n_{y}}{\pi b^{2} n_{x}^{2} + \pi a^{2} n_{y}^
     Relation of electromagnetic pressure per field energy density in this
 case is equal to \(1\)
 
-\[\frac{f_z/S}{E/V} = 1\]
+\begin{equation}\frac{f_z/S}{E/V} = 1\end{equation}
 
     Considering solution with wave propagation in \(x\) direction we have
 \(H_x = 0\) which give:
@@ -1364,7 +1383,7 @@ A_{y} = -\frac{\pi^{2} A_{x} b n_{x} n_{y}}{a b^{2} k_{z}^{2} + \pi^{2} a n_{y}^
     Relation of electromagnetic pressure per field energy density in this
 case is
 
-\[\frac{f_z/S}{E/V} = \frac{b^{2} k_{z}^{2}}{b^{2} k_{z}^{2} + \pi^{2} n_{y}^{2}}\]
+\begin{equation}\frac{f_z/S}{E/V} = \frac{b^{2} k_{z}^{2}}{b^{2} k_{z}^{2} + \pi^{2} n_{y}^{2}}\end{equation}
 
     Considering solution with wave propagation in \(y\) direction
 \(H_y = 0\) is similar to it in \(x\) direction
@@ -1372,11 +1391,11 @@ case is
 \[A_{x} = -\frac{\pi^{2} A_{y} a n_{x} n_{y}}{a^{2} b k_{z}^{2} + \pi^{2} b n_{x}^{2}},
 A_{z} = -\frac{\pi A_{y} a^{2} k_{z} n_{y}}{a^{2} b k_{z}^{2} + \pi^{2} b n_{x}^{2}}\]
 
-\[\frac{f_z/S}{E/V} = \frac{a^{2} k_{z}^{2}}{a^{2} k_{z}^{2} + \pi^{2} n_{x}^{2}}\]
+\begin{equation}\frac{f_z/S}{E/V} = \frac{a^{2} k_{z}^{2}}{a^{2} k_{z}^{2} + \pi^{2} n_{x}^{2}}\end{equation}
 
     \textbf{In magnetic mode}
 
-\(\nabla\,\vec{H} + \frac{\omega^2}{c^2}\,\vec{H} = 0\) we have the
+\begin{equation}\nabla\,\vec{H} + \frac{\omega^2}{c^2}\,\vec{H} = 0\end{equation} we have the
 following solution
 
     \[H_{x} = B_{1} \cos\left(\frac{\pi n_{y} y}{b}\right) \cos\left(k_{z} z\right) \sin\left(\frac{\pi n_{x} x}{a}\right)\]

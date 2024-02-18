@@ -1491,6 +1491,9 @@ approach}}\label{appendix-c.-hamiltonian-mechanics-approach}
 
 % \begin{multicols}{2}
 
+\setcounter{equation}{0}
+\renewcommand{\theequation}{C.\arabic{equation}}
+
     Let us consider a cubic cavity of volume \(L^3\) bounded by perfectly
 conducting walls and let a perfectly conducting square plate with side
 \(L\) be placed in this cavity parallel to the \(xy\) face and let us
@@ -1499,6 +1502,12 @@ consider the situation in which this plate is at a very large, say
 
 One side of this perfectly conducting square plate is a pure plane and
 other is covered by perfectly conducting honeycomb.
+
+\begin{figure}
+\includegraphics[width=0.42\textwidth]{honeycomb_box_H.png}
+\caption{}{\centering{\textbf{Fig.3.} Cubic cavity with a plate covered by honeycomb}}
+\label{fig:honeycomb_box_H}
+\end{figure}
 
 On both sided of the the plate expressions \(1\big/2\sum\,\hbar\omega\)
 where the summation extends over all possible resonance frequencies of
@@ -1512,6 +1521,8 @@ opposite sides,
 will be shown to have a well defined value and this value will be
 interpreted as the interaction between the plate and the both \(xy\)
 faces.
+
+
 
     The possible vibrations of the cavities defined by
 
@@ -1537,7 +1548,11 @@ where \(n_x\). \(n_y\), \(n_z\) are positive integers;
 
 \(k = \sqrt{k_x^2+k_y^2+k_z^2} = \sqrt{\kappa^2+k_z^2}\).
 
-\(E = \frac{1}{2}\sum\,\hbar\omega = \hbar\,c\frac{1}{2}\sum\limits_{n_x}^{}\sum\limits_{n_y}^{}\sum\limits_{n_z}^{}k\)
+Let us write the expression for the sum of zero-point energy in general form
+
+\begin{equation}
+E = \frac{1}{2}\sum\,\hbar\omega = \hbar\,c\frac{1}{2}\sum\limits_{n_x}^{}\sum\limits_{n_y}^{}\sum\limits_{n_z}^{}k
+\end{equation}
 
     To every \(k_x\), \(k_y\), \(k_z\) correspond two standing waves unless
 one of the \(n_i\) is zero, when there is only one.
@@ -1560,20 +1575,25 @@ Thus we find
     \(\frac{E}{S} = \frac{\hbar c}{a^2}\int\limits_{0}^{\infty}\left[{\frac{\sqrt{k_z^2}}{2}+\sum\limits_{n_x=1}^{\infty}\sum\limits_{n_y=1}^{\infty}\sqrt{\frac{n_x^2\pi^2}{a^2}+\frac{n_y^2\pi^2}{a^2}+k_z^2}}\right]\frac{l}{\pi}dk_z\)
 % (small cavity, one honeycomb cell),
 
-    \(\frac{E}{S} = \frac{\hbar c}{a^2 \pi}\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\int\limits_{0}^{\infty}\sqrt{\frac{n_x^2\pi^2}{a^2}+\frac{n_y^2\pi^2}{a^2}+k_z^2} dk_z\right]\)
+\begin{equation}
+\begin{array}{rl}
+\frac{E}{S} = \frac{\hbar c l}{a^2 \pi} & \cdot  \sum\limits_{n_x=(0)1}^{\infty}  \\
+\sum\limits_{n_y=(0)1}^{\infty}&\Bigg[\int\limits_{0}^{\infty}\sqrt{\frac{n_x^2\pi^2}{a^2}+\frac{n_y^2\pi^2}{a^2}+k_z^2}\,dk_z\Bigg]
+\end{array}
+\end{equation}
 % (small cavity, one honeycomb cell).
 
     And in case of large cavity for \(k_x\), \(k_y\) this is without
 importance since for very large \(L\) we may regard \(k_x\), \(k_y\) as
 continuous variables. Thus we find
-
-\(\begin{array}{l}
+\noindent
+\begin{equation}\begin{array}{l}
 \begin{array}{ll}
 \sum\frac{\hbar\omega}{2} = \frac{\hbar c}{2}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\Bigg[\sqrt{k_x^2+k_y^2}\,+ & \,\\
 \end{array} \\
 \begin{array}{rr}
-\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\, &+\, 2\sum\limits_{n_z=1}^{\infty}\sqrt{\frac{n_z^2 \pi^2}{(L-l)^2}+k_x^2+k_y^2}\Bigg]d{n_x}d{n_y}\end{array}
-\end{array}\)
+\,\,\,\,\,\,\,\,\,\,\,+ & 2\sum\limits_{n_z=1}^{\infty}\sqrt{\frac{n_z^2 \pi^2}{(L-l)^2}+k_x^2+k_y^2}\Bigg]d{n_x}d{n_y}\end{array}
+\end{array}\end{equation}
 
 %\(\sum\frac{\hbar\omega}{2} = \frac{\hbar c}{2}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[{\sqrt{k_x^2+k_y^2}+ \\
 %2\sum\limits_{n_z=1}^{\infty}\sqrt{\frac{n_z^2 \pi^2}{(L-l)^2}+k_x^2+k_y^2}}\right]d{n_x}d{n_y}\)
@@ -1581,11 +1601,11 @@ continuous variables. Thus we find
 
 For very large \(L-l\) also this last summation may be replaced by an
 integral and it is therefore easily seen that energy is given by
-
-\(\frac{1}{2}\sum\,\hbar\omega = \hbar\,c\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,d{n_x}\,d{n_y}\,d{n_z}\)
+\noindent
+\begin{equation}\sum\frac{\hbar\omega}{2} = \hbar\,c\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,d{n_x}\,d{n_y}\,d{n_z}\end{equation}
 % (large cavity between pure plane and \(xy\) face),
 
-\(dn_x = \frac{L}{\pi}\,dk_x\), \(dn_y = \frac{L}{\pi}\,dk_y\),
+where \(dn_x = \frac{L}{\pi}\,dk_x\), \(dn_y = \frac{L}{\pi}\,dk_y\),
 \(dn_z = \frac{L-l}{\pi}\,dk_z\).
 
     Now we can find the specific (per area) energy density \(E/S\), where
@@ -1611,7 +1631,9 @@ given by
 
 \[\begin{array}{lr}
 % \frac{\left<0|\hat{\mathcal{H}}|0\right>}{S} =
-\begin{array}{c}\frac{\hbar\,c}{a^2\,\pi}\Bigg\{l\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] + \\
+\begin{array}{l}
+\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S} = \frac{\hbar\,c}{a^2\,\pi} \cdot\\
+\cdot \Bigg\{l\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] + \\
 (L-l)\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\Bigg\}
 \end{array}\end{array}\]
 
@@ -1625,9 +1647,9 @@ is:
 %\begin{array}{c}\frac{\hbar\,c}{a^2\,\pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] - \\
 %\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\Bigg\}\end{array}\end{array}\)
 
-
-\(\frac{F}{S} = \frac{\hbar\,c}{a^2\,\pi}\left\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] -
-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\right\}\)
+\noindent
+\begin{equation}\frac{F}{S} = \frac{\hbar\,c}{a^2\,\pi}\left\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] -
+\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\right\}\end{equation}
 
 \begin{multicols}{2}
 
@@ -1654,6 +1676,9 @@ honeycomb basing on the Antipin's formula for the metal
 angle}}\label{appendix-d.-the-derivation-of-the-thrust-formula-for-the-honeycomb-basing-on-the-antipin-formula-for-the-thrust-of-a-metal-angle}
 \vspace{-3.5mm}
 
+\setcounter{equation}{0}
+\renewcommand{\theequation}{D.\arabic{equation}}
+
     Antipin \cite{Antipin2012} gives an estimated calculation of the thrust
 force of the ``corner'' using the Casimir formula, ``with the most
 general and natural approximations known as PFA (Proximity Force
@@ -1661,32 +1686,33 @@ Approximation), or PAA (Pairwise Additive Approximation), calculation
 method \cite{Intravaia2013}, \cite{Rodriguez2011}".
 
 Casimir's interaction energy is given by
-\[\delta\,E/L^2 = \hbar\,c\frac{\pi^2}{4\,a^3}\left\{\frac{-4}{24\times30}\right\}\]
+\noindent
+\begin{equation}\delta\,E/L^2 = \hbar\,c\frac{\pi^2}{4\,a^3}\left\{\frac{-4}{24\times30}\right\}\end{equation}
 
 Casimir's force
-\[F_{c} = \hbar\,c\frac{-3\,\pi^2}{4\,a^4}\left\{\frac{-4}{24\times30}\right\}\]
+\noindent
+\begin{equation}F_{c} = \hbar\,c\frac{-3\,\pi^2}{4\,a^4}\left\{\frac{-4}{24\times30}\right\}\end{equation}
 
+Driving force of the metal corner
+\noindent
+\begin{equation}F_{thrust} = 2 \int F_{c} \, sin\, \alpha \,dS, \,\,\,\,\,\,\, dS = b\,dz\end{equation}
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=0.42\textwidth]{Antipins_angle_en.png}
-\caption{}{\centering{\textbf{Fig.3.} Antipin's angle}}
+\caption{}{\centering{\textbf{Fig.4.} Antipin's angle}}
 \end{center}
 \label{fig:Antipins_angle}
 \end{figure}
 
-Driving force of the metal corner
-
-\[F_{thrust} = 2 \int F_{c} \, sin\, \alpha \,dS, \,\,\,\,\,\,\, dS = b\,dz\]
-
-
-\[F_{thrust} = 2\, \frac{-3\,\pi^2\hbar c b}{4}\int\limits_{z_{min}}^{z_{max}} \left\{\frac{-4}{24\times30}\right\}\frac{sin\, \alpha}{\left(a\left(z\right)\right)^4}dz\]
+\noindent
+\begin{equation}F_{thrust} = 2\, \frac{-3\,\pi^2\hbar c b}{4}\int\limits_{z_{min}}^{z_{max}} \left\{\frac{-4}{24\times30}\right\}\frac{sin\, \alpha\,dz}{\left(a\left(z\right)\right)^4}\end{equation}
 
 Let's make a substitution
 
 \[a\left(z\right) = 2\,z\,tg\, \alpha\]
 
-\[F_{thrust} = 2\, \frac{-3\,\pi^2\hbar c b}{4}\int\limits_{z_{min}}^{z_{max}} \left\{\frac{-4}{24\times30}\right\}\frac{sin\, \alpha}{\left(2\,z\,tg \alpha\right)^4}dz\]
+\[F_{thrust} = 2\, \frac{-3\,\pi^2\hbar c b}{4}\int\limits_{z_{min}}^{z_{max}} \left\{\frac{-4}{24\times30}\right\}\frac{sin\, \alpha\,dz}{\left(2\,z\,tg \alpha\right)^4}\]
 
 \[F_{thrust} = 2\, \frac{-3\,\pi^2\hbar c b}{4} \frac{sin\, \alpha}{\left(2\,tg\, \alpha\right)^4} \int\limits_{z_{min}}^{z_{max}} \left\{\frac{-4}{24\times30}\right\} \frac{dz}{z^4}\]
 
@@ -1698,13 +1724,14 @@ Let's make a substitution
 
 \[F_{thrust} = -2\cdot3\, \frac{\pi^2\hbar c b}{240} \frac{cos\, \alpha}{2^4\left(sin\, \alpha\right)^4} \left(\frac{1}{l^3}\right)\Bigg\rvert_{\,l_{min}}^{\,l_{max}} \]
 
-\[F_{thrust} = \frac{\pi^2\hbar c b}{640} \frac{cos\, \alpha}{\left(sin\, \alpha\right)^4} \left(\frac{1}{l_{min}^3} - \frac{1}{l_{max}^3}\right)\]
+\noindent
+\begin{equation}F_{thrust} = \frac{\pi^2\hbar c b}{640} \frac{cos\, \alpha}{\left(sin\, \alpha\right)^4} \left(\frac{1}{l_{min}^3} - \frac{1}{l_{max}^3}\right)\end{equation}
 
 Thus, the formula for the thrust of the corner is obtained basing on the
 length of its wings.
 
 Antipin indicates that the value of \(l_{min}\) is limited from below by
-the "cutoff" level, which is determined technologically:
+the {\glqq}cutoff{\grqq} level, which is determined technologically:
 
 \begin{itemize}
 \item
@@ -1731,31 +1758,29 @@ Indeed, a rectangular honeycomb with a cell size of \(b \times b\) and
 with the same edge height equal to \(b = l_{max}\) can be imagined as a
 combination of four corners with a half opening angle equal to
 \(\alpha = {\pi}/{4}\). Driving force of the every corner
-
-\[F_{thrust} = - \frac{\pi^2\hbar c l_{max}}{640} 2\sqrt{2} \left(\frac{1}{l_{min}^3} - \frac{1}{l_{max}^3}\right)\]
+\noindent
+\begin{equation}F_{thrust} = - \frac{\pi^2\hbar c l_{max}}{640} 2\sqrt{2} \left(\frac{1}{l_{min}^3} - \frac{1}{l_{max}^3}\right)\end{equation}
 
 directed along the bisector of each angle must be multiplied by
 \(sin\left({\pi}/{4}\right)={\sqrt{2}}\big/{2}\) and, when multiplied by
-4, the thrust of one square "opened" cell will be equal to
-
-\[F_{thrust} = - \frac{\pi^2\hbar c b}{640} 2\sqrt{2}\cdot4\,\frac{\sqrt{2}}{2} \left(\frac{1}{l_{min}^3} - \frac{1}{b^3}\right)\]
-
-\[F_{thrust} = - \frac{\pi^2\hbar c b}{640} 2\cdot4\,\left(\frac{1}{l_{min}^3} - \frac{1}{b^3}\right)\]
-
-\[F_{thrust} = - \frac{\pi^2\hbar c b}{80} \left(\frac{1}{l_{min}^3} - \frac{1}{b^3}\right)\]
+4, the thrust of one square {\glqq}opened{\grqq} cell will be equal to
+%\[F_{thrust} = - \frac{\pi^2\hbar c b}{640} 2\sqrt{2}\cdot4\,\frac{\sqrt{2}}{2} \left(\frac{1}{l_{min}^3} - \frac{1}{b^3}\right)\]
+%\[F_{thrust} = - \frac{\pi^2\hbar c b}{640} 2\cdot4\,\left(\frac{1}{l_{min}^3} - \frac{1}{b^3}\right)\]
+\noindent
+\begin{equation}F_{thrust} = - \frac{\pi^2\hbar c b}{80} \left(\frac{1}{l_{min}^3} - \frac{1}{b^3}\right)\end{equation}
 
 So, the formula for the specific thrust of cells, obtained using the PFA
 (Proximity Force Approximation) method, or PAA (Pairwise Additive
 Approximation)
-
-\[\frac{F_{thrust}}{S} = - \frac{\pi^2\hbar c}{80\, b} \left(\frac{1}{l_{min}^3} - \frac{1}{b^3}\right)\]
+\noindent
+\begin{equation}\frac{F_{thrust}}{S} = - \frac{\pi^2\hbar c}{80\, b} \left(\frac{1}{l_{min}^3} - \frac{1}{b^3}\right)\end{equation}
 
 to some extent similar to the formula for the magnitude of the
 two-dimensional Casimir effect on honeycombs, produced in the first part
 of this work: at least the value of the exponent in the denominator is
 the same.
-
-\[\delta\,\frac{E}{V} \approx R\left(b \cdot k_m\right)\,\frac{\hbar\,c\,\pi}{b^4}\]
+\noindent
+\begin{equation}\delta\,\frac{E}{V} \approx R\left(b \cdot k_m\right)\,\frac{\hbar\,c\,\pi}{b^4}\end{equation}
 
 It should be noted here that this formula is obtained without taking
 into account the finiteness of the cell edge height (in other words, in

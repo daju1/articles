@@ -587,9 +587,13 @@ Maclaurin formula twice on \(n_x\) and on \(n_y\). Starting from the following f
 \end{array}
 \end{array}\end{equation},
 
-\({\displaystyle P_{k}(x)=B_{k}\left(x-\lfloor x\rfloor \right),}\)
+\begin{equation} \label{eq:8}
+{\displaystyle P_{k}(x)=B_{k}\left(x-\lfloor x\rfloor \right),}
+\end{equation}
 
-\({\displaystyle R_{p}=(-1)^{p+1}\int_{a}^{b}f^{(p)}(x){\frac {P_{p}(x)}{p!}}\,dx.}\)
+\begin{equation} \label{eq:9}
+{\displaystyle R_{p}=(-1)^{p+1}\int_{a}^{b}f^{(p)}(x){\frac {P_{p}(x)}{p!}}\,dx.}
+\end{equation}
 
 or better since we are dealing with a mathematically very complex
 problem of integration that is rather difficult, often oscillating and
@@ -598,7 +602,9 @@ argument due to the presence of the multiplier \((x-\lfloor x\rfloor )\)
 of the function, we will use the fact that the remainder term can also
 be expressed in the form:
 
-\({\displaystyle R_{p}=(-1)^{p+1}\sum_{j=a}^{b-1} \int _{0}^{1}f^{(p)}(v+j){\frac {B_{p}(v)}{p!}}\,dv.}\)
+\begin{equation} \label{eq:10}
+{\displaystyle R_{p}=(-1)^{p+1}\sum_{j=a}^{b-1} \int _{0}^{1}f^{(p)}(v+j){\frac {B_{p}(v)}{p!}}\,dv.}
+\end{equation}
 
 we see that it consists of 4 terms:
 
@@ -621,7 +627,7 @@ and the remainder term
 When applying it to \(G\) twice on \(n_x\) and on \(n_y\) we should have
 the following terms which can be represented in the table form:
 
-    \begin{equation} \label{eq:8}
+    \begin{equation} \label{eq:11}
 \begin{array}{cccc}
  \int\limits_{n_y}^{} \int\limits_{n_x}^{} G  &  \int\limits_{n_y}^{} \underset{n_x}{H_{\sum}}\,G  &  \int\limits_{n_y}^{}{\sum\limits_{n_x}^{}}^{B}\,G  &  \int\limits_{n_y}^{}\,\underset{n_x}{R_{p}}\,G  \\
  \underset{n_y}{H_{\sum}}\,\int\limits_{n_x}^{}\,G &  \underset{n_y}{H_{\sum}}\,\underset{n_x}{H_{\sum}}\,G &  \underset{n_y}{H_{\sum}}\,{\sum\limits_{n_x}^{}}^{B}\,G &  \underset{n_y}{H_{\sum}}\,\underset{n_x}{R_{p}}\,G \\
@@ -735,7 +741,7 @@ G''\left(\widehat{j_{x} + v_{x}}, \widehat{j_{y} + v_{y}}\right)\,{d v_{x}}\,{d 
 
     Let's consider the expression
 
-\begin{equation} \label{eq:9}
+\begin{equation} \label{eq:12}
 \sum\limits_{n_x=\left(0\right)\,1}^{\infty}
 \sum\limits_{n_y=\left(0\right)\,1}^{\infty}
 G%\left(n_x, n_y\right)
@@ -748,7 +754,7 @@ G%\left(n_x, n_y\right)
 
     First we see, that
 
-\begin{equation} \label{eq:10}
+\begin{equation} \label{eq:13}
 \begin{array}{c}
     \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} {G\left(n_x, n_y\right)} = \\
 % \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \left( -\frac{1}{2}G\left(n_x, 0\right) + \sum\limits_{n_y=0}^{\infty}{G\left(n_x, n_y\right)} \right) = \\
@@ -826,7 +832,7 @@ G%\left(n_x, n_y\right)
 \end{array}
 \end{array}\)
 
-    So we can find expression (\ref{eq:9}) using the following summation:
+    So we can find expression (\ref{eq:12}) using the following summation:
 
 %\(\sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y}\)
 
@@ -839,7 +845,7 @@ G%\left(n_x, n_y\right)
 
     \(\begin{array}{llll}  \,&  \,&  + \int\limits_{n_y}^{}{\sum\limits_{n_x}^{}}^{B}\,G \\  \,&  \,&  + \underset{n_y}{H_{\sum}}\,{\sum\limits_{n_x}^{}}^{B}\,G \\  + {\sum\limits_{n_y}^{}}^{B}\,\int\limits_{n_x}^{}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,\underset{n_x}{H_{\sum}}\,G &  + {\sum\limits_{n_y}^{}}^{B}\,{\sum\limits_{n_x}^{}}^{B}\,G\\  \,&  \,&  - \frac{1}{2}{\sum\limits_{n_y}^{}}^{B}\,G \\  \,&  \,&  - \frac{1}{2}{\sum\limits_{n_x}^{}}^{B}\,G \\ \end{array}\)
 
-    are 0 in sum. And so any possible non zero result of expression (\ref{eq:9}) should be related with
+    are 0 in sum. And so any possible non zero result of expression (\ref{eq:12}) should be related with
 remainder part:
 
 \noindent
@@ -933,7 +939,7 @@ G%\left(n_x, n_y\right)
 % \begin{multicols}{2}
 
     Casimir in his original work has provided his formula in assumption when
-as \(a\,k_m\,>>\,1\). But now we can investigate how the expression (\ref{eq:9}) will depends on \(a k_m\)
+as \(a\,k_m\,>>\,1\). But now we can investigate how the expression (\ref{eq:12}) will depends on \(a k_m\)
 
 %\(\sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y}\)
 

@@ -1,8 +1,8 @@
-\documentclass[twoside, 10pt]{article}
+\documentclass[twoside, 10pt, ptm]{article}
 
 \usepackage[T2A]{fontenc}   % Standard package for selecting font encodings
 \usepackage[utf8]{inputenc} % Accept different input encodings
-\usepackage[english, ukrainian]{babel}
+\usepackage[ukrainian, english]{babel}
 
 \usepackage{indentfirst}    % Indent first paragraph after section header
 
@@ -25,15 +25,14 @@
 
 \def\licenseref{http://creativecommons.org/licenses/by/4.0/}
 
+\newcommand{\MyTitle}{\expandafter\MakeUppercase\expandafter{\mytitle}}
+
 \fancypagestyle{firstpagestyle}{
 % Definition of the header
-\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\headrulewidth}{0.6pt} % top horizontal rule
+% Arial 9.5
 \fancyhead[C]{\ukrvisnyk \\ \envisnyk}
-
-
-
 \renewcommand{\footrulewidth}{0.6pt} % bottom horizontal rule
-
 \fancyfoot[L]{${}^{\copyright}$ \myname}
 \fancyfoot[R]{Open Access. This article is licensed under a Creative Commons Attribution 4.0 \\
 \href{\licenseref}{\licenseref}}
@@ -97,7 +96,6 @@
     \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
     \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
                                 % normalem makes italics be italics, not underlines
-    \usepackage{mathrsfs}
     
 \usepackage{wrapfig}
 \usepackage[rightcaption]{sidecap}
@@ -117,7 +115,7 @@
     
     % Document parameters
     % Document title
-    \title{\textbf{\mytitle.}}
+    \title{\textbf{\MyTitle.}}
     \date{} % clear date
 
     % Exact colors from NB
@@ -165,12 +163,18 @@ tmargin=1.2cm,bmargin=3cm,lmargin=2cm,rmargin=2cm}
 
 %... then configure it.
 \fancyhead{} % clear all header fields
-\fancyhead[CE]{{\it \mytitle.}}
-\fancyhead[CO]{\myname}
 
-\renewcommand{\headrulewidth}{0pt} % remove the top horizontal rule
+% Arial 9.5
+\fancyhead[CE]{{\it \mytitle.}}
+
+% Times New Roman 11
+\fancyhead[CO]{{\fontfamily{ptm} \it \selectfont \myname}}
+
+\renewcommand{\headrulewidth}{0.6pt} % remove the top horizontal rule
 
 \fancyfoot{} % clear all footer fields
+
+% Arial 9.0
 \fancyfoot[LE,RO]{\thepage}
 \fancyfoot[LO,RE]{{\envisnyk}\\{\ukrvisnyk}}
 \fancyfoot[CO,CE]{}
@@ -203,9 +207,9 @@ PACS numbers: 81.35. +k \\
 
 
 
-\section*{\centering{\textbf{\mytitle}}}
+\section*{\centering \MyTitle}
 
-\centerline{{\myname \,\orcidlink{\myorcidlink} }}
+\centerline{\Large{\myname \,\orcidlink{\myorcidlink} }}
 \vspace{3mm}
 \centerline{\textit{\myworkplace}}
 \centerline{\textit{E-mail: \href{mailto:\myemail}{\myemail}}}
@@ -1630,7 +1634,7 @@ given by
 \end{array}\end{array}\]
 
 and interaction
-\(\frac{F}{S} = \frac{d}{dl} \,\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S}\)
+\(\frac{F}{S} = -\frac{\partial }{\partial z} \,\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S} = \frac{\partial}{\partial l} \,\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S}\)
 is
 
 \end{multicols}
@@ -1790,7 +1794,6 @@ panel produced from acute-angled V-shaped angles, but producing
 panels from honeycombs seems to be technologically simpler than
 from V-shaped angles.
 
-
     \begin{thebibliography}{99}
 
 \bibitem{Casimir1948}
@@ -1810,7 +1813,7 @@ https://doi.org/10.1103/PhysRev.174.1764
 \bibitem{Bikyalis1968}
 \textit{A.Bikyalis (1968). Euler-Maclaurin summation formula for a function of many variables.  Lietuvos matematikos rinkinys. p.681
 %https://www.journals.vu.lt/LMJ/article/view/20600/19701
-http://dx.doi.org/10.15388/LMJ.1968.20600
+http://doi.org/10.15388/LMJ.1968.20600
 }
 
 

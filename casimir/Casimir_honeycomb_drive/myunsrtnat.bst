@@ -205,10 +205,10 @@ FUNCTION {field.or.null}
 }
 
 FUNCTION {emphasize}
-{ duplicate$ empty$
-    { pop$ "" }
-    { "\emph{" swap$ * "}" * }
-  if$
+{% duplicate$ empty$
+%    { pop$ "" }
+%    { "\emph{" swap$ * "}" * }
+%  if$
 }
 
 INTEGERS { nameptr namesleft numnames }
@@ -250,10 +250,16 @@ FUNCTION {format.key}
 }
 
 FUNCTION {format.authors}
-{ author empty$
-    { "" }
-    { author format.names }
+{ author "author" format.names
+  duplicate$ empty$ 'skip$
+    { collaboration "collaboration" bibinfo.check
+      duplicate$ empty$ 'skip$
+        { " (" swap$ * ")" * }
+      if$
+      *
+    }
   if$
+  "author" 'bibfield :=
 }
 
 FUNCTION {format.editors}
@@ -285,7 +291,7 @@ FUNCTION {format.issn}
 FUNCTION {format.url}
 { url empty$
     { "" }
-    { new.block "URL \url{" url * "}" * }
+    { new.block "\url{" url * "}" * }
   if$
 }
 
@@ -299,7 +305,7 @@ FUNCTION {format.doi}
 FUNCTION {format.title}
 { title empty$
     { "" }
-    { title "t" change.case$ }
+ %   { title "t" change.case$ }
   if$
 }
 
@@ -414,6 +420,17 @@ FUNCTION {n.dashify}
   while$
 }
 
+FUNCTION {date.encapsulate}
+{
+  duplicate$ empty$
+    'skip$
+    {
+      before.all 'output.state :=
+      " (" swap$ * ")" *
+    }
+  if$
+}
+
 FUNCTION {format.date}
 { year duplicate$ empty$
     { "empty year in " cite$ * warning$
@@ -427,6 +444,7 @@ FUNCTION {format.date}
     }
   if$
   extra.label *
+  date.encapsulate
 }
 
 FUNCTION {format.btitle}

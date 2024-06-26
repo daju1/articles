@@ -21,18 +21,28 @@
 
 \def\myfilename{Casimir_honeycomb_drive}
 \def\myname{A. Drozdov}
+\def\mynameukr{А. Дроздов}
 \def\mytitle{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate}
+\def\mytitleukr{Стільниковий рушій Казимира: про силу, що діє на соти на пластині, які ідеально проводять}
 \def\myissn{2222-5617}
 \def\mydoi{10.26565/2222-5617-2024--}
 \def\myemail{alexey.drozdov.07@gmail.com}
 \def\ukrvisnyk{Вісник ХНУ імені В.~Н.~Каразіна, серія «Фізика», вип. 40, p.  (2024)}
 \def\envisnyk{The Journal of V.~N.~Karazin Kharkiv National University. Series “Physics” Iss. 40, p. (2024)}
 \def\myworkplace{V.~N.~Karazin Kharkiv National University, 61022, 4 Svoboda Sq., Kharkiv, Ukraine}
+\def\myworkplaceukr{Харківський національний університет імені В.~Н.~Каразіна, майдан Свободи, 4, 61022 Харків, Україна}
 \def\myorcidlink{0009-0004-1386-4534}
+
+\def\myreceived{Received on October 18, 2023. Reviewed on November 16, 2023.}
+\def\myaccepted{Accepted for publication on June 18, 2024.}
+\def\myreceivedukr{Надійшла до редакції 18 жовтня 2023 р. Переглянуто 16 листопада 2023.}
+\def\myacceptedukr{Прийнято до друку on 18 червня 2024 р.}
+
 
 \def\licenseref{http://creativecommons.org/licenses/by/4.0/}
 
 \newcommand{\MyTitle}{\expandafter\MakeUppercase\expandafter{\mytitle}}
+\newcommand{\MyTitleUkr}{\expandafter\MakeUppercase\expandafter{\mytitleukr}}
 
 \fancypagestyle{firstpagestyle}{
 % Definition of the header
@@ -222,8 +232,8 @@ PACS numbers: 81.35. +k \\
 \centerline{\textit{E-mail: \href{mailto:\myemail}{\myemail}}}
 
 \vspace{3mm}
-\centerline{Received on April 17, 2023. Reviewed on May 10, 2023.}
-\centerline{Accepted for publication on May 22, 2023.}
+\centerline{\myreceived}
+\centerline{\myaccepted}
 
 \vspace{3.5mm}
 
@@ -241,6 +251,17 @@ For this purpose, it is necessary to grow nanocells on one of surfaces of a smoo
 As a result, it has been found that the formula for the force per unit and for the energy density
 difference per unit area is very similar to the formula of the classical Casimir effect,
 except for the value of the proportionality coefficient.
+
+The force applied to perfectly conducting honeycombs on a plate as a result of the
+difference in specific energy density on its different sides can be interpreted
+as the pressure of the zero-point electromagnetic oscillations.
+According to the formula presented in this work, for the gold nano-honeycomb
+with a size of about 2 microns the force should be equal to 8.55 dynes per square meter of the panel, which is quite
+an acceptable value for the practical use of the expected effect for satellite orbits correction.
+
+    Although the effect is small, an experimental confirmation
+could serve as a critical proof for the existence of Casimir's virtual quantum photons.
+
 
 %\end{abstract}
 
@@ -958,7 +979,11 @@ G%\left(n_x, n_y\right)
 %\(\sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y}\)
 
 \noindent
-    \begin{center}
+\begin{center}
+\begin{tabular}{ r }
+Table 1. The result of calculating the expression (\ref{eq:12}).
+\end{tabular}
+
 \begin{tabular}{ | l | c | c | c | }
 \hline
 $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
@@ -1005,14 +1030,15 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 % 6 & -0.012436017530558603 & 2.3732800946523056e-05 & 66 \\
 6 & -0.0124360 & 2.37328e-05 & 66 \\
 
-%\hline
-%\end{tabular}
-%\begin{tabular}{ | l | c | c | c | }
-%\hline
-%$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
-%\hline
+
+\hline
+\end{tabular}
 
 
+\begin{tabular}{ | l | c | c | c | }
+\hline
+$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
+\hline
 
 
 % 7 & -0.014209420986523558 & 3.8533275062919475e-05 & 69 \\
@@ -1034,13 +1060,6 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 \end{array}
 \end{equation}
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=0.46\textwidth]{sum_sum_int_int_G_on_a_km.png}
-\end{center}
-\caption{}{\centering{\textbf{Fig.2.} How $\sum\limits_{\left(0\right)\,1}^{\infty}\,\,\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ depends on $a \cdot k_m$.}}
-\label{fig:G_on_a_km}
-\end{figure}
 
     According to our calculation we can see that
 
@@ -1074,6 +1093,13 @@ properties with well defined limit at \(a\,k_m\,»\,1\). So
 
     where \(a_{\mu}\) is a square side of honeycombs measured in microns.
 
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.46\textwidth]{sum_sum_int_int_G_on_a_km.png}
+\end{center}
+\caption{}{\centering{\textbf{Fig.2.} How $\sum\limits_{\left(0\right)\,1}^{\infty}\,\,\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ depends on $a \cdot k_m$.}}
+\label{fig:G_on_a_km}
+\end{figure}
 
     Can this difference of specific energy density
 \(\delta\left(E/V\right)\) be interpreted as the cause of the force
@@ -1958,39 +1984,47 @@ from V-shaped angles.
     % Add a bibliography block to the postdoc
     
 
-\section*{\centering \MyTitle}
+\section*{\centering \uppercase{\MyTitleUkr}}
 
-\centerline{\Large{\myname \,\orcidlink{\myorcidlink} }}
+\centerline{\Large{\mynameukr \,\orcidlink{\myorcidlink} }}
 \vspace{3mm}
-\centerline{\textit{\myworkplace}}
+\centerline{\textit{\myworkplaceukr}}
 \centerline{\textit{E-mail: \href{mailto:\myemail}{\myemail}}}
 
 \vspace{3mm}
-\centerline{Received on April 17, 2023. Reviewed on May 10, 2023.}
-\centerline{Accepted for publication on May 22, 2023.}
+\centerline{\myreceivedukr}
+\centerline{\myacceptedukr}
 
 \vspace{3.5mm}
 
-In this paper, the two-dimensional one-body Casimir effect is analyzed
-on the example of square-shaped nanocells.
-In the classical one-dimensional two-body Casimir effect a Casimir force
-appears between two plates as a difference of electromagnetic pressures
-of zero-point quantum-vacuum oscillation on different sides of each of the plates.
-The plates are pushed forwards each other by external quantum-vacuum oscillation fields,
-which in classical configuration exceed internal quantum-vacuum oscillation fields.
-It is possible to try to create a difference of electromagnetic pressures
-of quantum-vacuum oscillation on different sides of a single plate
-due to the difference of the geometry of vacuum resonators on different sides of the plate.
-For this purpose, it is necessary to grow nanocells on one of surfaces of a smooth metallic plate.
-As a result, it has been found that the formula for the force per unit and for the energy density
-difference per unit area is very similar to the formula of the classical Casimir effect,
-except for the value of the proportionality coefficient.
+У цій статті проаналізовано двовимірний ефект Казимира одного тіла
+на прикладі наносот квадратної форми.
+У класичному одновимірному двотіловому ефекті Казимира між двома пластинами виникає сила Казимира
+виникає між двома пластинами як різниця електромагнітних тисків
+нульового квантово-вакуумного коливання по різні боки кожної з пластин.
+Пластини штовхаються одна до одної зовнішніми полями квантово-вакуумних коливань,
+які в класичній конфігурації перевищують внутрішні поля квантово-вакуумних коливань.
+Можна спробувати створити різницю електромагнітних тисків
+квантово-вакуумних коливань по різні боки однієї пластини
+за рахунок різниці геометрії вакуумних резонаторів на різних сторонах пластини.
+Для цього необхідно виростити нанокомірки на одній з поверхонь гладкої металевої пластини.
+В результаті було виявлено, що формула для сили на одиницю і для густини енергії на одиницю площі
+на одиницю площі дуже схожа на формулу класичного ефекту Казимира,
+за винятком значення коефіцієнта пропорційності.
 
+Силу, прикладену до ідеально провідних сот на пластині в результаті
+різниці питомої густини енергії на різних її сторонах, можна інтерпретувати
+як тиск електромагнітних флуктуацій нульової точки.
+Згідно з формулою, представленою в цій роботі, для золотих наносот
+розміром близько 2 мкм сила має дорівнювати 8,55 дин на квадратний метр панелі, що є цілком
+прийнятним значенням для практичного використання очікуваного ефекту для корекції орбіт супутників.
+
+    Хоча ефект невеликий, експериментальне підтвердження
+могло б слугувати вирішальним доказом існування віртуальних квантових фотонів Казимира.
 %\end{abstract}
 
 \begin{keywords}
-Two dimensional one body Casimir effect, nanocells, nanohoneycomb, Casimir thrust
-\end{keywords}
+Двовимірний ефект Казимира одного тіла, нанокомірки, наносоти, тяга Казимира\end{keywords}
 
     
 \end{document}

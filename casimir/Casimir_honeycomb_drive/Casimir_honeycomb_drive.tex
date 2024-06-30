@@ -44,6 +44,10 @@
 
 \def\licenseref{http://creativecommons.org/licenses/by/4.0/}
 
+\def\myfirstpage{7}
+\def\myvspacebeforesubsection{-1.5mm}
+\def\myvspaceaftersubsection{-2.5mm}
+
 \newcommand{\MyTitle}{\expandafter\MakeUppercase\expandafter{\mytitle}}
 \newcommand{\MyTitleUkr}{\expandafter\MakeUppercase\expandafter{\mytitleukr}}
 
@@ -176,7 +180,7 @@ tmargin=1.2cm,bmargin=3cm,lmargin=2cm,rmargin=2cm}
 \begin{document}
 
 
-\setcounter{page}{5}
+\setcounter{page}{\myfirstpage}
 
 % Set the page style to "fancy"...
 \pagestyle{fancy}
@@ -279,8 +283,9 @@ Two dimensional one body Casimir effect, nanocells, nanohoneycomb, Casimir thrus
 
 \begin{multicols}{2}
 
+\vspace{\myvspacebeforesubsection}
     \subsection*{\centering{INTRODUCTION}}\label{introduction}
-\vspace{-3.5mm}
+\vspace{\myvspaceaftersubsection}
 
 The introduction of half-quanta in the context of
 black-body radiation by Planck in 1911 was fundamental for discovering the Casimir effect
@@ -316,9 +321,10 @@ configuration of perfectly conducting nanohoneycomb.
 %\label{fig:honeycomb_box_L}
 % \end{wrapfigure}
 
+\vspace{\myvspacebeforesubsection}
     \subsection*{\centering\uppercase{Two dimensional Casimir's
 approach}}\label{two-dimensional-casimirs-approach}
-\vspace{-3.5mm}
+\vspace{\myvspaceaftersubsection}
 
 % \begin{multicols}{2}
 
@@ -605,8 +611,9 @@ could be considered.
 
 % \end{multicols}
 
+\vspace{\myvspacebeforesubsection}
 \subsection*{\centering\uppercase{Euler-Maclaurin 2D formula}}\label{eulermaclaurin-2d-formula}
-\vspace{-3.5mm}
+\vspace{\myvspaceaftersubsection}
 
 % \begin{multicols}{2}
 
@@ -680,9 +687,10 @@ Euler-Maclaurin marix presented above is symmetric too.
 
 % \end{multicols}
 
+\vspace{\myvspacebeforesubsection}
     \subsection*{\centering\uppercase{Summary of Euler-Maclaurin
 2D}}\label{summary-of-eulermaclaurin-2d}
-\vspace{-3.5mm}
+\vspace{\myvspaceaftersubsection}
 
 % \begin{multicols}{2}
 
@@ -772,11 +780,9 @@ G''\left(\widehat{j_{x} + v_{x}}, \widehat{j_{y} + v_{y}}\right)\,{d v_{x}}\,{d 
 
 % \end{multicols}
 
+\vspace{\myvspacebeforesubsection}
     \subsection*{\centering{\uppercase{A way \\ of calculating~}\(\delta\left(E/V\right)\)}}\label{a-way-of-calculating-deltaleftevright}
-
-%    \section*{\centering{\(\delta\left(E/V\right)\) \uppercase{calculating way}}}\label{a-way-of-calculating-deltaleftevright}
-
-\vspace{-3.5mm}
+\vspace{\myvspaceaftersubsection}
 
 % \begin{multicols}{2}
 
@@ -970,8 +976,9 @@ G%\left(n_x, n_y\right)
 
 % \end{multicols}
 
+\vspace{\myvspacebeforesubsection}
     \subsection*{\centering{\uppercase{How} \(\delta\left(E/V\right)\) \\ \uppercase{depends on} \(a k_m\) ?}}\label{how-deltaleftevright-depends-on-a-k_m}
-\vspace{-3.5mm}
+\vspace{\myvspaceaftersubsection}
 
 % \begin{multicols}{2}
 
@@ -1033,14 +1040,14 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 6 & -0.0124360 & 2.37328e-05 & 66 \\
 
 
-\hline
-\end{tabular}
+%\hline
+%\end{tabular}
 
 
-\begin{tabular}{ | l | c | c | c | }
-\hline
-$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
-\hline
+%\begin{tabular}{ | l | c | c | c | }
+%\hline
+%$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}%^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
+%s\hline
 
 
 % 7 & -0.014209420986523558 & 3.8533275062919475e-05 & 69 \\
@@ -1114,8 +1121,9 @@ shows that \(F/S \approx \delta\left(E/V\right)\).
 
 % \end{multicols}
 
+\vspace{\myvspacebeforesubsection}
     \subsection*{\centering{CONCLUSION}}\label{conclusions}
-\vspace{-3.5mm}
+\vspace{\myvspaceaftersubsection}
 
 % \begin{multicols}{2}
 
@@ -1180,8 +1188,9 @@ Casimir force corresponds to reality.
 
 \end{multicols}
 
+\vspace{\myvspacebeforesubsection}
     \subsection*{\centering\uppercase{Appendix A. Integration details}}\label{appendix-a.-integration-details}
-\vspace{-3.5mm}
+\vspace{\myvspaceaftersubsection}
 
 \begin{multicols}{2}
     Let us use the regularization function in the form
@@ -1343,9 +1352,10 @@ expression of \(\alpha_1\) and \(\beta_1\) found above.
 
 \end{multicols}
 
+\vspace{\myvspacebeforesubsection}
     \subsection*{\centering\uppercase{Appendix B. Electromagnetic pressure
 calculation}}\label{appendix-b.-electromagnetic-pressure-calculation}
-\vspace{-3.5mm}
+\vspace{\myvspaceaftersubsection}
 
 \begin{multicols}{2}
 
@@ -1529,9 +1539,10 @@ Hamiltonian mechanics approach.
 
 % \end{multicols}
 
+\vspace{\myvspacebeforesubsection}
     \subsection*{\centering\uppercase{Appendix C. Hamiltonian mechanics
 approach}}\label{appendix-c.-hamiltonian-mechanics-approach}
-\vspace{-3.5mm}
+\vspace{\myvspaceaftersubsection}
 
 % \begin{multicols}{2}
 
@@ -1706,10 +1717,11 @@ different sides \(\delta\left({E}/{V}\right)\).
 \end{multicols}
 \begin{multicols}{2}
 
+\vspace{\myvspacebeforesubsection}
     \subsection*{\centering\uppercase{Appendix D. The derivation of the thrust formula for the
 honeycomb basing on the Antipin's formula for the metal
 angle}}\label{appendix-d.-the-derivation-of-the-thrust-formula-for-the-honeycomb-basing-on-the-antipin-formula-for-the-thrust-of-a-metal-angle}
-\vspace{-3.5mm}
+\vspace{\myvspaceaftersubsection}
 
 \setcounter{equation}{0}
 \renewcommand{\theequation}{D.\arabic{equation}}

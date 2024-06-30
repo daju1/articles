@@ -939,6 +939,7 @@ should be \(0\) because derivative with respect to \(n_x\), for
 gives \(0\) in summation, we can simplify the result in the form
 
 \end{multicols}
+\vspace{-3.5mm}
 
     \begin{equation}
 \begin{array}{r}
@@ -1060,8 +1061,12 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 \end{tabular}
 \end{center}
 
+
+\vspace{+1.5mm}
+
     Thus, for the energy density difference per \(cm^2\) we find
 
+\vspace{-3.5mm}
 \begin{equation}
 \begin{array}{r}
     \delta\,\frac{E}{V} = \frac{\hbar\,c\,\pi}{a^4} \int\limits_{0}^{\infty} \Bigg\{ \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} F\left(n_x, n_y\right) \,\,\,\,\,\,\,\,\,\,\\ 
@@ -1070,22 +1075,25 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 \end{equation}
 
 
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.46\textwidth]{sum_sum_int_int_G_on_a_km.png}
+\caption{}{\centering{\textbf{Fig.2.} How $\sum\limits_{\left(0\right)\,1}^{\infty}\,\,\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ depends on $a \cdot k_m$.}}
+\end{center}
+\label{fig:G_on_a_km}
+\end{figure}
+
+
+
     According to our calculation we can see that
 
+\vspace{-3.5mm}
 \begin{equation}
 \begin{array}{l}
     \int\limits_{0}^{\infty} \Bigg\{ \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} F\left(n_x, n_y\right) \\
 - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} F\left(n_x, n_y\right) d{n_x} d{n_y} \Bigg\} d{u} \approx R\left(a k_m\right),
 \end{array}
 \end{equation}
-
-%    \begin{wrapfigure}{r}{0.5\textwidth}
-% \begin{center}
-% \includegraphics[width=0.48\textwidth]{sum_sum_int_int_G_on_a_km.png}
-% \caption{}{How $\delta\left(E/V\right)$ depends on $a k_m$}
-% \end{center}
-% \label{fig:G_on_a_km}
-% \end{wrapfigure}
 
 
     where \(R\left(a k_m\right)\) is a function depended on material
@@ -1102,13 +1110,6 @@ properties with well defined limit at \(a\,k_m\,»\,1\). So
 
     where \(a_{\mu}\) is a square side of honeycombs measured in microns.
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=0.46\textwidth]{sum_sum_int_int_G_on_a_km.png}
-\caption{}{\centering{\textbf{Fig.2.} How $\sum\limits_{\left(0\right)\,1}^{\infty}\,\,\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ depends on $a \cdot k_m$.}}
-\end{center}
-\label{fig:G_on_a_km}
-\end{figure}
 
     Can this difference of specific energy density
 \(\delta\left(E/V\right)\) be interpreted as the cause of the force
@@ -1223,9 +1224,10 @@ F\left(u, n_{xy}, ak_m\right) = \frac{\sqrt{n_{\mathit{xy}}^{2} + u^{2}}}{\frac{
 
 And using this variable, we can make the following substitution
 
+\vspace{1.5mm}
 \(u = \sqrt{n^2 - n_x^2 - n_y^2} = \sqrt{n^2 - n_{xy}^2}\),
-
-\(\frac{du}{dn} = \frac{n}{\sqrt{n^{2} - \mathit{n_{xy}}^{2}}}\), $\,\,\,\,\,\,\,\,\,$ \(d{u}= \frac{n\,d{n}}{\sqrt{n^{2} - \mathit{n_{xy}}^{2}}}\).
+%\(\frac{du}{dn} = \frac{n}{\sqrt{n^{2} - \mathit{n_{xy}}^{2}}}\), $\,\,\,\,\,\,\,\,\,$
+ \(d{u}= \frac{n\,d{n}}{\sqrt{n^{2} - \mathit{n_{xy}}^{2}}}\).
 
     And now we can rewrite integral (\ref{eq:5}) in form
 

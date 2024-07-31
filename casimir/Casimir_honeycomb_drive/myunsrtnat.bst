@@ -305,7 +305,7 @@ FUNCTION {format.doi}
 FUNCTION {format.title}
 { title empty$
     { "" }
- %   { title "t" change.case$ }
+    { title "t" change.case$ }
   if$
 }
 
@@ -537,7 +537,7 @@ FUNCTION {format.pages}
     { "" }
     { pages multi.page.check
         { "pages" pages n.dashify tie.or.space.connect }
-        { "page" pages tie.or.space.connect }
+        { "p." pages tie.or.space.connect }
       if$
     }
   if$
@@ -565,7 +565,7 @@ FUNCTION {format.vol.num.pages}
     'skip$
     { duplicate$ empty$
         { pop$ format.pages }
-        { ":\penalty0 " * pages n.dashify * }
+        { ", \penalty0 p. " * pages n.dashify * }
       if$
     }
   if$
@@ -719,8 +719,8 @@ FUNCTION {article}
   format.authors "author" output.check
   author format.key output
   new.block
-  format.title "title" output.check
-  new.block
+  % format.title "title" output.check
+  % new.block
   crossref missing$
     { journal emphasize "journal" output.check
       eid empty$
@@ -736,7 +736,7 @@ FUNCTION {article}
       if$
     }
   if$
-  format.issn output
+  % format.issn output
   format.doi output
   format.url output
   new.block

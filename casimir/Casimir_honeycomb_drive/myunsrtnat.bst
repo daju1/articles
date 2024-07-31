@@ -124,7 +124,7 @@ FUNCTION {output.check}
 }
 
 FUNCTION {fin.entry}
-{ add.period$
+{ % add.period$
   write$
   newline$
 }
@@ -718,7 +718,7 @@ FUNCTION {article}
 { output.bibitem
   format.authors "author" output.check
   author format.key output
-  new.block
+  % new.block
   % format.title "title" output.check
   % new.block
   crossref missing$

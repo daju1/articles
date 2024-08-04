@@ -45,7 +45,7 @@
 \def\licenseref{http://creativecommons.org/licenses/by/4.0/}
 
 \def\myfirstpage{7}
-\def\myvspacebeforesubsection{-1.5mm}
+\def\myvspacebeforesubsection{-2.0mm}
 \def\myvspaceaftersubsection{-2.5mm}
 
 \newcommand{\MyTitle}{\expandafter\MakeUppercase\expandafter{\mytitle}}
@@ -172,7 +172,7 @@
     
     \geometry{verbose,includehead,
 nomarginpar,% We don't want any margin paragraphs
-tmargin=1.2cm,bmargin=3cm,lmargin=2cm,rmargin=2cm}
+tmargin=0.5cm,bmargin=2.5cm,lmargin=2cm,rmargin=2cm}
 
 \setlength{\columnsep}{0.5cm}
 
@@ -231,6 +231,9 @@ PACS numbers: 81.35. +k \\
 
     %\maketitle
 
+%Hrvoje Nikolić
+%Proof that Casimir force does not originate from vacuum energy
+%PACS Numbers: : 11.10.Ef, 03.70.+k, 42.50.Lc
 
 
 \section*{\centering \MyTitle}
@@ -280,8 +283,16 @@ Two dimensional one body Casimir effect, nanocells, nanohoneycomb, Casimir thrus
 \vspace{5mm}
 
 \noindent
+\textbf{Як цитувати:}: \textit{\mynameukr}. \textit{\mytitleukr}. {\ukrvisnyk}. \href{https://doi.org/\mydoi}{https://doi.org/\mydoi}.
+
+\vspace{5mm}
+
+\noindent
 \textbf{In cites}: \textit{\myname}. \textit{\mytitle}. {\envisnyk}. \href{https://doi.org/\mydoi}{https://doi.org/\mydoi}.
 
+\vspace{5mm}
+
+\pagebreak
 
 \begin{multicols}{2}
 
@@ -335,8 +346,6 @@ conducting walls where perfectly conducting square plate with side
 \(L\) is placed in this cavity parallel to the \(xy\) face, and let
 the distance between the plate and the \(xy\) face be sufficiently large,
 \(L/2\), for example.
-
-
 One side of this perfectly conducting square plate is a smooth plane and
 another is covered with perfectly conducting square-shaped honeycombs with
 a square side \(a\).
@@ -353,6 +362,19 @@ will be shown to have a well-defined value and this value will be
 interpreted as the interaction between the plate and the both remote
 \(xy\) faces.
 
+    The possible oscillations inside cavities defined by
+\(0 \leq x \leq L\), \(0 \leq y \leq L\), \(0 \leq z \leq L/2\) (a large cavity between smooth
+plane and \(xy\) face) and
+\(0 \leq x \leq a\), \(0 \leq y \leq a\), \(0 \leq z \leq L/2\) (a small cavity, one honeycomb
+cell) have wave vectors
+\(k_x = \frac{\pi}{L}\,n_x\), \(k_y = \frac{\pi}{L}\,n_y\),
+\(k_z = \frac{\pi}{L/2}\,n_z\) (a large cavity between smooth plane and
+\(xy\) face), and
+\(k_x = \frac{\pi}{a}\,n_x\), \(k_y = \frac{\pi}{a}\,n_y\),
+\(k_z = \frac{\pi}{L/2}\,n_z\) (a small cavity, one honeycomb cell),
+where \(n_x\), \(n_y\), \(n_z\) are positive integers;
+    \(k = \sqrt{k_x^2+k_y^2+k_z^2} = \sqrt{\kappa^2+k_z^2}\).
+
 \begin{figure}
 \begin{center}
 \includegraphics[width=0.42\textwidth]{honeycomb_box_L.png}
@@ -361,39 +383,16 @@ interpreted as the interaction between the plate and the both remote
 \label{fig:honeycomb_box_L}
 \end{figure}
 
-    The possible oscillations inside cavities defined by
-
-    \(0 \leq x \leq L\), \(0 \leq y \leq L\), \(0 \leq z \leq L/2\) (a large cavity between smooth
-plane and \(xy\) face)
-
-    and
-
-    \(0 \leq x \leq a\), \(0 \leq y \leq a\), \(0 \leq z \leq L/2\) (a small cavity, one honeycomb
-cell)
-
-    have wave vectors
-
-    \(k_x = \frac{\pi}{L}\,n_x\), \(k_y = \frac{\pi}{L}\,n_y\),
-\(k_z = \frac{\pi}{L/2}\,n_z\) (a large cavity between smooth plane and
-\(xy\) face),
-
-    and
-
-    \(k_x = \frac{\pi}{a}\,n_x\), \(k_y = \frac{\pi}{a}\,n_y\),
-\(k_z = \frac{\pi}{L/2}\,n_z\) (a small cavity, one honeycomb cell),
-
-where \(n_x\), \(n_y\), \(n_z\) are positive integers;
-
-    \(k = \sqrt{k_x^2+k_y^2+k_z^2} = \sqrt{\kappa^2+k_z^2}\).
 
 Let us write the expression for the sum of zero-point energy in general form
 
+\vspace{-3.5mm}
 \begin{equation} \label{eq:1}
 E = \frac{1}{2}\sum\,\hbar\omega = \hbar\,c\frac{1}{2}\sum\limits_{n_x}^{}\sum\limits_{n_y}^{}\sum\limits_{n_z}^{}k.
 \end{equation}
+\vspace{-3.5mm}
 
-    Two standing waves correspond to every \(k_x\), \(k_y\), \(k_z\) but in case when
-one of the \(n_i\) is zero, there is only one wave.
+    Two standing waves correspond to every \(k_x\), \(k_y\), \(k_z\) but in case when one of the \(n_i\) is zero, there is only one wave.
 
     That is of no importance in case of one honeycomb cell cavity for \(k_z\),
 since for very large \(L/2\) we may regard \(k_z\) as
@@ -455,8 +454,8 @@ integral and, therefore, it can be seen that energy of a large cavity is given b
 
     % \(\frac{1}{2\,V}\sum\,\hbar\omega = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dk_z\right]\,dn_x\,dn_y\)
 % (large cavity between pure plane and \(xy\) face),
-\noindent
-    \(\frac{E}{V} = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\),
+%\noindent
+%    \(\frac{E}{V} = \frac{\hbar\,c}{L^2\,\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,dn_x\,dn_y\),
 %(large cavity between pure plane and \(xy\) face),
 
 \noindent
@@ -490,6 +489,8 @@ Therefore, it is obvious that the interaction energy is determined by the follow
 %\end{array}\end{array}\]
 \end{multicols}
 \noindent
+
+\vspace{-3.5mm}
     \begin{equation} \label{eq:2}
 \begin{array}{lr}
 \delta \frac{E}{V} =
@@ -497,6 +498,7 @@ Therefore, it is obvious that the interaction energy is determined by the follow
 \frac{\hbar c}{a^2 \pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\int\limits_{0}^{\infty}\sqrt{\frac{n_x^2 \pi^2}{a^2}+\frac{n_y^2 \pi^2}{a^2}+k_z^2} dk_z\right] % \\ 
 -\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right] dn_x dn_y\Bigg\}.
 \end{array}\end{array}\end{equation}
+\vspace{-3.5mm}
 
 \begin{multicols}{2}
 
@@ -516,9 +518,8 @@ influence of its specific type will be removed by a limit transition in the end.
 
     Introducing the variable \(u^2 = a^2\,k_z^2/\pi^2\),
 \(du = a/\pi\,dk_z\), we have:
-
 \end{multicols}
-
+\vspace{-3.5mm}
     \begin{equation} \label{eq:3}
 \begin{array}{c}
 \begin{array}{ll}
@@ -540,17 +541,13 @@ f\left(\frac{\pi\sqrt{n_x^2 + n_y^2 + u^2}}{a\,k_m}\right)
 \end{array}
 \end{array}
 \end{equation}
-
-
+\vspace{-3.5mm}
 \begin{multicols}{2}
-
-
     If \(\omega _{n_x,n_y} = c\,\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\)
 and \(k_z^2 = u^2 \frac{\pi^2}{a^2}\) we have
 \(\omega _{n_x,n_y} = c \, \frac{\pi}{a} \sqrt{n_x^2+n_y^2+u^2}\) so
 \(f\left(\frac{\pi\sqrt{n_x^2 + n_y^2+u^2}}{a\,k_m}\right) = f\left(\frac{\omega _{n_x,n_y}}{c\,k_m}\right)\),
 where the cutting frequency is \(\omega_m = c\,k_m\).
-
     Introducing function
 \noindent
 \begin{equation} \label{eq:4}
@@ -990,11 +987,25 @@ G%\left(n_x, n_y\right)
 
 %\(\sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} G\left(n_x, n_y\right) - \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} G\left(n_x, n_y\right)\,d{n_x}\,d{n_y}\)
 
+    Thus, for the energy density difference per \(cm^2\) we find
+
+\vspace{-3.5mm}
+\begin{equation}
+\begin{array}{r}
+    \delta\,\frac{E}{V} = \frac{\hbar\,c\,\pi}{a^4} \int\limits_{0}^{\infty} \Bigg\{ \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} F\left(n_x, n_y\right) \,\,\,\,\,\,\,\,\,\,\\ 
+- \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} F\left(n_x, n_y\right) d{n_x} d{n_y} \Bigg\} d{u}.
+\end{array}
+\end{equation}
+
+\vspace{-3.5mm}
+
 \noindent
 \begin{center}
 \begin{tabular}{ r }
 Table 1. The result of evaluating the expression (\ref{eq:12}).
 \end{tabular}
+
+\vspace{+3.5mm}
 
 \begin{tabular}{ | l | c | c | c | }
 \hline
@@ -1006,6 +1017,15 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 0.5 & 0.00322377 & 7.99836e-07 & 6 \\
 % 0.75 & 0.004403922584267899 & 8.721734991096397e-07 & 11 \\
 0.75 & 0.00440392 & 8.72173e-07 & 11 \\
+
+%\hline
+%\end{tabular}
+
+%\begin{tabular}{ | l | c | c | c | }
+%\hline
+%$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
+%\hline
+
 % 1.0 & 0.003048368039753142 & 8.495559555607291e-07 & 17 \\
 1.0 & 0.00304837 & 8.49556e-07 & 17 \\
 % 1.25 & -0.0014811539004775248 & 1.7711588730298828e-06 & 18 \\
@@ -1024,7 +1044,6 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 2.75 & -0.0324363 & 2.09102e-05 & 23 \\
 % 3.0 & -0.028986396523536337 & 2.961508478431949e-05 & 23 \\
 3.0 & -0.0289864 & 2.96151e-05 & 23 \\
-
 % 3.25 & -0.024047951283080123 & 4.0789713256873105e-05 & 23 \\
 3.25 & -0.02404795 & 4.07897e-05 & 23 \\
 % 3.5 & -0.018309169743688476 & 8.561178612309775e-06 & 45 \\
@@ -1033,26 +1052,12 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 3.75 & -0.0135918 & 2.185368e-05 & 36 \\
 % 4 & -0.009731507224089121 & 1.4610545561998458e-05 & 45 \\
 4 & -0.00973151 & 1.46105e-05 & 45 \\
-
 % 4.5 & -0.006342700310733549 & 1.9329818693328873e-05 & 48 \\
 4.5 & -0.00634270 & 1.93298e-05 & 48 \\
 % 5 & -0.007323343929996339 & 2.3242272627768528e-05 & 52 \\
 5 & -0.00732334 & 2.32423e-05 & 52 \\
-
 % 6 & -0.012436017530558603 & 2.3732800946523056e-05 & 66 \\
 6 & -0.0124360 & 2.37328e-05 & 66 \\
-
-
-%\hline
-%\end{tabular}
-
-
-%\begin{tabular}{ | l | c | c | c | }
-%\hline
-%$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}%^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
-%s\hline
-
-
 % 7 & -0.014209420986523558 & 3.8533275062919475e-05 & 69 \\
 7 & -0.0142094 & 3.85332e-05 & 69 \\
 % 8 & -0.0136610172109347 & 3.293747500025098e-05 & 87 \\
@@ -1064,17 +1069,7 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 \end{center}
 
 
-\vspace{+1.5mm}
 
-    Thus, for the energy density difference per \(cm^2\) we find
-
-\vspace{-3.5mm}
-\begin{equation}
-\begin{array}{r}
-    \delta\,\frac{E}{V} = \frac{\hbar\,c\,\pi}{a^4} \int\limits_{0}^{\infty} \Bigg\{ \sum\limits_{n_x=\left(0\right)\,1}^{\infty} \sum\limits_{n_y=\left(0\right)\,1}^{\infty} F\left(n_x, n_y\right) \,\,\,\,\,\,\,\,\,\,\\ 
-- \int\limits_{0}^{\infty} \int\limits_{0}^{\infty} F\left(n_x, n_y\right) d{n_x} d{n_y} \Bigg\} d{u}.
-\end{array}
-\end{equation}
 
 
 \begin{figure}
@@ -1206,16 +1201,6 @@ f\left(\frac{k}{k_m}\right) = \frac{1}{\frac{k^{4}}{k_{m}^{4}} + 1}.
 \end{equation}
 
 
-
-%\(\begin{array}{c}
-%\begin{array}{ll}
-%F\left(u, n_x, n_y, a, k_m\right) = & \,\\
-%\end{array} \\
-%\begin{array}{rr}
-%\, & \sqrt{n_{x}^{2} + n_{y}^{2} + u^{2}} f\left(\frac{\pi \sqrt{n_{x}^{2} + n_{y}^{2} + u^{2}}}{a k_{m}}\right)\end{array}
-%\end{array}\)
-
-
     Starting from (\ref{eq:4}) and by introducing a variable \(n_{xy} = \sqrt{n_x^2 + n_y^2}\) and \(n = \sqrt{n_x^2 + n_y^2 + u^2} = \sqrt{n_{xy}^2 + u^2}\), we have 
 
 \noindent
@@ -1228,7 +1213,7 @@ And using this variable, we can make the following substitution
 
 \vspace{1.5mm}
 \(u = \sqrt{n^2 - n_x^2 - n_y^2} = \sqrt{n^2 - n_{xy}^2}\),
-%\(\frac{du}{dn} = \frac{n}{\sqrt{n^{2} - \mathit{n_{xy}}^{2}}}\), $\,\,\,\,\,\,\,\,\,$
+\(\frac{du}{dn} = \frac{n}{\sqrt{n^{2} - \mathit{n_{xy}}^{2}}}\), $\,\,\,\,\,\,\,\,\,$
  \(d{u}= \frac{n\,d{n}}{\sqrt{n^{2} - \mathit{n_{xy}}^{2}}}\).
 
     And now we can rewrite integral (\ref{eq:5}) in form
@@ -1241,9 +1226,10 @@ f\left(\frac{\pi\sqrt{n_{xy}^2+u^2}}{a\,k_m}\right)\,d{u},
 
 changing the integration variable from \(u\) to \(n\)
 
-%\noindent
-%$G\left(n_x, n_y\right) = \int\limits_{n_{xy}}^{\infty}\sqrt{n_{xy}^2+u^2}
-% f\left(\frac{\pi\sqrt{n_{xy}^2+u^2}}{a\,k_m}\right)\,dn\,{\frac{n}{\sqrt{n^{2} - n_{xy}^{2}}}}$
+\noindent
+$G%\left(n_x, n_y\right)
+ = \int\limits_{n_{xy}}^{\infty}\sqrt{n_{xy}^2+u^2}
+ f\left(\frac{\pi\sqrt{n_{xy}^2+u^2}}{a\,k_m}\right)\,dn\,{\frac{n}{\sqrt{n^{2} - n_{xy}^{2}}}}$
 
 \begin{equation}
 G\left(n_x, n_y\right) = \int\limits_{n_{xy}}^{\infty}n\,
@@ -1355,6 +1341,8 @@ expression of \(\alpha_1\) and \(\beta_1\) found above.
 
 
 \end{multicols}
+
+\pagebreak
 
 \vspace{\myvspacebeforesubsection}
     \subsection*{\centering\uppercase{Appendix B. Electromagnetic pressure
@@ -1561,14 +1549,6 @@ between the plate and \(xy\) face be sufficiently large, say \(l = L/2\), for ex
 One side of this perfectly conducting square plate is a smooth plane and
 another is covered by perfectly conducting square-shaped honeycomb a square side \(a\).
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=0.42\textwidth]{honeycomb_box_H.png}
-\caption{}{\centering{\textbf{Fig.3.} Cubic cavity with a plate covered by honeycomb.}}
-\end{center}
-\label{fig:honeycomb_box_H}
-\end{figure}
-
 On both sided of the the plate the expressions \(1\big/2\sum\,\hbar\omega\)
 where the summation extends over all possible resonance frequencies of
 the cavity \(\left(L-l\right)\times L\times L\) (a large cavity between
@@ -1581,28 +1561,27 @@ the vacuums Hamiltonian of the whole system for these sums
 has a well-defined value and this value will be
 interpreted as the interaction between the plate and the both \(xy\) faces.
 
-    The possible oscillations of the cavities defined by
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.42\textwidth]{honeycomb_box_H.png}
+\caption{}{\centering{\textbf{Fig.3.} Cubic cavity with a plate covered by honeycomb.}}
+\end{center}
+\label{fig:honeycomb_box_H}
+\end{figure}
 
+    The possible oscillations of the cavities defined by
 \(0 \leq x \leq L\), \(0 \leq y \leq L\), \(0 \geq z \geq -\,(L-l)\) (a large cavity between smooth
 plane and \(xy\) face)
-
 and
-
 \(0 \leq x \leq a\), \(0 \leq y \leq a\), \(0 \leq z \leq l\) (a small cavity, one honeycomb cell)
-
     have the wave vectors
-
 \(k_x = \frac{\pi}{L}\,n_x\), \(k_y = \frac{\pi}{L}\,n_y\),
 \(k_z = \frac{\pi}{L-l}\,n_z\) (a large cavity between smooth plane and
 \(xy\) face),
-
 and
-
 \(k_x = \frac{\pi}{a}\,n_x\), \(k_y = \frac{\pi}{a}\,n_y\),
 \(k_z = \frac{\pi}{l}\,n_z\) (a small cavity, one honeycomb cell),
-
 where \(n_x\). \(n_y\), \(n_z\) are positive integers;
-
 \(k = \sqrt{k_x^2+k_y^2+k_z^2} = \sqrt{\kappa^2+k_z^2}\).
 
 Let us write the expression for the sum of zero-point energy in general form
@@ -1663,8 +1642,8 @@ where \(dn_x = \frac{L}{\pi}\,dk_x\), \(dn_y = \frac{L}{\pi}\,dk_y\),
 \(\frac{\sum\hbar\omega}{2 S} = \frac{\hbar\,c}{L^2}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dn_x\,dn_y\,\frac{L-l}{\pi}\,dk_z\),
 % (large cavity between pure plane and \(xy\) face),
 
-\noindent
-\(\frac{\sum\hbar\omega}{2 S} = \frac{L-l}{L^2\,\pi}\hbar\,c\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dk_z\right]\,dn_x\,dn_y\),
+%\noindent
+%\(\frac{\sum\hbar\omega}{2 S} = \frac{L-l}{L^2\,\pi}\hbar\,c\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_z^2+k_x^2+k_y^2}\,dk_z\right]\,dn_x\,dn_y\),
 % (large cavity between pure plane and \(xy\) face),
 
 \noindent
@@ -1736,6 +1715,15 @@ general and natural approximations known as PFA (Proximity Force
 Approximation) or PAA (Pairwise Additive Approximation) calculation
 method \cite{Intravaia2013}, \cite{Rodriguez2011}".
 
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.45\textwidth]{Antipins_angle_en.png}
+\caption{}{\centering{\textbf{Fig.4.} Antipin's angle.}}
+\end{center}
+\label{fig:Antipins_angle}
+\end{figure}
+
+
 Casimir's interaction energy is given by
 \noindent
 \begin{equation}\delta\,E/L^2 = \hbar\,c\frac{\pi^2}{4\,a^3}\left\{\frac{-4}{24\times30}\right\}.\end{equation}
@@ -1747,14 +1735,6 @@ Casimir's force is
 Thrust of the metal \mbox{V-shaped} angle is
 \noindent
 \begin{equation}F_{thrust} = 2 \int F_{c} \, sin\, \alpha \,dS, \,\,\,\,\,\,\, dS = b\,dz\end{equation}
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=0.42\textwidth]{Antipins_angle_en.png}
-\caption{}{\centering{\textbf{Fig.4.} Antipin's angle.}}
-\end{center}
-\label{fig:Antipins_angle}
-\end{figure}
 
 \noindent
 \begin{equation}F_{thrust} = 2\, \frac{-3\,\pi^2\hbar c b}{4}\int\limits_{z_{min}}^{z_{max}} \left\{\frac{-4}{24\times30}\right\}\frac{sin\, \alpha\,dz}{\left(a\left(z\right)\right)^4}.\end{equation}
@@ -2007,6 +1987,7 @@ from \mbox{V-shaped} angles.
 
     % Add a bibliography block to the postdoc
     
+\pagebreak
 
 \section*{\centering \uppercase{\MyTitleUkr}}
 

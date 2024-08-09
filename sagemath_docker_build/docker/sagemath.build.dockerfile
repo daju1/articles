@@ -16,7 +16,7 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Install build-essential package (for cross compilation)
 RUN apt-get update
-RUN apt-get -y install build-essential aptitude
+RUN apt-get -y install build-essential
 
 # Install vim, nano
 RUN apt-get -y install vim nano
@@ -42,16 +42,18 @@ RUN apt-get -y install tk tk-dev
 RUN apt-get -y install texlive       # debian latex
 
 RUN apt-get -y install texlive-generic-extra #(to generate pdf documentation)
+RUN apt-get -y install texlive-latex-extra #(to generate pdf documentation)
 RUN apt-get -y install texlive-xetex #(to convert Jupyter notebooks to pdf)
-# RUN apt-get -y install latexmk #(to generate pdf documentation)
+RUN apt-get -y install latexmk #(to generate pdf documentation)
 RUN apt-get -y install pandoc #(to convert Jupyter notebooks to pdf)
-# RUN apt-get -y install dvipng #(to render text with LaTeX in Matplotlib)
-# RUN apt-get -y install default-jdk #(to run the Jmol 3D viewer from the console and generate images for 3D plots in the documentation)
+RUN apt-get -y install dvipng #(to render text with LaTeX in Matplotlib)
+RUN apt-get -y install default-jdk #(to run the Jmol 3D viewer from the console and generate images for 3D plots in the documentation)
 RUN apt-get -y install ffmpeg #(to produce animations)
-# RUN apt-get -y install libavdevice-dev #(to produce animations)
-
+RUN apt-get -y install libavdevice-dev #(to produce animations)
 RUN apt-get -y install texlive-lang-cyrillic
 # RUN apt-get -y install texlive-full
+
+RUN apt-get -y install texlive-publishers #(revtex, etc)
 
 USER ${USER_NAME}
 # WORKDIR ${PROJECT_PATH}

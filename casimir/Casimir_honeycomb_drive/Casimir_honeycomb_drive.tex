@@ -90,7 +90,7 @@
     }
     \usepackage{upquote} % Upright quotes for verbatim code
     \usepackage{eurosym} % defines \euro
-    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage{ucs} % Extended unicode (utf-8) support
     % \usepackage{fancyvrb} % verbatim repheadheightlacement that allows latex
     \usepackage{grffile} % extends the file name processing of package graphics 
                          % to support a larger range
@@ -174,7 +174,7 @@
     
     \geometry{verbose,includehead,
 nomarginpar,% We don't want any margin paragraphs
-tmargin=0.5cm,bmargin=2.5cm,lmargin=2cm,rmargin=2cm}
+tmargin=1.0cm,bmargin=3.0cm,lmargin=1.85cm,rmargin=1.85cm}
 
 \setlength{\columnsep}{0.5cm}
 
@@ -291,7 +291,8 @@ Two dimensional one body Casimir effect, nanocells, nanohoneycomb, Casimir thrus
 
 \vspace{5mm}
 
-\pagebreak
+%\pagebreak
+\newpage
 
 \begin{multicols}{2}
 
@@ -1017,13 +1018,7 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 % 0.75 & 0.004403922584267899 & 8.721734991096397e-07 & 11 \\
 0.75 & 0.00440392 & 8.72173e-07 & 11 \\
 
-%\hline
-%\end{tabular}
 
-%\begin{tabular}{ | l | c | c | c | }
-%\hline
-%$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
-%\hline
 
 % 1.0 & 0.003048368039753142 & 8.495559555607291e-07 & 17 \\
 1.0 & 0.00304837 & 8.49556e-07 & 17 \\
@@ -1057,6 +1052,16 @@ $a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\ri
 5 & -0.00732334 & 2.32423e-05 & 52 \\
 % 6 & -0.012436017530558603 & 2.3732800946523056e-05 & 66 \\
 6 & -0.0124360 & 2.37328e-05 & 66 \\
+
+\hline
+\end{tabular}
+
+\begin{tabular}{ | l | c | c | c | }
+\hline
+$a \cdot k_m$ & $\sum\limits_{\left(0\right)\,1}^{\infty}\sum\limits_{\left(0\right)\,1}^{\infty}-\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}G$ & $\epsilon$ & $j_{max}$ \\
+\hline
+
+
 % 7 & -0.014209420986523558 & 3.8533275062919475e-05 & 69 \\
 7 & -0.0142094 & 3.85332e-05 & 69 \\
 % 8 & -0.0136610172109347 & 3.293747500025098e-05 & 87 \\
@@ -1656,20 +1661,28 @@ where \(dn_x = \frac{L}{\pi}\,dk_x\), \(dn_y = \frac{L}{\pi}\,dk_y\),
     Therefore, it can be seen that specific (per area) vacuum Hamiltonian
 \(\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S}\) of the whole system is
 given by
+
+\end{multicols}
+
+% \noindent
+% \[\begin{array}{lr}
+% % \frac{\left<0|\hat{\mathcal{H}}|0\right>}{S} =
+% \begin{array}{l}
+% \frac{\left<0|\hat{\mathcal{H}}|0\right>}{S} = \frac{\hbar\,c}{a^2\,\pi} \cdot\\
+% \cdot \Bigg\{l\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}%\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] + \\
+% (L-l)\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\Bigg\}
+% \end{array}\end{array}\]
+
 \noindent
-\[\begin{array}{lr}
-% \frac{\left<0|\hat{\mathcal{H}}|0\right>}{S} =
-\begin{array}{l}
-\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S} = \frac{\hbar\,c}{a^2\,\pi} \cdot\\
-\cdot \Bigg\{l\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] + \\
+\[
+\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S} = \frac{\hbar\,c}{a^2\,\pi}
+\cdot \Bigg\{l\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] +
 (L-l)\int\limits_{0}^{\infty}\int\limits_{0}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{k_x^2+k_y^2+k_z^2}\,dk_z\right]\,\left(\frac{a}{\pi}dk_x\right)\,\left(\frac{a}{\pi}dk_y\right)\Bigg\}
-\end{array}\end{array}\]
+\]
 
 and interaction
 \(\frac{F}{S} = -\frac{\partial }{\partial z} \,\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S} = \frac{\partial}{\partial l} \,\frac{\left<0|\hat{\mathcal{H}}|0\right>}{S}\)
 is
-
-\end{multicols}
 
 %\(\begin{array}{lr}\frac{F}{S} =
 %\begin{array}{c}\frac{\hbar\,c}{a^2\,\pi}\Bigg\{\sum\limits_{n_x=(0)1}^{\infty}\sum\limits_{n_y=(0)1}^{\infty}\left[\,\int\limits_{0}^{\infty}\sqrt{n_x^2\frac{\pi^2}{a^2}+n_y^2\frac{\pi^2}{a^2}+k_z^2}\,dk_z\right] - \\

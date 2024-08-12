@@ -4,6 +4,8 @@
 \usepackage[utf8]{inputenc} % Accept different input encodings
 \usepackage[ukrainian, english]{babel}
 
+\usepackage{mathptmx}
+
 \usepackage{indentfirst}    % Indent first paragraph after section header
 
 \usepackage{sectsty}        % Control sectional headers
@@ -18,9 +20,7 @@
 
 \usepackage{filecontents}
 \usepackage{hyperref, doi}
-\usepackage[square,numbers]{natbib}
-
-\usepackage{mathptmx}
+\usepackage[numbers]{natbib}
 
 \bibliographystyle{myunsrtnat}
 
@@ -53,6 +53,8 @@
 \def\myvspacebeforesubsection{-2.0mm}
 \def\myvspaceaftersubsection{-2.5mm}
 
+\def\collontitulasfontcode{lmss}
+
 \newcommand{\MyTitle}{\expandafter\MakeUppercase\expandafter{\mytitle}}
 \newcommand{\MyTitleUkr}{\expandafter\MakeUppercase\expandafter{\mytitleukr}}
 
@@ -63,8 +65,8 @@
 \fancyhead[C]{\ukrvisnyk \\ \envisnyk}
 \renewcommand{\footrulewidth}{0.6pt} % bottom horizontal rule
 \fancyfoot[L]{${}^{\copyright}$ \myname}
-\fancyfoot[R]{~ \\ Open Access. This article is licensed under a Creative Commons Attribution 4.0 \\
-\href{\licenseref}{\licenseref}}
+\fancyfoot[R]{~ \\ \fontencoding{T1}\fontfamily{\collontitulasfontcode}{\selectfont \textit{Open Access. This article is licensed under a Creative Commons Attribution 4.0}} \\
+\href{\licenseref}{\fontencoding{T1}\fontfamily{\collontitulasfontcode}{\selectfont \textit{\licenseref}}}}
 }
 
     % Basic figure setup, for now with no caption control since it's done
@@ -198,10 +200,10 @@ tmargin=1.1cm,bmargin=3.0cm,lmargin=1.85cm,rmargin=1.85cm}
 \fancyhead{} % clear all header fields
 
 % Arial 9.5
-\fancyhead[CE]{{\it \mytitle.}}
+\fancyhead[CE]{\fontencoding{T1}\fontfamily{ptm}{\selectfont \textit{\mytitle.}}}
 
 % Times New Roman 11
-\fancyhead[CO]{{\fontfamily{ptm} \it \selectfont \myname}}
+\fancyhead[CO]{\fontencoding{T1}\fontfamily{ptm}{\selectfont \textit{\myname}}}
 
 \renewcommand{\headrulewidth}{0.6pt} % remove the top horizontal rule
 
@@ -209,7 +211,7 @@ tmargin=1.1cm,bmargin=3.0cm,lmargin=1.85cm,rmargin=1.85cm}
 
 % Arial 9.0
 \fancyfoot[LE,RO]{\thepage}
-\fancyfoot[LO,RE]{{~} \\ {\envisnyk}\\{\ukrvisnyk}}
+\fancyfoot[LO,RE]{{~} \\ {\fontencoding{T1}\fontfamily{ptm}{\selectfont \envisnyk}} \\ {\fontencoding{T2A}\fontfamily{\collontitulasfontcode}{\selectfont \ukrvisnyk}}}
 \fancyfoot[CO,CE]{}
 
 $\,$

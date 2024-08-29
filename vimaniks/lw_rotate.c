@@ -22,15 +22,11 @@ void set_c(double _c)
     c = _c;
 }
 
-const distance R_r = (double)10;
-const distance R_l = (double)10;
-
-const double v_c = (double) 0.984;
-
-double get_omega()
+velocity cget_c()
 {
-    return v_c * c / R_r;
+    return c;
 }
+
 
 // вращение заряда в плоскости xy вокруг центра в точке 
 // coordinate xc, coordinate yc, coordinate zc
@@ -50,7 +46,18 @@ typedef acceleration (*Acceleration)(timevalue t_zap,
 
 // расчет итерациями запаздывающего момента
 
-timespan Epsilon = 1.0e-16;// # погрешность
+static timespan Epsilon = 1.0e-16;// # погрешность
+
+void set_timespan_Epsilon(double _eps)
+{
+    Epsilon = _eps;
+}
+
+timespan cget_timespan_Epsilon()
+{
+    return Epsilon;
+}
+
 _Bool no_retardation_test = 0;
 
 typedef timevalue (*Tlag)(coordinate x, coordinate y, coordinate z, timevalue t,

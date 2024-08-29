@@ -36,7 +36,7 @@ typedef acceleration (*Acceleration)(timevalue t_zap);
 
 // расчет итерациями запаздывающего момента
 
-timespan Epsilon = 1.e-6;// # погрешность
+timespan Epsilon = 1.0e-16;// # погрешность
 _Bool no_retardation_test = 0;
 
 typedef timevalue (*Tlag)(coordinate x, coordinate y, coordinate z, timevalue t,
@@ -51,7 +51,7 @@ timevalue tlag(coordinate x, coordinate y, coordinate z, timevalue t,
     }
 
     timevalue t1 = t;
-    timevalue t2 = t - 0.1;
+    timevalue t2 = t - 2*Epsilon;
     //printf("____ x = %f y = %f\n", x, y);
     //printf("____ t1 = %f t2 = %f\n", t1, t2);
     

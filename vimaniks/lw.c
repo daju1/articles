@@ -136,17 +136,54 @@ double Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
     distance nx;
     distance ny;
     distance nz;
-    
-    //printf("Rlw____ x = %f y = %f\n", x, y);
-    //printf("Rlw____ sx(t) = %f vx(t) = %f\n", sx(t), vx(t));
 
     double t2 = t_lag(x, y, z, t, sx, sy, sz); // расчет итерациями запаздывающего момента
-
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz);
-    //printf("(r) = %e (k) = %e\n", (r), (k));
 
     return k*r;
 }
+
+// phi_lw - скалярный потенциал Лиенара Вихерта
+double philw(coordinate x, coordinate y, coordinate z, timevalue t,
+           Coordinate sx, Coordinate sy, Coordinate sz,
+           Velocity vx, Velocity vy, Velocity vz,
+           charge q, Tlag t_lag)
+{
+    double k;
+    distance r;
+    distance nx;
+    distance ny;
+    distance nz;
+
+    double t2 = t_lag(x, y, z, t, sx, sy, sz); // расчет итерациями запаздывающего момента
+    calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz);
+
+    return q/(k*r);
+}
+
+
+// A_lw - векторный потенциал Лиенара Вихерта
+void Alw(coordinate x, coordinate y, coordinate z, timevalue t,
+       Coordinate sx, Coordinate sy, Coordinate sz,
+       Velocity vx, Velocity vy, Velocity vz,
+       charge q, Tlag t_lag,
+       field * A_x, field * A_y, field * A_z
+       )
+{
+    double k;
+    distance r;
+    distance nx;
+    distance ny;
+    distance nz;
+
+    double t2 = t_lag(x, y, z, t, sx, sy, sz); // расчет итерациями запаздывающего момента
+    calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz);
+
+    (*A_x) = q*vx(t2)/(k*r);
+    (*A_y) = q*vy(t2)/(k*r);
+    (*A_z) = q*vz(t2)/(k*r);
+}
+
 
 void electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
                 Coordinate sx, Coordinate sy, Coordinate sz,

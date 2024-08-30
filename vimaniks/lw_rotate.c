@@ -15,7 +15,7 @@
 
 //sgs 
 
-static velocity c = (double)(299792458 * 100);
+static velocity c;// = (double)(299792458 * 100);
 
 void set_c(double _c)
 {

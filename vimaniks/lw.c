@@ -11,6 +11,8 @@
 #include <math.h>
 #define Pi M_PI
 
+#define Sq(x) (x)*(x)
+
 //sgs 
 
 static velocity c = (double)(299792458 * 100);
@@ -20,14 +22,9 @@ void set_c(double _c)
     c = _c;
 }
 
-const distance R_r = (double)10;
-const distance R_l = (double)10;
-
-const double v_c = (double) 0.984;
-
-double get_omega()
+velocity cget_c()
 {
-    return v_c * c / R_r;
+    return c;
 }
 
 typedef coordinate (*Coordinate)(timevalue t_zap);
@@ -36,7 +33,18 @@ typedef acceleration (*Acceleration)(timevalue t_zap);
 
 // расчет итерациями запаздывающего момента
 
-timespan Epsilon = 1.0e-16;// # погрешность
+static timespan Epsilon = 1.0e-16;// # погрешность
+
+void set_timespan_Epsilon(double _eps)
+{
+    Epsilon = _eps;
+}
+
+timespan cget_timespan_Epsilon()
+{
+    return Epsilon;
+}
+
 _Bool no_retardation_test = 0;
 
 typedef timevalue (*Tlag)(coordinate x, coordinate y, coordinate z, timevalue t,
@@ -52,23 +60,19 @@ timevalue tlag(coordinate x, coordinate y, coordinate z, timevalue t,
 
     timevalue t1 = t;
     timevalue t2 = t - 2*Epsilon;
-    //printf("____ x = %f y = %f\n", x, y);
-    //printf("____ t1 = %f t2 = %f\n", t1, t2);
     
     int n = 0;
 
     while (fabs(t1 - t2) > Epsilon) {
         t1 = t2;
-        double dd = (x - sx(t1))*(x - sx(t1)) + (y - sy(t1))*(y - sy(t1)) + (z - sz(t1))*(z - sz(t1));
-        //printf("dd = %f\n", dd);
+        double dd = (x - sx(t1))*(x - sx(t1)) +
+                    (y - sy(t1))*(y - sy(t1)) +
+                    (z - sz(t1))*(z - sz(t1));
         double d = sqrt(dd);
-        //printf("d = %f\n", d);
         t2 = t - d / c;
-        //printf("t1 = %f t2 = %f\n", t1, t2);
         if (++n > 100)
             break;
     }
-    //printf(">>>>> t1 = %f t2 = %f\n", t1, t2);
 
     return t2;
 }
@@ -85,7 +89,9 @@ void calc_k(coordinate x, coordinate y, coordinate z, timevalue t,
 {
     
     if (no_retardation_test) {
-        (*r) = sqrt((x - sx(t))*(x - sx(t)) + (y - sy(t))*(y - sy(t)) + (z - sz(t))*(z - sz(t)));
+        (*r) = sqrt((x - sx(t))*(x - sx(t)) +
+                    (y - sy(t))*(y - sy(t)) +
+                    (z - sz(t))*(z - sz(t)));
     }
     else {
         (*r) = c * (t - t2);
@@ -202,16 +208,24 @@ void electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
 
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz);
 
-    double v2_c2 = (vx(t2)*vx(t2) + vy(t2)*vy(t2) + vz(t2)*vz(t2)) / (c*c);
-    double ra_c2 = r * (nx*wx(t2) + ny*wy(t2) + nz*wz(t2)) / (c*c);
-    
-    (*E_x) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx - vx(t2)/c)/(r*r) - (k/r)*wx(t2)/(c*c));
-    (*E_y) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(ny - vy(t2)/c)/(r*r) - (k/r)*wy(t2)/(c*c));
-    (*E_z) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nz - vz(t2)/c)/(r*r) - (k/r)*wz(t2)/(c*c));
+    double v_x = vx(t2);
+    double v_y = vy(t2);
+    double v_z = vz(t2);
 
-    (*B_x) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(ny*vz(t2) - nz*vy(t2))/(r*r)/c + (ny*wz(t2) - nz*wy(t2))*(k/r)/(c*c));
-    (*B_y) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nz*vx(t2) - nx*vz(t2))/(r*r)/c + (nz*wx(t2) - nx*wz(t2))*(k/r)/(c*c));
-    (*B_z) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx*vy(t2) - ny*vx(t2))/(r*r)/c + (nx*wy(t2) - ny*wx(t2))*(k/r)/(c*c));
+    double w_x = wx(t2);
+    double w_y = wy(t2);
+    double w_z = wz(t2);
+
+    double v2_c2 = (v_x*v_x + v_y*v_y + v_z*v_z)) / (c*c);
+    double ra_c2 = r * (nx*w_x + ny*w_y + nz*w_z) / (c*c);
+    
+    (*E_x) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx - v_x/c)/(r*r) - (k/r)*w_x/(c*c));
+    (*E_y) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(ny - v_y/c)/(r*r) - (k/r)*w_y/(c*c));
+    (*E_z) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nz - v_z/c)/(r*r) - (k/r)*w_z/(c*c));
+
+    (*B_x) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(ny*v_z - nz*v_y)/(r*r)/c + (ny*w_z - nz*w_y)*(k/r)/(c*c));
+    (*B_y) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nz*v_x - nx*v_z)/(r*r)/c + (nz*w_x - nx*w_z)*(k/r)/(c*c));
+    (*B_z) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx*v_y - ny*v_x)/(r*r)/c + (nx*w_y - ny*w_x)*(k/r)/(c*c));
 }
 
 void test(double x)

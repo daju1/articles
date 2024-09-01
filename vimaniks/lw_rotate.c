@@ -17,7 +17,7 @@
 
 static velocity c;// = (double)(299792458 * 100);
 
-void set_c(double _c)
+void cset_c(double _c)
 {
     c = _c;
 }
@@ -48,7 +48,7 @@ typedef acceleration (*Acceleration)(timevalue t_zap,
 
 static timespan Epsilon = 1.0e-16;// # погрешность
 
-void set_timespan_Epsilon(double _eps)
+void cset_timespan_Epsilon(double _eps)
 {
     Epsilon = _eps;
 }

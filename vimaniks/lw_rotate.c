@@ -4,6 +4,7 @@
 #include <float.h>
 #include <assert.h>
 #include "lw.h"
+#include "lw_rotate.h"
 
 #include "stdlib.h"
 
@@ -15,7 +16,7 @@
 
 //sgs 
 
-static velocity c;// = (double)(299792458 * 100);
+velocity c;// = (double)(299792458 * 100);
 
 void cset_c(long double _c)
 {
@@ -47,10 +48,15 @@ typedef acceleration (*Acceleration)(timevalue t_zap,
 // расчет итерациями запаздывающего момента
 
 static timespan Epsilon = 1.0e-16;// # погрешность
-
+static int max_steps = 50;
 void cset_timespan_Epsilon(long double _eps)
 {
     Epsilon = _eps;
+}
+
+void cset_max_steps(int _max_steps)
+{
+    max_steps = _max_steps;
 }
 
 timespan cget_timespan_Epsilon()
@@ -131,16 +137,20 @@ timevalue find_newton_root(coordinate x, coordinate y, coordinate z, timevalue t
                            distance R, anglevelocity omega, angle alpha, int max_steps)
 {
     long double step = 1.0;
+    long double t1;
 
     for (int i = 0; i < max_steps; ++i)
     {
         //printf("t2=%0.30Le\t", t2);
+        t1 = t2;
         t2 = NewtonIt(step,
                       x, y, z,
                       t, t2,
                       sx, sy, sz,
                       vx, vy, vz,
                       xc, yc, zc, R, omega, alpha);
+        if (t2 == t1)
+            break;
 
         step *= 0.9;
     }
@@ -162,7 +172,6 @@ timevalue tlag(coordinate x, coordinate y, coordinate z, timevalue t,
     timevalue t2 = t - 2*Epsilon;
     
     int n = 0;
-    int max_steps = 10;
 
     while (fabs(t1 - t2) > Epsilon) {
         t1 = t2;
@@ -172,6 +181,8 @@ timevalue tlag(coordinate x, coordinate y, coordinate z, timevalue t,
             Sq(z - sz(t2, xc, yc, zc, R, omega, alpha));
         long double d = sqrt(dd);
         t2 = t - d / c;
+        if (t2 == t1)
+            break;
         //printf("d=%0.30Le, c(t-t2)=%0.30Le\n", d, c*(t-t2));
         //printf("d-c(t-t2)=%0.30Le\n", d-c*(t-t2));
         if (++n > max_steps)
@@ -375,7 +386,3 @@ void electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
     (*B_z) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx*v_y - ny*v_x)/(r*r)/c + (nx*w_y - ny*w_x)*(k/r)/(c*c));
 }
 
-void test(long double x)
-{
-    printf("test x = %lf\n", x);
-}

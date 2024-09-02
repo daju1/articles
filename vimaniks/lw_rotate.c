@@ -61,15 +61,98 @@ timespan cget_timespan_Epsilon()
 _Bool no_retardation_test = 0;
 
 typedef timevalue (*Tlag)(coordinate x, coordinate y, coordinate z, timevalue t,
-                          Coordinate sx, Coordinate sy, Coordinate sz, 
+                          Coordinate sx, Coordinate sy, Coordinate sz,
+                          Velocity vx, Velocity vy, Velocity vz,
                           coordinate xc, coordinate yc, coordinate zc,
                           distance R, anglevelocity omega, angle alpha);
 
-    
+
+timevalue newton_root_func(coordinate x, coordinate y, coordinate z,
+                           timevalue t, timevalue t2,
+                           Coordinate sx, Coordinate sy, Coordinate sz,
+                           coordinate xc, coordinate yc, coordinate zc,
+                           distance R, anglevelocity omega, angle alpha)
+{
+    double f = Sq(c*(t-t2))
+             - Sq(x-sx(t2, xc, yc, zc, R, omega, alpha))
+             - Sq(y-sy(t2, xc, yc, zc, R, omega, alpha))
+             - Sq(z-sz(t2, xc, yc, zc, R, omega, alpha));
+    return f;
+}
+
+timevalue newton_root_derivative(coordinate x, coordinate y, coordinate z,
+                                 timevalue t, timevalue t2,
+                                 Coordinate sx, Coordinate sy, Coordinate sz,
+                                 Velocity vx, Velocity vy, Velocity vz,
+                                 coordinate xc, coordinate yc, coordinate zc,
+                                 distance R, anglevelocity omega, angle alpha)
+{
+    double dfdt2 = - 2 * c*c * (t - t2)
+                 + 2*(x - sx(t2, xc, yc, zc, R, omega, alpha))*vx(t2, xc, yc, zc, R, omega, alpha)
+                 + 2*(y - sy(t2, xc, yc, zc, R, omega, alpha))*vy(t2, xc, yc, zc, R, omega, alpha)
+                 + 2*(z - sz(t2, xc, yc, zc, R, omega, alpha))*vz(t2, xc, yc, zc, R, omega, alpha);
+    return dfdt2;
+}
+
+
+
+timevalue NewtonIt(double step,
+                   coordinate x, coordinate y, coordinate z,
+                   timevalue t, timevalue t2,
+                   Coordinate sx, Coordinate sy, Coordinate sz,
+                   Velocity vx, Velocity vy, Velocity vz,
+                   coordinate xc, coordinate yc, coordinate zc,
+                   distance R, anglevelocity omega, angle alpha)
+{
+    timevalue f = newton_root_func(x, y, z,
+                                   t, t2,
+                                   sx, sy, sz,
+                                   xc, yc, zc, R, omega, alpha);
+
+    timevalue df = newton_root_derivative(x, y, z,
+                                          t, t2,
+                                          sx, sy, sz,
+                                          vx, vy, vz,
+                                          xc, yc, zc, R, omega, alpha);
+
+    double delta      = f/df;
+    printf("f = %0.20e, df=%0.20f, delta=%0.20e\n",
+           f, df, delta);
+    double step_delta = step*delta;
+    double res        = t2-step_delta;
+
+    return res;
+}
+
+timevalue find_newton_root(coordinate x, coordinate y, coordinate z, timevalue t, timevalue t2,
+                           Coordinate sx, Coordinate sy, Coordinate sz,
+                           Velocity vx, Velocity vy, Velocity vz,
+                           coordinate xc, coordinate yc, coordinate zc,
+                           distance R, anglevelocity omega, angle alpha, int max_steps)
+{
+    double step = 1.0;
+
+    for (int i = 0; i < max_steps; ++i)
+    {
+        printf("t2=%0.20e\n", t2);
+        t2 = NewtonIt(step,
+                      x, y, z,
+                      t, t2,
+                      sx, sy, sz,
+                      vx, vy, vz,
+                      xc, yc, zc, R, omega, alpha);
+
+        //step *= 0.999;
+    }
+
+    return t2;
+}
+
 timevalue tlag(coordinate x, coordinate y, coordinate z, timevalue t,
-               Coordinate sx, Coordinate sy, Coordinate sz, 
-                 coordinate xc, coordinate yc, coordinate zc,
-                 distance R, anglevelocity omega, angle alpha)
+               Coordinate sx, Coordinate sy, Coordinate sz,
+               Velocity vx, Velocity vy, Velocity vz,
+               coordinate xc, coordinate yc, coordinate zc,
+               distance R, anglevelocity omega, angle alpha)
 {
     if (no_retardation_test){
         return t;
@@ -79,20 +162,43 @@ timevalue tlag(coordinate x, coordinate y, coordinate z, timevalue t,
     timevalue t2 = t - 2*Epsilon;
     
     int n = 0;
+    int max_steps = 20;
 
     while (fabs(t1 - t2) > Epsilon) {
         t1 = t2;
-        double dd = 
+        double dd =
             Sq(x - sx(t1, xc, yc, zc, R, omega, alpha)) +
             Sq(y - sy(t1, xc, yc, zc, R, omega, alpha)) +
             Sq(z - sz(t1, xc, yc, zc, R, omega, alpha));
         double d = sqrt(dd);
         t2 = t - d / c;
-        if (++n > 100)
+        printf("d=%f, c(t-t2)=%f\n", d, c*(t-t2));
+        printf("d-c(t-t2)=%e\n", d-c*(t-t2));
+        if (++n > max_steps)
             break;
     }
 
+    t2 = find_newton_root(x, y, z, t, t2,
+                          sx, sy, sz,
+                          vx, vy, vz,
+                          xc, yc, zc,
+                          R, omega, alpha, max_steps);
+
     return t2;
+}
+
+timevalue tlag_test(coordinate x, coordinate y, coordinate z, timevalue t1, timevalue t2,
+                    Coordinate sx, Coordinate sy, Coordinate sz,
+                    coordinate xc, coordinate yc, coordinate zc,
+                    distance R, anglevelocity omega, angle alpha)
+{
+    double dd =
+        Sq(x - sx(t1, xc, yc, zc, R, omega, alpha)) +
+        Sq(y - sy(t1, xc, yc, zc, R, omega, alpha)) +
+        Sq(z - sz(t1, xc, yc, zc, R, omega, alpha));
+    double d = sqrt(dd);
+    double cdt = c*(t1-t2);
+    return d - cdt;
 }
 
 /*
@@ -103,9 +209,9 @@ void calc_k(coordinate x, coordinate y, coordinate z, timevalue t,
             Coordinate sx, Coordinate sy, Coordinate sz,
             Velocity vx, Velocity vy, Velocity vz,
             timevalue t2,
-            double * k, distance * r, distance * nx, distance * ny, distance * nz, 
-               coordinate xc, coordinate yc, coordinate zc,
-               distance R, anglevelocity omega, angle alpha)
+            double * k, distance * r, distance * nx, distance * ny, distance * nz,
+            coordinate xc, coordinate yc, coordinate zc,
+            distance R, anglevelocity omega, angle alpha)
 {
     
     if (no_retardation_test) {
@@ -137,11 +243,10 @@ void calc_k(coordinate x, coordinate y, coordinate z, timevalue t,
 
 // отношение радиуса Лиенара Вихерта к радиусу
 double klw(coordinate x, coordinate y, coordinate z, timevalue t,
-                Coordinate sx, Coordinate sy, Coordinate sz,
-                Velocity vx, Velocity vy, Velocity vz,
-                Tlag t_lag, 
-               coordinate xc, coordinate yc, coordinate zc,
-               distance R, anglevelocity omega, angle alpha)
+           Coordinate sx, Coordinate sy, Coordinate sz,
+           Velocity vx, Velocity vy, Velocity vz,
+           coordinate xc, coordinate yc, coordinate zc,
+           distance R, anglevelocity omega, angle alpha)
 {
     double k;
     distance r;
@@ -149,7 +254,7 @@ double klw(coordinate x, coordinate y, coordinate z, timevalue t,
     distance ny;
     distance nz;
 
-    double t2 = t_lag(x, y, z, t, sx, sy, sz, 
+    double t2 = tlag(x, y, z, t, sx, sy, sz, vx, vy, vz,
                       xc, yc, zc, r, omega, alpha); // расчет итерациями запаздывающего момента
     
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz,
@@ -159,11 +264,10 @@ double klw(coordinate x, coordinate y, coordinate z, timevalue t,
 
 // Радиус Лиенара Вихерта
 double Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
-                Coordinate sx, Coordinate sy, Coordinate sz,
-                Velocity vx, Velocity vy, Velocity vz,
-                Tlag t_lag, 
-               coordinate xc, coordinate yc, coordinate zc,
-               distance R, anglevelocity omega, angle alpha)
+           Coordinate sx, Coordinate sy, Coordinate sz,
+           Velocity vx, Velocity vy, Velocity vz,
+           coordinate xc, coordinate yc, coordinate zc,
+           distance R, anglevelocity omega, angle alpha)
 {
     double k;
     distance r;
@@ -171,7 +275,7 @@ double Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
     distance ny;
     distance nz;
 
-    double t2 = t_lag(x, y, z, t, sx, sy, sz,
+    double t2 = tlag(x, y, z, t, sx, sy, sz, vx, vy, vz,
                      xc, yc, zc, R, omega, alpha); // расчет итерациями запаздывающего момента
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz,
           xc, yc, zc, R, omega, alpha);
@@ -181,11 +285,11 @@ double Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
 
 // phi_lw - скалярный потенциал Лиенара Вихерта
 double philw(coordinate x, coordinate y, coordinate z, timevalue t,
-           Coordinate sx, Coordinate sy, Coordinate sz,
-           Velocity vx, Velocity vy, Velocity vz,
-           charge q, Tlag t_lag, 
-               coordinate xc, coordinate yc, coordinate zc,
-               distance R, anglevelocity omega, angle alpha)
+             Coordinate sx, Coordinate sy, Coordinate sz,
+             Velocity vx, Velocity vy, Velocity vz,
+             charge q,
+             coordinate xc, coordinate yc, coordinate zc,
+             distance R, anglevelocity omega, angle alpha)
 {
     double k;
     distance r;
@@ -193,7 +297,7 @@ double philw(coordinate x, coordinate y, coordinate z, timevalue t,
     distance ny;
     distance nz;
 
-    double t2 = t_lag(x, y, z, t, sx, sy, sz,
+    double t2 = tlag(x, y, z, t, sx, sy, sz, vx, vy, vz,
                      xc, yc, zc, R, omega, alpha); // расчет итерациями запаздывающего момента
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz,
           xc, yc, zc, R, omega, alpha);
@@ -206,10 +310,10 @@ double philw(coordinate x, coordinate y, coordinate z, timevalue t,
 void Alw(coordinate x, coordinate y, coordinate z, timevalue t,
        Coordinate sx, Coordinate sy, Coordinate sz,
        Velocity vx, Velocity vy, Velocity vz,
-       charge q, Tlag t_lag,
+       charge q,
        field * A_x, field * A_y, field * A_z, 
-               coordinate xc, coordinate yc, coordinate zc,
-               distance R, anglevelocity omega, angle alpha
+       coordinate xc, coordinate yc, coordinate zc,
+       distance R, anglevelocity omega, angle alpha
        )
 {
     double k;
@@ -218,7 +322,7 @@ void Alw(coordinate x, coordinate y, coordinate z, timevalue t,
     distance ny;
     distance nz;
 
-    double t2 = t_lag(x, y, z, t, sx, sy, sz,
+    double t2 = tlag(x, y, z, t, sx, sy, sz, vx, vy, vz,
                       xc, yc, zc, R, omega, alpha); // расчет итерациями запаздывающего момента
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz,
                       xc, yc, zc, R, omega, alpha);
@@ -230,13 +334,13 @@ void Alw(coordinate x, coordinate y, coordinate z, timevalue t,
 
 
 void electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
-                Coordinate sx, Coordinate sy, Coordinate sz,
-                Velocity vx, Velocity vy, Velocity vz,
-                Acceleration wx, Acceleration wy, Acceleration wz,
-                charge q, Tlag t_lag, 
-                field * E_x, field * E_y, field * E_z, field * B_x, field * B_y, field * B_z, 
-               coordinate xc, coordinate yc, coordinate zc,
-               distance R, anglevelocity omega, angle alpha)
+                   Coordinate sx, Coordinate sy, Coordinate sz,
+                   Velocity vx, Velocity vy, Velocity vz,
+                   Acceleration wx, Acceleration wy, Acceleration wz,
+                   charge q,
+                   field * E_x, field * E_y, field * E_z, field * B_x, field * B_y, field * B_z,
+                   coordinate xc, coordinate yc, coordinate zc,
+                   distance R, anglevelocity omega, angle alpha)
 {
     double k;
     distance r;
@@ -244,7 +348,7 @@ void electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
     distance ny;
     distance nz;
 
-    double t2 = t_lag(x, y, z, t, sx, sy, sz, 
+    double t2 = tlag(x, y, z, t, sx, sy, sz, vx, vy, vz,
                       xc, yc, zc, R, omega, alpha); // расчет итерациями запаздывающего момента
 
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz, 

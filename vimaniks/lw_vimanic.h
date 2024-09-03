@@ -27,6 +27,12 @@ long double ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long 
 long double spherical_ccalc_Maxwells_stress_tensor(
     long double r, long double theta, long double varphi, long double t);
 
+long double spherical_ccalc_Maxwells_stress_tensor_R_t(
+    long double theta, long double varphi, long double t);
+
+void cset_sphere_R(long double R);
+long double cget_sphere_R();
+
 void cset_vc(long double vc);
 long double cget_omega(); 
 

@@ -355,6 +355,8 @@ long double ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long 
 // Интегрируем в сферической системе координат,
 // у которой однако в соотвествие с принятыми в задаче
 // наименованиями осей главная ось игрек вместо зет
+
+// направление векторов нормали к сферической воображаемой поверхности инвертировано - снаружи вовнутрь
 long double spherical_ccalc_Maxwells_stress_tensor(
     long double r, long double theta, long double varphi, long double t)
 {
@@ -371,8 +373,22 @@ long double spherical_ccalc_Maxwells_stress_tensor(
         0);
 }
 
-// направление векторов нормали к сферической воображаемой поверхности инвертировано - снаружи вовнутрь
+long double sphere_R;
+void cset_sphere_R(long double R)
+{
+    sphere_R = R;
+}
 
+long double cget_sphere_R()
+{
+    return sphere_R;
+}
+
+long double spherical_ccalc_Maxwells_stress_tensor_R_t(
+    long double theta, long double varphi, long double t)
+{
+    return sphere_R * sphere_R * spherical_ccalc_Maxwells_stress_tensor(sphere_R, theta, varphi, t);
+}
 
 long double cget_S()  { return S;}
 long double cget_R_l(){ return R_l; }

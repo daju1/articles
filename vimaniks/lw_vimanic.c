@@ -15,9 +15,9 @@
 
 #define Sq(x) (x)*(x)
 
-static long double R_r = 10;
-static long double R_l = 10;
-static long double S = 0.5;
+static long double R_r = 1;
+static long double R_l = 1;
+static long double S = 0.05;
 static long double v_c = 0.8;
 
 void cset_vc(long double vc)
@@ -25,6 +25,10 @@ void cset_vc(long double vc)
     v_c = vc;
 }
 
+long double cget_vc()
+{
+    return v_c;
+}
 
 long double cget_omega() {
     return v_c * cget_c() / cget_R_r();
@@ -286,8 +290,8 @@ long double ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long 
             Alpha_l = M_PI - (i_a * (2*M_PI)/N + alpha0_l);
             Alpha_r = i_q * (2*M_PI)/N + alpha0_r;
             
-            //printf("sign_a = %Lf sign_q = %Lf\n", sign_a, sign_q);
-            //printf("Alpha_l = %Lf Alpha_r = %Lf\n", Alpha_l, Alpha_r);
+            printf("sign_a = %Lf sign_q = %Lf\n", sign_a, sign_q);
+            printf("Alpha_l = %Lf Alpha_r = %Lf\n", Alpha_l, Alpha_r);
 
             
             //(E_x, E_y, E_z, B_x, B_y, B_z) = EB_lw(X_a, Y_a, Z_a, t_i, sign_q, xc_r, yc_r, zc_r, R_r, Omega_r, Alpha_r)
@@ -340,7 +344,7 @@ long double ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long 
     //# Тамм параграф 33 формула (33.5)
     //# сила натяжения действующая на площадку поверхности интегрирования
     //# со стороны поля создаваемого вращающимися зарядами
-    long double fy = (sigma_yx * cos_nx + sigma_yy * cos_ny + sigma_yz * cos_nz);
+    long double py = (sigma_yx * cos_nx + sigma_yy * cos_ny + sigma_yz * cos_nz);
     
     long double S_x = ((long double)(1.0))/(4*M_PI)*(Ey * Hz - Ez * Hy);
     long double S_y = ((long double)(1.0))/(4*M_PI)*(Ez * Hx - Ex * Hz);
@@ -348,7 +352,7 @@ long double ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long 
 
     //# Интегральная величина количества имульса электромагнитного поля, 
     //# вытекающего в единицу времени из замкнутого обьёма через площадку ЛЛ2 32.14
-    return fy;
+    return py;
 }
 
 
@@ -394,6 +398,10 @@ long double cget_S()  { return S;}
 long double cget_R_l(){ return R_l; }
 long double cget_R_r(){ return R_r; }
 
+void cset_S(long double s)  { S = s;}
+void cset_R_l(long double r){ R_l = r; }
+void cset_R_r(long double r){ R_r = r; }
+
 long double cget_xc_l(){ return xc_l(); }
 long double cget_xc_r(){ return xc_r(); }
 
@@ -402,3 +410,25 @@ long double cget_yc_r(){ return yc_r(); }
 
 long double cget_zc_l(){ return zc_l(); }
 long double cget_zc_r(){ return zc_r(); }
+
+double sum_Fy_Integrand(double t, void *user_data)
+{
+    long double res = ccalc_sum_Fy_t(1, (long double) t,
+                  (long double) 0.0,
+                  (long double) 0.0, 0);
+
+    return (double)res;
+}
+
+// scipy.LowLevelCallable interface
+double Maxwells_stress_tensor_Integrand(int n, double *xx, void *user_data){
+    // theta, varphi, t
+
+    #define theta  xx[0]
+    #define varphi xx[1]
+    #define t      xx[2]
+
+    long double res = spherical_ccalc_Maxwells_stress_tensor_R_t((long double)theta, (long double)varphi, (long double)t);
+
+    return (double)res;
+}

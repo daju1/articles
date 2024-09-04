@@ -34,6 +34,7 @@ void cset_sphere_R(long double R);
 long double cget_sphere_R();
 
 void cset_vc(long double vc);
+long double cget_vc();
 long double cget_omega(); 
 
 long double cget_S();

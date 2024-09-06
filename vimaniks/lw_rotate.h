@@ -50,13 +50,14 @@ timevalue newton_root_derivative(coordinate x, coordinate y, coordinate z,
 
 
 
-timevalue NewtonIt(long double step,
+int NewtonIt(long double step,
                    coordinate x, coordinate y, coordinate z,
                    timevalue t, timevalue t2,
                    Coordinate sx, Coordinate sy, Coordinate sz,
                    Velocity vx, Velocity vy, Velocity vz,
                    coordinate xc, coordinate yc, coordinate zc,
-                   distance R, anglevelocity omega, angle alpha);
+                   distance R, anglevelocity omega, angle alpha,
+            timevalue * res);
 
 timevalue find_newton_root(coordinate x, coordinate y, coordinate z, timevalue t, timevalue t2,
                            Coordinate sx, Coordinate sy, Coordinate sz,

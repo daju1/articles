@@ -14,9 +14,13 @@ long double wx(long double t, long double xc, long double yc, long double zc, lo
 long double wy(long double t, long double xc, long double yc, long double zc, long double R, long double omega, long double alpha);
 long double wz(long double t, long double xc, long double yc, long double zc, long double R, long double omega, long double alpha);
 
-long double ccalc_sum_Fy_t(int N, long double t_i,
-                  long double alpha0_l,
-                  long double alpha0_r, _Bool to_log);
+void ccalc_sum_Fy_t(int N, long double t_i,
+                    long double alpha0_l,
+                    long double alpha0_r,
+                    long double * Fy,
+                    long double * F_alpha_l,
+                    long double * F_alpha_r,
+                    _Bool to_log);
 long double ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z_a, long double t_i,
                                  int N,
                                 long double cos_nx, long double cos_ny, long double cos_nz,

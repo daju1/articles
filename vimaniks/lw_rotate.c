@@ -102,13 +102,14 @@ timevalue newton_root_derivative(coordinate x, coordinate y, coordinate z,
 
 
 
-timevalue NewtonIt(long double step,
+int NewtonIt(long double step,
                    coordinate x, coordinate y, coordinate z,
                    timevalue t, timevalue t2,
                    Coordinate sx, Coordinate sy, Coordinate sz,
                    Velocity vx, Velocity vy, Velocity vz,
                    coordinate xc, coordinate yc, coordinate zc,
-                   distance R, anglevelocity omega, angle alpha)
+                   distance R, anglevelocity omega, angle alpha,
+        timevalue * res)
 {
     timevalue f = newton_root_func(x, y, z,
                                    t, t2,
@@ -120,14 +121,18 @@ timevalue NewtonIt(long double step,
                                           sx, sy, sz,
                                           vx, vy, vz,
                                           xc, yc, zc, R, omega, alpha);
+    if (df == 0.0)
+    {
+        return -1;
+    }
 
     long double delta      = f/df;
     long double step_delta = step*delta;
-    long double res        = t2-step_delta;
+    *res                   = t2-step_delta;
     //printf("t2 = %0.30Le, f = %0.30Le, df=%0.30Le, delta=%0.30Le step %0.30Le step_delta %0.30Le res = %0.30Le\n",
     //       t2, f, df, delta, step, step_delta, res);
 
-    return res;
+    return 0;
 }
 
 timevalue find_newton_root(coordinate x, coordinate y, coordinate z, timevalue t, timevalue t2,
@@ -143,14 +148,19 @@ timevalue find_newton_root(coordinate x, coordinate y, coordinate z, timevalue t
     {
         //printf("t2=%0.30Le\t", t2);
         t1 = t2;
-        t2 = NewtonIt(step,
+        if (-1 == NewtonIt(step,
                       x, y, z,
                       t, t2,
                       sx, sy, sz,
                       vx, vy, vz,
-                      xc, yc, zc, R, omega, alpha);
-        if (t2 == t1)
+                      xc, yc, zc, R, omega, alpha, &t2))
+        {
             break;
+        }
+
+        if (t2 == t1){
+            break;
+        }
 
         step *= 0.9;
     }
@@ -234,11 +244,13 @@ void calc_k(coordinate x, coordinate y, coordinate z, timevalue t,
         (*r) = c * (t - t2);
     }
 
+    //printf("(*r) = %Lf t = %Lf t2 = %Lf (t - t2)=%Lf\n", (*r), t, t2, (t - t2));
+
     (*nx) = (x - sx(t2, xc, yc, zc, R, omega, alpha))/(*r);
     (*ny) = (y - sy(t2, xc, yc, zc, R, omega, alpha))/(*r);
     (*nz) = (z - sz(t2, xc, yc, zc, R, omega, alpha))/(*r);
     
-    //printf("(*nx) = %f (*ny) = %f (*nz) = %f\n", (*nx), (*ny), (*nz));
+    //printf("(*nx) = %Lf (*ny) = %Lf (*nz) = %Lf\n", (*nx), (*ny), (*nz));
 
     if (no_retardation_test) {
         (*k) = 1.0;
@@ -248,11 +260,11 @@ void calc_k(coordinate x, coordinate y, coordinate z, timevalue t,
                       (*ny) * vy(t2, xc, yc, zc, R, omega, alpha) +
                       (*nz) * vz(t2, xc, yc, zc, R, omega, alpha)) / c;
     }
-    
-    //printf("(*r) = %e (*k) = %e\n", (*r), (*k));
+
+    //printf("(*r) = %Le (*k) = %Le\n", (*r), (*k));
 }
 
-// отношение радиуса Лиенара Вихерта к радиусу
+// отношение радиуса Лиенара Вихерта к длине радиус-вектора
 long double klw(coordinate x, coordinate y, coordinate z, timevalue t,
            Coordinate sx, Coordinate sy, Coordinate sz,
            Velocity vx, Velocity vy, Velocity vz,
@@ -266,10 +278,11 @@ long double klw(coordinate x, coordinate y, coordinate z, timevalue t,
     distance nz;
 
     long double t2 = tlag(x, y, z, t, sx, sy, sz, vx, vy, vz,
-                      xc, yc, zc, r, omega, alpha); // расчет итерациями запаздывающего момента
+                      xc, yc, zc, R, omega, alpha); // расчет итерациями запаздывающего момента
     
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz,
            xc, yc, zc, R, omega, alpha);
+    //printf("klw (*r) = %Le (*k) = %Le t2 = %Le\n", r, k, t2);
     return k;
 }
 
@@ -290,6 +303,7 @@ long double Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
                      xc, yc, zc, R, omega, alpha); // расчет итерациями запаздывающего момента
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz,
           xc, yc, zc, R, omega, alpha);
+    //printf("Rlw (*r) = %Le (*k) = %Le t2 = %Le\n", r, k, t2);
 
     return k*r;
 }

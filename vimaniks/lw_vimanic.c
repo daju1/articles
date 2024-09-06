@@ -121,9 +121,13 @@ long double wz(long double t, long double xc, long double yc, long double zc,
     return result;
 }
 
-long double ccalc_sum_Fy_t(int N, long double t_i,
+void ccalc_sum_Fy_t(int N, long double t_i,
                   long double alpha0_l,
-                  long double alpha0_r, _Bool to_log)
+                  long double alpha0_r,
+                  long double * Fy,
+                  long double * F_alpha_l,
+                  long double * F_alpha_r,
+                  _Bool to_log)
 {
     long double omega = cget_omega();
 
@@ -163,8 +167,14 @@ long double ccalc_sum_Fy_t(int N, long double t_i,
     long double Fy_l = 0.0;
     long double Fx_r = 0.0;
     long double Fy_r = 0.0;
-    long double F_alpha_l = 0.0;
-    long double F_alpha_r = 0.0;
+
+    if (F_alpha_l) {
+        *F_alpha_l = 0.0;
+    }
+
+    if (F_alpha_r) {
+        *F_alpha_r = 0.0;
+    }
     
     long double fx_l, fx_r, fy_l, fy_r;
     long double f_alpha_l, f_alpha_r;
@@ -193,7 +203,7 @@ long double ccalc_sum_Fy_t(int N, long double t_i,
             Zq = sz(t_i, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
             
             
-            //# поле создаваемое правым вращающимся зарядом в области левого вращающегося заряда
+            // поле создаваемое правым вращающимся зарядом в области левого вращающегося заряда
             //(E_x, E_y, E_z, B_x, B_y, B_z) = EB_lw(Xa, Ya, Za, t_i, sign_q, xc_r, yc_r, zc_r, R_r, Omega_r, Alpha_r)
                 
             electr_magnet(Xa, Ya, Za, t_i,
@@ -201,20 +211,23 @@ long double ccalc_sum_Fy_t(int N, long double t_i,
                   sign_q,
                   &E_x, &E_y, &E_z, &B_x, &B_y, &B_z, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
 
-            //# сила действующая на левый заряд со стороны поля правого заряда
+            // сила действующая на левый заряд со стороны поля правого заряда
             fx_l = (E_x)*sign_a;
             fy_l = (E_y)*sign_a;
 
             Fx_l += fx_l;
             Fy_l += fy_l;
             
-            current_angle_l = Omega_l * t_i + Alpha_l;
+            if (F_alpha_l) {
             
-            //# Расчёт углового усилия действующего на левый заряд со стороны поля правого заряда
-            f_alpha_l  = fy_l * cos(current_angle_l) - fx_l * sin(current_angle_l);
-            F_alpha_l += f_alpha_l;
+                current_angle_l = Omega_l * t_i + Alpha_l;
+
+                // Расчёт углового усилия действующего на левый заряд со стороны поля правого заряда
+                f_alpha_l  = fy_l * cos(current_angle_l) - fx_l * sin(current_angle_l);
+                *F_alpha_l += f_alpha_l;
+            }
             
-            //# поле создаваемое левым вращающимся зарядом в области правого вращающегося заряда
+            // поле создаваемое левым вращающимся зарядом в области правого вращающегося заряда
             //(E_x, E_y, E_z, B_x, B_y, B_z) = EB_lw(Xq, Yq, Zq, t_i, sign_a, xc_l, yc_l, zc_l, R_l, Omega_l, Alpha_l)
                 
             electr_magnet(Xq, Yq, Zq, t_i,
@@ -222,18 +235,20 @@ long double ccalc_sum_Fy_t(int N, long double t_i,
                   sign_a,
                   &E_x, &E_y, &E_z, &B_x, &B_y, &B_z, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l);
 
-            //# сила действующая на правый заряд со стороны поля левого заряда
+            // сила действующая на правый заряд со стороны поля левого заряда
             fx_r = (E_x)*sign_q;
             fy_r = (E_y)*sign_q;
             
             Fx_r += fx_r;
             Fy_r += fy_r;
             
-            current_angle_r = Omega_r * t_i + Alpha_r;
-            
-            //# Расчёт углового усилия действующего на правый заряд со стороны поля левого заряда
-            f_alpha_r  = fy_r * cos(current_angle_r) - fx_r * sin(current_angle_r);
-            F_alpha_r += f_alpha_r;
+            if (F_alpha_r) {
+                current_angle_r = Omega_r * t_i + Alpha_r;
+
+                // Расчёт углового усилия действующего на правый заряд со стороны поля левого заряда
+                f_alpha_r  = fy_r * cos(current_angle_r) - fx_r * sin(current_angle_r);
+                *F_alpha_r += f_alpha_r;
+            }
 
             if (to_log){
                 printf("fx_l=%Lf fy_l=%Lf fx_r=%Lf fy_r=%Lf",fx_l, fy_l, fx_r, fy_r);
@@ -241,11 +256,13 @@ long double ccalc_sum_Fy_t(int N, long double t_i,
         }
     }
 
-    //# Интегральная величина тяги в направлении оси y
-    //# угловое усилие
-
-    return Fy_l + Fy_r;//, F_alpha_l, F_alpha_r;
+    if (Fy)
+    {
+        // Интегральная величина тяги в направлении оси y
+        *Fy = Fy_l + Fy_r;
+    }
 }
+
 long double ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z_a, long double t_i,
                                  int N,
                                 long double cos_nx, long double cos_ny, long double cos_nz,
@@ -290,8 +307,8 @@ long double ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long 
             Alpha_l = M_PI - (i_a * (2*M_PI)/N + alpha0_l);
             Alpha_r = i_q * (2*M_PI)/N + alpha0_r;
             
-            printf("sign_a = %Lf sign_q = %Lf\n", sign_a, sign_q);
-            printf("Alpha_l = %Lf Alpha_r = %Lf\n", Alpha_l, Alpha_r);
+            //printf("sign_a = %Lf sign_q = %Lf\n", sign_a, sign_q);
+            //printf("Alpha_l = %Lf Alpha_r = %Lf\n", Alpha_l, Alpha_r);
 
             
             //(E_x, E_y, E_z, B_x, B_y, B_z) = EB_lw(X_a, Y_a, Z_a, t_i, sign_q, xc_r, yc_r, zc_r, R_r, Omega_r, Alpha_r)
@@ -410,25 +427,3 @@ long double cget_yc_r(){ return yc_r(); }
 
 long double cget_zc_l(){ return zc_l(); }
 long double cget_zc_r(){ return zc_r(); }
-
-double sum_Fy_Integrand(double t, void *user_data)
-{
-    long double res = ccalc_sum_Fy_t(1, (long double) t,
-                  (long double) 0.0,
-                  (long double) 0.0, 0);
-
-    return (double)res;
-}
-
-// scipy.LowLevelCallable interface
-double Maxwells_stress_tensor_Integrand(int n, double *xx, void *user_data){
-    // theta, varphi, t
-
-    #define theta  xx[0]
-    #define varphi xx[1]
-    #define t      xx[2]
-
-    long double res = spherical_ccalc_Maxwells_stress_tensor_R_t((long double)theta, (long double)varphi, (long double)t);
-
-    return (double)res;
-}

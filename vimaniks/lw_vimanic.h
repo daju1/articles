@@ -14,25 +14,31 @@ long double wx(long double t, long double xc, long double yc, long double zc, lo
 long double wy(long double t, long double xc, long double yc, long double zc, long double R, long double omega, long double alpha);
 long double wz(long double t, long double xc, long double yc, long double zc, long double R, long double omega, long double alpha);
 
-void ccalc_sum_Fy_t(int N, long double t_i,
+int ccalc_sum_Fy_t(int N, long double t_i,
                     long double alpha0_l,
                     long double alpha0_r,
                     long double * Fy,
                     long double * F_alpha_l,
                     long double * F_alpha_r,
                     _Bool to_log);
-long double ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z_a, long double t_i,
+int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z_a, long double t_i,
                                  int N,
-                                long double cos_nx, long double cos_ny, long double cos_nz,
-                                long double alpha0_l,
-                                long double alpha0_r
-                               );
+                                 long double cos_nx, long double cos_ny, long double cos_nz,
+                                 long double alpha0_l,
+                                 long double alpha0_r,
+                                 long double *py,
+                                 long double *S
+                                 );
 
-long double spherical_ccalc_Maxwells_stress_tensor(
-    long double r, long double theta, long double varphi, long double t);
+int spherical_ccalc_Maxwells_stress_tensor(
+                                 long double r, long double theta, long double varphi, long double t,
+                                 long double *py,
+                                 long double *S);
 
-long double spherical_ccalc_Maxwells_stress_tensor_R_t(
-    long double theta, long double varphi, long double t);
+int spherical_ccalc_Maxwells_stress_tensor_R_t(
+                                 long double theta, long double varphi, long double t,
+                                 long double *ppy,
+                                 long double *pS);
 
 void cset_sphere_R(long double R);
 long double cget_sphere_R();

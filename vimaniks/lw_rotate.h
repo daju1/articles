@@ -35,6 +35,7 @@ typedef timevalue (*Tlag)(coordinate x, coordinate y, coordinate z, timevalue t,
                           distance R, anglevelocity omega, angle alpha);
 
 
+/*
 timevalue newton_root_func(coordinate x, coordinate y, coordinate z,
                            timevalue t, timevalue t2,
                            Coordinate sx, Coordinate sy, Coordinate sz,
@@ -47,34 +48,42 @@ timevalue newton_root_derivative(coordinate x, coordinate y, coordinate z,
                                  Velocity vx, Velocity vy, Velocity vz,
                                  coordinate xc, coordinate yc, coordinate zc,
                                  distance R, anglevelocity omega, angle alpha);
+*/
 
-
+void newton_root_derivative(coordinate x, coordinate y, coordinate z,
+                            timevalue t, timevalue t2,
+                            Coordinate sx, Coordinate sy, Coordinate sz,
+                            Velocity vx, Velocity vy, Velocity vz,
+                            coordinate xc, coordinate yc, coordinate zc,
+                            distance R, anglevelocity omega, angle alpha,
+                            long double * cdt, long double * d, long double * f1,
+                            long double * dfdt);
 
 int NewtonIt(long double step,
-                   coordinate x, coordinate y, coordinate z,
-                   timevalue t, timevalue t2,
-                   Coordinate sx, Coordinate sy, Coordinate sz,
-                   Velocity vx, Velocity vy, Velocity vz,
-                   coordinate xc, coordinate yc, coordinate zc,
-                   distance R, anglevelocity omega, angle alpha,
-            timevalue * res);
+             coordinate x, coordinate y, coordinate z,
+             timevalue t, timevalue t2,
+             Coordinate sx, Coordinate sy, Coordinate sz,
+             Velocity vx, Velocity vy, Velocity vz,
+             coordinate xc, coordinate yc, coordinate zc,
+             distance R, anglevelocity omega, angle alpha,
+             timevalue * res, long double * f);
 
-timevalue find_newton_root(coordinate x, coordinate y, coordinate z, timevalue t, timevalue t2,
-                           Coordinate sx, Coordinate sy, Coordinate sz,
-                           Velocity vx, Velocity vy, Velocity vz,
-                           coordinate xc, coordinate yc, coordinate zc,
-                           distance R, anglevelocity omega, angle alpha, int max_steps);
+int find_newton_root(coordinate x, coordinate y, coordinate z, timevalue t, timevalue * pt2,
+                     Coordinate sx, Coordinate sy, Coordinate sz,
+                     Velocity vx, Velocity vy, Velocity vz,
+                     coordinate xc, coordinate yc, coordinate zc,
+                     distance R, anglevelocity omega, angle alpha);
 
-timevalue tlag(coordinate x, coordinate y, coordinate z, timevalue t,
-               Coordinate sx, Coordinate sy, Coordinate sz,
-               Velocity vx, Velocity vy, Velocity vz,
-               coordinate xc, coordinate yc, coordinate zc,
-               distance R, anglevelocity omega, angle alpha);
+int tlag(coordinate x, coordinate y, coordinate z, timevalue t,
+         Coordinate sx, Coordinate sy, Coordinate sz,
+         Velocity vx, Velocity vy, Velocity vz,
+         coordinate xc, coordinate yc, coordinate zc,
+         distance R, anglevelocity omega, angle alpha, timevalue * pt2);
 
 timevalue tlag_test(coordinate x, coordinate y, coordinate z, timevalue t1, timevalue t2,
                     Coordinate sx, Coordinate sy, Coordinate sz,
                     coordinate xc, coordinate yc, coordinate zc,
-                    distance R, anglevelocity omega, angle alpha);
+                    distance R, anglevelocity omega, angle alpha, long double * d, long double * cdt);
 
 /*
 Здесь нужно отметить во избежание путаницы, что радиус Лиенара Вихерта $k$ в формуле для электрического и магнитного полей и $k$ в программе отличаются друг от друга тем, что в программе $k$ нормирован на единицу, а в формуле нет. При переходе от формул к програмным кодам по сути произведено преобразование $k \rightarrow k\cdot r$
@@ -89,39 +98,39 @@ void calc_k(coordinate x, coordinate y, coordinate z, timevalue t,
             distance R, anglevelocity omega, angle alpha);
 
 // отношение радиуса Лиенара Вихерта к радиусу
-long double klw(coordinate x, coordinate y, coordinate z, timevalue t,
-           Coordinate sx, Coordinate sy, Coordinate sz,
-           Velocity vx, Velocity vy, Velocity vz,
-           coordinate xc, coordinate yc, coordinate zc,
-           distance R, anglevelocity omega, angle alpha);
+int klw(coordinate x, coordinate y, coordinate z, timevalue t,
+                Coordinate sx, Coordinate sy, Coordinate sz,
+                Velocity vx, Velocity vy, Velocity vz,
+                coordinate xc, coordinate yc, coordinate zc,
+                distance R, anglevelocity omega, angle alpha, long double *);
 
 // Радиус Лиенара Вихерта
-long double Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
-           Coordinate sx, Coordinate sy, Coordinate sz,
-           Velocity vx, Velocity vy, Velocity vz,
-           coordinate xc, coordinate yc, coordinate zc,
-           distance R, anglevelocity omega, angle alpha);
+int Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
+                Coordinate sx, Coordinate sy, Coordinate sz,
+                Velocity vx, Velocity vy, Velocity vz,
+                coordinate xc, coordinate yc, coordinate zc,
+                distance R, anglevelocity omega, angle alpha, long double *);
 
 // phi_lw - скалярный потенциал Лиенара Вихерта
-long double philw(coordinate x, coordinate y, coordinate z, timevalue t,
-             Coordinate sx, Coordinate sy, Coordinate sz,
-             Velocity vx, Velocity vy, Velocity vz,
-             charge q,
-             coordinate xc, coordinate yc, coordinate zc,
-             distance R, anglevelocity omega, angle alpha);
+int philw(coordinate x, coordinate y, coordinate z, timevalue t,
+                  Coordinate sx, Coordinate sy, Coordinate sz,
+                  Velocity vx, Velocity vy, Velocity vz,
+                  charge q,
+                  coordinate xc, coordinate yc, coordinate zc,
+                  distance R, anglevelocity omega, angle alpha, long double *);
 
 // A_lw - векторный потенциал Лиенара Вихерта
-void Alw(coordinate x, coordinate y, coordinate z, timevalue t,
-       Coordinate sx, Coordinate sy, Coordinate sz,
-       Velocity vx, Velocity vy, Velocity vz,
-       charge q,
-       field * A_x, field * A_y, field * A_z,
-       coordinate xc, coordinate yc, coordinate zc,
-       distance R, anglevelocity omega, angle alpha
+int Alw(coordinate x, coordinate y, coordinate z, timevalue t,
+         Coordinate sx, Coordinate sy, Coordinate sz,
+         Velocity vx, Velocity vy, Velocity vz,
+         charge q,
+         field * A_x, field * A_y, field * A_z,
+         coordinate xc, coordinate yc, coordinate zc,
+         distance R, anglevelocity omega, angle alpha
        );
 
 
-void electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
+int electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
                    Coordinate sx, Coordinate sy, Coordinate sz,
                    Velocity vx, Velocity vy, Velocity vz,
                    Acceleration wx, Acceleration wy, Acceleration wz,

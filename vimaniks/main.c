@@ -17,10 +17,14 @@
 #include "lw_rotate.h"
 #include "lw_vimanic.h"
 
+extern int logging;
+
 int main()
 {
-	long double xcl = cget_xc_l();
+    long double xcl = cget_xc_l();
     printf("xcl = %Lf\n", xcl);
+    printf("sizeof(double) = %ld\n", sizeof(double));
+    printf("sizeof(long double) = %ld\n", sizeof(long double));
     
     cset_c(1.0);
     cset_timespan_Epsilon(1.e-15);
@@ -41,7 +45,13 @@ int main()
 
     cset_max_steps(50);
 
-    long double Fy = ccalc_sum_Fy_t(n, t_i, Alpha0_l, Alpha0_r, To_log);
+    long double Fy;
+    long double F_alpha_l;
+    long double F_alpha_r;
+    if (0 != ccalc_sum_Fy_t(n, t_i, Alpha0_l, Alpha0_r, &Fy, &F_alpha_l, &F_alpha_r, To_log))
+    {
+        printf("ccalc_sum_Fy_t error\n");
+    }
 
     long double R;
     // радиус сферы интегрирования
@@ -52,9 +62,14 @@ int main()
     long double varphi = 0;
 
 
-    long double p = spherical_ccalc_Maxwells_stress_tensor(
-        R, theta, varphi, t_i);
-    printf("p = %0.36Le Fy = %0.36Lf\n", p, Fy);
+    long double py;
+    long double S;
+    if (0 != spherical_ccalc_Maxwells_stress_tensor(
+        R, theta, varphi, t_i, &py, &S))
+    {
+        printf("spherical_ccalc_Maxwells_stress_tensor error\n");
+    }
+    printf("py = %0.36Le S = %0.36Lf Fy = %0.36Lf\n", py, S, Fy);
 
     
     return 0;

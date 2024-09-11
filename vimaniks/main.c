@@ -28,27 +28,29 @@ int main()
     
     cset_c(1.0);
     cset_timespan_Epsilon(1.e-15);
+    cset_distance_Epsilon(1.e-8);
     cset_vc(0.8);
-    
+
     long double omega = cget_omega();
     long double T = (2*M_PI)/cget_omega(); // период вращения
     int time_steps_number = 36000;                      // разбиваем период на шаги
     long double dt = T / time_steps_number;             // длительность шага
-    
+
     int n = 1;
     long double t_i = T/3;
-    
+
     long double Alpha0_l = 0;
     long double Alpha0_r = 0;
     int To_log = 0;
-    
+
+    long double sum_rlagerror_sqare;
 
     cset_max_steps(50);
 
     long double Fy;
     long double F_alpha_l;
     long double F_alpha_r;
-    if (0 != ccalc_sum_Fy_t(n, t_i, Alpha0_l, Alpha0_r, &Fy, &F_alpha_l, &F_alpha_r, To_log))
+    if (0 != ccalc_sum_Fy_t(n, t_i, Alpha0_l, Alpha0_r, &Fy, &F_alpha_l, &F_alpha_r, &sum_rlagerror_sqare, To_log))
     {
         printf("ccalc_sum_Fy_t error\n");
     }
@@ -61,16 +63,14 @@ int main()
     long double theta = M_PI / 2;
     long double varphi = 0;
 
-
     long double py;
     long double S;
     if (0 != spherical_ccalc_Maxwells_stress_tensor(
-        R, theta, varphi, t_i, &py, &S))
+        R, theta, varphi, t_i, &py, &S, &sum_rlagerror_sqare))
     {
         printf("spherical_ccalc_Maxwells_stress_tensor error\n");
     }
     printf("py = %0.36Le S = %0.36Lf Fy = %0.36Lf\n", py, S, Fy);
 
-    
     return 0;
 }

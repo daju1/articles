@@ -389,7 +389,7 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
     //#T = [[sigma_xx, sigma_xy, sigma_xz],
     //#     [sigma_yx, sigma_yy, sigma_yz],
     //#     [sigma_zx, sigma_zy, sigma_zz]]
-    spherical_ccalc_Maxwells_stress_tensor
+
     //# Тамм параграф 33 формула (33.5)
     //# сила натяжения действующая на площадку поверхности интегрирования
     //# со стороны поля создаваемого вращающимися зарядами

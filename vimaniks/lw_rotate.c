@@ -88,6 +88,11 @@ int logging = 0;
 
 int no_retardation_test = 0;
 
+void cset_no_retardation_test(int test)
+{
+    no_retardation_test = test;
+}
+
 typedef timevalue (*Tlag)(coordinate x, coordinate y, coordinate z, timevalue t,
                           Coordinate sx, Coordinate sy, Coordinate sz,
                           Velocity vx, Velocity vy, Velocity vz,

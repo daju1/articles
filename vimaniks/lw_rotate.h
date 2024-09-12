@@ -26,6 +26,8 @@ void cset_timespan_Epsilon(long double _eps);
 void cset_distance_Epsilon(long double _eps);
 void cset_max_steps(int _max_steps);
 
+void cset_no_retardation_test(int test);
+
 timespan cget_timespan_Epsilon();
 
 void cset_min_newton_step(long double min_step);

@@ -276,7 +276,8 @@ int tlag(coordinate x, coordinate y, coordinate z, timevalue t,
                distance R, anglevelocity omega, angle alpha, timevalue * pt2, coordinate * rlagerror)
 {
     if (no_retardation_test){
-        return t;
+        *pt2 = t;
+        return 0;
     }
 
     timevalue t1 = t;
@@ -431,11 +432,11 @@ int Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
 
 // phi_lw - скалярный потенциал Лиенара Вихерта
 int philw(coordinate x, coordinate y, coordinate z, timevalue t,
-                  Coordinate sx, Coordinate sy, Coordinate sz,
-                  Velocity vx, Velocity vy, Velocity vz,
-                  charge q,
-                  coordinate xc, coordinate yc, coordinate zc,
-                  distance R, anglevelocity omega, angle alpha, long double *pphi, coordinate * rlagerror)
+          Coordinate sx, Coordinate sy, Coordinate sz,
+          Velocity vx, Velocity vy, Velocity vz,
+          charge q,
+          coordinate xc, coordinate yc, coordinate zc,
+          distance R, anglevelocity omega, angle alpha, long double *pphi, coordinate * rlagerror)
 {
     long double k;
     distance r;
@@ -461,12 +462,12 @@ int philw(coordinate x, coordinate y, coordinate z, timevalue t,
 
 // A_lw - векторный потенциал Лиенара Вихерта
 int Alw(coordinate x, coordinate y, coordinate z, timevalue t,
-         Coordinate sx, Coordinate sy, Coordinate sz,
-         Velocity vx, Velocity vy, Velocity vz,
-         charge q,
-         field * A_x, field * A_y, field * A_z, coordinate * rlagerror,
-         coordinate xc, coordinate yc, coordinate zc,
-         distance R, anglevelocity omega, angle alpha
+        Coordinate sx, Coordinate sy, Coordinate sz,
+        Velocity vx, Velocity vy, Velocity vz,
+        charge q,
+        field * A_x, field * A_y, field * A_z, coordinate * rlagerror,
+        coordinate xc, coordinate yc, coordinate zc,
+        distance R, anglevelocity omega, angle alpha
        )
 {
     long double k;

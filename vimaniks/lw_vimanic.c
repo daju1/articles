@@ -121,10 +121,12 @@ long double wz(long double t, long double xc, long double yc, long double zc,
     return result;
 }
 
-int ccalc_sum_Fy_t(int N, long double t_i,
+int ccalc_sum_F_t(int N, long double t_i,
                   long double alpha0_l,
                   long double alpha0_r,
+                  long double * Fx,
                   long double * Fy,
+                  long double * Fz,
                   long double * F_alpha_l,
                   long double * F_alpha_r,
                   long double * sum_rlagerror_sqare,
@@ -144,8 +146,11 @@ int ccalc_sum_Fy_t(int N, long double t_i,
     long double Omega_l = + omega;
     long double Omega_r = - omega;
     
-    long double Xa, Ya, Za;
-    long double Xq, Yq, Zq;
+    long double Xa, Ya, Za; // X_l, Y_l, Z_l
+    long double Xq, Yq, Zq; // X_r, Y_r, Z_r
+
+    long double vx_l, vy_l, vz_l;
+    long double vx_r, vy_r, vz_r;
 
     //# current positions of rotated masses
     /*
@@ -166,8 +171,10 @@ int ccalc_sum_Fy_t(int N, long double t_i,
 
     long double Fx_l = 0.0;
     long double Fy_l = 0.0;
+    long double Fz_l = 0.0;
     long double Fx_r = 0.0;
     long double Fy_r = 0.0;
+    long double Fz_r = 0.0;
 
     if (F_alpha_l) {
         *F_alpha_l = 0.0;
@@ -177,7 +184,7 @@ int ccalc_sum_Fy_t(int N, long double t_i,
         *F_alpha_r = 0.0;
     }
     
-    long double fx_l, fx_r, fy_l, fy_r;
+    long double fx_l, fx_r, fy_l, fy_r, fz_l, fz_r;
     long double f_alpha_l, f_alpha_r;
     
     long double E_x, E_y, E_z, B_x, B_y, B_z;
@@ -199,17 +206,25 @@ int ccalc_sum_Fy_t(int N, long double t_i,
             
             Xa = sx(t_i, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l);
             Xq = sx(t_i, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
-            
+
             Ya = sy(t_i, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l);
             Yq = sy(t_i, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
-            
+
             Za = sz(t_i, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l);
             Zq = sz(t_i, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
-            
-            
+
+            vx_l = vx(t_i, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l);
+            vx_r = vx(t_i, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
+
+            vy_l = vy(t_i, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l);
+            vy_r = vy(t_i, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
+
+            vz_l = vz(t_i, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l);
+            vz_r = vz(t_i, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
+
             // поле создаваемое правым вращающимся зарядом в области левого вращающегося заряда
             //(E_x, E_y, E_z, B_x, B_y, B_z) = EB_lw(Xa, Ya, Za, t_i, sign_q, xc_r, yc_r, zc_r, R_r, Omega_r, Alpha_r)
-                
+
             if (0 != electr_magnet(Xa, Ya, Za, t_i,
                   sx, sy, sz, vx, vy, vz, wx, wy, wz,
                   sign_q,
@@ -221,11 +236,13 @@ int ccalc_sum_Fy_t(int N, long double t_i,
             *sum_rlagerror_sqare += Sq(rlagerror);
 
             // сила действующая на левый заряд со стороны поля правого заряда
-            fx_l = (E_x)*sign_a;
-            fy_l = (E_y)*sign_a;
+            fx_l = sign_a*(E_x + (vy_l*B_z-vz_l*B_y)/cget_c());
+            fy_l = sign_a*(E_y + (vz_l*B_x-vx_l*B_z)/cget_c());
+            fz_l = sign_a*(E_z + (vx_l*B_y-vy_l*B_x)/cget_c());
 
             Fx_l += fx_l;
             Fy_l += fy_l;
+            Fz_l += fz_l;
             
             if (F_alpha_l) {
             
@@ -235,10 +252,10 @@ int ccalc_sum_Fy_t(int N, long double t_i,
                 f_alpha_l  = fy_l * cos(current_angle_l) - fx_l * sin(current_angle_l);
                 *F_alpha_l += f_alpha_l;
             }
-            
+
             // поле создаваемое левым вращающимся зарядом в области правого вращающегося заряда
             //(E_x, E_y, E_z, B_x, B_y, B_z) = EB_lw(Xq, Yq, Zq, t_i, sign_a, xc_l, yc_l, zc_l, R_l, Omega_l, Alpha_l)
-                
+
             if (0 != electr_magnet(Xq, Yq, Zq, t_i,
                   sx, sy, sz, vx, vy, vz, wx, wy, wz,
                   sign_a,
@@ -250,12 +267,14 @@ int ccalc_sum_Fy_t(int N, long double t_i,
             *sum_rlagerror_sqare += Sq(rlagerror);
 
             // сила действующая на правый заряд со стороны поля левого заряда
-            fx_r = (E_x)*sign_q;
-            fy_r = (E_y)*sign_q;
-            
+            fx_r = sign_q*(E_x + (vy_r*B_z-vz_r*B_y)/cget_c());
+            fy_r = sign_q*(E_y + (vz_r*B_x-vx_r*B_z)/cget_c());
+            fz_r = sign_q*(E_z + (vx_r*B_y-vy_r*B_x)/cget_c());
+
             Fx_r += fx_r;
             Fy_r += fy_r;
-            
+            Fz_r += fz_r;
+
             if (F_alpha_r) {
                 current_angle_r = Omega_r * t_i + Alpha_r;
 
@@ -270,12 +289,23 @@ int ccalc_sum_Fy_t(int N, long double t_i,
         }
     }
 
+    if (Fx)
+    {
+        *Fx = Fx_l + Fx_r;
+    }
+
     if (Fy)
     {
         // Интегральная величина тяги в направлении оси y
         // printf("Fy_l = %Lf Fy_r = %Lf\n", Fy_l, Fy_r);
         *Fy = Fy_l + Fy_r;
     }
+
+    if (Fz)
+    {
+        *Fz = Fz_l + Fz_r;
+    }
+
     return 0;
 }
 
@@ -300,9 +330,8 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
     long double Omega_l = + omega;
     long double Omega_r = - omega;
     
-    long double Xa, Ya, Za;
-    long double Xq, Yq, Zq;
-
+    long double Xa, Ya, Za; // X_l, Y_l, Z_l
+    long double Xq, Yq, Zq; // X_r, Y_r, Z_r
 
     long double Ex = 0;
     long double Ey = 0;
@@ -454,7 +483,10 @@ int spherical_ccalc_Maxwells_stress_tensor_R_t(
     int ret = spherical_ccalc_Maxwells_stress_tensor(sphere_R, theta, varphi, t,
                                                      &py, &S, sum_rlagerror_sqare);
     *ppy = sphere_R * sphere_R * py;
-    *pS  = sphere_R * sphere_R * S;
+    *pS  = - sphere_R * sphere_R * S; // берём количество энергии излучения
+    // протекающей через поверхность воображаемой сферы со знаком минус, потому что
+    // направление векторов нормали к поверхности внутри функции spherical_ccalc_Maxwells_stress_tensor
+    // инвертировано
 
     return ret;
 }

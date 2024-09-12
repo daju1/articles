@@ -1,23 +1,21 @@
 long double sx(long double t, long double xc, long double yc, long double zc, long double R, long double omega, long double alpha);
-
 long double sy(long double t, long double xc, long double yc, long double zc, long double R, long double omega, long double alpha);
-
 long double sz(long double t, long double xc, long double yc, long double zc, long double R, long double omega, long double alpha);
 
 long double vx(long double t, long double xc, long double yc, long double zc, long double R, long double omega, long double alpha);
-
 long double vy(long double t, long double xc, long double yc, long double zc, long double R, long double omega, long double alpha);
-
 long double vz(long double t, long double xc, long double yc, long double zc, long double R, long double omega, long double alpha);
 
 long double wx(long double t, long double xc, long double yc, long double zc, long double R, long double omega, long double alpha);
 long double wy(long double t, long double xc, long double yc, long double zc, long double R, long double omega, long double alpha);
 long double wz(long double t, long double xc, long double yc, long double zc, long double R, long double omega, long double alpha);
 
-int ccalc_sum_Fy_t(int N, long double t_i,
+int ccalc_sum_F_t(int N, long double t_i,
                     long double alpha0_l,
                     long double alpha0_r,
+                    long double * Fx,
                     long double * Fy,
+                    long double * Fz,
                     long double * F_alpha_l,
                     long double * F_alpha_r,
                     long double * sum_rlagerror_sqare,

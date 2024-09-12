@@ -30,6 +30,7 @@ int main()
     cset_timespan_Epsilon(1.e-15);
     cset_distance_Epsilon(1.e-8);
     cset_vc(0.8);
+    cset_no_retardation_test(0);
 
     long double omega = cget_omega();
     long double T = (2*M_PI)/cget_omega(); // период вращения
@@ -47,10 +48,12 @@ int main()
 
     cset_max_steps(50);
 
+    long double Fx;
     long double Fy;
+    long double Fz;
     long double F_alpha_l;
     long double F_alpha_r;
-    if (0 != ccalc_sum_Fy_t(n, t_i, Alpha0_l, Alpha0_r, &Fy, &F_alpha_l, &F_alpha_r, &sum_rlagerror_sqare, To_log))
+    if (0 != ccalc_sum_F_t(n, t_i, Alpha0_l, Alpha0_r, &Fx, &Fy, &Fz, &F_alpha_l, &F_alpha_r, &sum_rlagerror_sqare, To_log))
     {
         printf("ccalc_sum_Fy_t error\n");
     }

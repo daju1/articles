@@ -13,7 +13,7 @@
 #include <math.h>
 #define Pi M_PI
 
-#define Sq(x) (x)*(x)
+#define Sq(x) ((x)*(x))
 
 static long double R_r = 1;
 static long double R_l = 1;

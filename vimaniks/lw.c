@@ -11,7 +11,7 @@
 #include <math.h>
 #define Pi M_PI
 
-#define Sq(x) (x)*(x)
+#define Sq(x) ((x)*(x))
 
 //sgs 
 

@@ -1,3 +1,4 @@
+#define INCLUDE_CUBA_H
 #include "calc_RO.h"
 
 int Integrand(const int *ndim, const cubareal xx[],

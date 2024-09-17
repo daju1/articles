@@ -20,7 +20,7 @@ static inline cubareal Iq (cubareal r0, cubareal q, cubareal theta_a, cubareal r
 }
 
 // интегрирование по координатам точек наблюдения
-static inline cubareal Ia (cubareal r0, cubareal q, cubareal theta_a, cubareal ra, cubareal phi_q, cubareal theta_q, cubareal rq)
+/*static inline*/ cubareal Ia (cubareal r0, cubareal q, cubareal theta_a, cubareal ra, cubareal phi_q, cubareal theta_q, cubareal rq)
 {
     return 2 * M_PI * rho_q(r0, q) * Iq(r0, q, theta_a, ra, phi_q, theta_q, rq) * sin(theta_a) * Sq(ra) ;
 }

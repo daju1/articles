@@ -45,6 +45,8 @@ long double yc_r() { return 0; }
 long double zc_l() { return 0; }
 long double zc_r() { return 0; }
 
+extern velocity c;
+
 long double sx(long double t, long double xc, long double yc, long double zc,
                long double R, long double omega, long double alpha)
 {
@@ -402,10 +404,12 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
             Hz += B_z;
         }
     }
-            
-    long double sigma_xx = ((long double)(1.0))/(4*M_PI)*( - Ex*Ex - Hx*Hx + Ey*Ey + Ez*Ez + Hy*Hy + Hz*Hz);
-    long double sigma_yy = ((long double)(1.0))/(4*M_PI)*( - Ey*Ey - Hy*Hy + Ez*Ez + Ex*Ex + Hz*Hz + Hx*Hx);
-    long double sigma_zz = ((long double)(1.0))/(4*M_PI)*( - Ez*Ez - Hz*Hz + Ex*Ex + Ey*Ey + Hx*Hx + Hy*Hy);
+
+    // ЛЛ2 (33,3)
+
+    long double sigma_xx = ((long double)(1.0))/(8*M_PI)*( - Ex*Ex - Hx*Hx + Ey*Ey + Ez*Ez + Hy*Hy + Hz*Hz);
+    long double sigma_yy = ((long double)(1.0))/(8*M_PI)*( - Ey*Ey - Hy*Hy + Ez*Ez + Ex*Ex + Hz*Hz + Hx*Hx);
+    long double sigma_zz = ((long double)(1.0))/(8*M_PI)*( - Ez*Ez - Hz*Hz + Ex*Ex + Ey*Ey + Hx*Hx + Hy*Hy);
     
     long double sigma_xy = ((long double)(1.0))/(4*M_PI)*( - Ex*Ey - Hx*Hy );
     long double sigma_xz = ((long double)(1.0))/(4*M_PI)*( - Ex*Ez - Hx*Hz );
@@ -415,20 +419,22 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
     long double sigma_zx = ((long double)(1.0))/(4*M_PI)*( - Ez*Ex - Hz*Hx );
     long double sigma_zy = ((long double)(1.0))/(4*M_PI)*( - Ez*Ey - Hz*Hy );
 
-    //#T = [[sigma_xx, sigma_xy, sigma_xz],
-    //#     [sigma_yx, sigma_yy, sigma_yz],
-    //#     [sigma_zx, sigma_zy, sigma_zz]]
+    //T = [[sigma_xx, sigma_xy, sigma_xz],
+    //     [sigma_yx, sigma_yy, sigma_yz],
+    //     [sigma_zx, sigma_zy, sigma_zz]]
 
-    //# Тамм параграф 33 формула (33.5)
-    //# сила натяжения действующая на площадку поверхности интегрирования
-    //# со стороны поля создаваемого вращающимися зарядами
-    //# Интегральная величина количества имульса электромагнитного поля,
-    //# вытекающего в единицу времени из замкнутого обьёма через площадку ЛЛ2 32.14
+    // Тамм параграф 33 формула (33.5)
+    // сила натяжения действующая на площадку поверхности интегрирования
+    // со стороны поля создаваемого вращающимися зарядами
+    // Интегральная величина количества имульса электромагнитного поля,
+    // вытекающего в единицу времени из замкнутого объёма через площадку ЛЛ2 32.14
     *py = (sigma_yx * cos_nx + sigma_yy * cos_ny + sigma_yz * cos_nz);
 
-    long double S_x = ((long double)(1.0))/(4*M_PI)*(Ey * Hz - Ez * Hy);
-    long double S_y = ((long double)(1.0))/(4*M_PI)*(Ez * Hx - Ex * Hz);
-    long double S_z = ((long double)(1.0))/(4*M_PI)*(Ex * Hy - Ey * Hx);
+    // ЛЛ2 (31,2)
+
+    long double S_x = (c)/(4*M_PI)*(Ey * Hz - Ez * Hy);
+    long double S_y = (c)/(4*M_PI)*(Ez * Hx - Ex * Hz);
+    long double S_z = (c)/(4*M_PI)*(Ex * Hy - Ey * Hx);
 
     // Чисельно енергетична світність дорівнює середньому за часом модулю складової вектора Пойнтінга,
     // перпендикулярної до поверхні

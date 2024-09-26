@@ -211,14 +211,22 @@ int NewtonIt(long double step,
         return -1;
     }
 
+//    if (fabsl(dfdt) > 1.0)
+//    {
+//        printf("NewtonIt warning: derivative more than one\n");
+//        printf("contractive mapping is not contractive\n");
+//    }
+
     long double delta      = (*f1)/dfdt;
     long double step_delta = step*delta;
     *res                   = t2-step_delta;
 
     if (*res == t2)
     {
-        printf("NewtonIt step_delta = %0.36Le delta %0.36Le step=%0.36Le\n", step_delta, delta, step);
-        printf("NewtonIt t2 %0.36Le *res %0.36Le f1 = %0.36Le dfdt = %0.36Le\n", t2, *res, (*f1), dfdt);
+        printf("NewtonIt step_delta = %0.36Le delta %0.36Le step=%0.36Le\n",
+            step_delta, delta, step);
+        printf("NewtonIt t2 %0.36Le *res %0.36Le f1 = %0.36Le dfdt = %0.36Le\n",
+            t2, *res, (*f1), dfdt);
         ret = +2;
     }
 
@@ -418,8 +426,9 @@ int Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
     distance nz;
 
     long double t2;
+    // расчет итерациями запаздывающего момента
     if (0 == tlag(x, y, z, t, sx, sy, sz, vx, vy, vz,
-                     xc, yc, zc, R, omega, alpha, &t2, rlagerror)) { // расчет итерациями запаздывающего момента
+                     xc, yc, zc, R, omega, alpha, &t2, rlagerror)) {
         calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz,
               xc, yc, zc, R, omega, alpha);
         //printf("Rlw (*r) = %Le (*k) = %Le t2 = %Le\n", r, k, t2);

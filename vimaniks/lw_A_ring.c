@@ -38,7 +38,7 @@ long double sx(long double t, long double xc, long double yc, long double zc,
 {
     double result;
     double current_angle = omega * t + alpha;
-    result = xc + R*cos(current_angle);
+    result = xc + R*cosl(current_angle);
     return result;
 }
 
@@ -47,7 +47,7 @@ long double sy(long double t, long double xc, long double yc, long double zc,
 {
     long double result;
     long double current_angle = omega * t + alpha;
-    result = yc + R*sin(current_angle);
+    result = yc + R*sinl(current_angle);
     return result;
 }
 
@@ -64,7 +64,7 @@ long double vx(long double t, long double xc, long double yc, long double zc,
 {
     long double result;
     long double current_angle = omega * t + alpha;
-    result = -omega*R*sin(current_angle);
+    result = -omega*R*sinl(current_angle);
     return result;
 }
 
@@ -73,7 +73,7 @@ long double vy(long double t, long double xc, long double yc, long double zc,
 {
     long double result;
     long double current_angle = omega * t + alpha;
-    result = omega*R*cos(current_angle);
+    result = omega*R*cosl(current_angle);
     return result;
 }
 
@@ -90,7 +90,7 @@ long double wx(long double t, long double xc, long double yc, long double zc,
 {
     long double result;
     long double current_angle = omega * t + alpha;
-    result = -omega*omega*R*cos(current_angle);
+    result = -omega*omega*R*cosl(current_angle);
     return result;
 }
 long double wy(long double t, long double xc, long double yc, long double zc,
@@ -98,7 +98,7 @@ long double wy(long double t, long double xc, long double yc, long double zc,
 {
     double result;
     double current_angle = omega * t + alpha;
-    result = -omega*omega*R*sin(current_angle);
+    result = -omega*omega*R*sinl(current_angle);
     return result;
 }
 long double wz(long double t, long double xc, long double yc, long double zc,
@@ -142,7 +142,7 @@ int ccalc_A_ring(long double X_a, long double Y_a, long double Z_a, long double 
 
     // angle between vector A and polar axis with center of rotated charge
     long double beta  =  phi_phi - phi_A;
-    *A_phi = sqrt(Sq(A_x) + Sq(A_y)) * cos(beta);
+    *A_phi = sqrtl(Sq(A_x) + Sq(A_y)) * cosl(beta);
 
     return ret;
 }

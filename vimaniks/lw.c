@@ -63,12 +63,12 @@ timevalue tlag(coordinate x, coordinate y, coordinate z, timevalue t,
     
     int n = 0;
 
-    while (fabs(t1 - t2) > Epsilon) {
+    while (fabsl(t1 - t2) > Epsilon) {
         t1 = t2;
-        double dd = (x - sx(t1))*(x - sx(t1)) +
+        long double dd = (x - sx(t1))*(x - sx(t1)) +
                     (y - sy(t1))*(y - sy(t1)) +
                     (z - sz(t1))*(z - sz(t1));
-        double d = sqrt(dd);
+        long double d = sqrtl(dd);
         t2 = t - d / c;
         if (++n > 100)
             break;
@@ -85,11 +85,11 @@ void calc_k(coordinate x, coordinate y, coordinate z, timevalue t,
             Coordinate sx, Coordinate sy, Coordinate sz,
             Velocity vx, Velocity vy, Velocity vz,
             timevalue t2,
-            double * k, distance * r, distance * nx, distance * ny, distance * nz)
+            long double * k, distance * r, distance * nx, distance * ny, distance * nz)
 {
     
     if (no_retardation_test) {
-        (*r) = sqrt((x - sx(t))*(x - sx(t)) +
+        (*r) = sqrtl((x - sx(t))*(x - sx(t)) +
                     (y - sy(t))*(y - sy(t)) +
                     (z - sz(t))*(z - sz(t)));
     }
@@ -114,54 +114,54 @@ void calc_k(coordinate x, coordinate y, coordinate z, timevalue t,
 }
 
 // отношение радиуса Лиенара Вихерта к радиусу
-double klw(coordinate x, coordinate y, coordinate z, timevalue t,
+long double klw(coordinate x, coordinate y, coordinate z, timevalue t,
                 Coordinate sx, Coordinate sy, Coordinate sz,
                 Velocity vx, Velocity vy, Velocity vz,
                 Tlag t_lag)
 {
-    double k;
+    long double k;
     distance r;
     distance nx;
     distance ny;
     distance nz;
 
-    double t2 = t_lag(x, y, z, t, sx, sy, sz); // расчет итерациями запаздывающего момента
+    long double t2 = t_lag(x, y, z, t, sx, sy, sz); // расчет итерациями запаздывающего момента
     
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz);
     return k;
 }
 
 // Радиус Лиенара Вихерта
-double Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
+long double Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
                 Coordinate sx, Coordinate sy, Coordinate sz,
                 Velocity vx, Velocity vy, Velocity vz,
                 Tlag t_lag)
 {
-    double k;
+    long double k;
     distance r;
     distance nx;
     distance ny;
     distance nz;
 
-    double t2 = t_lag(x, y, z, t, sx, sy, sz); // расчет итерациями запаздывающего момента
+    long double t2 = t_lag(x, y, z, t, sx, sy, sz); // расчет итерациями запаздывающего момента
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz);
 
     return k*r;
 }
 
 // phi_lw - скалярный потенциал Лиенара Вихерта
-double philw(coordinate x, coordinate y, coordinate z, timevalue t,
+long double philw(coordinate x, coordinate y, coordinate z, timevalue t,
            Coordinate sx, Coordinate sy, Coordinate sz,
            Velocity vx, Velocity vy, Velocity vz,
            charge q, Tlag t_lag)
 {
-    double k;
+    long double k;
     distance r;
     distance nx;
     distance ny;
     distance nz;
 
-    double t2 = t_lag(x, y, z, t, sx, sy, sz); // расчет итерациями запаздывающего момента
+    long double t2 = t_lag(x, y, z, t, sx, sy, sz); // расчет итерациями запаздывающего момента
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz);
 
     return q/(k*r);
@@ -176,13 +176,13 @@ void Alw(coordinate x, coordinate y, coordinate z, timevalue t,
        field * A_x, field * A_y, field * A_z
        )
 {
-    double k;
+    long double k;
     distance r;
     distance nx;
     distance ny;
     distance nz;
 
-    double t2 = t_lag(x, y, z, t, sx, sy, sz); // расчет итерациями запаздывающего момента
+    long double t2 = t_lag(x, y, z, t, sx, sy, sz); // расчет итерациями запаздывающего момента
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz);
 
     (*A_x) = q*vx(t2)/(k*r);
@@ -198,26 +198,26 @@ void electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
                 charge q, Tlag t_lag, 
                 field * E_x, field * E_y, field * E_z, field * B_x, field * B_y, field * B_z)
 {
-    double k;
+    long double k;
     distance r;
     distance nx;
     distance ny;
     distance nz;
 
-    double t2 = t_lag(x, y, z, t, sx, sy, sz); // расчет итерациями запаздывающего момента
+    long double t2 = t_lag(x, y, z, t, sx, sy, sz); // расчет итерациями запаздывающего момента
 
     calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz);
 
-    double v_x = vx(t2);
-    double v_y = vy(t2);
-    double v_z = vz(t2);
+    long double v_x = vx(t2);
+    long double v_y = vy(t2);
+    long double v_z = vz(t2);
 
-    double w_x = wx(t2);
-    double w_y = wy(t2);
-    double w_z = wz(t2);
+    long double w_x = wx(t2);
+    long double w_y = wy(t2);
+    long double w_z = wz(t2);
 
-    double v2_c2 = (v_x*v_x + v_y*v_y + v_z*v_z)) / (c*c);
-    double ra_c2 = r * (nx*w_x + ny*w_y + nz*w_z) / (c*c);
+    long double v2_c2 = (v_x*v_x + v_y*v_y + v_z*v_z)) / (c*c);
+    long double ra_c2 = r * (nx*w_x + ny*w_y + nz*w_z) / (c*c);
     
     (*E_x) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx - v_x/c)/(r*r) - (k/r)*w_x/(c*c));
     (*E_y) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(ny - v_y/c)/(r*r) - (k/r)*w_y/(c*c));
@@ -228,7 +228,7 @@ void electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
     (*B_z) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx*v_y - ny*v_x)/(r*r)/c + (nx*w_y - ny*w_x)*(k/r)/(c*c));
 }
 
-void test(double x)
+void test(long double x)
 {
     printf("test x = %lf\n", x);
 }

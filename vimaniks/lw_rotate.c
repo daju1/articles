@@ -138,7 +138,7 @@ timevalue tlag_test(coordinate x, coordinate y, coordinate z, timevalue t1, time
         Sq(x - sx(t2, xc, yc, zc, R, omega, alpha)) +
         Sq(y - sy(t2, xc, yc, zc, R, omega, alpha)) +
         Sq(z - sz(t2, xc, yc, zc, R, omega, alpha));
-    *d = sqrt(dd);
+    *d = sqrtl(dd);
     *cdt = c*(t1-t2);
     return (*cdt) - (*d);
 }
@@ -149,7 +149,7 @@ timevalue tlag_test(coordinate x, coordinate y, coordinate z, timevalue t1, time
                            coordinate xc, coordinate yc, coordinate zc,
                            distance R, anglevelocity omega, angle alpha)
 {
-    long double f = (c*(t-t2)) - sqrt(Sq(x-sx(t2, xc, yc, zc, R, omega, alpha)) +
+    long double f = (c*(t-t2)) - sqrtl(Sq(x-sx(t2, xc, yc, zc, R, omega, alpha)) +
                                       Sq(y-sy(t2, xc, yc, zc, R, omega, alpha)) +
                                       Sq(z-sz(t2, xc, yc, zc, R, omega, alpha)));
     return f;
@@ -170,7 +170,7 @@ void newton_root_derivative(coordinate x, coordinate y, coordinate z,
         Sq(z - sz(t2, xc, yc, zc, R, omega, alpha));
 
     *cdt = c*(t-t2);
-    *d = sqrt(dd);
+    *d = sqrtl(dd);
     *f1 = (*cdt) - (*d);
 
     long double r_dot_v =
@@ -300,7 +300,7 @@ int tlag(coordinate x, coordinate y, coordinate z, timevalue t,
             Sq(x - sx(*pt2, xc, yc, zc, R, omega, alpha)) +
             Sq(y - sy(*pt2, xc, yc, zc, R, omega, alpha)) +
             Sq(z - sz(*pt2, xc, yc, zc, R, omega, alpha));
-        d = sqrt(dd);
+        d = sqrtl(dd);
         *pt2 = t - d / c;
         cdt = c*(t-*pt2);
 
@@ -329,7 +329,7 @@ int tlag(coordinate x, coordinate y, coordinate z, timevalue t,
         Sq(x - sx(*pt2, xc, yc, zc, R, omega, alpha)) +
         Sq(y - sy(*pt2, xc, yc, zc, R, omega, alpha)) +
         Sq(z - sz(*pt2, xc, yc, zc, R, omega, alpha));
-    d = sqrt(dd);
+    d = sqrtl(dd);
 
     cdt = c*(t-(*pt2));
     *rlagerror = cdt - d;
@@ -359,7 +359,7 @@ void calc_k(coordinate x, coordinate y, coordinate z, timevalue t,
 {
     
     if (no_retardation_test) {
-        (*r) = sqrt(Sq(x - sx(t, xc, yc, zc, R, omega, alpha)) +
+        (*r) = sqrtl(Sq(x - sx(t, xc, yc, zc, R, omega, alpha)) +
                     Sq(y - sy(t, xc, yc, zc, R, omega, alpha)) +
                     Sq(z - sz(t, xc, yc, zc, R, omega, alpha)) );
     }

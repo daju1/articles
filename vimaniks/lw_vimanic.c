@@ -52,7 +52,7 @@ long double sx(long double t, long double xc, long double yc, long double zc,
 {
     double result;
     double current_angle = omega * t + alpha;
-    result = xc + R*cos(current_angle);
+    result = xc + R*cosl(current_angle);
     return result;
 }
 
@@ -61,7 +61,7 @@ long double sy(long double t, long double xc, long double yc, long double zc,
 {
     long double result;
     long double current_angle = omega * t + alpha;
-    result = yc + R*sin(current_angle);
+    result = yc + R*sinl(current_angle);
     return result;
 }
 
@@ -78,7 +78,7 @@ long double vx(long double t, long double xc, long double yc, long double zc,
 {
     long double result;
     long double current_angle = omega * t + alpha;
-    result = -omega*R*sin(current_angle);
+    result = -omega*R*sinl(current_angle);
     return result;
 }
 
@@ -87,7 +87,7 @@ long double vy(long double t, long double xc, long double yc, long double zc,
 {
     long double result;
     long double current_angle = omega * t + alpha;
-    result = omega*R*cos(current_angle);
+    result = omega*R*cosl(current_angle);
     return result;
 }
 
@@ -104,7 +104,7 @@ long double wx(long double t, long double xc, long double yc, long double zc,
 {
     long double result;
     long double current_angle = omega * t + alpha;
-    result = -omega*omega*R*cos(current_angle);
+    result = -omega*omega*R*cosl(current_angle);
     return result;
 }
 long double wy(long double t, long double xc, long double yc, long double zc,
@@ -112,10 +112,34 @@ long double wy(long double t, long double xc, long double yc, long double zc,
 {
     double result;
     double current_angle = omega * t + alpha;
-    result = -omega*omega*R*sin(current_angle);
+    result = -omega*omega*R*sinl(current_angle);
     return result;
 }
 long double wz(long double t, long double xc, long double yc, long double zc,
+               long double R, long double omega, long double alpha)
+{
+    long double result;
+    result = 0;
+    return result;
+}
+
+long double dot_wx(long double t, long double xc, long double yc, long double zc,
+               long double R, long double omega, long double alpha)
+{
+    long double result;
+    long double current_angle = omega * t + alpha;
+    result = omega*omega*omega*R*sinl(current_angle);
+    return result;
+}
+long double dot_wy(long double t, long double xc, long double yc, long double zc,
+               long double R, long double omega, long double alpha)
+{
+    double result;
+    double current_angle = omega * t + alpha;
+    result = -omega*omega*omega*R*cosl(current_angle);
+    return result;
+}
+long double dot_wz(long double t, long double xc, long double yc, long double zc,
                long double R, long double omega, long double alpha)
 {
     long double result;
@@ -171,19 +195,19 @@ int ccalc_sum_F_t(int N, long double t_i,
         
         */
 
-    long double Fx_l = 0.0;
-    long double Fy_l = 0.0;
-    long double Fz_l = 0.0;
-    long double Fx_r = 0.0;
-    long double Fy_r = 0.0;
-    long double Fz_r = 0.0;
+    long double Fx_l = (long double)(0.0);
+    long double Fy_l = (long double)(0.0);
+    long double Fz_l = (long double)(0.0);
+    long double Fx_r = (long double)(0.0);
+    long double Fy_r = (long double)(0.0);
+    long double Fz_r = (long double)(0.0);
 
     if (F_alpha_l) {
-        *F_alpha_l = 0.0;
+        *F_alpha_l = (long double)(0.0);
     }
 
     if (F_alpha_r) {
-        *F_alpha_r = 0.0;
+        *F_alpha_r = (long double)(0.0);
     }
     
     long double fx_l, fx_r, fy_l, fy_r, fz_l, fz_r;
@@ -191,8 +215,11 @@ int ccalc_sum_F_t(int N, long double t_i,
     
     long double E_x, E_y, E_z, B_x, B_y, B_z;
 
+    long double fx_3l, fy_3l;
+    long double fx_3r, fy_3r;
+
     coordinate rlagerror;
-    *sum_rlagerror_sqare = 0.0;
+    *sum_rlagerror_sqare = (long double)(0.0);
 
     for(int i_a = 0; i_a < N; ++i_a) {
         for (int i_q = 0; i_q < N; ++i_q) {
@@ -224,6 +251,29 @@ int ccalc_sum_F_t(int N, long double t_i,
             vz_l = vz(t_i, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l);
             vz_r = vz(t_i, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
 
+            // торможение излучением (разложение функции Лагранжа до членов третьего порядка)
+            // ЛЛ2 (75,8)
+            fx_3r =  2 * sign_q * sign_q / (3*c*c*c) * dot_wx(t_i, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
+            fy_3r =  2 * sign_q * sign_q / (3*c*c*c) * dot_wy(t_i, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
+            fx_3l =  2 * sign_a * sign_a / (3*c*c*c) * dot_wx(t_i, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l);
+            fy_3l =  2 * sign_a * sign_a / (3*c*c*c) * dot_wy(t_i, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l);
+
+            // релятивистское преобразование электрического поля при переходе из системы координат,
+            // связанной с зарядом в лабораторную систему координат
+            // потому что согласно ЛЛ2 параграф 73
+            // для точечного (не распределённого в объеме) заряда
+            // формула (75,8) является точным выражением для обратного действия излучения
+            // в той системе отсчёта, в которой заряд покоится
+            // а интегрирование производится в лабораторной системе координат
+            // поэтому необходимо в соответствии с преобразованиями Лоренца
+            // формулы (26.35) (26.38) Фейнмановских лекций по физике, том 6
+            // произвести преобразование формулы ЛЛ2 (75,8) из системы координат,
+            // связанной с зарядом в лабораторную систему координат
+            fx_3r /= sqrtl((long double)(1.0) - cget_vc()*cget_vc());
+            fy_3r /= sqrtl((long double)(1.0) - cget_vc()*cget_vc());
+            fx_3l /= sqrtl((long double)(1.0) - cget_vc()*cget_vc());
+            fy_3l /= sqrtl((long double)(1.0) - cget_vc()*cget_vc());
+
             // поле создаваемое правым вращающимся зарядом в области левого вращающегося заряда
             //(E_x, E_y, E_z, B_x, B_y, B_z) = EB_lw(Xa, Ya, Za, t_i, sign_q, xc_r, yc_r, zc_r, R_r, Omega_r, Alpha_r)
 
@@ -242,6 +292,10 @@ int ccalc_sum_F_t(int N, long double t_i,
             fy_l = sign_a*(E_y + (vz_l*B_x-vx_l*B_z)/cget_c());
             fz_l = sign_a*(E_z + (vx_l*B_y-vy_l*B_x)/cget_c());
 
+            // добавка обусловленная торможением излучением
+            fx_l += fx_3l;
+            fy_l += fy_3l;
+
             Fx_l += fx_l;
             Fy_l += fy_l;
             Fz_l += fz_l;
@@ -251,7 +305,7 @@ int ccalc_sum_F_t(int N, long double t_i,
                 current_angle_l = Omega_l * t_i + Alpha_l;
 
                 // Расчёт углового усилия действующего на левый заряд со стороны поля правого заряда
-                f_alpha_l  = fy_l * cos(current_angle_l) - fx_l * sin(current_angle_l);
+                f_alpha_l  = fy_l * cosl(current_angle_l) - fx_l * sinl(current_angle_l);
                 *F_alpha_l += f_alpha_l;
             }
 
@@ -273,6 +327,10 @@ int ccalc_sum_F_t(int N, long double t_i,
             fy_r = sign_q*(E_y + (vz_r*B_x-vx_r*B_z)/cget_c());
             fz_r = sign_q*(E_z + (vx_r*B_y-vy_r*B_x)/cget_c());
 
+            // добавка обусловленная торможением излучением
+            fx_r += fx_3r;
+            fy_r += fy_3r;
+
             Fx_r += fx_r;
             Fy_r += fy_r;
             Fz_r += fz_r;
@@ -281,7 +339,7 @@ int ccalc_sum_F_t(int N, long double t_i,
                 current_angle_r = Omega_r * t_i + Alpha_r;
 
                 // Расчёт углового усилия действующего на правый заряд со стороны поля левого заряда
-                f_alpha_r  = fy_r * cos(current_angle_r) - fx_r * sin(current_angle_r);
+                f_alpha_r  = fy_r * cosl(current_angle_r) - fx_r * sinl(current_angle_r);
                 *F_alpha_r += f_alpha_r;
             }
 
@@ -455,14 +513,14 @@ int spherical_ccalc_Maxwells_stress_tensor(
     long double * sum_rlagerror_sqare)
 {
     return ccalc_Maxwells_stress_tensor(
-        r*sin(theta)*cos(varphi),
-        r*cos(theta),
-        r*sin(theta)*sin(varphi),
+        r*sinl(theta)*cosl(varphi),
+        r*cosl(theta),
+        r*sinl(theta)*sinl(varphi),
         t,
         1,
-        - sin(theta)*cos(varphi),
-        - cos(theta),
-        - sin(theta)*sin(varphi),
+        - sinl(theta)*cosl(varphi),
+        - cosl(theta),
+        - sinl(theta)*sinl(varphi),
         0,
         0,
         py, S, sum_rlagerror_sqare);

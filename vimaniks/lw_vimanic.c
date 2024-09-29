@@ -9,6 +9,8 @@
 
 #include "stdlib.h"
 
+//#define USE_LEFT_CHARGE_ONLY
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 #define Pi M_PI
@@ -178,23 +180,6 @@ int ccalc_sum_F_t(int N, long double t_i,
     long double vx_l, vy_l, vz_l;
     long double vx_r, vy_r, vz_r;
 
-    //# current positions of rotated masses
-    /*
-    sign_r = []
-    sign_l = []
-    alpha_r = []
-    alpha_l = []
-
-    # n - number of charges per circle
-    for i in range(n):
-        sign_r += [lambda i=i : -((i%2)*2-1)]
-        sign_l += [lambda i=i :   (i%2)*2-1]
-
-        alpha_r += [lambda i=i : i * np.float128(2*np.pi)/n + alpha0_r]
-        alpha_l += [lambda i=i : i * np.float128(2*np.pi)/n + alpha0_l]
-        
-        */
-
     long double Fx_l = (long double)(0.0);
     long double Fy_l = (long double)(0.0);
     long double Fz_l = (long double)(0.0);
@@ -210,10 +195,18 @@ int ccalc_sum_F_t(int N, long double t_i,
         *F_alpha_r = (long double)(0.0);
     }
     
-    long double fx_l, fx_r, fy_l, fy_r, fz_l, fz_r;
-    long double f_alpha_l, f_alpha_r;
-    
+    long double
+        fx_l = (long double)(0.0),
+        fx_r = (long double)(0.0),
+        fy_l = (long double)(0.0),
+        fy_r = (long double)(0.0),
+        fz_l = (long double)(0.0),
+        fz_r = (long double)(0.0);
+    long double f_alpha_l = (long double)(0.0), f_alpha_r = (long double)(0.0);
+
+#ifndef USE_LEFT_CHARGE_ONLY
     long double E_x, E_y, E_z, B_x, B_y, B_z;
+#endif
 
     long double fx_3l, fy_3l;
     long double fx_3r, fy_3r;
@@ -251,14 +244,16 @@ int ccalc_sum_F_t(int N, long double t_i,
             vz_l = vz(t_i, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l);
             vz_r = vz(t_i, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
 
-            // торможение излучением (разложение функции Лагранжа до членов третьего порядка)
+            // торможение излучением (разложение функции Лагранжа
+            // до членов третьего порядка)
             // ЛЛ2 (75,8)
             fx_3r =  2 * sign_q * sign_q / (3*c*c*c) * dot_wx(t_i, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
             fy_3r =  2 * sign_q * sign_q / (3*c*c*c) * dot_wy(t_i, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r);
             fx_3l =  2 * sign_a * sign_a / (3*c*c*c) * dot_wx(t_i, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l);
             fy_3l =  2 * sign_a * sign_a / (3*c*c*c) * dot_wy(t_i, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l);
 
-            // релятивистское преобразование электрического поля при переходе из системы координат,
+            // релятивистское преобразование электрического поля
+            // при переходе из системы координат,
             // связанной с зарядом в лабораторную систему координат
             // потому что согласно ЛЛ2 параграф 73
             // для точечного (не распределённого в объеме) заряда
@@ -273,10 +268,9 @@ int ccalc_sum_F_t(int N, long double t_i,
             fy_3r /= sqrtl((long double)(1.0) - cget_vc()*cget_vc());
             fx_3l /= sqrtl((long double)(1.0) - cget_vc()*cget_vc());
             fy_3l /= sqrtl((long double)(1.0) - cget_vc()*cget_vc());
-
-            // поле создаваемое правым вращающимся зарядом в области левого вращающегося заряда
-            //(E_x, E_y, E_z, B_x, B_y, B_z) = EB_lw(Xa, Ya, Za, t_i, sign_q, xc_r, yc_r, zc_r, R_r, Omega_r, Alpha_r)
-
+#ifndef USE_LEFT_CHARGE_ONLY
+            // поле создаваемое правым вращающимся зарядом
+            // в области левого вращающегося заряда
             if (0 != electr_magnet(Xa, Ya, Za, t_i,
                   sx, sy, sz, vx, vy, vz, wx, wy, wz,
                   sign_q,
@@ -287,11 +281,12 @@ int ccalc_sum_F_t(int N, long double t_i,
 
             *sum_rlagerror_sqare += Sq(rlagerror);
 
-            // сила действующая на левый заряд со стороны поля правого заряда
+            // сила действующая на левый заряд
+            // со стороны поля правого заряда
             fx_l = sign_a*(E_x + (vy_l*B_z-vz_l*B_y)/cget_c());
             fy_l = sign_a*(E_y + (vz_l*B_x-vx_l*B_z)/cget_c());
             fz_l = sign_a*(E_z + (vx_l*B_y-vy_l*B_x)/cget_c());
-
+#endif
             // добавка обусловленная торможением излучением
             fx_l += fx_3l;
             fy_l += fy_3l;
@@ -304,14 +299,14 @@ int ccalc_sum_F_t(int N, long double t_i,
             
                 current_angle_l = Omega_l * t_i + Alpha_l;
 
-                // Расчёт углового усилия действующего на левый заряд со стороны поля правого заряда
+                // Расчёт углового усилия действующего на левый заряд
+                // со стороны поля правого заряда
                 f_alpha_l  = fy_l * cosl(current_angle_l) - fx_l * sinl(current_angle_l);
                 *F_alpha_l += f_alpha_l;
             }
-
-            // поле создаваемое левым вращающимся зарядом в области правого вращающегося заряда
-            //(E_x, E_y, E_z, B_x, B_y, B_z) = EB_lw(Xq, Yq, Zq, t_i, sign_a, xc_l, yc_l, zc_l, R_l, Omega_l, Alpha_l)
-
+#ifndef USE_LEFT_CHARGE_ONLY
+            // поле создаваемое левым вращающимся зарядом
+            // в области правого вращающегося заряда
             if (0 != electr_magnet(Xq, Yq, Zq, t_i,
                   sx, sy, sz, vx, vy, vz, wx, wy, wz,
                   sign_a,
@@ -322,7 +317,8 @@ int ccalc_sum_F_t(int N, long double t_i,
 
             *sum_rlagerror_sqare += Sq(rlagerror);
 
-            // сила действующая на правый заряд со стороны поля левого заряда
+            // сила действующая на правый заряд
+            // со стороны поля левого заряда
             fx_r = sign_q*(E_x + (vy_r*B_z-vz_r*B_y)/cget_c());
             fy_r = sign_q*(E_y + (vz_r*B_x-vx_r*B_z)/cget_c());
             fz_r = sign_q*(E_z + (vx_r*B_y-vy_r*B_x)/cget_c());
@@ -338,11 +334,12 @@ int ccalc_sum_F_t(int N, long double t_i,
             if (F_alpha_r) {
                 current_angle_r = Omega_r * t_i + Alpha_r;
 
-                // Расчёт углового усилия действующего на правый заряд со стороны поля левого заряда
+                // Расчёт углового усилия действующего на правый заряд
+                // со стороны поля левого заряда
                 f_alpha_r  = fy_r * cosl(current_angle_r) - fx_r * sinl(current_angle_r);
                 *F_alpha_r += f_alpha_r;
             }
-
+#endif
             if (to_log){
                 printf("fx_l=%Lf fy_l=%Lf fx_r=%Lf fy_r=%Lf",fx_l, fy_l, fx_r, fy_r);
             }
@@ -390,8 +387,8 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
     long double Omega_l = + omega;
     long double Omega_r = - omega;
     
-    long double Xa, Ya, Za; // X_l, Y_l, Z_l
-    long double Xq, Yq, Zq; // X_r, Y_r, Z_r
+    //long double Xa, Ya, Za; // X_l, Y_l, Z_l
+    //long double Xq, Yq, Zq; // X_r, Y_r, Z_r
 
     long double Ex = 0;
     long double Ey = 0;
@@ -421,8 +418,8 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
             //printf("sign_a = %Lf sign_q = %Lf\n", sign_a, sign_q);
             //printf("Alpha_l = %Lf Alpha_r = %Lf\n", Alpha_l, Alpha_r);
 
-            
-            //(E_x, E_y, E_z, B_x, B_y, B_z) = EB_lw(X_a, Y_a, Z_a, t_i, sign_q, xc_r, yc_r, zc_r, R_r, Omega_r, Alpha_r)
+#ifndef USE_LEFT_CHARGE_ONLY
+            // поле в точке наблюдения создаваемое правым зарядом
             if (0 != electr_magnet(X_a, Y_a, Z_a, t_i,
                   sx, sy, sz, vx, vy, vz, wx, wy, wz,
                   sign_q,
@@ -440,9 +437,9 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
             Hx += B_x;
             Hy += B_y;
             Hz += B_z;
-            
+#endif
 
-            //(E_x, E_y, E_z, B_x, B_y, B_z) = EB_lw(X_a, Y_a, Z_a, t_i, sign_a, xc_l, yc_l, zc_l, R_l, Omega_l, Alpha_l)
+            // поле в точке наблюдения создаваемое левым зарядом
             if (0 != electr_magnet(X_a, Y_a, Z_a, t_i,
                   sx, sy, sz, vx, vy, vz, wx, wy, wz,
                   sign_a,
@@ -494,8 +491,8 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
     long double S_y = (c)/(4*M_PI)*(Ez * Hx - Ex * Hz);
     long double S_z = (c)/(4*M_PI)*(Ex * Hy - Ey * Hx);
 
-    // Чисельно енергетична світність дорівнює середньому за часом модулю складової вектора Пойнтінга,
-    // перпендикулярної до поверхні
+    // складова вектора Пойнтінга,
+    // перпендикулярна до поверхні
     *S = (S_x * cos_nx + S_y * cos_ny + S_z * cos_nz);
 
     return 0;

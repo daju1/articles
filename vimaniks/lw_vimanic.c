@@ -10,6 +10,7 @@
 #include "stdlib.h"
 
 //#define USE_LEFT_CHARGE_ONLY
+//#define USE_LEFT_CENTERED_CHARGE_ONLY
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -37,9 +38,14 @@ long double cget_omega() {
 }
 
 //# centers of circles
-
+#ifdef USE_LEFT_CENTERED_CHARGE_ONLY
+long double xc_l() { return 0.0; }
+#else
 long double xc_l() { return -S/2 - R_l; }
+#endif
+
 long double xc_r() { return  S/2 + R_r; }
+
 
 long double yc_l() { return 0; }
 long double yc_r() { return 0; }
@@ -500,8 +506,10 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
 
 
 // Интегрируем в сферической системе координат,
-// у которой однако в соотвествие с принятыми в задаче
-// наименованиями осей главная ось игрек вместо зет
+// которая однако в соотвествие с принятыми в задаче
+// наименованиями осей повернута так,
+// что главная ось (зет в сферической системе)
+// направлена вдоль оси игрек декартовой системы
 
 // направление векторов нормали к сферической воображаемой поверхности инвертировано - снаружи вовнутрь
 int spherical_ccalc_Maxwells_stress_tensor(
@@ -510,14 +518,14 @@ int spherical_ccalc_Maxwells_stress_tensor(
     long double * sum_rlagerror_sqare)
 {
     return ccalc_Maxwells_stress_tensor(
-        r*sinl(theta)*cosl(varphi),
-        r*cosl(theta),
-        r*sinl(theta)*sinl(varphi),
+        r*sinl(theta)*sinl(varphi), // X_a - в декартовой -> y в сферической
+        r*cosl(theta),              // Y_a - в декартовой -> z в сферической
+        r*sinl(theta)*cosl(varphi), // Z_a - в декартовой -> x в сферической
         t,
-        1,
-        - sinl(theta)*cosl(varphi),
-        - cosl(theta),
-        - sinl(theta)*sinl(varphi),
+        1,                          // N
+        - sinl(theta)*sinl(varphi), // cos_nx - i в декартовой -> j в сферической
+        - cosl(theta),              // cos_ny - j в декартовой -> k в сферической
+        - sinl(theta)*cosl(varphi), // cos_nz - k в декартовой -> i в сферической
         0,
         0,
         py, S, sum_rlagerror_sqare);

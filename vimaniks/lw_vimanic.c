@@ -377,7 +377,12 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
                                  long double cos_nx, long double cos_ny, long double cos_nz,
                                  long double alpha0_l,
                                  long double alpha0_r,
-                                 long double * py,
+                                 long double * T_xn,
+                                 long double * T_yn,
+                                 long double * T_zn,
+                                 long double * N_x,
+                                 long double * N_y,
+                                 long double * N_z,
                                  long double * S,
                                  long double * sum_rlagerror_sqare
                                )
@@ -489,7 +494,13 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
     // со стороны поля создаваемого вращающимися зарядами
     // Интегральная величина количества имульса электромагнитного поля,
     // вытекающего в единицу времени из замкнутого объёма через площадку ЛЛ2 32.14
-    *py = (sigma_yx * cos_nx + sigma_yy * cos_ny + sigma_yz * cos_nz);
+    *T_xn = (sigma_xx * cos_nx + sigma_xy * cos_ny + sigma_xz * cos_nz);
+    *T_yn = (sigma_yx * cos_nx + sigma_yy * cos_ny + sigma_yz * cos_nz);
+    *T_zn = (sigma_zx * cos_nx + sigma_zy * cos_ny + sigma_zz * cos_nz);
+
+    *N_x = Y_a * (*T_zn) - Z_a * (*T_yn);
+    *N_y = Z_a * (*T_xn) - X_a * (*T_zn);
+    *N_z = X_a * (*T_yn) - Y_a * (*T_xn);
 
     // ЛЛ2 (31,2)
 
@@ -514,7 +525,9 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
 // направление векторов нормали к сферической воображаемой поверхности инвертировано - снаружи вовнутрь
 int spherical_ccalc_Maxwells_stress_tensor(
     long double r, long double theta, long double varphi, long double t,
-    long double *py, long double *S,
+    long double * Txn, long double * Tyn, long double * Tzn,
+    long double * Nx, long double * Ny, long double * Nz,
+    long double * S,
     long double * sum_rlagerror_sqare)
 {
     return ccalc_Maxwells_stress_tensor(
@@ -528,7 +541,9 @@ int spherical_ccalc_Maxwells_stress_tensor(
         - sinl(theta)*cosl(varphi), // cos_nz - k в декартовой -> i в сферической
         0,
         0,
-        py, S, sum_rlagerror_sqare);
+        Txn, Tyn, Tzn,
+        Nx, Ny, Nz,
+        S, sum_rlagerror_sqare);
 }
 
 long double sphere_R;
@@ -544,14 +559,30 @@ long double cget_sphere_R()
 
 int spherical_ccalc_Maxwells_stress_tensor_R_t(
     long double theta, long double varphi, long double t,
-    long double * ppy, long double * pS,
+    long double * pTxn, long double * pTyn, long double * pTzn,
+    long double * pNx, long double * pNy, long double * pNz,
+    long double * pS,
     long double * sum_rlagerror_sqare)
 {
-    long double py;
+    long double Txn;
+    long double Tyn;
+    long double Tzn;
+    long double Nx;
+    long double Ny;
+    long double Nz;
     long double S;
     int ret = spherical_ccalc_Maxwells_stress_tensor(sphere_R, theta, varphi, t,
-                                                     &py, &S, sum_rlagerror_sqare);
-    *ppy = sphere_R * sphere_R * py;
+                                                     &Txn, &Tyn, &Tzn,
+                                                     &Nx, &Ny, &Nz,
+                                                     &S, sum_rlagerror_sqare);
+    *pTxn = sphere_R * sphere_R * Txn;
+    *pTyn = sphere_R * sphere_R * Tyn;
+    *pTzn = sphere_R * sphere_R * Tzn;
+
+    *pNx = sphere_R * sphere_R * Nx;
+    *pNy = sphere_R * sphere_R * Ny;
+    *pNz = sphere_R * sphere_R * Nz;
+
     *pS  = - sphere_R * sphere_R * S; // берём количество энергии излучения
     // протекающей через поверхность воображаемой сферы со знаком минус, потому что
     // направление векторов нормали к поверхности внутри функции spherical_ccalc_Maxwells_stress_tensor

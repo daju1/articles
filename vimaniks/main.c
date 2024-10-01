@@ -66,14 +66,24 @@ int main()
     long double theta = M_PI / 2;
     long double varphi = 0;
 
-    long double py;
+    long double Txn;
+    long double Tyn;
+    long double Tzn;
+    long double Nx;
+    long double Ny;
+    long double Nz;
     long double S;
-    if (0 != spherical_ccalc_Maxwells_stress_tensor(
-        R, theta, varphi, t_i, &py, &S, &sum_rlagerror_sqare))
+    int ret = spherical_ccalc_Maxwells_stress_tensor(R, theta, varphi, t_i,
+                                                     &Txn, &Tyn, &Tzn,
+                                                     &Nx, &Ny, &Nz,
+                                                     &S, &sum_rlagerror_sqare);
+    if (0 != ret)
     {
         printf("spherical_ccalc_Maxwells_stress_tensor error\n");
     }
-    printf("py = %0.36Le S = %0.36Lf Fy = %0.36Lf\n", py, S, Fy);
+    printf("Txn = %0.36Le Tyn = %0.36Lf Tzn = %0.36Lf\n", Txn, Tyn, Tzn);
+    printf("Nx = %0.36Le Ny = %0.36Lf Nz = %0.36Lf\n", Nx, Ny, Nz);
+    printf("S = %0.36Lf Fy = %0.36Lf\n", S, Fy);
 
     return 0;
 }

@@ -548,3 +548,58 @@ int electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
     return -1;
 }
 
+
+int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
+                   Coordinate sx, Coordinate sy, Coordinate sz,
+                   Velocity vx, Velocity vy, Velocity vz,
+                   Acceleration wx, Acceleration wy, Acceleration wz,
+                   charge q,
+                   field * E_x, field * E_y, field * E_z,
+                   field * B_x, field * B_y, field * B_z,
+                   field * A_x, field * A_y, field * A_z,
+                   coordinate * rlagerror,
+                   coordinate xc, coordinate yc, coordinate zc,
+                   distance R, anglevelocity omega, angle alpha)
+{
+    long double k;
+    distance r;
+    distance nx;
+    distance ny;
+    distance nz;
+
+    long double t2;
+    if (0 == tlag(x, y, z, t, sx, sy, sz, vx, vy, vz,
+                      xc, yc, zc, R, omega, alpha, &t2, rlagerror)) { // расчет итерациями запаздывающего момента
+
+        calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz,
+               xc, yc, zc, R, omega, alpha);
+
+        long double v_x = vx(t2, xc, yc, zc, R, omega, alpha);
+        long double v_y = vy(t2, xc, yc, zc, R, omega, alpha);
+        long double v_z = vz(t2, xc, yc, zc, R, omega, alpha);
+
+        long double w_x = wx(t2, xc, yc, zc, R, omega, alpha);
+        long double w_y = wy(t2, xc, yc, zc, R, omega, alpha);
+        long double w_z = wz(t2, xc, yc, zc, R, omega, alpha);
+
+        long double v2_c2 = (Sq(v_x) + Sq(v_y) + Sq(v_z)) / (c*c);
+        long double ra_c2 = r * (nx*w_x + ny*w_y + nz*w_z) / (c*c);
+
+        (*E_x) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx - v_x/c)/(r*r) - (k/r)*w_x/(c*c));
+        (*E_y) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(ny - v_y/c)/(r*r) - (k/r)*w_y/(c*c));
+        (*E_z) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nz - v_z/c)/(r*r) - (k/r)*w_z/(c*c));
+
+        (*B_x) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(ny*v_z - nz*v_y)/(r*r)/c + (ny*w_z - nz*w_y)*(k/r)/(c*c));
+        (*B_y) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nz*v_x - nx*v_z)/(r*r)/c + (nz*w_x - nx*w_z)*(k/r)/(c*c));
+        (*B_z) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx*v_y - ny*v_x)/(r*r)/c + (nx*w_y - ny*w_x)*(k/r)/(c*c));
+
+        (*A_x) = q*v_x/(k*r);
+        (*A_y) = q*v_y/(k*r);
+        (*A_z) = q*v_z/(k*r);
+
+        return 0;
+    }
+    return -1;
+}
+
+

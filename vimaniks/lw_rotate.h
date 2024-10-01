@@ -141,7 +141,9 @@ int electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
                    Velocity vx, Velocity vy, Velocity vz,
                    Acceleration wx, Acceleration wy, Acceleration wz,
                    charge q,
-                   field * E_x, field * E_y, field * E_z, field * B_x, field * B_y, field * B_z, coordinate * rlagerror,
+                   field * E_x, field * E_y, field * E_z,
+                   field * B_x, field * B_y, field * B_z,
+                   coordinate * rlagerror,
                    coordinate xc, coordinate yc, coordinate zc,
                    distance R, anglevelocity omega, angle alpha);
 

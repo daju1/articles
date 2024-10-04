@@ -73,14 +73,27 @@ int main()
     long double Ny;
     long double Nz;
     long double Sn;
-    int ret = spherical_ccalc_Maxwells_stress_tensor(R, theta, varphi, t_i,
+    int ret = spherical_y_ccalc_Maxwells_stress_tensor(R, theta, varphi, t_i,
                                                      &Txn, &Tyn, &Tzn,
                                                      &Nx, &Ny, &Nz,
                                                      &Sn,
                                                      &sum_rlagerror_sqare);
     if (0 != ret)
     {
-        printf("spherical_ccalc_Maxwells_stress_tensor error\n");
+        printf("spherical_y_ccalc_Maxwells_stress_tensor error\n");
+    }
+    printf("Txn = %0.36Le Tyn = %0.36Lf Tzn = %0.36Lf\n", Txn, Tyn, Tzn);
+    printf("Nx = %0.36Le Ny = %0.36Lf Nz = %0.36Lf\n", Nx, Ny, Nz);
+    printf("Sn = %0.36Lf Fy = %0.36Lf\n", Sn, Fy);
+
+    ret = spherical_x_ccalc_Maxwells_stress_tensor(R, theta, varphi, t_i,
+                                                     &Txn, &Tyn, &Tzn,
+                                                     &Nx, &Ny, &Nz,
+                                                     &Sn,
+                                                     &sum_rlagerror_sqare);
+    if (0 != ret)
+    {
+        printf("spherical_x_ccalc_Maxwells_stress_tensor error\n");
     }
     printf("Txn = %0.36Le Tyn = %0.36Lf Tzn = %0.36Lf\n", Txn, Tyn, Tzn);
     printf("Nx = %0.36Le Ny = %0.36Lf Nz = %0.36Lf\n", Nx, Ny, Nz);

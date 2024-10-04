@@ -11,6 +11,7 @@
 
 //#define USE_LEFT_CHARGE_ONLY
 //#define USE_LEFT_CENTERED_CHARGE_ONLY
+//#define TEST_WITH_X_DIRECTED_DIPOLE
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -67,6 +68,9 @@ long double sx(long double t, long double xc, long double yc, long double zc,
 long double sy(long double t, long double xc, long double yc, long double zc,
                long double R, long double omega, long double alpha)
 {
+#ifdef TEST_WITH_X_DIRECTED_DIPOLE
+    return yc;
+#endif
     long double result;
     long double current_angle = omega * t + alpha;
     result = yc + R*sinl(current_angle);
@@ -93,6 +97,9 @@ long double vx(long double t, long double xc, long double yc, long double zc,
 long double vy(long double t, long double xc, long double yc, long double zc,
                long double R, long double omega, long double alpha)
 {
+#ifdef TEST_WITH_X_DIRECTED_DIPOLE
+    return (long double)(0.0);
+#endif
     long double result;
     long double current_angle = omega * t + alpha;
     result = omega*R*cosl(current_angle);
@@ -118,6 +125,9 @@ long double wx(long double t, long double xc, long double yc, long double zc,
 long double wy(long double t, long double xc, long double yc, long double zc,
                long double R, long double omega, long double alpha)
 {
+#ifdef TEST_WITH_X_DIRECTED_DIPOLE
+    return (long double)(0.0);
+#endif
     double result;
     double current_angle = omega * t + alpha;
     result = -omega*omega*R*sinl(current_angle);
@@ -142,6 +152,9 @@ long double dot_wx(long double t, long double xc, long double yc, long double zc
 long double dot_wy(long double t, long double xc, long double yc, long double zc,
                long double R, long double omega, long double alpha)
 {
+#ifdef TEST_WITH_X_DIRECTED_DIPOLE
+    return (long double)(0.0);
+#endif
     double result;
     double current_angle = omega * t + alpha;
     result = -omega*omega*omega*R*cosl(current_angle);
@@ -475,17 +488,17 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
 
     // ЛЛ2 (33,3)
 
-    long double sigma_xx = ((long double)(1.0))/(8*M_PI)*( - Ex*Ex - Hx*Hx + Ey*Ey + Ez*Ez + Hy*Hy + Hz*Hz);
-    long double sigma_yy = ((long double)(1.0))/(8*M_PI)*( - Ey*Ey - Hy*Hy + Ez*Ez + Ex*Ex + Hz*Hz + Hx*Hx);
-    long double sigma_zz = ((long double)(1.0))/(8*M_PI)*( - Ez*Ez - Hz*Hz + Ex*Ex + Ey*Ey + Hx*Hx + Hy*Hy);
+    long double sigma_xx = ((long double)(1.0))/(8*M_PI)*( Ex*Ex + Hx*Hx - Ey*Ey - Ez*Ez - Hy*Hy - Hz*Hz);
+    long double sigma_yy = ((long double)(1.0))/(8*M_PI)*( Ey*Ey + Hy*Hy - Ez*Ez - Ex*Ex - Hz*Hz - Hx*Hx);
+    long double sigma_zz = ((long double)(1.0))/(8*M_PI)*( Ez*Ez + Hz*Hz - Ex*Ex - Ey*Ey - Hx*Hx - Hy*Hy);
     
-    long double sigma_xy = ((long double)(1.0))/(4*M_PI)*( - Ex*Ey - Hx*Hy );
-    long double sigma_xz = ((long double)(1.0))/(4*M_PI)*( - Ex*Ez - Hx*Hz );
-    long double sigma_yz = ((long double)(1.0))/(4*M_PI)*( - Ey*Ez - Hy*Hz );
+    long double sigma_xy = ((long double)(1.0))/(4*M_PI)*( Ex*Ey + Hx*Hy );
+    long double sigma_xz = ((long double)(1.0))/(4*M_PI)*( Ex*Ez + Hx*Hz );
+    long double sigma_yz = ((long double)(1.0))/(4*M_PI)*( Ey*Ez + Hy*Hz );
 
-    long double sigma_yx = ((long double)(1.0))/(4*M_PI)*( - Ey*Ex - Hy*Hx );
-    long double sigma_zx = ((long double)(1.0))/(4*M_PI)*( - Ez*Ex - Hz*Hx );
-    long double sigma_zy = ((long double)(1.0))/(4*M_PI)*( - Ez*Ey - Hz*Hy );
+    long double sigma_yx = ((long double)(1.0))/(4*M_PI)*( Ey*Ex + Hy*Hx );
+    long double sigma_zx = ((long double)(1.0))/(4*M_PI)*( Ez*Ex + Hz*Hx );
+    long double sigma_zy = ((long double)(1.0))/(4*M_PI)*( Ez*Ey + Hz*Hy );
 
     //T = [[sigma_xx, sigma_xy, sigma_xz],
     //     [sigma_yx, sigma_yy, sigma_yz],
@@ -526,7 +539,7 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
 // направлена вдоль оси игрек декартовой системы
 
 // направление векторов нормали к сферической воображаемой поверхности инвертировано - снаружи вовнутрь
-int spherical_ccalc_Maxwells_stress_tensor(
+int spherical_y_ccalc_Maxwells_stress_tensor(
     long double r, long double theta, long double varphi, long double t,
     long double * Txn, long double * Tyn, long double * Tzn,
     long double * Nx, long double * Ny, long double * Nz,
@@ -550,6 +563,36 @@ int spherical_ccalc_Maxwells_stress_tensor(
         sum_rlagerror_sqare);
 }
 
+// Интегрируем в сферической системе координат,
+// которая однако в соотвествие с принятыми в задаче
+// наименованиями осей повернута так,
+// что главная ось (зет в сферической системе)
+// направлена вдоль оси икс декартовой системы
+
+// направление векторов нормали к сферической воображаемой поверхности инвертировано - снаружи вовнутрь
+int spherical_x_ccalc_Maxwells_stress_tensor(
+    long double r, long double theta, long double varphi, long double t,
+    long double * Txn, long double * Tyn, long double * Tzn,
+    long double * Nx, long double * Ny, long double * Nz,
+    long double * Sn,
+    long double * sum_rlagerror_sqare)
+{
+    return ccalc_Maxwells_stress_tensor(
+        r*cosl(theta),              // X_a - в декартовой -> z в сферической
+        r*sinl(theta)*cosl(varphi), // Y_a - в декартовой -> x в сферической
+        r*sinl(theta)*sinl(varphi), // Z_a - в декартовой -> y в сферической
+        t,
+        1,                          // N
+        - cosl(theta),              // cos_nx - i в декартовой -> k в сферической
+        - sinl(theta)*cosl(varphi), // cos_ny - j в декартовой -> i в сферической
+        - sinl(theta)*sinl(varphi), // cos_nz - k в декартовой -> j в сферической
+        0,
+        0,
+        Txn, Tyn, Tzn,
+        Nx, Ny, Nz,
+        Sn,
+        sum_rlagerror_sqare);
+}
 long double sphere_R;
 void cset_sphere_R(long double R)
 {
@@ -561,7 +604,7 @@ long double cget_sphere_R()
     return sphere_R;
 }
 
-int spherical_ccalc_Maxwells_stress_tensor_R_t(
+int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
     long double theta, long double varphi, long double t,
     long double * pTxn, long double * pTyn, long double * pTzn,
     long double * pNx, long double * pNy, long double * pNz,
@@ -575,7 +618,42 @@ int spherical_ccalc_Maxwells_stress_tensor_R_t(
     long double Ny;
     long double Nz;
     long double Sn;
-    int ret = spherical_ccalc_Maxwells_stress_tensor(sphere_R, theta, varphi, t,
+    int ret = spherical_y_ccalc_Maxwells_stress_tensor(sphere_R, theta, varphi, t,
+                                                     &Txn, &Tyn, &Tzn,
+                                                     &Nx, &Ny, &Nz,
+                                                     &Sn,
+                                                     sum_rlagerror_sqare);
+    *pTxn = sphere_R * sphere_R * Txn;
+    *pTyn = sphere_R * sphere_R * Tyn;
+    *pTzn = sphere_R * sphere_R * Tzn;
+
+    *pNx = sphere_R * sphere_R * Nx;
+    *pNy = sphere_R * sphere_R * Ny;
+    *pNz = sphere_R * sphere_R * Nz;
+
+    *pSn  = - sphere_R * sphere_R * Sn; // берём количество энергии излучения
+    // протекающей через поверхность воображаемой сферы со знаком минус, потому что
+    // направление векторов нормали к поверхности внутри функции spherical_ccalc_Maxwells_stress_tensor
+    // инвертировано
+
+    return ret;
+}
+
+int spherical_x_ccalc_Maxwells_stress_tensor_R_t(
+    long double theta, long double varphi, long double t,
+    long double * pTxn, long double * pTyn, long double * pTzn,
+    long double * pNx, long double * pNy, long double * pNz,
+    long double * pSn,
+    long double * sum_rlagerror_sqare)
+{
+    long double Txn;
+    long double Tyn;
+    long double Tzn;
+    long double Nx;
+    long double Ny;
+    long double Nz;
+    long double Sn;
+    int ret = spherical_x_ccalc_Maxwells_stress_tensor(sphere_R, theta, varphi, t,
                                                      &Txn, &Tyn, &Tzn,
                                                      &Nx, &Ny, &Nz,
                                                      &Sn,

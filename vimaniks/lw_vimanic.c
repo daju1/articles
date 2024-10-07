@@ -623,15 +623,15 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
                                                      &Nx, &Ny, &Nz,
                                                      &Sn,
                                                      sum_rlagerror_sqare);
-    *pTxn = sphere_R * sphere_R * Txn;
-    *pTyn = sphere_R * sphere_R * Tyn;
-    *pTzn = sphere_R * sphere_R * Tzn;
+    *pTxn = sphere_R * sphere_R * sinl(theta) * Txn;
+    *pTyn = sphere_R * sphere_R * sinl(theta) * Tyn;
+    *pTzn = sphere_R * sphere_R * sinl(theta) * Tzn;
 
-    *pNx = sphere_R * sphere_R * Nx;
-    *pNy = sphere_R * sphere_R * Ny;
-    *pNz = sphere_R * sphere_R * Nz;
+    *pNx = sphere_R * sphere_R * sinl(theta) * Nx;
+    *pNy = sphere_R * sphere_R * sinl(theta) * Ny;
+    *pNz = sphere_R * sphere_R * sinl(theta) * Nz;
 
-    *pSn  = - sphere_R * sphere_R * Sn; // берём количество энергии излучения
+    *pSn  = - sphere_R * sphere_R * sinl(theta) * Sn; // берём количество энергии излучения
     // протекающей через поверхность воображаемой сферы со знаком минус, потому что
     // направление векторов нормали к поверхности внутри функции spherical_ccalc_Maxwells_stress_tensor
     // инвертировано
@@ -658,15 +658,15 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(
                                                      &Nx, &Ny, &Nz,
                                                      &Sn,
                                                      sum_rlagerror_sqare);
-    *pTxn = sphere_R * sphere_R * Txn;
-    *pTyn = sphere_R * sphere_R * Tyn;
-    *pTzn = sphere_R * sphere_R * Tzn;
+    *pTxn = sphere_R * sphere_R * sinl(theta) * Txn;
+    *pTyn = sphere_R * sphere_R * sinl(theta) * Tyn;
+    *pTzn = sphere_R * sphere_R * sinl(theta) * Tzn;
 
-    *pNx = sphere_R * sphere_R * Nx;
-    *pNy = sphere_R * sphere_R * Ny;
-    *pNz = sphere_R * sphere_R * Nz;
+    *pNx = sphere_R * sphere_R * sinl(theta) * Nx;
+    *pNy = sphere_R * sphere_R * sinl(theta) * Ny;
+    *pNz = sphere_R * sphere_R * sinl(theta) * Nz;
 
-    *pSn  = - sphere_R * sphere_R * Sn; // берём количество энергии излучения
+    *pSn  = - sphere_R * sphere_R * sinl(theta) * Sn; // берём количество энергии излучения
     // протекающей через поверхность воображаемой сферы со знаком минус, потому что
     // направление векторов нормали к поверхности внутри функции spherical_ccalc_Maxwells_stress_tensor
     // инвертировано

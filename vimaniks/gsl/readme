@@ -1,0 +1,8 @@
+./gsl-latest/gsl-2.8$ ./configure --prefix=/usr3/articles/sagemath_docker_build/work/vimaniks/gsl/local
+
+make && make install
+
+./gsl$ make test
+gcc -o test vanderpol.o -I. -I./local/include -O0 -g -Werror -Wformat -L./local/lib -lm -lgsl -lgslcblas
+./gsl$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./local/lib 
+./gsl$ ./test 

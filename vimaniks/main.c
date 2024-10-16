@@ -16,6 +16,7 @@
 #include "lw.h"
 #include "lw_rotate.h"
 #include "lw_vimanic.h"
+#include "lw_tensor.h"
 
 extern int logging;
 
@@ -73,10 +74,16 @@ int main()
     long double Ny;
     long double Nz;
     long double Sn;
+    long double En;
+    long double Hn;
+    long double An;
     int ret = spherical_y_ccalc_Maxwells_stress_tensor(R, theta, varphi, t_i,
                                                      &Txn, &Tyn, &Tzn,
                                                      &Nx, &Ny, &Nz,
                                                      &Sn,
+                                                     &En,
+                                                     &Hn,
+                                                     &An,
                                                      &sum_rlagerror_sqare);
     if (0 != ret)
     {
@@ -90,6 +97,9 @@ int main()
                                                      &Txn, &Tyn, &Tzn,
                                                      &Nx, &Ny, &Nz,
                                                      &Sn,
+                                                     &En,
+                                                     &Hn,
+                                                     &An,
                                                      &sum_rlagerror_sqare);
     if (0 != ret)
     {

@@ -6,23 +6,26 @@ int main (void)
     double m = 1.0;
     double g = 1.0;
     double R = 1.0;
-    double p0 = 0.01;
+    double p0 = 0.5;
     double q0 = 0.0;
     double t0 = 0.0;
+    double xc = 0.0;
+    double yc = 0.0;
 
     cset_timespan_Epsilon(1.e-15);
     cset_distance_Epsilon(1.e-8);
     cset_min_newton_step(0.1);
     cset_newton_step_multiplier(0.9999);
 
-    init (m, g, R, p0, q0, t0);
+    init (m, g, R, p0, q0, t0, xc, yc);
     alloc();
 
 
     double x = 0.0;
     double y = 0.0;
     double z = 0.0;
-    double t = 0.0;
+    double t = 7.5;
+    double t2;
     double k, rlagerror;
 
     double x0 = -7.0;
@@ -35,10 +38,10 @@ int main (void)
             x = x0 + i * dx;
             y = y0 + j * dy;
             // отношение радиуса Лиенара Вихерта к длине радиус-вектора
-            int ret = klw(x, y, z, t,
+            int ret = klw(x, y, z, t, &t2,
                     &k, &rlagerror);
 
-            printf("x = %f y = %f k = %0.12f rlagerror = %0.12e\n", x, y, k, rlagerror);
+            printf("x = %f y = %f t2 =%f k = %0.12f rlagerror = %0.12e\n", x, y, t2, k, rlagerror);
         }
     }
 

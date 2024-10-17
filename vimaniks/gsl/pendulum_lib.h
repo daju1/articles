@@ -1,5 +1,5 @@
 
-void init (double m, double g, double R, double p0, double q0, double t0);
+void init (double m, double g, double R, double p0, double q0, double t0, double xc, double yc);
 
 void alloc();
 
@@ -40,7 +40,7 @@ void cset_min_newton_step(long double min_step);
 void cset_newton_step_multiplier(long double multiplier);
 
 // отношение радиуса Лиенара Вихерта к длине радиус-вектора
-int klw(coordinate x, coordinate y, coordinate z, timevalue t,
+int klw(coordinate x, coordinate y, coordinate z, timevalue t, timevalue * pt2,
         double *pk, coordinate * rlagerror);
 // Радиус Лиенара Вихерта
 int Rlw(coordinate x, coordinate y, coordinate z, timevalue t,

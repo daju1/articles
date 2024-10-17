@@ -75,7 +75,7 @@ jac (double t, const double y[], double *dfdy,
 static gsl_odeiv2_driver * d;
 static struct pendulum p;
 
-void init (double m, double g, double R, double p0, double q0, double t0)
+void init (double m, double g, double R, double p0, double q0, double t0, double xc, double yc)
 {
   p.m = m;
   p.g = g;
@@ -83,6 +83,8 @@ void init (double m, double g, double R, double p0, double q0, double t0)
   p.y[0] = p0;
   p.y[1] = q0;
   p.t = t0;
+  p.xc = xc;
+  p.yc = yc;
 }
 
 void alloc()
@@ -164,8 +166,8 @@ velocity cget_c()
 
 // расчет итерациями запаздывающего момента
 
-static timespan timespan_Epsilon = 1.0e-16;// # погрешность
-static distance distance_Epsilon = 1.0e-16;// # погрешность
+static timespan timespan_Epsilon = 1.0e-15;// # погрешность
+static distance distance_Epsilon = 1.0e-8;// # погрешность
 
 static long double min_newton_step = 0.1;
 static long double newton_step_multiplier = 0.9999;
@@ -476,7 +478,7 @@ void calc_k(coordinate x, coordinate y, coordinate z, timevalue t,
 }
 
 // отношение радиуса Лиенара Вихерта к длине радиус-вектора
-int klw(coordinate x, coordinate y, coordinate z, timevalue t,
+int klw(coordinate x, coordinate y, coordinate z, timevalue t, timevalue * pt2,
         double *pk, coordinate * rlagerror)
 {
     distance r;
@@ -489,15 +491,14 @@ int klw(coordinate x, coordinate y, coordinate z, timevalue t,
     acceleration wx, wy, wz;
     double dot_wx, dot_wy, dot_wz;
 
-    timevalue t2;
     // расчет итерациями запаздывающего момента
     if (0 == tlag(x, y, z, t, &sx, &sy, &sz, &vx, &vy, &vz,
                   &wx, &wy, &wz,
                   &dot_wx, &dot_wy, &dot_wz,
-                  &t2, rlagerror)) {
+                  pt2, rlagerror)) {
 
-        calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, pk, &r, &nx, &ny, &nz);
-        //printf("klw (*r) = %Le (*k) = %Le t2 = %Le\n", r, k, t2);
+        calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, *pt2, pk, &r, &nx, &ny, &nz);
+        //printf("klw (*r) = %e (*k) = %e t2 = %e\n", r, *pk, t2);
         return 0;
     }
     return -1;

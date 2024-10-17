@@ -8,11 +8,15 @@ LDFLAGS=#-L./local/lib
 # OBJ = vanderpol.o
 OBJ = pendulum.o
 LIB = pendulum_lib.o
+LIBTEST = pendulum_lib.o pendulum_lib_test.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 test: $(OBJ)
+	$(CC) -o $@ $^ $(LDFLAGS) $(LDLIBS)
+
+libtest: $(LIBTEST)
 	$(CC) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
 mylib: $(LIB)

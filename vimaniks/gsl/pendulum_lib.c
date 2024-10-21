@@ -603,7 +603,9 @@ int Alw(coordinate x, coordinate y, coordinate z, timevalue t,
 
 int electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
                    charge q,
-                   field * E_x, field * E_y, field * E_z, field * B_x, field * B_y, field * B_z, coordinate * rlagerror)
+                   field * E_x, field * E_y, field * E_z,
+                   field * B_x, field * B_y, field * B_z,
+                   coordinate * rlagerror)
 {
     double k;
     distance r;

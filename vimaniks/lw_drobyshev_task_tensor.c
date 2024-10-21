@@ -32,8 +32,7 @@ int ccalc_Maxwells_stress_tensor(
     long double * A_n
     )
 {
-    long double sign_a;
-    long double sign_q;
+    long double _q = 1.0;
 
     long double Ex = 0;
     long double Ey = 0;
@@ -52,7 +51,7 @@ int ccalc_Maxwells_stress_tensor(
     // поле в точке наблюдения создаваемое левым зарядом
     electr_magnet_ex(X_a, Y_a, Z_a, t_i,
             sx, sy, sz, vx, vy, vz, wx, wy, wz,
-            sign_a,
+            _q,
             &E_x, &E_y, &E_z,
             &B_x, &B_y, &B_z,
             &A_x, &A_y, &A_z);
@@ -164,7 +163,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor(
 // направлена вдоль оси икс декартовой системы
 
 // направление векторов нормали к сферической воображаемой поверхности инвертировано - снаружи вовнутрь
-int spherical_x_ccalc_Maxwells_stress_tensor(
+int spherical_x_ccalc_Maxwells_stress_tensor(long double xc,
     long double r, long double theta, long double varphi, long double t,
     Coordinate sx, Coordinate sy, Coordinate sz,
     Velocity vx, Velocity vy, Velocity vz,
@@ -177,7 +176,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor(
     long double * An)
 {
     return ccalc_Maxwells_stress_tensor(
-        r*cosl(theta),              // X_a - в декартовой -> z в сферической
+        xc + r*cosl(theta),         // X_a - в декартовой -> z в сферической
         r*sinl(theta)*cosl(varphi), // Y_a - в декартовой -> x в сферической
         r*sinl(theta)*sinl(varphi), // Z_a - в декартовой -> y в сферической
         t,
@@ -257,7 +256,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
     return ret;
 }
 
-int spherical_x_ccalc_Maxwells_stress_tensor_R_t(
+int spherical_x_ccalc_Maxwells_stress_tensor_R_t(long double xc,
     long double theta, long double varphi, long double t,
     Coordinate sx, Coordinate sy, Coordinate sz,
     Velocity vx, Velocity vy, Velocity vz,
@@ -267,8 +266,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(
     long double * pSn,
     long double * pEn,
     long double * pHn,
-    long double * pAn,
-    long double * sum_rlagerror_sqare)
+    long double * pAn)
 {
     long double Txn;
     long double Tyn;
@@ -281,7 +279,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(
     long double Hn;
     long double An;
 
-    int ret = spherical_x_ccalc_Maxwells_stress_tensor(sphere_R, theta, varphi, t,
+    int ret = spherical_x_ccalc_Maxwells_stress_tensor(xc, sphere_R, theta, varphi, t,
         sx, sy, sz, vx, vy, vz, wx, wy, wz,
         &Txn, &Tyn, &Tzn,
         &Nx, &Ny, &Nz,

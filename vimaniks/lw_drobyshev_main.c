@@ -5,6 +5,7 @@
 #include <assert.h>
 #include "lw.h"
 #include "lw_drobyshev_task.h"
+#include "lw_drobyshev_task_tensor.h"
 
 #include "stdlib.h"
 
@@ -121,6 +122,41 @@ distance R_lw(coordinate x, coordinate y, coordinate z, timevalue t)
     return r_lw;
 }
 
+
+long double spherical_x_calc_En_R_t (long double xc, long double theta, long double varphi, long double t)
+{
+    long double _xc = xc;
+    long double _theta = theta;
+    long double _varphi = varphi;
+    long double _t = t;
+
+    long double Txn;
+    long double Tyn;
+    long double Tzn;
+    long double Nx;
+    long double Ny;
+    long double Nz;
+    long double Sn;
+    long double En;
+    long double Hn;
+    long double An;
+
+    int ret = spherical_x_ccalc_Maxwells_stress_tensor_R_t(_xc, _theta, _varphi, _t,
+        sx, sy, sz, vx, vy, vz, wx, wy, wz,
+        &Txn,
+        &Tyn,
+        &Tzn,
+        &Nx,
+        &Ny,
+        &Nz,
+        &Sn,
+        &En,
+        &Hn,
+        &An);
+
+    return En;
+}
+
 void main()
 {
     double x = 5;
@@ -130,5 +166,15 @@ void main()
 
     double R = R_lw(x, y, z, t);
 
+    long double xc = sx(t);
+    long double theta = M_PI / 4;
+    long double varphi = 0.1;
+
+    cset_sphere_R(1.0);
+
+    long double En = spherical_x_calc_En_R_t(xc, theta, varphi, t);
+
     printf("R = %f\n", R);
+    printf("xc = %Lf\n", xc);
+    printf("En = %Lf\n", En);
 }

@@ -375,8 +375,8 @@ int find_period_by_newton_root(timevalue * pt2, double *pf)
     double ddot_q;  // d2phi/dt2
     double dddot_q; // d3phi/dt3
 
-    coordinate sx, sy, sz;
-    velocity vx, vy, vz;
+    coordinate sx, sy;
+    velocity vx, vy;
 
     double wx;
     double wy;

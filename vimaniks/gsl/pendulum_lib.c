@@ -1,8 +1,5 @@
 #include <stdio.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_odeiv2.h>
-#include <gsl/gsl_math.h>
+
 
 #include "pendulum_lib.h"
 
@@ -31,17 +28,6 @@
 // J[0,1] = R*g*m*cos(phi) = R*g*m*cos(y[1])
 // J[1,0] = 1/m
 // J[1,1[ = 0
-
-struct pendulum
-{
-    double m;
-    double g;
-    double R;
-    double y[2];
-    double t;
-    double xc, yc;
-};
-
 
 int
 func (double t, const double y[], double f[],
@@ -72,36 +58,63 @@ jac (double t, const double y[], double *dfdy,
   return GSL_SUCCESS;
 }
 
-static gsl_odeiv2_driver * d;
-static struct pendulum p;
+gsl_odeiv2_driver * driver_left;
+gsl_odeiv2_driver * driver_right;
 
-void init (double m, double g, double R, double p0, double q0, double t0, double xc, double yc)
+struct pendulum pendulum_left;
+struct pendulum pendulum_right;
+
+static gsl_odeiv2_system sys_left;
+static gsl_odeiv2_system sys_right;
+
+void init(struct pendulum * p, double m, double g, double R, double p0, double q0, double t0, double xc, double yc)
 {
-  p.m = m;
-  p.g = g;
-  p.R = R;
-  p.y[0] = p0;
-  p.y[1] = q0;
-  p.t = t0;
-  p.xc = xc;
-  p.yc = yc;
+  p->m = m;
+  p->g = g;
+  p->R = R;
+  p->y[0] = p0;
+  p->y[1] = q0;
+  p->t = t0;
+  p->xc = xc;
+  p->yc = yc;
 }
 
-void alloc()
+void init_left (double m, double g, double R, double p0, double q0, double t0, double xc, double yc)
 {
-  static gsl_odeiv2_system sys;
-  sys.function = &func;
-  sys.jacobian = &jac;
-  sys.dimension = 2;
-  sys.params = &p;
+    init (&pendulum_left, m, g, R, p0, q0, t0, xc, yc);
+}
 
-  d = gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk8pd,
+void init_right(double m, double g, double R, double p0, double q0, double t0, double xc, double yc)
+{
+    init (&pendulum_right, m, g, R, p0, q0, t0, xc, yc);
+}
+
+
+void alloc(struct pendulum * pendulum, gsl_odeiv2_system * sys, gsl_odeiv2_driver ** driver)
+{
+  sys->function = &func;
+  sys->jacobian = &jac;
+  sys->dimension = 2;
+  sys->params = pendulum;
+
+  *driver = gsl_odeiv2_driver_alloc_y_new (sys, gsl_odeiv2_step_rk8pd,
                                   1e-6, 1e-6, 0.0);
+}
+
+void alloc_left()
+{
+    alloc(&pendulum_left, &sys_left, &driver_left);
+}
+
+void alloc_right()
+{
+    alloc(&pendulum_right, &sys_right, &driver_right);
 }
 
 int logging = 0;
 
-int apply(double ti, double * pt, double *pMomenta, double *pq,
+int apply(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
+          double ti, double * pt, double *pMomenta, double *pq,
           double * pdot_q, double * pddot_q, double * pdddot_q,
           double * psx, double * psy,
           double * pvx, double * pvy,
@@ -109,12 +122,12 @@ int apply(double ti, double * pt, double *pMomenta, double *pq,
           double * pdot_wx, double * pdot_wy
          )
 {
-  if (d->h * (ti - p.t) < 0.0)
+  if (driver->h * (ti - pendulum->t) < 0.0)
   {
-    d->h *= -1;
+    driver->h *= -1;
   }
 
-  int status = gsl_odeiv2_driver_apply (d, &p.t, ti, p.y);
+  int status = gsl_odeiv2_driver_apply (driver, &pendulum->t, ti, pendulum->y);
 
   if (status != GSL_SUCCESS)
   {
@@ -122,30 +135,30 @@ int apply(double ti, double * pt, double *pMomenta, double *pq,
   }
 
   //printf ("%.5e %.5e %.5e\n", p.t, p.y[0], p.y[1]);
-  if (pt != NULL) *pt = p.t;
-  *pMomenta = p.y[0];
-  *pq = p.y[1];
+  if (pt != NULL) *pt = pendulum->t;
+  *pMomenta = pendulum->y[0];
+  *pq = pendulum->y[1];
 
-  *pdot_q   = *pMomenta / p.m;                  // dphi/dt
-  *pddot_q  = p.R * p.g * sin(*pq);             // d2phi/dt2
-  *pdddot_q = p.R * p.g * cos(*pq) * (*pdot_q); // d3phi/dt3
+  *pdot_q   = *pMomenta / pendulum->m;                  // dphi/dt
+  *pddot_q  = pendulum->R * pendulum->g * sin(*pq);             // d2phi/dt2
+  *pdddot_q = pendulum->R * pendulum->g * cos(*pq) * (*pdot_q); // d3phi/dt3
 
-  *psx = p.xc + p.R*cos(*pq);
-  *psy = p.yc + p.R*sin(*pq);
+  *psx = pendulum->xc + pendulum->R*cos(*pq);
+  *psy = pendulum->yc + pendulum->R*sin(*pq);
 
-  *pvx = - p.R*sin(*pq) * (*pdot_q);
-  *pvy = + p.R*cos(*pq) * (*pdot_q);
+  *pvx = - pendulum->R*sin(*pq) * (*pdot_q);
+  *pvy = + pendulum->R*cos(*pq) * (*pdot_q);
 
-  *pwx = - p.R*cos(*pq) * Sq((*pdot_q)) - p.R*sin(*pq) * (*pddot_q);
-  *pwy = - p.R*sin(*pq) * Sq((*pdot_q)) + p.R*cos(*pq) * (*pddot_q);
+  *pwx = - pendulum->R*cos(*pq) * Sq((*pdot_q)) - pendulum->R*sin(*pq) * (*pddot_q);
+  *pwy = - pendulum->R*sin(*pq) * Sq((*pdot_q)) + pendulum->R*cos(*pq) * (*pddot_q);
 
-  *pdot_wx = + p.R*sin(*pq) * Cu((*pdot_q)) - 3 * p.R*cos(*pq) * (*pdot_q) * (*pddot_q) - p.R*sin(*pq) * (*pdddot_q);
-  *pdot_wy = - p.R*cos(*pq) * Cu((*pdot_q)) - 3 * p.R*sin(*pq) * (*pdot_q) * (*pddot_q) + p.R*cos(*pq) * (*pdddot_q);
+  *pdot_wx = + pendulum->R*sin(*pq) * Cu((*pdot_q)) - 3 * pendulum->R*cos(*pq) * (*pdot_q) * (*pddot_q) - pendulum->R*sin(*pq) * (*pdddot_q);
+  *pdot_wy = - pendulum->R*cos(*pq) * Cu((*pdot_q)) - 3 * pendulum->R*sin(*pq) * (*pdot_q) * (*pddot_q) + pendulum->R*cos(*pq) * (*pdddot_q);
 
   return status;
 }
 
-void release()
+void release(gsl_odeiv2_driver * d)
 {
   gsl_odeiv2_driver_free (d);
 }
@@ -304,9 +317,10 @@ int NewtonIt(double step,
     return ret;
 }
 
-int find_newton_root(coordinate x, coordinate y, coordinate z, timevalue t, timevalue * pt2,
-                           coordinate *psx, coordinate *psy, coordinate *psz,
-                           velocity *pvx, velocity *pvy, velocity *pvz)
+int find_newton_root(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
+                     coordinate x, coordinate y, coordinate z, timevalue t, timevalue * pt2,
+                     coordinate *psx, coordinate *psy, coordinate *psz,
+                     velocity *pvx, velocity *pvy, velocity *pvz)
 {
     double step = 1.0;
     double t1;
@@ -330,7 +344,8 @@ int find_newton_root(coordinate x, coordinate y, coordinate z, timevalue t, time
         if (logging) printf("t2=%0.30e\t", *pt2);
         t1 = *pt2;
 
-        apply(*pt2, NULL, &Momenta, &q,
+        apply(pendulum, driver,
+             *pt2, NULL, &Momenta, &q,
               &dot_q, &ddot_q, &dddot_q,
               psx, psy,
               pvx, pvy,
@@ -363,7 +378,8 @@ int find_newton_root(coordinate x, coordinate y, coordinate z, timevalue t, time
 
 double period_Epsilon = 1.0e-16;
 
-int find_period_by_newton_root(timevalue * pt2, double *pf)
+int find_period_by_newton_root(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
+                               timevalue * pt2, double *pf)
 {
     double step = 1.0;
     double t1;
@@ -389,7 +405,8 @@ int find_period_by_newton_root(timevalue * pt2, double *pf)
         if (logging) printf("t2=%0.30e\t", *pt2);
         t1 = *pt2;
 
-        apply(*pt2, NULL, &Momenta, &q,
+        apply(pendulum, driver,
+              *pt2, NULL, &Momenta, &q,
               &dot_q, &ddot_q, &dddot_q,
               &sx, &sy,
               &vx, &vy,
@@ -471,7 +488,8 @@ int find_period_by_newton_root(timevalue * pt2, double *pf)
     return ret;
 }
 
-void calc_pendulum_period(double * p_init_T, double max_ti, double dti)
+void calc_pendulum_period(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
+                          double * p_init_T, double max_ti, double dti)
 {
     double f;
     int ret;
@@ -498,7 +516,8 @@ void calc_pendulum_period(double * p_init_T, double max_ti, double dti)
 
     for (double ti = 0; ti < max_ti; ti += dti)
     {
-        apply(ti, NULL, &Momenta, &q,
+        apply(pendulum, driver,
+              ti, NULL, &Momenta, &q,
               &dot_q, &ddot_q, &dddot_q,
               &sx, &sy,
               &vx, &vy,
@@ -530,7 +549,8 @@ void calc_pendulum_period(double * p_init_T, double max_ti, double dti)
     }
 }
 
-int tlag(coordinate x, coordinate y, coordinate z, timevalue t,
+int tlag(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
+         coordinate x, coordinate y, coordinate z, timevalue t,
          coordinate *psx, coordinate *psy, coordinate *psz,
          velocity *pvx, velocity *pvy, velocity *pvz,
          acceleration *pwx, acceleration *pwy, acceleration *pwz,
@@ -562,7 +582,8 @@ int tlag(coordinate x, coordinate y, coordinate z, timevalue t,
     while (1) {
         t1 = *pt2;
 
-        apply(*pt2, NULL, &Momenta, &q,
+        apply(pendulum, driver,
+              *pt2, NULL, &Momenta, &q,
               &dot_q, &ddot_q, &dddot_q,
               psx, psy,
               pvx, pvy,
@@ -592,7 +613,8 @@ int tlag(coordinate x, coordinate y, coordinate z, timevalue t,
             break;
     }
 
-    int ret = find_newton_root(x, y, z, t, pt2,
+    int ret = find_newton_root(pendulum, driver,
+                     x, y, z, t, pt2,
                      psx, psy, psz,
                      pvx, pvy, pvz);
 
@@ -648,7 +670,8 @@ void calc_k(coordinate x, coordinate y, coordinate z, timevalue t,
 }
 
 // отношение радиуса Лиенара Вихерта к длине радиус-вектора
-int klw(coordinate x, coordinate y, coordinate z, timevalue t, timevalue * pt2,
+int klw(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
+        coordinate x, coordinate y, coordinate z, timevalue t, timevalue * pt2,
         double *pk, coordinate * rlagerror)
 {
     distance r;
@@ -662,7 +685,10 @@ int klw(coordinate x, coordinate y, coordinate z, timevalue t, timevalue * pt2,
     double dot_wx, dot_wy, dot_wz;
 
     // расчет итерациями запаздывающего момента
-    if (0 == tlag(x, y, z, t, &sx, &sy, &sz, &vx, &vy, &vz,
+    if (0 == tlag(pendulum, driver,
+                  x, y, z, t,
+                  &sx, &sy, &sz,
+                  &vx, &vy, &vz,
                   &wx, &wy, &wz,
                   &dot_wx, &dot_wy, &dot_wz,
                   pt2, rlagerror)) {
@@ -675,7 +701,8 @@ int klw(coordinate x, coordinate y, coordinate z, timevalue t, timevalue * pt2,
 }
 
 // Радиус Лиенара Вихерта
-int Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
+int Rlw(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
+        coordinate x, coordinate y, coordinate z, timevalue t,
         double *pRlw, coordinate * rlagerror)
 {
     double k;
@@ -691,7 +718,10 @@ int Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
 
     timevalue t2;
     // расчет итерациями запаздывающего момента
-    if (0 == tlag(x, y, z, t, &sx, &sy, &sz, &vx, &vy, &vz,
+    if (0 == tlag(pendulum, driver,
+                  x, y, z, t,
+                  &sx, &sy, &sz,
+                  &vx, &vy, &vz,
                   &wx, &wy, &wz,
                   &dot_wx, &dot_wy, &dot_wz,
                   &t2, rlagerror)) {
@@ -705,7 +735,8 @@ int Rlw(coordinate x, coordinate y, coordinate z, timevalue t,
 }
 
 // phi_lw - скалярный потенциал Лиенара Вихерта
-int philw(coordinate x, coordinate y, coordinate z, timevalue t,
+int philw(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
+          coordinate x, coordinate y, coordinate z, timevalue t,
           charge q,
           double *pphi, coordinate * rlagerror)
 {
@@ -722,7 +753,10 @@ int philw(coordinate x, coordinate y, coordinate z, timevalue t,
 
     timevalue t2;
     // расчет итерациями запаздывающего момента
-    if (0 == tlag(x, y, z, t, &sx, &sy, &sz, &vx, &vy, &vz,
+    if (0 == tlag(pendulum, driver,
+                  x, y, z, t,
+                  &sx, &sy, &sz,
+                  &vx, &vy, &vz,
                   &wx, &wy, &wz,
                   &dot_wx, &dot_wy, &dot_wz,
                   &t2, rlagerror)) {
@@ -738,7 +772,8 @@ int philw(coordinate x, coordinate y, coordinate z, timevalue t,
 
 
 // A_lw - векторный потенциал Лиенара Вихерта
-int Alw(coordinate x, coordinate y, coordinate z, timevalue t,
+int Alw(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
+        coordinate x, coordinate y, coordinate z, timevalue t,
         charge q,
         field * A_x, field * A_y, field * A_z, coordinate * rlagerror)
 {
@@ -755,7 +790,10 @@ int Alw(coordinate x, coordinate y, coordinate z, timevalue t,
 
     timevalue t2;
     // расчет итерациями запаздывающего момента
-    if (0 == tlag(x, y, z, t, &sx, &sy, &sz, &vx, &vy, &vz,
+    if (0 == tlag(pendulum, driver,
+                  x, y, z, t,
+                  &sx, &sy, &sz,
+                  &vx, &vy, &vz,
                   &wx, &wy, &wz,
                   &dot_wx, &dot_wy, &dot_wz,
                   &t2, rlagerror)) {
@@ -771,7 +809,8 @@ int Alw(coordinate x, coordinate y, coordinate z, timevalue t,
 }
 
 
-int electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
+int electr_magnet(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
+                  coordinate x, coordinate y, coordinate z, timevalue t,
                    charge q,
                    field * E_x, field * E_y, field * E_z,
                    field * B_x, field * B_y, field * B_z,
@@ -790,7 +829,10 @@ int electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
 
     timevalue t2;
     // расчет итерациями запаздывающего момента
-    if (0 == tlag(x, y, z, t, &sx, &sy, &sz, &vx, &vy, &vz,
+    if (0 == tlag(pendulum, driver,
+                  x, y, z, t,
+                  &sx, &sy, &sz,
+                  &vx, &vy, &vz,
                   &wx, &wy, &wz,
                   &dot_wx, &dot_wy, &dot_wz,
                   &t2, rlagerror)) {
@@ -815,7 +857,37 @@ int electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
 }
 
 
-int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
+int calc_fields(double k, distance r,
+                distance nx,
+                distance ny,
+                distance nz,
+                charge q,
+                coordinate sx, coordinate sy, coordinate sz,
+                velocity vx, velocity vy, velocity vz,
+                acceleration wx, acceleration wy, acceleration wz,
+                double dot_wx, double dot_wy, double dot_wz,
+                field * E_x, field * E_y, field * E_z,
+                field * B_x, field * B_y, field * B_z,
+                field * A_x, field * A_y, field * A_z)
+{
+    double v2_c2 = (Sq(vx) + Sq(vy) + Sq(vz)) / (c*c);
+    double ra_c2 = r * (nx*wx + ny*wy + nz*wz) / (c*c);
+
+    (*E_x) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx - vx/c)/(r*r) - (k/r)*wx/(c*c));
+    (*E_y) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(ny - vy/c)/(r*r) - (k/r)*wy/(c*c));
+    (*E_z) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nz - vz/c)/(r*r) - (k/r)*wz/(c*c));
+
+    (*B_x) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(ny*vz - nz*vy)/(r*r)/c + (ny*wz - nz*wy)*(k/r)/(c*c));
+    (*B_y) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nz*vx - nx*vz)/(r*r)/c + (nz*wx - nx*wz)*(k/r)/(c*c));
+    (*B_z) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx*vy - ny*vx)/(r*r)/c + (nx*wy - ny*wx)*(k/r)/(c*c));
+
+    (*A_x) = q*vx/(k*r);
+    (*A_y) = q*vy/(k*r);
+    (*A_z) = q*vz/(k*r);
+}
+
+int electr_magnet_ex(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
+                   coordinate x, coordinate y, coordinate z, timevalue t,
                    charge q,
                    field * E_x, field * E_y, field * E_z,
                    field * B_x, field * B_y, field * B_z,
@@ -835,28 +907,25 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
 
     timevalue t2;
     // расчет итерациями запаздывающего момента
-    if (0 == tlag(x, y, z, t, &sx, &sy, &sz, &vx, &vy, &vz,
+    if (0 == tlag(pendulum, driver,
+                  x, y, z, t,
+                  &sx, &sy, &sz,
+                  &vx, &vy, &vz,
                   &wx, &wy, &wz,
                   &dot_wx, &dot_wy, &dot_wz,
                   &t2, rlagerror)) {
 
         calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz);
 
-
-        double v2_c2 = (Sq(vx) + Sq(vy) + Sq(vz)) / (c*c);
-        double ra_c2 = r * (nx*wx + ny*wy + nz*wz) / (c*c);
-
-        (*E_x) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx - vx/c)/(r*r) - (k/r)*wx/(c*c));
-        (*E_y) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(ny - vy/c)/(r*r) - (k/r)*wy/(c*c));
-        (*E_z) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nz - vz/c)/(r*r) - (k/r)*wz/(c*c));
-
-        (*B_x) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(ny*vz - nz*vy)/(r*r)/c + (ny*wz - nz*wy)*(k/r)/(c*c));
-        (*B_y) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nz*vx - nx*vz)/(r*r)/c + (nz*wx - nx*wz)*(k/r)/(c*c));
-        (*B_z) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx*vy - ny*vx)/(r*r)/c + (nx*wy - ny*wx)*(k/r)/(c*c));
-
-        (*A_x) = q*vx/(k*r);
-        (*A_y) = q*vy/(k*r);
-        (*A_z) = q*vz/(k*r);
+        calc_fields(k, r,
+                nx, ny, nz,
+                q,
+                sx, sy, sz, vx, vy, vz,
+                wx, wy, wz,
+                dot_wx, dot_wy, dot_wz,
+                E_x, E_y, E_z,
+                B_x, B_y, B_z,
+                A_x, A_y, A_z);
 
         return 0;
     }

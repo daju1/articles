@@ -272,8 +272,6 @@ int ccalc_sum_F_t(timevalue t_i,
 
 int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z_a, long double t_i,
                                  long double cos_nx, long double cos_ny, long double cos_nz,
-                                 long double alpha0_l,
-                                 long double alpha0_r,
                                  long double * T_xn,
                                  long double * T_yn,
                                  long double * T_zn,
@@ -452,8 +450,6 @@ int spherical_y_ccalc_Maxwells_stress_tensor(
         - sinl(theta)*sinl(varphi), // cos_nx - i в декартовой -> j в сферической
         - cosl(theta),              // cos_ny - j в декартовой -> k в сферической
         - sinl(theta)*cosl(varphi), // cos_nz - k в декартовой -> i в сферической
-        0,
-        0,
         Txn, Tyn, Tzn,
         Nx, Ny, Nz,
         Sn,
@@ -488,8 +484,6 @@ int spherical_x_ccalc_Maxwells_stress_tensor(
         - cosl(theta),              // cos_nx - i в декартовой -> k в сферической
         - sinl(theta)*cosl(varphi), // cos_ny - j в декартовой -> i в сферической
         - sinl(theta)*sinl(varphi), // cos_nz - k в декартовой -> j в сферической
-        0,
-        0,
         Txn, Tyn, Tzn,
         Nx, Ny, Nz,
         Sn,

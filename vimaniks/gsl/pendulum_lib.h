@@ -28,6 +28,7 @@ typedef double anglevelocity;
 
 
 int find_period_by_newton_root(timevalue * pT, double *pf);
+void calc_pendulum_period(double * p_init_T, double max_ti, double dti);
 
 
 void cset_c(long double _c);

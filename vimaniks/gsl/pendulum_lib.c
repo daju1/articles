@@ -158,9 +158,58 @@ int apply(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
   return status;
 }
 
+int apply_left(
+          double ti, double * pt, double *pMomenta, double *pq,
+          double * pdot_q, double * pddot_q, double * pdddot_q,
+          double * psx, double * psy,
+          double * pvx, double * pvy,
+          double * pwx, double * pwy,
+          double * pdot_wx, double * pdot_wy
+         )
+{
+    return apply(&pendulum_left, driver_left,
+          ti, pt, pMomenta, pq,
+          pdot_q, pddot_q, pdddot_q,
+          psx, psy,
+          pvx, pvy,
+          pwx, pwy,
+          pdot_wx, pdot_wy
+         );
+}
+
+
+int apply_right(
+          double ti, double * pt, double *pMomenta, double *pq,
+          double * pdot_q, double * pddot_q, double * pdddot_q,
+          double * psx, double * psy,
+          double * pvx, double * pvy,
+          double * pwx, double * pwy,
+          double * pdot_wx, double * pdot_wy
+         )
+{
+    return apply(&pendulum_right, driver_right,
+          ti, pt, pMomenta, pq,
+          pdot_q, pddot_q, pdddot_q,
+          psx, psy,
+          pvx, pvy,
+          pwx, pwy,
+          pdot_wx, pdot_wy
+         );
+}
+
 void release(gsl_odeiv2_driver * d)
 {
   gsl_odeiv2_driver_free (d);
+}
+
+void release_left()
+{
+    release(driver_left);
+}
+
+void release_right()
+{
+    release(driver_right);
 }
 
 //sgs
@@ -375,6 +424,27 @@ int find_newton_root(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
     return 0;
 }
 
+int find_newton_root_left(
+                     coordinate x, coordinate y, coordinate z, timevalue t, timevalue * pt2,
+                     coordinate *psx, coordinate *psy, coordinate *psz,
+                     velocity *pvx, velocity *pvy, velocity *pvz)
+{
+    return find_newton_root(&pendulum_left, driver_left,
+                     x, y, z, t, pt2,
+                     psx, psy, psz,
+                     pvx, pvy, pvz);
+}
+
+int find_newton_root_right(
+                     coordinate x, coordinate y, coordinate z, timevalue t, timevalue * pt2,
+                     coordinate *psx, coordinate *psy, coordinate *psz,
+                     velocity *pvx, velocity *pvy, velocity *pvz)
+{
+    return find_newton_root(&pendulum_right, driver_right,
+                     x, y, z, t, pt2,
+                     psx, psy, psz,
+                     pvx, pvy, pvz);
+}
 
 double period_Epsilon = 1.0e-16;
 
@@ -488,6 +558,18 @@ int find_period_by_newton_root(struct pendulum * pendulum, gsl_odeiv2_driver * d
     return ret;
 }
 
+int find_period_by_newton_root_left(timevalue * pt2, double *pf)
+{
+    return find_period_by_newton_root(&pendulum_left, driver_left,
+        pt2, pf);
+}
+
+int find_period_by_newton_root_right(timevalue * pt2, double *pf)
+{
+    return find_period_by_newton_root(&pendulum_right, driver_right,
+        pt2, pf);
+}
+
 void calc_pendulum_period(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
                           double * p_init_T, double max_ti, double dti)
 {
@@ -547,6 +629,18 @@ void calc_pendulum_period(struct pendulum * pendulum, gsl_odeiv2_driver * driver
             }
         }
     }
+}
+
+void calc_pendulum_period_left(double * p_init_T, double max_ti, double dti)
+{
+    calc_pendulum_period(&pendulum_left, driver_left,
+        p_init_T, max_ti, dti);
+}
+
+void calc_pendulum_period_right(double * p_init_T, double max_ti, double dti)
+{
+    calc_pendulum_period(&pendulum_right, driver_right,
+        p_init_T, max_ti, dti);
 }
 
 int tlag(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
@@ -640,8 +734,6 @@ int tlag(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
     return 0;
 }
 
-
-
 /*
 Здесь нужно отметить во избежание путаницы, что радиус Лиенара Вихерта $k$ в формуле для электрического и магнитного полей и $k$ в программе отличаются друг от друга тем, что в программе $k$ нормирован на единицу, а в формуле нет. При переходе от формул к програмным кодам по сути произведено преобразование $k \rightarrow k\cdot r$
 */
@@ -700,6 +792,22 @@ int klw(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
     return -1;
 }
 
+int klw_left(
+        coordinate x, coordinate y, coordinate z, timevalue t, timevalue * pt2,
+        double *pk, coordinate * rlagerror)
+{
+    return klw(&pendulum_left, driver_left,
+        x, y, z, t, pt2, pk, rlagerror);
+}
+
+int klw_right(
+        coordinate x, coordinate y, coordinate z, timevalue t, timevalue * pt2,
+        double *pk, coordinate * rlagerror)
+{
+    return klw(&pendulum_right, driver_right,
+        x, y, z, t, pt2, pk, rlagerror);
+}
+
 // Радиус Лиенара Вихерта
 int Rlw(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
         coordinate x, coordinate y, coordinate z, timevalue t,
@@ -732,6 +840,22 @@ int Rlw(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
         return 0;
     }
     return -1;
+}
+
+int Rlw_left(
+        coordinate x, coordinate y, coordinate z, timevalue t,
+        double *pRlw, coordinate * rlagerror)
+{
+    return Rlw(&pendulum_left, driver_left,
+        x, y, z, t, pRlw, rlagerror);
+}
+
+int Rlw_right(
+        coordinate x, coordinate y, coordinate z, timevalue t,
+        double *pRlw, coordinate * rlagerror)
+{
+    return Rlw(&pendulum_right, driver_right,
+        x, y, z, t, pRlw, rlagerror);
 }
 
 // phi_lw - скалярный потенциал Лиенара Вихерта
@@ -770,6 +894,27 @@ int philw(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
     return -1;
 }
 
+int philw_left(
+          coordinate x, coordinate y, coordinate z, timevalue t,
+          charge q,
+          double *pphi, coordinate * rlagerror)
+{
+    return philw(&pendulum_left, driver_left,
+        x, y, z, t,
+        q,
+        pphi, rlagerror);
+}
+
+int philw_right(
+          coordinate x, coordinate y, coordinate z, timevalue t,
+          charge q,
+          double *pphi, coordinate * rlagerror)
+{
+    return philw(&pendulum_right, driver_right,
+        x, y, z, t,
+        q,
+        pphi, rlagerror);
+}
 
 // A_lw - векторный потенциал Лиенара Вихерта
 int Alw(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
@@ -808,6 +953,25 @@ int Alw(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
     return -1;
 }
 
+int Alw_left(
+        coordinate x, coordinate y, coordinate z, timevalue t,
+        charge q,
+        field * A_x, field * A_y, field * A_z, coordinate * rlagerror)
+{
+    return Alw(&pendulum_left, driver_left,
+        x, y, z, t, q,
+        A_x, A_y, A_z, rlagerror);
+}
+
+int Alw_right(
+        coordinate x, coordinate y, coordinate z, timevalue t,
+        charge q,
+        field * A_x, field * A_y, field * A_z, coordinate * rlagerror)
+{
+    return Alw(&pendulum_right, driver_right,
+        x, y, z, t, q,
+        A_x, A_y, A_z, rlagerror);
+}
 
 int electr_magnet(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
                   coordinate x, coordinate y, coordinate z, timevalue t,
@@ -854,6 +1018,36 @@ int electr_magnet(struct pendulum * pendulum, gsl_odeiv2_driver * driver,
         return 0;
     }
     return -1;
+}
+
+int electr_magnet_left(
+                  coordinate x, coordinate y, coordinate z, timevalue t,
+                   charge q,
+                   field * E_x, field * E_y, field * E_z,
+                   field * B_x, field * B_y, field * B_z,
+                   coordinate * rlagerror)
+{
+    return electr_magnet(&pendulum_left, driver_left,
+        x, y, z, t,
+        q,
+        E_x, E_y, E_z,
+        B_x, B_y, B_z,
+        rlagerror);
+}
+
+int electr_magnet_right(
+                  coordinate x, coordinate y, coordinate z, timevalue t,
+                   charge q,
+                   field * E_x, field * E_y, field * E_z,
+                   field * B_x, field * B_y, field * B_z,
+                   coordinate * rlagerror)
+{
+    return electr_magnet(&pendulum_right, driver_right,
+        x, y, z, t,
+        q,
+        E_x, E_y, E_z,
+        B_x, B_y, B_z,
+        rlagerror);
 }
 
 

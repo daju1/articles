@@ -6,7 +6,7 @@ int main (void)
     double m = 1.0;
     double g = 1.0;
     double R = 1.0;
-    double p0 = 0.5;
+    double p0 = 0.05;
     double q0 = 0.0;
     double t0 = 0.0;
     double xc = 0.0;
@@ -19,6 +19,15 @@ int main (void)
 
     init (m, g, R, p0, q0, t0, xc, yc);
     alloc();
+
+    timevalue T = 18;
+    double fT;
+    find_period_by_newton_root(&T, &fT);
+
+    printf("period T = %f\n", T);
+    printf("fT = %0.30e\n", fT);
+
+    return 0;
 
 
     double x = 0.0;

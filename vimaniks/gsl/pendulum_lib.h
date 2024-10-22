@@ -27,6 +27,9 @@ typedef double angle;
 typedef double anglevelocity;
 
 
+int find_period_by_newton_root(timevalue * pT, double *pf);
+
+
 void cset_c(long double _c);
 velocity cget_c();
 

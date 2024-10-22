@@ -25,5 +25,6 @@ mylib: $(LIB)
 clean:
 	rm -f $(OBJ)
 	rm -f test
+	rm -f libtest
 	rm -f mylib.so
 	rm *.o

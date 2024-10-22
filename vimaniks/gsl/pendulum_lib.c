@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include <math.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_odeiv2.h>
+#include <gsl/gsl_math.h>
 
 #include "pendulum_lib.h"
 
@@ -358,6 +358,117 @@ int find_newton_root(coordinate x, coordinate y, coordinate z, timevalue t, time
     }
 
     return 0;
+}
+
+
+double period_Epsilon = 1.0e-16;
+
+int find_period_by_newton_root(timevalue * pt2, double *pf)
+{
+    double step = 1.0;
+    double t1;
+    int ret;
+
+    double Momenta, q;
+
+    double dot_q;   // dphi/dt
+    double ddot_q;  // d2phi/dt2
+    double dddot_q; // d3phi/dt3
+
+    coordinate sx, sy, sz;
+    velocity vx, vy, vz;
+
+    double wx;
+    double wy;
+
+    double dot_wx;
+    double dot_wy;
+
+    for (;;)
+    {
+        if (logging) printf("t2=%0.30e\t", *pt2);
+        t1 = *pt2;
+
+        apply(*pt2, NULL, &Momenta, &q,
+              &dot_q, &ddot_q, &dddot_q,
+              &sx, &sy,
+              &vx, &vy,
+              &wx, &wy,
+              &dot_wx, &dot_wy
+        );
+
+        /*ret = NewtonIt(step,
+                      x, y, z,
+                      t, *pt2,
+                      psx, psy, psz,
+                      pvx, pvy, pvz, pt2, &f);
+*/
+
+        {
+            int ret = 0;
+            double res, dfdt;
+            /*newton_root_derivative(x, y, z,
+                                t, *pt2,
+                                *psx, *psy, *psz,
+                                *pvx, *pvy, *pvz,
+                                &cdt, &d, &f, &dfdt);*/
+
+            *pf = 2*M_PI - q;
+            dfdt = dot_q;
+
+            *pf = sy;
+            dfdt = vy;
+
+            if(fabsl(*pf) < period_Epsilon)
+            {
+                if (logging) printf("NewtonIt fabsl(*f) %Le < Epsilon %e\n",
+                    fabsl(*pf), period_Epsilon);
+                return +1;
+            }
+
+            if (dfdt == 0.0)
+            {
+                printf("NewtonIt error: derivative is zero\n");
+                return -1;
+            }
+
+        //    if (fabsl(dfdt) > 1.0)
+        //    {
+        //        printf("NewtonIt warning: derivative more than one\n");
+        //        printf("contractive mapping is not contractive\n");
+        //    }
+
+            double delta      = (*pf)/dfdt;
+            double step_delta = step*delta;
+            res                   = *pt2-step_delta;
+
+            if (res == *pt2)
+            {
+                printf("NewtonIt step_delta = %0.36e delta %0.36e step=%0.36e\n",
+                    step_delta, delta, step);
+                printf("NewtonIt t2 %0.36e *res %0.36e f1 = %0.36e dfdt = %0.36e\n",
+                    *pt2, res, *pf, dfdt);
+                ret = +2;
+            }
+
+            if (logging)
+            {
+                printf("t2 = %0.30e, f1 = %0.30e, dfdt=%0.30e, delta=%0.30e step %0.30e step_delta %0.30e res = %0.30e\n",
+                    *pt2, *pf, dfdt, delta, step, step_delta, res);
+            }
+
+            *pt2 = res;
+        }
+        if (*pt2 == t1){
+            printf("NewtonIt *pt2 %e == t1 %e step=%e\n", *pt2, t1, step);
+            break;
+        }
+
+        if (step > min_newton_step)
+            step *= newton_step_multiplier;
+    }
+
+    return ret;
 }
 
 int tlag(coordinate x, coordinate y, coordinate z, timevalue t,

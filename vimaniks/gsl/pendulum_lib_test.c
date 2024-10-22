@@ -1,27 +1,8 @@
 #include <stdio.h>
 #include "pendulum_lib.h"
 
-int main (void)
+void calc_pendulum_period(double * p_init_T, double max_ti, double dti)
 {
-    double m = 1.0;
-    double g = 0.1;
-    double R = 1.0;
-    double p0 = 0.05;
-    double q0 = 0.0;
-    double t0 = 0.0;
-    double xc = 0.0;
-    double yc = 0.0;
-
-    cset_timespan_Epsilon(1.e-15);
-    cset_distance_Epsilon(1.e-8);
-    cset_min_newton_step(0.1);
-    cset_newton_step_multiplier(0.9999);
-
-    init (m, g, R, p0, q0, t0, xc, yc);
-    alloc();
-
-    double init_T;
-    {
     double f;
     int ret;
 
@@ -45,7 +26,7 @@ int main (void)
     int start = 1;
     int null_index = 0;
 
-    for (double ti = 0; ti < 50; ti += 0.01)
+    for (double ti = 0; ti < max_ti; ti += dti)
     {
         apply(ti, NULL, &Momenta, &q,
               &dot_q, &ddot_q, &dddot_q,
@@ -59,8 +40,8 @@ int main (void)
         if (pre_sy * sy < 0.0) {
             if (1 == null_index)
             {
-                init_T = (pre_ti+ti)/2;
-                printf("init_T=%f\n", init_T);
+                *p_init_T = (pre_ti+ti)/2;
+                printf("init_T=%f\n", *p_init_T);
             }
 
             printf("(pre_sy=%f,sy=%f)\n", pre_sy,sy);
@@ -77,8 +58,32 @@ int main (void)
             }
         }       
     }
-    }
+}
 
+int main (void)
+{
+    double m = 1.0;
+    double g = 0.1;
+    double R = 1.0;
+    double p0 = 0.05;
+    double q0 = 0.0;
+    double t0 = 0.0;
+    double xc = 0.0;
+    double yc = 0.0;
+
+    cset_timespan_Epsilon(1.e-15);
+    cset_distance_Epsilon(1.e-8);
+    cset_min_newton_step(0.1);
+    cset_newton_step_multiplier(0.9999);
+
+    init (m, g, R, p0, q0, t0, xc, yc);
+    alloc();
+
+    double init_T;
+    double max_ti = 50;
+    double dti = 0.01;
+
+    calc_pendulum_period(&init_T, max_ti, dti);
 
     timevalue T = init_T;
     double fT;

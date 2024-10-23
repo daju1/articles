@@ -117,7 +117,9 @@ distance R_lw(coordinate x, coordinate y, coordinate z, timevalue t)
     timevalue ta = t;
 
     //set_c(1.0);
-    distance r_lw = Rlw(Xa, Ya, Za, ta, sx, sy, sz, vx, vy, vz);
+    distance r_lw;
+    coordinate rlagerror;
+    Rlw(Xa, Ya, Za, ta, sx, sy, sz, vx, vy, vz, &r_lw, &rlagerror);
 
     return r_lw;
 }
@@ -141,6 +143,8 @@ long double spherical_x_calc_En_R_t (long double xc, long double theta, long dou
     long double Hn;
     long double An;
 
+    coordinate sum_rlagerror_square;
+
     int ret = spherical_x_ccalc_Maxwells_stress_tensor_R_t(_xc, _theta, _varphi, _t,
         sx, sy, sz, vx, vy, vz, wx, wy, wz,
         &Txn,
@@ -152,7 +156,10 @@ long double spherical_x_calc_En_R_t (long double xc, long double theta, long dou
         &Sn,
         &En,
         &Hn,
-        &An);
+        &An,
+        &sum_rlagerror_square);
+
+    printf("sum_rlagerror_square = %Le\n", sum_rlagerror_square);
 
     return En;
 }

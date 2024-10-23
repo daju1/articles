@@ -29,7 +29,7 @@ int ccalc_sum_F_t(timevalue t_i,
                   force * Fz,
                   force * F_alpha_l,
                   force * F_alpha_r,
-                  double * sum_rlagerror_sqare,
+                  double * sum_rlagerror_square,
                   _Bool to_log)
 {
     charge sign_a;
@@ -82,7 +82,7 @@ int ccalc_sum_F_t(timevalue t_i,
     double fx_3r, fy_3r;
 
     coordinate rlagerror;
-    *sum_rlagerror_sqare = (long double)(0.0);
+    *sum_rlagerror_square = (long double)(0.0);
 
     //i_l = i_a
     //i_r = i_q
@@ -186,7 +186,7 @@ int ccalc_sum_F_t(timevalue t_i,
                 return -1;
             }
 
-            *sum_rlagerror_sqare += Sq(rlagerror);
+            *sum_rlagerror_square += Sq(rlagerror);
 
             // сила действующая на левый заряд
             // со стороны поля правого заряда
@@ -221,7 +221,7 @@ int ccalc_sum_F_t(timevalue t_i,
                 return -1;
             }
 
-            *sum_rlagerror_sqare += Sq(rlagerror);
+            *sum_rlagerror_square += Sq(rlagerror);
 
             // сила действующая на правый заряд
             // со стороны поля левого заряда
@@ -282,7 +282,7 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
                                  long double * E_n,
                                  long double * H_n,
                                  long double * A_n,
-                                 long double * sum_rlagerror_sqare
+                                 long double * sum_rlagerror_square
                                )
 {
     long double sign_a;
@@ -306,7 +306,7 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
     field E_x, E_y, E_z, B_x, B_y, B_z, A_x, A_y, A_z;
 
     coordinate rlagerror;
-    *sum_rlagerror_sqare = 0.0;
+    *sum_rlagerror_square = 0.0;
 
     //i_l = i_a
     //i_r = i_q
@@ -334,7 +334,7 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
                 return -1;
             }
 
-            *sum_rlagerror_sqare += Sq(rlagerror);
+            *sum_rlagerror_square += Sq(rlagerror);
 
             Ex += E_x;
             Ey += E_y;
@@ -361,7 +361,7 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
                 return -1;
             }
 
-            *sum_rlagerror_sqare += Sq(rlagerror);
+            *sum_rlagerror_square += Sq(rlagerror);
 
             Ex += E_x;
             Ey += E_y;
@@ -440,7 +440,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor(
     long double * En,
     long double * Hn,
     long double * An,
-    long double * sum_rlagerror_sqare)
+    long double * sum_rlagerror_square)
 {
     return ccalc_Maxwells_stress_tensor(
         r*sinl(theta)*sinl(varphi), // X_a - в декартовой -> y в сферической
@@ -456,7 +456,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor(
         En,
         Hn,
         An,
-        sum_rlagerror_sqare);
+        sum_rlagerror_square);
 }
 
 // Интегрируем в сферической системе координат,
@@ -474,7 +474,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor(
     long double * En,
     long double * Hn,
     long double * An,
-    long double * sum_rlagerror_sqare)
+    long double * sum_rlagerror_square)
 {
     return ccalc_Maxwells_stress_tensor(
         r*cosl(theta),              // X_a - в декартовой -> z в сферической
@@ -490,7 +490,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor(
         En,
         Hn,
         An,
-        sum_rlagerror_sqare);
+        sum_rlagerror_square);
 }
 long double sphere_R;
 void cset_sphere_R(long double R)
@@ -511,7 +511,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
     long double * pEn,
     long double * pHn,
     long double * pAn,
-    long double * sum_rlagerror_sqare)
+    long double * sum_rlagerror_square)
 {
     long double Txn;
     long double Tyn;
@@ -531,7 +531,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
                                                      &En,
                                                      &Hn,
                                                      &An,
-                                                     sum_rlagerror_sqare);
+                                                     sum_rlagerror_square);
     *pTxn = sphere_R * sphere_R * sinl(theta) * Txn;
     *pTyn = sphere_R * sphere_R * sinl(theta) * Tyn;
     *pTzn = sphere_R * sphere_R * sinl(theta) * Tzn;
@@ -560,7 +560,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(
     long double * pEn,
     long double * pHn,
     long double * pAn,
-    long double * sum_rlagerror_sqare)
+    long double * sum_rlagerror_square)
 {
     long double Txn;
     long double Tyn;
@@ -580,7 +580,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(
                                                      &En,
                                                      &Hn,
                                                      &An,
-                                                    sum_rlagerror_sqare);
+                                                    sum_rlagerror_square);
     *pTxn = sphere_R * sphere_R * sinl(theta) * Txn;
     *pTyn = sphere_R * sphere_R * sinl(theta) * Tyn;
     *pTzn = sphere_R * sphere_R * sinl(theta) * Tzn;

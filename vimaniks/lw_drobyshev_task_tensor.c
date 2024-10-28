@@ -32,6 +32,7 @@ int ccalc_Maxwells_stress_tensor(
     long double * E_n,
     long double * H_n,
     long double * A_n,
+    long double * j_n,
     long double * sum_rlagerror_square
     )
 {
@@ -49,7 +50,12 @@ int ccalc_Maxwells_stress_tensor(
     long double Ay = 0;
     long double Az = 0;
 
+    long double jx = 0;
+    long double jy = 0;
+    long double jz = 0;
+
     long double E_x, E_y, E_z, B_x, B_y, B_z, A_x, A_y, A_z;
+    long double j_x, j_y, j_z;
 
     coordinate rlagerror;
     *sum_rlagerror_square = 0.0;
@@ -61,6 +67,7 @@ int ccalc_Maxwells_stress_tensor(
             &E_x, &E_y, &E_z,
             &B_x, &B_y, &B_z,
             &A_x, &A_y, &A_z,
+            &j_x, &j_y, &j_z,
             &rlagerror);
 
     *sum_rlagerror_square += Sq(rlagerror);
@@ -77,6 +84,9 @@ int ccalc_Maxwells_stress_tensor(
     Ay += A_y;
     Az += A_z;
 
+    jx += j_x;
+    jy += j_y;
+    jz += j_z;
 
     // ЛЛ2 (33,3)
 
@@ -122,6 +132,7 @@ int ccalc_Maxwells_stress_tensor(
     *E_n = (Ex * cos_nx + Ey * cos_ny + Ez * cos_nz);
     *H_n = (Hx * cos_nx + Hy * cos_ny + Hz * cos_nz);
     *A_n = (Ax * cos_nx + Ay * cos_ny + Az * cos_nz);
+    *j_n = (jx * cos_nx + jy * cos_ny + jz * cos_nz);
 
     return 0;
 }
@@ -145,6 +156,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor(
     long double * En,
     long double * Hn,
     long double * An,
+    long double * jn,
     long double * sum_rlagerror_square)
 {
     return ccalc_Maxwells_stress_tensor(
@@ -164,6 +176,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor(
         En,
         Hn,
         An,
+        jn,
         sum_rlagerror_square);
 }
 
@@ -185,6 +198,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor(long double xc,
     long double * En,
     long double * Hn,
     long double * An,
+    long double * jn,
     long double * sum_rlagerror_square)
 {
     return ccalc_Maxwells_stress_tensor(
@@ -204,6 +218,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor(long double xc,
         En,
         Hn,
         An,
+        jn,
         sum_rlagerror_square);
 }
 long double sphere_R;
@@ -228,6 +243,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
     long double * pEn,
     long double * pHn,
     long double * pAn,
+    long double * pjn,
     long double * sum_rlagerror_square)
 {
     long double Txn;
@@ -240,6 +256,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
     long double En;
     long double Hn;
     long double An;
+    long double jn;
 
     int ret = spherical_y_ccalc_Maxwells_stress_tensor(sphere_R, theta, varphi, t,
         sx, sy, sz, vx, vy, vz, wx, wy, wz,
@@ -249,6 +266,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
         &En,
         &Hn,
         &An,
+        &jn,
         sum_rlagerror_square);
 
     *pTxn = sphere_R * sphere_R * sinl(theta) * Txn;
@@ -267,6 +285,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
     *pEn  = - sphere_R * sphere_R * sinl(theta) * En;
     *pHn  = - sphere_R * sphere_R * sinl(theta) * Hn;
     *pAn  = - sphere_R * sphere_R * sinl(theta) * An;
+    *pjn  = - sphere_R * sphere_R * sinl(theta) * jn;
 
     return ret;
 }
@@ -282,6 +301,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(long double xc,
     long double * pEn,
     long double * pHn,
     long double * pAn,
+    long double * pjn,
     long double * sum_rlagerror_square)
 {
     long double Txn;
@@ -294,6 +314,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(long double xc,
     long double En;
     long double Hn;
     long double An;
+    long double jn;
 
     int ret = spherical_x_ccalc_Maxwells_stress_tensor(xc, sphere_R, theta, varphi, t,
         sx, sy, sz, vx, vy, vz, wx, wy, wz,
@@ -303,6 +324,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(long double xc,
         &En,
         &Hn,
         &An,
+        &jn,
         sum_rlagerror_square);
 
     *pTxn = sphere_R * sphere_R * sinl(theta) * Txn;
@@ -320,6 +342,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(long double xc,
     *pEn  = - sphere_R * sphere_R * sinl(theta) * En;
     *pHn  = - sphere_R * sphere_R * sinl(theta) * Hn;
     *pAn  = - sphere_R * sphere_R * sinl(theta) * An;
+    *pjn  = - sphere_R * sphere_R * sinl(theta) * jn;
 
     return ret;
 }

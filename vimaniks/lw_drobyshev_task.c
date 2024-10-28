@@ -254,9 +254,9 @@ int find_newton_root(coordinate x, coordinate y, coordinate z, timevalue t, time
 }
 
 int tlag(coordinate x, coordinate y, coordinate z, timevalue t,
-               Coordinate sx, Coordinate sy, Coordinate sz,
-               Velocity vx, Velocity vy, Velocity vz,
-               timevalue * pt2, coordinate * rlagerror)
+         Coordinate sx, Coordinate sy, Coordinate sz,
+         Velocity vx, Velocity vy, Velocity vz,
+         timevalue * pt2, coordinate * rlagerror)
 {
     if (no_retardation_test){
         *pt2 = t;
@@ -503,15 +503,59 @@ int electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
     return -1;
 }
 
+int calc_fields(double k, distance r,
+                distance nx,
+                distance ny,
+                distance nz,
+                charge q,
+                velocity vx, velocity vy, velocity vz,
+                acceleration wx, acceleration wy, acceleration wz,
+                long double dot_wx, long double dot_wy, long double dot_wz,
+                field * E_x, field * E_y, field * E_z,
+                field * B_x, field * B_y, field * B_z,
+                field * A_x, field * A_y, field * A_z,
+                field * j_x, field * j_y, field * j_z
+                )
+{
+    long double v2_c2 = (Sq(vx) + Sq(vy) + Sq(vz)) / (c*c);
+    long double ra_c2 = r * (nx*wx + ny*wy + nz*wz) / (c*c);
+    long double va_c2 = (vx*wx + vy*wy + vz*wz) / (c*c);
+    long double one_m_v2_c2_p_ra_c2 = (1.0 - v2_c2 + ra_c2);
+    long double rdota_c2 = r * (nx*dot_wx + ny*dot_wy + nz*dot_wz) / (c*c);
+
+    (*E_x) = q*(1.0/(k*k*k))*(one_m_v2_c2_p_ra_c2*(nx - vx/c)/(r*r) - (k/r)*wx/(c*c));
+    (*E_y) = q*(1.0/(k*k*k))*(one_m_v2_c2_p_ra_c2*(ny - vy/c)/(r*r) - (k/r)*wy/(c*c));
+    (*E_z) = q*(1.0/(k*k*k))*(one_m_v2_c2_p_ra_c2*(nz - vz/c)/(r*r) - (k/r)*wz/(c*c));
+
+    (*B_x) = -q*(1.0/(k*k*k))*(one_m_v2_c2_p_ra_c2*(ny*vz - nz*vy)/(r*r)/c + (ny*wz - nz*wy)*(k/r)/(c*c));
+    (*B_y) = -q*(1.0/(k*k*k))*(one_m_v2_c2_p_ra_c2*(nz*vx - nx*vz)/(r*r)/c + (nz*wx - nx*wz)*(k/r)/(c*c));
+    (*B_z) = -q*(1.0/(k*k*k))*(one_m_v2_c2_p_ra_c2*(nx*vy - ny*vx)/(r*r)/c + (nx*wy - ny*wx)*(k/r)/(c*c));
+
+    (*A_x) = q*vx/(k*r);
+    (*A_y) = q*vy/(k*r);
+    (*A_z) = q*vz/(k*r);
+
+    (*j_x) = (-3*q*c/(k*k*k*k*r*r*r) * (1.0 - one_m_v2_c2_p_ra_c2/k) * (one_m_v2_c2_p_ra_c2*(nx - vx/c) - (k*r)*wx/(c*c))
+              + q/(k*k*k*r*r) * (-vx/r*one_m_v2_c2_p_ra_c2 + (nx - vx/c)/k*(rdota_c2-3*va_c2) - r*dot_wx/(c*c) - wx*k*r/c))
+              /(4*M_PI);
+    (*j_y) = (-3*q*c/(k*k*k*k*r*r*r) * (1.0 - one_m_v2_c2_p_ra_c2/k) * (one_m_v2_c2_p_ra_c2*(ny - vy/c) - (k*r)*wy/(c*c))
+              + q/(k*k*k*r*r) * (-vy/r*one_m_v2_c2_p_ra_c2 + (ny - vy/c)/k*(rdota_c2-3*va_c2) - r*dot_wy/(c*c) - wy*k*r/c))
+              /(4*M_PI);
+    (*j_z) = (-3*q*c/(k*k*k*k*r*r*r) * (1.0 - one_m_v2_c2_p_ra_c2/k) * (one_m_v2_c2_p_ra_c2*(nz - vz/c) - (k*r)*wz/(c*c))
+              + q/(k*k*k*r*r) * (-vz/r*one_m_v2_c2_p_ra_c2 + (nz - vz/c)/k*(rdota_c2-3*va_c2) - r*dot_wz/(c*c) - wz*k*r/c))
+              /(4*M_PI);
+}
+
 int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
-                   Coordinate sx, Coordinate sy, Coordinate sz,
-                   Velocity vx, Velocity vy, Velocity vz,
-                   Acceleration wx, Acceleration wy, Acceleration wz,
-                   charge q,
-                   field * E_x, field * E_y, field * E_z,
-                   field * B_x, field * B_y, field * B_z,
-                   field * A_x, field * A_y, field * A_z,
-                   coordinate * rlagerror)
+                     Coordinate sx, Coordinate sy, Coordinate sz,
+                     Velocity vx, Velocity vy, Velocity vz,
+                     Acceleration wx, Acceleration wy, Acceleration wz,
+                     charge q,
+                     field * E_x, field * E_y, field * E_z,
+                     field * B_x, field * B_y, field * B_z,
+                     field * A_x, field * A_y, field * A_z,
+                     field * j_x, field * j_y, field * j_z,
+                     coordinate * rlagerror)
 {
     long double k;
     distance r;
@@ -526,13 +570,19 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
 
         calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz);
 
-        long double v_x = vx(t2);
-        long double v_y = vy(t2);
-        long double v_z = vz(t2);
+        velocity v_x = vx(t2);
+        velocity v_y = vy(t2);
+        velocity v_z = vz(t2);
 
-        long double w_x = wx(t2);
-        long double w_y = wy(t2);
-        long double w_z = wz(t2);
+        acceleration w_x = wx(t2);
+        acceleration w_y = wy(t2);
+        acceleration w_z = wz(t2);
+
+        long double dotw_x = 0.0;
+        long double dotw_y = 0.0;
+        long double dotw_z = 0.0;
+
+        #if 0
 
         long double v2_c2 = (Sq(v_x) + Sq(v_y) + Sq(v_z)) / (c*c);
         long double ra_c2 = r * (nx*w_x + ny*w_y + nz*w_z) / (c*c);
@@ -548,6 +598,20 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
         (*A_x) = q*v_x/(k*r);
         (*A_y) = q*v_y/(k*r);
         (*A_z) = q*v_z/(k*r);
+
+        #else
+        calc_fields(k, r,
+                nx, ny, nz,
+                q,
+                v_x, v_y, v_z,
+                w_x, w_y, w_z,
+                dotw_x, dotw_y, dotw_z,
+                E_x, E_y, E_z,
+                B_x, B_y, B_z,
+                A_x, A_y, A_z,
+                j_x, j_y, j_z
+                );
+        #endif
 
         return 0;
     }

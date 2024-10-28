@@ -6,7 +6,7 @@ int ccalc_sum_F_t(int N, long double t_i,
                     long double * Fz,
                     long double * F_alpha_l,
                     long double * F_alpha_r,
-                    long double * sum_rlagerror_sqare,
+                    long double * sum_rlagerror_square,
                     _Bool to_log);
 int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z_a, long double t_i,
                                  int N,
@@ -23,9 +23,17 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
                                  long double * E_n,
                                  long double * H_n,
                                  long double * A_n,
-                                 long double * sum_rlagerror_sqare
+                                 long double * j_n,
+                                 long double * sum_rlagerror_square
                                  );
 
+// Интегрируем в сферической системе координат,
+// которая однако в соотвествие с принятыми в задаче
+// наименованиями осей повернута так,
+// что главная ось (зет в сферической системе)
+// направлена вдоль оси игрек декартовой системы
+
+// направление векторов нормали к сферической воображаемой поверхности инвертировано - снаружи вовнутрь
 int spherical_y_ccalc_Maxwells_stress_tensor(
                                  long double r, long double theta, long double varphi, long double t,
                                  long double * Txn, long double * Tyn, long double * Tzn,
@@ -34,7 +42,8 @@ int spherical_y_ccalc_Maxwells_stress_tensor(
                                  long double * En,
                                  long double * Hn,
                                  long double * An,
-                                 long double * sum_rlagerror_sqare);
+                                 long double * jn,
+                                 long double * sum_rlagerror_square);
 int spherical_x_ccalc_Maxwells_stress_tensor(
                                  long double r, long double theta, long double varphi, long double t,
                                  long double * Txn, long double * Tyn, long double * Tzn,
@@ -43,7 +52,8 @@ int spherical_x_ccalc_Maxwells_stress_tensor(
                                  long double * En,
                                  long double * Hn,
                                  long double * An,
-                                long double * sum_rlagerror_sqare);
+                                 long double * jn,
+                                long double * sum_rlagerror_square);
 
 int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
                                  long double theta, long double varphi, long double t,
@@ -53,6 +63,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
                                  long double * pEn,
                                  long double * pHn,
                                  long double * pAn,
+                                 long double * pjn,
                                  long double * sum_rlagerror_sqare);
 int spherical_x_ccalc_Maxwells_stress_tensor_R_t(
                                  long double theta, long double varphi, long double t,
@@ -62,7 +73,8 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(
                                  long double * pEn,
                                  long double * pHn,
                                  long double * pAn,
-                                 long double * sum_rlagerror_sqare);
+                                 long double * pjn,
+                             long double * sum_rlagerror_square);
 
 void cset_sphere_R(long double R);
 long double cget_sphere_R();

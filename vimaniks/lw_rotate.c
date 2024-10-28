@@ -5,6 +5,7 @@
 #include <assert.h>
 #include "lw.h"
 #include "lw_rotate.h"
+#include "lw_vimanic.h"
 
 #include "stdlib.h"
 
@@ -14,7 +15,7 @@
 
 #define Sq(x) ((x)*(x))
 
-//sgs 
+//sgs
 
 velocity c;// = (double)(299792458 * 100);
 
@@ -357,7 +358,6 @@ void calc_k(coordinate x, coordinate y, coordinate z, timevalue t,
             coordinate xc, coordinate yc, coordinate zc,
             distance R, anglevelocity omega, angle alpha)
 {
-    
     if (no_retardation_test) {
         (*r) = sqrtl(Sq(x - sx(t, xc, yc, zc, R, omega, alpha)) +
                     Sq(y - sy(t, xc, yc, zc, R, omega, alpha)) +
@@ -401,9 +401,9 @@ int klw(coordinate x, coordinate y, coordinate z, timevalue t,
     distance nz;
 
     long double t2;
-
+    // расчет итерациями запаздывающего момента
     if (0 == tlag(x, y, z, t, sx, sy, sz, vx, vy, vz,
-                      xc, yc, zc, R, omega, alpha, &t2, rlagerror)) { // расчет итерациями запаздывающего момента
+                      xc, yc, zc, R, omega, alpha, &t2, rlagerror)) {
 
         calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, pk, &r, &nx, &ny, &nz,
                xc, yc, zc, R, omega, alpha);
@@ -457,8 +457,9 @@ int philw(coordinate x, coordinate y, coordinate z, timevalue t,
     distance nz;
 
     long double t2;
+    // расчет итерациями запаздывающего момента
     if (0 == tlag(x, y, z, t, sx, sy, sz, vx, vy, vz,
-                     xc, yc, zc, R, omega, alpha, &t2, rlagerror)) // расчет итерациями запаздывающего момента
+                     xc, yc, zc, R, omega, alpha, &t2, rlagerror))
     {
         calc_k(x, y, z, t, sx, sy, sz, vx, vy, vz, t2, &k, &r, &nx, &ny, &nz,
               xc, yc, zc, R, omega, alpha);
@@ -502,7 +503,6 @@ int Alw(coordinate x, coordinate y, coordinate z, timevalue t,
     }
     return -1;
 }
-
 
 int electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
                   Coordinate sx, Coordinate sy, Coordinate sz,
@@ -553,6 +553,49 @@ int electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
     return -1;
 }
 
+int calc_fields(double k, distance r,
+                distance nx,
+                distance ny,
+                distance nz,
+                charge q,
+                velocity vx, velocity vy, velocity vz,
+                acceleration wx, acceleration wy, acceleration wz,
+                long double dot_wx, long double dot_wy, long double dot_wz,
+                field * E_x, field * E_y, field * E_z,
+                field * B_x, field * B_y, field * B_z,
+                field * A_x, field * A_y, field * A_z,
+                field * j_x, field * j_y, field * j_z
+                )
+{
+    long double v2_c2 = (Sq(vx) + Sq(vy) + Sq(vz)) / (c*c);
+    long double ra_c2 = r * (nx*wx + ny*wy + nz*wz) / (c*c);
+    long double va_c2 = (vx*wx + vy*wy + vz*wz) / (c*c);
+    long double one_m_v2_c2_p_ra_c2 = (1.0 - v2_c2 + ra_c2);
+    long double rdota_c2 = r * (nx*dot_wx + ny*dot_wy + nz*dot_wz) / (c*c);
+
+    (*E_x) = q*(1.0/(k*k*k))*(one_m_v2_c2_p_ra_c2*(nx - vx/c)/(r*r) - (k/r)*wx/(c*c));
+    (*E_y) = q*(1.0/(k*k*k))*(one_m_v2_c2_p_ra_c2*(ny - vy/c)/(r*r) - (k/r)*wy/(c*c));
+    (*E_z) = q*(1.0/(k*k*k))*(one_m_v2_c2_p_ra_c2*(nz - vz/c)/(r*r) - (k/r)*wz/(c*c));
+
+    (*B_x) = -q*(1.0/(k*k*k))*(one_m_v2_c2_p_ra_c2*(ny*vz - nz*vy)/(r*r)/c + (ny*wz - nz*wy)*(k/r)/(c*c));
+    (*B_y) = -q*(1.0/(k*k*k))*(one_m_v2_c2_p_ra_c2*(nz*vx - nx*vz)/(r*r)/c + (nz*wx - nx*wz)*(k/r)/(c*c));
+    (*B_z) = -q*(1.0/(k*k*k))*(one_m_v2_c2_p_ra_c2*(nx*vy - ny*vx)/(r*r)/c + (nx*wy - ny*wx)*(k/r)/(c*c));
+
+    (*A_x) = q*vx/(k*r);
+    (*A_y) = q*vy/(k*r);
+    (*A_z) = q*vz/(k*r);
+
+    (*j_x) = (-3*q*c/(k*k*k*k*r*r*r) * (1.0 - one_m_v2_c2_p_ra_c2/k) * (one_m_v2_c2_p_ra_c2*(nx - vx/c) - (k*r)*wx/(c*c))
+              + q/(k*k*k*r*r) * (-vx/r*one_m_v2_c2_p_ra_c2 + (nx - vx/c)/k*(rdota_c2-3*va_c2) - r*dot_wx/(c*c) - wx*k*r/c))
+              /(4*M_PI);
+    (*j_y) = (-3*q*c/(k*k*k*k*r*r*r) * (1.0 - one_m_v2_c2_p_ra_c2/k) * (one_m_v2_c2_p_ra_c2*(ny - vy/c) - (k*r)*wy/(c*c))
+              + q/(k*k*k*r*r) * (-vy/r*one_m_v2_c2_p_ra_c2 + (ny - vy/c)/k*(rdota_c2-3*va_c2) - r*dot_wy/(c*c) - wy*k*r/c))
+              /(4*M_PI);
+    (*j_x) = (-3*q*c/(k*k*k*k*r*r*r) * (1.0 - one_m_v2_c2_p_ra_c2/k) * (one_m_v2_c2_p_ra_c2*(nz - vz/c) - (k*r)*wz/(c*c))
+              + q/(k*k*k*r*r) * (-vz/r*one_m_v2_c2_p_ra_c2 + (nz - vz/c)/k*(rdota_c2-3*va_c2) - r*dot_wz/(c*c) - wz*k*r/c))
+              /(4*M_PI);
+}
+
 int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
                    Coordinate sx, Coordinate sy, Coordinate sz,
                    Velocity vx, Velocity vy, Velocity vz,
@@ -561,6 +604,7 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
                    field * E_x, field * E_y, field * E_z,
                    field * B_x, field * B_y, field * B_z,
                    field * A_x, field * A_y, field * A_z,
+                   field * j_x, field * j_y, field * j_z,
                    coordinate * rlagerror,
                    coordinate xc, coordinate yc, coordinate zc,
                    distance R, anglevelocity omega, angle alpha)
@@ -571,6 +615,7 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
     distance ny;
     distance nz;
 
+    // расчет итерациями запаздывающего момента
     long double t2;
     if (0 == tlag(x, y, z, t, sx, sy, sz, vx, vy, vz,
                       xc, yc, zc, R, omega, alpha, &t2, rlagerror)) {
@@ -585,6 +630,12 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
         long double w_x = wx(t2, xc, yc, zc, R, omega, alpha);
         long double w_y = wy(t2, xc, yc, zc, R, omega, alpha);
         long double w_z = wz(t2, xc, yc, zc, R, omega, alpha);
+
+        long double dotw_x = dot_wx(t2, xc, yc, zc, R, omega, alpha);
+        long double dotw_y = dot_wy(t2, xc, yc, zc, R, omega, alpha);
+        long double dotw_z = dot_wz(t2, xc, yc, zc, R, omega, alpha);
+
+        #if 0
 
         long double v2_c2 = (Sq(v_x) + Sq(v_y) + Sq(v_z)) / (c*c);
         long double ra_c2 = r * (nx*w_x + ny*w_y + nz*w_z) / (c*c);
@@ -601,9 +652,21 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
         (*A_y) = q*v_y/(k*r);
         (*A_z) = q*v_z/(k*r);
 
+        #else
+        calc_fields(k, r,
+                nx, ny, nz,
+                q,
+                v_x, v_y, v_z,
+                w_x, w_y, w_z,
+                dotw_x, dotw_y, dotw_z,
+                E_x, E_y, E_z,
+                B_x, B_y, B_z,
+                A_x, A_y, A_z,
+                j_x, j_y, j_z
+                );
+        #endif
+
         return 0;
     }
     return -1;
 }
-
-

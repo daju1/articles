@@ -19,6 +19,7 @@ int ccalc_Maxwells_stress_tensor(
     long double * E_n,
     long double * H_n,
     long double * A_n,
+    long double * j_n,
     long double * sum_rlagerror_square
     );
 
@@ -40,6 +41,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor(
     long double * En,
     long double * Hn,
     long double * An,
+    long double * jn,
     long double * sum_rlagerror_square);
 
 // Интегрируем в сферической системе координат,
@@ -60,6 +62,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor(long double xc,
     long double * En,
     long double * Hn,
     long double * An,
+    long double * jn,
     long double * sum_rlagerror_square);
 
 void cset_sphere_R(long double R);
@@ -76,6 +79,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
     long double * pEn,
     long double * pHn,
     long double * pAn,
+    long double * pjn,
     long double * sum_rlagerror_square);
 
 int spherical_x_ccalc_Maxwells_stress_tensor_R_t(long double xc,
@@ -89,4 +93,5 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(long double xc,
     long double * pEn,
     long double * pHn,
     long double * pAn,
+    long double * pjn,
     long double * sum_rlagerror_square);

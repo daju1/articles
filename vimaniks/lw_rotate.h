@@ -157,6 +157,7 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
                    field * E_x, field * E_y, field * E_z,
                    field * B_x, field * B_y, field * B_z,
                    field * A_x, field * A_y, field * A_z,
+                   field * j_x, field * j_y, field * j_z,
                    coordinate * rlagerror,
                    coordinate xc, coordinate yc, coordinate zc,
                    distance R, anglevelocity omega, angle alpha);

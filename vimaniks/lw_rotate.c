@@ -505,9 +505,9 @@ int Alw(coordinate x, coordinate y, coordinate z, timevalue t,
 }
 
 int electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
-                  Coordinate sx, Coordinate sy, Coordinate sz,
-                  Velocity vx, Velocity vy, Velocity vz,
-                  Acceleration wx, Acceleration wy, Acceleration wz,
+                  //Coordinate sx, Coordinate sy, Coordinate sz,
+                  //Velocity vx, Velocity vy, Velocity vz,
+                  //Acceleration wx, Acceleration wy, Acceleration wz,
                   charge q,
                   field * E_x, field * E_y, field * E_z,
                   field * B_x, field * B_y, field * B_z,
@@ -591,15 +591,15 @@ int calc_fields(double k, distance r,
     (*j_y) = (-3*q*c/(k*k*k*k*r*r*r) * (1.0 - one_m_v2_c2_p_ra_c2/k) * (one_m_v2_c2_p_ra_c2*(ny - vy/c) - (k*r)*wy/(c*c))
               + q/(k*k*k*r*r) * (-vy/r*one_m_v2_c2_p_ra_c2 + (ny - vy/c)/k*(rdota_c2-3*va_c2) - r*dot_wy/(c*c) - wy*k*r/c))
               /(4*M_PI);
-    (*j_x) = (-3*q*c/(k*k*k*k*r*r*r) * (1.0 - one_m_v2_c2_p_ra_c2/k) * (one_m_v2_c2_p_ra_c2*(nz - vz/c) - (k*r)*wz/(c*c))
+    (*j_z) = (-3*q*c/(k*k*k*k*r*r*r) * (1.0 - one_m_v2_c2_p_ra_c2/k) * (one_m_v2_c2_p_ra_c2*(nz - vz/c) - (k*r)*wz/(c*c))
               + q/(k*k*k*r*r) * (-vz/r*one_m_v2_c2_p_ra_c2 + (nz - vz/c)/k*(rdota_c2-3*va_c2) - r*dot_wz/(c*c) - wz*k*r/c))
               /(4*M_PI);
 }
 
 int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
-                   Coordinate sx, Coordinate sy, Coordinate sz,
-                   Velocity vx, Velocity vy, Velocity vz,
-                   Acceleration wx, Acceleration wy, Acceleration wz,
+                   //Coordinate sx, Coordinate sy, Coordinate sz,
+                   //Velocity vx, Velocity vy, Velocity vz,
+                   //Acceleration wx, Acceleration wy, Acceleration wz,
                    charge q,
                    field * E_x, field * E_y, field * E_z,
                    field * B_x, field * B_y, field * B_z,

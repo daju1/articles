@@ -145,7 +145,7 @@ int ccalc_sum_F_t(int N, long double t_i,
             // поле создаваемое правым вращающимся зарядом
             // в области левого вращающегося заряда
             if (0 != electr_magnet(Xa, Ya, Za, t_i,
-                  sx, sy, sz, vx, vy, vz, wx, wy, wz,
+                  //sx, sy, sz, vx, vy, vz, wx, wy, wz,
                   sign_q,
                   &E_x, &E_y, &E_z, &B_x, &B_y, &B_z, &rlagerror, xc_r(), yc_r(), zc_r(), R_r, Omega_r, Alpha_r))
             {
@@ -181,7 +181,7 @@ int ccalc_sum_F_t(int N, long double t_i,
             // поле создаваемое левым вращающимся зарядом
             // в области правого вращающегося заряда
             if (0 != electr_magnet(Xq, Yq, Zq, t_i,
-                  sx, sy, sz, vx, vy, vz, wx, wy, wz,
+                  //sx, sy, sz, vx, vy, vz, wx, wy, wz,
                   sign_a,
                   &E_x, &E_y, &E_z, &B_x, &B_y, &B_z, &rlagerror, xc_l(), yc_l(), zc_l(), R_l, Omega_l, Alpha_l))
             {
@@ -309,7 +309,7 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
 #ifndef USE_LEFT_CHARGE_ONLY
             // поле в точке наблюдения создаваемое правым зарядом
             if (0 != electr_magnet_ex(X_a, Y_a, Z_a, t_i,
-                  sx, sy, sz, vx, vy, vz, wx, wy, wz,
+                  //sx, sy, sz, vx, vy, vz, wx, wy, wz,
                   sign_q,
                   &E_x, &E_y, &E_z,
                   &B_x, &B_y, &B_z,
@@ -342,7 +342,7 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
 
             // поле в точке наблюдения создаваемое левым зарядом
             if (0 != electr_magnet_ex(X_a, Y_a, Z_a, t_i,
-                  sx, sy, sz, vx, vy, vz, wx, wy, wz,
+                  //sx, sy, sz, vx, vy, vz, wx, wy, wz,
                   sign_a,
                   &E_x, &E_y, &E_z,
                   &B_x, &B_y, &B_z,

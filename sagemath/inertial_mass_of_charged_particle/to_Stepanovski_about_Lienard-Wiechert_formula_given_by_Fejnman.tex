@@ -3,6 +3,23 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english, russian]{babel}
 
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+
+
+\usepackage{wrapfig}
+\usepackage[rightcaption]{sidecap}
+
+    \usepackage{geometry} % Used to adjust the document margins
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+
 \begin{document}
 
 \title{Юрию Петровичу Степановскому о выводе потенциалов Лиенара Вихерта в лекциях Фейнмана}
@@ -380,7 +397,7 @@ $$\frac{q}{a} \log\left(\frac{a_{q} t - c + \sqrt{-2 \, a_{q} c t + a a_{q} + c^
 Изоповерхность запаздывающего момента $t'$ есть геометрическое место точек в которых электрический потенциал обусловлен положением заряда в момент $t'$. 
 
 
-Lля покоящегося заряда густота изолиний запаздывающего момента 
+Для покоящегося заряда густота изолиний запаздывающего момента
 
 $R'=c(t-t')$
 
@@ -443,6 +460,16 @@ $$\rho_{\vec D} = \frac{q}{4\pi {R'}^2 c} =  \frac{q}{4\pi {R'}^2}\frac{\Delta t
 
 При вычислении обьема между изоповерхностями запаздывающего момента возникает вопрос: из какой запаздываюшей координаты проводить телесный угол, внутри которого вычислять искомый обьем? При исследовании этого вопроса становится ясно, что использование прямого телесного угла приведет к ошибкам, независимо от того из какой точки этот телесный угол, проводить, ибо заряд находится в движении. 
 
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+\begin{center}
+\includegraphics[width=0.48\textwidth]{../electric_field_density/results/field_of_directions_of_propagation_of_electric_potential_tau1=625_v=0_9.png}
+\caption{}{field of directions of propagation of electric potential $\tau_1$=625 $v$=0.9}
+\end{center}
+%\label{}
+\end{wrapfigure}
+
+
 Решение заключается в том, чтобы ограничить телесный угол искривленными поверхностями такими, чтобы поверхность телесного обьема была нормальна изоповерхности текущего запаздывающего момента
 
 Для построения оных прибегнем к следующим соображениям 
@@ -455,11 +482,38 @@ $$\rho_{\vec D} = \frac{q}{4\pi {R'}^2 c} =  \frac{q}{4\pi {R'}^2}\frac{\Delta t
 
 Радиус изоповерхности изменяется от $c(t-t'_{0})$ до $c(t-(t'_{0} + d t'))$
 
+
 Отметим на смещенной вместе с запаздывающей координатой сферической системе координат точку с теми же координатами $(\theta, \phi)$
+
 
 При последовательном изменении запаздывающего момента от $t'=0$ до $t'=t$ точка с координатами $\theta, \phi$ на сферической изоповерхности запаздывающего момента опишет некоторую кривую, нормальную изоповерхностям запаздывающего момента
 
-https://nbviewer.org/github/daju1/articles/blob/master/sagemath/electric\_field\_density/field\_of\_directions\_of\_propagation\_of\_electric\_potential.ipynb
+Алгоритм построения кривой, нормальной изоповерхностям запаздывающего момента реализован по ссылке
+
+https://nbviewer.org/github/daju1/articles/blob/master/sagemath/
+
+electric\_field\_density/field\_of\_directions\_of\_propagation\_of\_electric\_potential.ipynb
+
+
+
+Что интересно предел якобиана криволинейной системы координат, составленного как определитель матрицы производных декартовых координат $x_2$ и $z_2$ по криволинейным координатам $\tau_2$ и $\theta_1$ 
+
+
+\(J = \frac{d x_2}{d \tau_2} \frac{d z_2}{d \theta_1} - \frac{d x_2}{d \theta_1} \frac{d z_2}{d \tau_2}\)
+
+при устремлении разности текущего момента и запаздывающего момента в точке наблюдения
+
+\(\tau_2 = t - t_{{zap}_2}\)
+
+к разности текущего момента и момента начала движения заряда
+
+\(\tau_1 = t - t_{{zap}_1}\)
+
+Имеет интересный вид, отдалённо напоминающий формулу Лиенара Вихерта
+
+$J_0 =  c \tau_1 v cos(\theta_1) - c^2 \tau_1 + r_0 v cos(\theta_1) - c r_0$
+
+
 
 
 \section{Как разделить переменные для Н моды в диэлектрическом цилиндре с неизотропной проницаемостью ?}

@@ -27,8 +27,8 @@ int ccalc_sum_F_t(timevalue t_i,
                   force * Fx,
                   force * Fy,
                   force * Fz,
-                  force * F_alpha_l,
-                  force * F_alpha_r,
+                  force * F_alpha_l, power * F_alpha_v_alpha_l,
+                  force * F_alpha_r, power * F_alpha_v_alpha_r,
                   double * sum_rlagerror_square,
                   _Bool to_log)
 {
@@ -43,6 +43,8 @@ int ccalc_sum_F_t(timevalue t_i,
 
     velocity vx_l, vy_l, vz_l;
     velocity vx_r, vy_r, vz_r;
+
+    velocity v_alpha_l, v_alpha_r;
 
     acceleration wx_l, wy_l, wz_l;
     acceleration wx_r, wy_r, wz_r;
@@ -111,6 +113,7 @@ int ccalc_sum_F_t(timevalue t_i,
             &dot_wx_l, &dot_wy_l
         );
         current_angle_l = q;
+        v_alpha_l = dot_q * pendulum_left.R;
     }
 
     {
@@ -129,6 +132,7 @@ int ccalc_sum_F_t(timevalue t_i,
             &dot_wx_r, &dot_wy_r
         );
         current_angle_r = q;
+        v_alpha_r = dot_q * pendulum_left.R;
     }
 
     // торможение излучением (разложение функции Лагранжа
@@ -163,7 +167,7 @@ int ccalc_sum_F_t(timevalue t_i,
     fx_3l /= sqrtl((long double)(1.0) - vc_l*vc_l);
     fy_3l /= sqrtl((long double)(1.0) - vc_l*vc_l);
 #else
-    // или основываясь на соответсвующей проекции скорости
+    // или основываясь на соответствующей проекции скорости
     double vxc_l = vx_l/c;
     double vyc_l = vy_l/c;
 
@@ -210,6 +214,7 @@ int ccalc_sum_F_t(timevalue t_i,
                 // со стороны поля правого заряда
                 f_alpha_l  = fy_l * cosl(current_angle_l) - fx_l * sinl(current_angle_l);
                 *F_alpha_l += f_alpha_l;
+                *F_alpha_v_alpha_l = f_alpha_l * v_alpha_l;
             }
 #ifndef USE_LEFT_CHARGE_ONLY
             // поле создаваемое левым вращающимся зарядом
@@ -244,6 +249,7 @@ int ccalc_sum_F_t(timevalue t_i,
                 // со стороны поля левого заряда
                 f_alpha_r  = fy_r * cosl(current_angle_r) - fx_r * sinl(current_angle_r);
                 *F_alpha_r += f_alpha_r;
+                *F_alpha_v_alpha_r = f_alpha_r * v_alpha_r;
             }
 #endif
             if (to_log){

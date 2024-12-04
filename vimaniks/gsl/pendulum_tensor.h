@@ -3,8 +3,8 @@ int ccalc_sum_F_t(timevalue t_i,
                   force * Fx,
                   force * Fy,
                   force * Fz,
-                  force * F_alpha_l,
-                  force * F_alpha_r,
+                  force * F_alpha_l, power * F_alpha_v_alpha_l,
+                  force * F_alpha_r, power * F_alpha_v_alpha_r,
                   double * sum_rlagerror_sqare,
                   _Bool to_log);
 

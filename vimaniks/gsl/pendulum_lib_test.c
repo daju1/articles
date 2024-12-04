@@ -52,13 +52,21 @@ int main (void)
     force F_alpha_l;
     force F_alpha_r;
 
+    power F_alpha_v_alpha_l, F_alpha_v_alpha_r;
+
     timevalue t_i = T/3;
-    if (0 != ccalc_sum_F_t(t_i, &Fx, &Fy, &Fz, &F_alpha_l, &F_alpha_r, &sum_rlagerror_sqare, To_log))
+    if (0 != ccalc_sum_F_t(t_i,
+                           &Fx, &Fy, &Fz,
+                           &F_alpha_l, &F_alpha_v_alpha_l,
+                           &F_alpha_r, &F_alpha_v_alpha_r,
+                           &sum_rlagerror_sqare, To_log))
     {
         printf("ccalc_sum_Fy_t error\n");
     }
 
-    printf("Fx=%f, Fy=%f, Fz=%f, F_alpha_l=%f, F_alpha_r=%f\n\n", Fx, Fy, Fz, F_alpha_l, F_alpha_r);
+    printf("Fx=%f, Fy=%f, Fz=%f\n\n", Fx, Fy, Fz);
+    printf("F_alpha_l=%f, F_alpha_r=%f\n\n", F_alpha_l, F_alpha_r);
+    printf("F_alpha_v_alpha_l=%f, F_alpha_v_alpha_r=%f\n\n", F_alpha_v_alpha_l, F_alpha_v_alpha_r);
 
     return 0;
 

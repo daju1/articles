@@ -3,7 +3,7 @@
 set -e
 set -x
 
-SAGE_VER=9.5
+SAGE_VER=9.6.beta7
 SAGE_DIR=sage
 
 WORK_DIR=`pwd`
@@ -26,6 +26,11 @@ if [ ! -d $SAGE_DIR ]; then
 	git clone https://github.com/sagemath/sage.git
 
 	cd $SAGE_DIR
+
+	# commit 78bfb6c7ad4e6c1e6df83d13c3789e2fb59a8d5d (tag: 9.6.beta7)
+
+	git checkout 78bfb6c7ad4e6c1e6df83d13c3789e2fb59a8d5d
+
 
 	# https://doc.sagemath.org/html/en/developer/manual_git.html
 	git remote add trac https://github.com/sagemath/sagetrac-mirror.git -t master

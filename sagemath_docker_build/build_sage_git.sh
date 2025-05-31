@@ -29,7 +29,7 @@ if [ ! -d $SAGE_DIR ]; then
 
 	# commit 78bfb6c7ad4e6c1e6df83d13c3789e2fb59a8d5d (tag: 9.6.beta7)
 
-	git checkout 78bfb6c7ad4e6c1e6df83d13c3789e2fb59a8d5d
+	git checkout 9.6.beta7
 
 
 	# https://doc.sagemath.org/html/en/developer/manual_git.html

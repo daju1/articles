@@ -17,6 +17,12 @@ fi
 
 DOCKER_IMAGE=ubuntu_sage_build:18.04
 
-docker image build --build-arg USER_NAME=${USER} --build-arg GROUP_NAME=${USER} --build-arg USER_ID=$(id -u ${USER}) --build-arg GROUP_ID=$(id -g ${USER}) --build-arg PROJECT_PATH=${PROJECT_PATH} ${PROJECT_PATH} -f ${DOCKERFILE} -t ${DOCKER_IMAGE}
+docker image build \
+    --build-arg USER_NAME=${USER} \
+    --build-arg GROUP_NAME=${USER} \
+    --build-arg USER_ID=$(id -u ${USER}) \
+    --build-arg GROUP_ID=$(id -g ${USER}) \
+    --build-arg PROJECT_PATH=${PROJECT_PATH} \
+    ${PROJECT_PATH} -f ${DOCKERFILE} -t ${DOCKER_IMAGE}
 
 

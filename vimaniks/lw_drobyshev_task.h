@@ -3,6 +3,7 @@
 typedef coordinate (*Coordinate)(timevalue t_zap);
 typedef velocity (*Velocity)(timevalue t_zap);
 typedef acceleration (*Acceleration)(timevalue t_zap);
+typedef dotacceleration (*DotAcceleration)(timevalue t_zap);
 
 int tlag(coordinate x, coordinate y, coordinate z, timevalue t,
          Coordinate sx, Coordinate sy, Coordinate sz,
@@ -59,6 +60,7 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
                      Coordinate sx, Coordinate sy, Coordinate sz,
                      Velocity vx, Velocity vy, Velocity vz,
                      Acceleration wx, Acceleration wy, Acceleration wz,
+                     DotAcceleration dot_wx, DotAcceleration dot_wy, DotAcceleration dot_wz,
                      charge q,
                      field * E_x, field * E_y, field * E_z,
                      field * B_x, field * B_y, field * B_z,

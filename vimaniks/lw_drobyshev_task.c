@@ -550,6 +550,7 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
                      Coordinate sx, Coordinate sy, Coordinate sz,
                      Velocity vx, Velocity vy, Velocity vz,
                      Acceleration wx, Acceleration wy, Acceleration wz,
+                     DotAcceleration dot_wx, DotAcceleration dot_wy, DotAcceleration dot_wz,
                      charge q,
                      field * E_x, field * E_y, field * E_z,
                      field * B_x, field * B_y, field * B_z,
@@ -578,28 +579,10 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
         acceleration w_y = wy(t2);
         acceleration w_z = wz(t2);
 
-        long double dotw_x = 0.0;
-        long double dotw_y = 0.0;
-        long double dotw_z = 0.0;
+        dotacceleration dotw_x = dot_wx(t2);
+        dotacceleration dotw_y = dot_wy(t2);
+        dotacceleration dotw_z = dot_wz(t2);
 
-        #if 0
-
-        long double v2_c2 = (Sq(v_x) + Sq(v_y) + Sq(v_z)) / (c*c);
-        long double ra_c2 = r * (nx*w_x + ny*w_y + nz*w_z) / (c*c);
-
-        (*E_x) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx - v_x/c)/(r*r) - (k/r)*w_x/(c*c));
-        (*E_y) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(ny - v_y/c)/(r*r) - (k/r)*w_y/(c*c));
-        (*E_z) = q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nz - v_z/c)/(r*r) - (k/r)*w_z/(c*c));
-
-        (*B_x) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(ny*v_z - nz*v_y)/(r*r)/c + (ny*w_z - nz*w_y)*(k/r)/(c*c));
-        (*B_y) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nz*v_x - nx*v_z)/(r*r)/c + (nz*w_x - nx*w_z)*(k/r)/(c*c));
-        (*B_z) = -q*(1.0/(k*k*k))*((1.0 - v2_c2 + ra_c2)*(nx*v_y - ny*v_x)/(r*r)/c + (nx*w_y - ny*w_x)*(k/r)/(c*c));
-
-        (*A_x) = q*v_x/(k*r);
-        (*A_y) = q*v_y/(k*r);
-        (*A_z) = q*v_z/(k*r);
-
-        #else
         calc_fields(k, r,
                 nx, ny, nz,
                 q,
@@ -611,7 +594,6 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
                 A_x, A_y, A_z,
                 j_x, j_y, j_z
                 );
-        #endif
 
         return 0;
     }

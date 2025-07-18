@@ -19,6 +19,7 @@ int ccalc_Maxwells_stress_tensor(
     Coordinate sx, Coordinate sy, Coordinate sz,
     Velocity vx, Velocity vy, Velocity vz,
     Acceleration wx, Acceleration wy, Acceleration wz,
+    DotAcceleration dot_wx, DotAcceleration dot_wy, DotAcceleration dot_wz,
     long double cos_nx, long double cos_ny, long double cos_nz,
     long double alpha0_l,
     long double alpha0_r,
@@ -63,6 +64,7 @@ int ccalc_Maxwells_stress_tensor(
     // поле в точке наблюдения создаваемое левым зарядом
     electr_magnet_ex(X_a, Y_a, Z_a, t_i,
             sx, sy, sz, vx, vy, vz, wx, wy, wz,
+            dot_wx, dot_wy, dot_wz,
             _q,
             &E_x, &E_y, &E_z,
             &B_x, &B_y, &B_z,
@@ -150,6 +152,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor(
     Coordinate sx, Coordinate sy, Coordinate sz,
     Velocity vx, Velocity vy, Velocity vz,
     Acceleration wx, Acceleration wy, Acceleration wz,
+    DotAcceleration dot_wx, DotAcceleration dot_wy, DotAcceleration dot_wz,
     long double * Txn, long double * Tyn, long double * Tzn,
     long double * Nx, long double * Ny, long double * Nz,
     long double * Sn,
@@ -165,6 +168,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor(
         r*sinl(theta)*cosl(varphi), // Z_a - в декартовой -> x в сферической
         t,
         sx, sy, sz, vx, vy, vz, wx, wy, wz,
+        dot_wx, dot_wy, dot_wz,
         - sinl(theta)*sinl(varphi), // cos_nx - i в декартовой -> j в сферической
         - cosl(theta),              // cos_ny - j в декартовой -> k в сферической
         - sinl(theta)*cosl(varphi), // cos_nz - k в декартовой -> i в сферической
@@ -192,6 +196,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor(long double xc,
     Coordinate sx, Coordinate sy, Coordinate sz,
     Velocity vx, Velocity vy, Velocity vz,
     Acceleration wx, Acceleration wy, Acceleration wz,
+    DotAcceleration dot_wx, DotAcceleration dot_wy, DotAcceleration dot_wz,
     long double * Txn, long double * Tyn, long double * Tzn,
     long double * Nx, long double * Ny, long double * Nz,
     long double * Sn,
@@ -207,6 +212,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor(long double xc,
         r*sinl(theta)*sinl(varphi), // Z_a - в декартовой -> y в сферической
         t,
         sx, sy, sz, vx, vy, vz, wx, wy, wz,
+        dot_wx, dot_wy, dot_wz,
         - cosl(theta),              // cos_nx - i в декартовой -> k в сферической
         - sinl(theta)*cosl(varphi), // cos_ny - j в декартовой -> i в сферической
         - sinl(theta)*sinl(varphi), // cos_nz - k в декартовой -> j в сферической
@@ -237,6 +243,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
     Coordinate sx, Coordinate sy, Coordinate sz,
     Velocity vx, Velocity vy, Velocity vz,
     Acceleration wx, Acceleration wy, Acceleration wz,
+    DotAcceleration dot_wx, DotAcceleration dot_wy, DotAcceleration dot_wz,
     long double * pTxn, long double * pTyn, long double * pTzn,
     long double * pNx, long double * pNy, long double * pNz,
     long double * pSn,
@@ -260,6 +267,7 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
 
     int ret = spherical_y_ccalc_Maxwells_stress_tensor(sphere_R, theta, varphi, t,
         sx, sy, sz, vx, vy, vz, wx, wy, wz,
+        dot_wx, dot_wy, dot_wz,
         &Txn, &Tyn, &Tzn,
         &Nx, &Ny, &Nz,
         &Sn,
@@ -295,6 +303,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(long double xc,
     Coordinate sx, Coordinate sy, Coordinate sz,
     Velocity vx, Velocity vy, Velocity vz,
     Acceleration wx, Acceleration wy, Acceleration wz,
+    DotAcceleration dot_wx, DotAcceleration dot_wy, DotAcceleration dot_wz,
     long double * pTxn, long double * pTyn, long double * pTzn,
     long double * pNx, long double * pNy, long double * pNz,
     long double * pSn,
@@ -318,6 +327,7 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(long double xc,
 
     int ret = spherical_x_ccalc_Maxwells_stress_tensor(xc, sphere_R, theta, varphi, t,
         sx, sy, sz, vx, vy, vz, wx, wy, wz,
+        dot_wx, dot_wy, dot_wz,
         &Txn, &Tyn, &Tzn,
         &Nx, &Ny, &Nz,
         &Sn,

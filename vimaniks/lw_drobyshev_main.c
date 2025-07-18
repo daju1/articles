@@ -109,6 +109,25 @@ acceleration wz(timevalue t) {
     return result;
 }
 
+
+dotacceleration dot_wx(timevalue t) {
+    dotacceleration result;
+    result = 0;
+    return result;
+}
+
+dotacceleration dot_wy(timevalue t) {
+    dotacceleration result;
+    result = 0;
+    return result;
+}
+
+dotacceleration dot_wz(timevalue t) {
+    dotacceleration result;
+    result = 0;
+    return result;
+}
+
 distance R_lw(coordinate x, coordinate y, coordinate z, timevalue t)
 {
     coordinate Xa = x;
@@ -148,6 +167,7 @@ long double spherical_x_calc_En_R_t (long double xc, long double theta, long dou
 
     int ret = spherical_x_ccalc_Maxwells_stress_tensor_R_t(_xc, _theta, _varphi, _t,
         sx, sy, sz, vx, vy, vz, wx, wy, wz,
+        dot_wx, dot_wy, dot_wz,
         &Txn,
         &Tyn,
         &Tzn,

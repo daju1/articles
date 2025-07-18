@@ -3,6 +3,7 @@ typedef long double timevalue;
 typedef long double timespan;
 typedef long double power;
 typedef long double acceleration;
+typedef long double dotacceleration;
 typedef long double velocity;
 typedef long double charge;
 typedef long double coordinate;

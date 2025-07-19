@@ -298,29 +298,31 @@ long double spherical_x_calc_En_R_t (long double xc, long double theta, long dou
         &jn,
         &sum_rlagerror_square);
 
-    printf("sum_rlagerror_square = %Le\n", sum_rlagerror_square);
+    // printf("sum_rlagerror_square = %Le\n", sum_rlagerror_square);
+    printf("t = %Le Tn = %Le %Le %Le N = %Le %Le %Le SEHAj =  %Le %Le %Le %Le %Le\n",
+        t,
+        Txn, Tyn, Tzn,
+        Nx, Ny, Nz,
+        Sn, En, Hn, An, jn);
 
     return jn;
 }
 
 void main()
 {
-    double x = 5;
-    double y = 5;
-    double z = 0;
-    double t = 7.5;
+    for ( int i = 0; i < 10; ++i)
+    {
+        double t = 1+0.1*i;
 
-    double R = R_lw(x, y, z, t);
+        long double xc = s1x(t);
+        long double theta = M_PI / 4;
+        long double varphi = 0.1;
 
-    long double xc = s1x(t);
-    long double theta = M_PI / 4;
-    long double varphi = 0.1;
+        cset_sphere_R(1.0);
 
-    cset_sphere_R(1.0);
+        long double En = spherical_x_calc_En_R_t(xc, theta, varphi, t);
 
-    long double En = spherical_x_calc_En_R_t(xc, theta, varphi, t);
-
-    printf("R = %f\n", R);
-    printf("xc = %Lf\n", xc);
-    printf("En = %Lf\n", En);
+        printf("xc = %Lf\n", xc);
+        // printf("En = %Lf\n", En);
+    }
 }

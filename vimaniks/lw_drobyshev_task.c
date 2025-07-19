@@ -18,7 +18,7 @@
 
 velocity c = 1.0; //(double)(299792458 * 100);
 
-void set_c(double _c)
+void cset_c(double _c)
 {
     c = _c;
 }
@@ -32,6 +32,7 @@ velocity cget_c()
 
 static timespan timespan_Epsilon = 1.0e-16;// # погрешность
 static distance distance_Epsilon = 1.0e-16;// # погрешность
+static int tlag_max_n = 500;
 
 static long double min_newton_step = 0.1;
 static long double newton_step_multiplier = 0.9999;
@@ -279,8 +280,8 @@ int tlag(coordinate x, coordinate y, coordinate z, timevalue t,
         *pt2 = t - d / c;
         cdt = c*(t-*pt2);
 
-        //printf("d=%0.30Le, c(t-t2)=%0.30Le\n", d, c*(t-t2));
-        //printf("d-c(t-t2)=%0.30Le\n", d-c*(t-t2));
+        //printf("d=%0.30Le, c(t-t2)=%0.30Le\n", d, c*(t-*pt2));
+        //printf("d-c(t-t2)=%0.30Le\n", d-c*(t-*pt2));
 
         if(d/c < timespan_Epsilon)
             break;
@@ -290,6 +291,10 @@ int tlag(coordinate x, coordinate y, coordinate z, timevalue t,
 
         if (*pt2 == t1)
             break;
+
+        if (n > ++max_steps)
+            break;
+
     }
 
     int ret = find_newton_root(x, y, z, t, pt2,

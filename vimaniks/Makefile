@@ -4,8 +4,12 @@ DEPS = hellomake.h
 OBJ = lw_rotate.o lw_tensor.o lw_vimanic.o main.o
 DROBTASK = lw_drobyshev_task.o lw_drobyshev_task_tensor.o
 DROBTEST = lw_drobyshev_task.o lw_drobyshev_task_tensor.o lw_drobyshev_main.o
+
 DROBNTASK = lw_drobyshev_task.o lw_drobyshev_task_n_charges_tensor.o
 DROBNTEST = lw_drobyshev_task.o lw_drobyshev_task_n_charges_tensor.o lw_drobyshev_task_n_charges_tensor_main.o
+
+DIPOLELIB = lw_drobyshev_task.o lw_drobyshev_task_n_charges_tensor.o
+DIPOLETEST = lw_drobyshev_task.o lw_drobyshev_task_n_charges_tensor.o lw_dipole_tensor_main.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -23,6 +27,12 @@ libntest: $(DROBNTEST)
 	$(CC) -o $@ $^ $(LDFLAGS) $(LDLIBS)  -lm
 
 mnlib: $(DROBNTASK)
+	$(CC) -shared -o $@.so $^ $(LDFLAGS) $(LDLIBS)
+
+dipoletest: $(DIPOLETEST)
+	$(CC) -o $@ $^ $(LDFLAGS) $(LDLIBS)  -lm
+
+dipolelib: $(DIPOLELIB)
 	$(CC) -shared -o $@.so $^ $(LDFLAGS) $(LDLIBS)
 
 clean:

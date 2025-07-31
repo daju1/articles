@@ -196,6 +196,8 @@ long double spherical_x_calc_En_R_t (long double xc, long double theta, long dou
     long double Ny;
     long double Nz;
     long double Sn;
+    long double E1n;
+    long double E2n;
     long double En;
     long double Hn;
     long double An;
@@ -214,6 +216,8 @@ long double spherical_x_calc_En_R_t (long double xc, long double theta, long dou
         &Ny,
         &Nz,
         &Sn,
+        &E1n,
+        &E2n,
         &En,
         &Hn,
         &An,

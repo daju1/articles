@@ -74,6 +74,8 @@ int main()
     long double Ny;
     long double Nz;
     long double Sn;
+    long double E1n;
+    long double E2n;
     long double En;
     long double Hn;
     long double An;
@@ -82,6 +84,8 @@ int main()
                                                      &Txn, &Tyn, &Tzn,
                                                      &Nx, &Ny, &Nz,
                                                      &Sn,
+                                                     &E1n,
+                                                     &E2n,
                                                      &En,
                                                      &Hn,
                                                      &An,
@@ -95,11 +99,16 @@ int main()
     printf("Nx = %0.36Le Ny = %0.36Lf Nz = %0.36Lf\n", Nx, Ny, Nz);
     printf("Sn = %0.36Lf Fy = %0.36Lf\n", Sn, Fy);
     printf("En = %0.36Lf jn = %0.36Lf\n", En, jn);
+    printf("E1n = %0.36Lf\n", E1n);
+    printf("E2n = %0.36Lf\n", E2n);
+    printf("E1n+E2n = %0.36Lf En = %0.36Lf\n", E1n+E2n, En);
 
     ret = spherical_x_ccalc_Maxwells_stress_tensor(R, theta, varphi, t_i,
                                                      &Txn, &Tyn, &Tzn,
                                                      &Nx, &Ny, &Nz,
                                                      &Sn,
+                                                     &E1n,
+                                                     &E2n,
                                                      &En,
                                                      &Hn,
                                                      &An,
@@ -113,6 +122,9 @@ int main()
     printf("Nx = %0.36Le Ny = %0.36Lf Nz = %0.36Lf\n", Nx, Ny, Nz);
     printf("Sn = %0.36Lf Fy = %0.36Lf\n", Sn, Fy);
     printf("En = %0.36Lf jn = %0.36Lf\n", En, jn);
+    printf("E1n = %0.36Lf\n", E1n);
+    printf("E2n = %0.36Lf\n", E2n);
+    printf("E1n+E2n = %0.36Lf En = %0.36Lf\n", E1n+E2n, En);
 
     return 0;
 }

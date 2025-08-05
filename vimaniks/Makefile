@@ -36,6 +36,6 @@ dipolelib: $(DIPOLELIB)
 	$(CC) -shared -o $@.so $^ $(LDFLAGS) $(LDLIBS)
 
 clean:
-	rm -f $(OBJ) $(DROBTEST) $(DROBTASK) $(DROBNTEST) $(DROBNTASK)
+	rm -f $(OBJ) $(DROBTEST) $(DROBTASK) $(DROBNTEST) $(DROBNTASK) $(DIPOLETEST) $(DIPOLELIB)
 	rm -f testtzap
 	rm -f libtest

@@ -29,6 +29,11 @@ velocity cget_c()
     return c;
 }
 
+int fermi_field = 0;
+void cset_fermi_field(int _f)
+{
+    fermi_field = _f;
+}
 
 // вращение заряда в плоскости xy вокруг центра в точке 
 // coordinate xc, coordinate yc, coordinate zc
@@ -610,6 +615,18 @@ int calc_fields(double k, distance r,
     (*j_z) = (-3*q*c/(k*k*k*k*r*r*r) * (one - one_m_v2_c2_p_ra_c2/k) * (one_m_v2_c2_p_ra_c2*(nz - vz/c) - (k*r)*wz/(c*c))
               + q/(k*k*k*r*r) * (-vz/r*one_m_v2_c2_p_ra_c2 + (nz - vz/c)/k*(rdota_c2-3*va_c2) - r*dot_wz/(c*c) - wz*k*r/c))
               /(4*M_PI);
+
+    if (fermi_field) {
+        long double fermi_m = (one + ra_c2);
+
+        (*E_x) *= fermi_m;
+        (*E_y) *= fermi_m;
+        (*E_z) *= fermi_m;
+
+        (*B_x) *= fermi_m;
+        (*B_y) *= fermi_m;
+        (*B_z) *= fermi_m;
+    }
 }
 
 int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,

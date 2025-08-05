@@ -102,6 +102,41 @@ static inline cubareal R0 (cubareal ra, cubareal theta_a, cubareal rq, cubareal 
                 - 2*rca(ra, theta_a)*rcq(rq, theta_q)*cos(phi_q));
 }
 
+// \section{Приближение малых скоростей с учётом запаздывания}
+// Решение этой системы имеет весьма сложный вид,
+// но если мы исследуем вопрос какова будет инертная масса покоя,
+// то при решении этой системы мы можем положить $v = 0$.
+// В этом случае для нахождения запаздывания нужно будет решить уравнение
+
+/*$-\frac{1}{4} \, a^{2} \mathit{dt}^{4} + c^{2} \mathit{dt}^{2} - a \mathit{dt}^{2} {\left(z_{a} - z_{q}\right)} - R_{0}^{2} = 0$
+
+где
+$(t-t') = dt$
+
+Это уравнение имеет 4 решения, но физически приемлемый смысл при положительном ускорении имеет решение
+
+
+% $\mathit{dt} = -\frac{\sqrt{2 \, c^{2} - 2 \, a \mathit{dz} + 2 \, \sqrt{-R_{0}^{2} a^{2} + c^{4} - 2 \, a c^{2} \mathit{dz} + a^{2} \mathit{dz}^{2}}}}{a}$
+
+% $\mathit{dt} = \frac{\sqrt{2 \, c^{2} - 2 \, a \mathit{dz} + 2 \, \sqrt{-R_{0}^{2} a^{2} + c^{4} - 2 \, a c^{2} \mathit{dz} + a^{2} \mathit{dz}^{2}}}}{a}$
+
+% $\mathit{dt} = -\frac{\sqrt{2 \, c^{2} - 2 \, a \mathit{dz} - 2 \, \sqrt{-R_{0}^{2} a^{2} + c^{4} - 2 \, a c^{2} \mathit{dz} + a^{2} \mathit{dz}^{2}}}}{a}$
+
+$\mathit{dt} = \frac{\sqrt{2 \, c^{2} - 2 \, a \mathit{dz} - 2 \, \sqrt{-R_{0}^{2} a^{2} + c^{4} - 2 \, a c^{2} \mathit{dz} + a^{2} \mathit{dz}^{2}}}}{a}$
+
+где
+$\mathit{dz} = z_{a'} - z_{q'}$
+
+
+В приближении малых скоростей ${}^{v}/{}_{c}\ll 1$ но при учете запаздывания
+\[\overrightarrow{E}=\int\limits_{{{r}_{q}}}\int\limits_{{{\varphi}_{q}}}\int\limits_{{{\theta}_{q}}}\\
+{\left\{ -\frac{\overrightarrow{a}R}{{{c}^{2}}} \right\}\frac{\rho \left( {{r}_{q}} \right){{r}_{q}}^{2}\sin \left( {{\theta }_{q}} \right)}{{{R}^{*}}^{2}}\ }d{{\theta }_{q}}d{{\varphi }_{q}}d{{r}_{q}}\]
+ Откуда
+\[{{F}_{z}}=-\frac{\overrightarrow{a}}{{{c}^{^{2}}}}\int\limits_{{{V}_{a}}}{\int\limits_{{{V}_{q}}}{\frac{\rho \left( {{r}_{q}} \right)\rho \left( {{r}_{a}} \right)}{R}}}\ d{{V}_{q}}d{{V}_{a}}\]
+где
+$\mathit{R} = c\frac{\sqrt{2 \, c^{2} - 2 \, a \mathit{dz} - 2 \, \sqrt{-R_{0}^{2} a^{2} + c^{4} - 2 \, a c^{2} \mathit{dz} + a^{2} \mathit{dz}^{2}}}}{a}$
+*/
+
 static inline cubareal R_a (cubareal ra, cubareal theta_a, cubareal rq, cubareal theta_q, cubareal phi_q, cubareal c, cubareal a)
 {
     cubareal R_0 = R0 (ra, theta_a, rq, theta_q, phi_q);

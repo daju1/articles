@@ -1,0 +1,7 @@
+.ipynb_checkpoints/
+numerical_integrators/cuba/Cuba-4.2/
+numerical_integrators/cuba/local/
+numerical_integrators/cuba/*.o
+*.log
+*.aux
+

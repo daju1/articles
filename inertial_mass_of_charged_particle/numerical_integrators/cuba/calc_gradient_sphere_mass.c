@@ -13,9 +13,20 @@ static inline cubareal rho_q (cubareal r0, cubareal q)
 }
 
 // интегрирование по координатам заряда источника потенциала
+// E1
+// Градиентное электрическое поле ($z$ компонента)
+/*\[{E}_{1}=\\
+\int\limits_{{{r}_{q}}}\int\limits_{{{\varphi}_{q}}}\int\limits_{{{\theta}_{q}}}\\
+\left\{ \frac{z_a-z_q}{{{R}_{0}}^3}\left( 1+\frac{a_z\left( {{z}_{a}}-{{z}_{q}} \right)}{c^2} \right) \\
+ \right\}\\
+{\rho \left( {{r}_{q}} \right){{r}_{q}}^{2}\sin \left( {{\theta }_{q}} \right)}\\
+d{{\theta }_{q}}d{{\varphi }_{q}}d{{r}_{q}}\] */
 static inline cubareal Iq (cubareal r0, cubareal q, cubareal theta_a, cubareal ra, cubareal phi_q, cubareal theta_q, cubareal rq )
 {
     cubareal za_minus_zq = ra*cos(theta_a) - rq*cos(theta_q);
+    // В приближении малых скоростей ${}^{v}/{}_{c}\ll 1$
+    // и малых ускорений $a{{r}_{0}}\ll {{c}^{2}}$
+    // и при игнорировании запаздывания
     cubareal R = R0 (ra, theta_a, rq, theta_q, phi_q);
     return za_minus_zq * za_minus_zq * rho_q(r0, q) * Sq(rq) * sin(theta_q) / Cb(R);
 }

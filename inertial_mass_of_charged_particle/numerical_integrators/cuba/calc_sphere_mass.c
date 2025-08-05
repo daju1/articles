@@ -13,8 +13,21 @@ static inline cubareal rho_q (cubareal r0, cubareal q)
 }
 
 // интегрирование по координатам заряда источника потенциала
+// E2 - индуктивная компонента массы
+// В приближении малых скоростей ${}^{v} \big / {}_{c}\ll 1$
+// и малых ускорений $a{{r}_{0}}\ll {{c}^{2}}$ и при игнорировании запаздывания
+// Электрическое поле самоиндукции ($z$ компонента)
+/*
+\[{E}_{2}=\\
+\int\limits_{{{r}_{q}}}\int\limits_{{{\varphi}_{q}}}\int\limits_{{{\theta}_{q}}}\\
+{\left\{ -\frac{{a_z}}{{{c}^{2}}{{{R}_{0}}}} \right\}\\
+{\rho \left( {{r}_{q}} \right){{r}_{q}}^{2}\sin \left( {{\theta }_{q}} \right)}\ }d{{\theta }_{q}}d{{\varphi }_{q}}d{{r}_{q}}\]
+*/
 static inline cubareal Iq (cubareal r0, cubareal q, cubareal theta_a, cubareal ra, cubareal phi_q, cubareal theta_q, cubareal rq )
 {
+    // В приближении малых скоростей ${}^{v}/{}_{c}\ll 1$
+    // и малых ускорений $a{{r}_{0}}\ll {{c}^{2}}$
+    // и при игнорировании запаздывания
     cubareal R = R0 (ra, theta_a, rq, theta_q, phi_q);
     return rho_q(r0, q) * Sq(rq) * sin(theta_q) / R;
 }

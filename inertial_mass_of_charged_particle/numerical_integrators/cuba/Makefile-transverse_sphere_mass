@@ -1,0 +1,9 @@
+include ./cuba.mk
+
+OBJ = integrand_transverse_sphere_mass.o compute_transverse_mass.o
+
+all : compute_transverse_mass
+
+compute_transverse_mass: $(OBJ)
+	$(info OBJ=$(OBJ))
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS) -lm

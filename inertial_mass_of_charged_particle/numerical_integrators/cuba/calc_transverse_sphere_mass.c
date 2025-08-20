@@ -71,7 +71,7 @@ static void compute_electric_field(
 
     /* Вычисление градиентного поля E1 */
     double common_factor1 = 1.0 / pow(R_star, 2);
-    double velocity_factor1 = 1.0 + (R_rho * a_q) / pow(params->c, 2) - pow(v_q, 2) / pow(params->c, 2);
+    double velocity_factor1 = 1.0 + (R_rho * a_q) / pow(params->c, 2) - pow(v_q / params->c, 2);
 
     *E1_rho = common_factor1 * (R_rho * velocity_factor1 / R_star);
     *E1_phi = common_factor1 * (R_phi * velocity_factor1 / R_star - v_q / params->c);
@@ -79,9 +79,8 @@ static void compute_electric_field(
 
     /* Вычисление поля самоиндукции E2 */
     double common_factor2 = 1.0 / pow(R_star, 2);
-    double velocity_factor2 = (R / R_star) * (pow(v_q, 2) / pow(params->c, 2) - (R_rho * a_q) / pow(params->c, 2) - 1.0) + 1.0;
+    double velocity_factor2 = (R / R_star) * (pow(v_q / params->c, 2) - (R_rho * a_q) / pow(params->c, 2) - 1.0) + 1.0;
 
-    /* ИСПРАВЛЕНО: добавлено слагаемое с ускорением */
     *E2_rho = common_factor2 * (- a_q * R / pow(params->c, 2));
     *E2_phi = common_factor2 * (v_q / params->c * velocity_factor2);
     *E2_z = 0;
@@ -90,6 +89,16 @@ static void compute_electric_field(
     *E_total_rho = *E1_rho + *E2_rho;
     *E_total_phi = *E1_phi + *E2_phi;
     *E_total_z = *E1_z + *E2_z;
+
+    /* Основная формула Лиенара-Вихерта */
+    double common_factor = 1.0 / pow(R_star, 3);
+    double velocity_factor = 1.0 + (R_rho * a_q) / pow(params->c, 2) - pow(v_q, 2) / pow(params->c, 2);
+
+    *E_total_rho = common_factor * (R_rho * velocity_factor + (a_q * R_star * R) / pow(params->c, 2));
+    //*E_rho = common_factor * ((a_q * R_star * R) / pow(params->c, 2));
+    //*E_rho = ((a_q / R) / pow(params->c, 2));
+    *E_total_phi = common_factor * ((R_phi - (R * v_q) / params->c) * velocity_factor);
+    *E_total_z = common_factor * (R_z * velocity_factor);
 }
 
 
@@ -173,13 +182,14 @@ static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_
         &int_q_E_total_rho, &int_q_E_total_phi, &int_q_E_total_z
         );
 
-
     *int_a_E1_rho      = k_a * int_q_E1_rho;
     *int_a_E1_phi      = k_a * int_q_E1_phi;
     *int_a_E1_z        = k_a * int_q_E1_z;
+
     *int_a_E2_rho      = k_a * int_q_E2_rho;
     *int_a_E2_phi      = k_a * int_q_E2_phi;
     *int_a_E2_z        = k_a * int_q_E2_z;
+
     *int_a_E_total_rho = k_a * int_q_E_total_rho;
     *int_a_E_total_phi = k_a * int_q_E_total_phi;
     *int_a_E_total_z   = k_a * int_q_E_total_z;
@@ -209,9 +219,14 @@ int Integrand(const int *ndim, const cubareal xx[],
     #define observed_ratio_1_rho ff[0]
     #define observed_ratio_1_phi ff[1]
     #define observed_ratio_1_z   ff[2]
+
     #define observed_ratio_2_rho ff[3]
     #define observed_ratio_2_phi ff[4]
     #define observed_ratio_2_z   ff[5]
+
+    #define observed_ratio_rho ff[6]
+    #define observed_ratio_phi ff[7]
+    #define observed_ratio_z   ff[8]
 
     if ( fabs(theta_a - theta_q) < 1e-12 && fabs(ra - rq) < 1e-12 && fabs(psi_q - psi_a) < 1e-12)
     {
@@ -233,15 +248,14 @@ int Integrand(const int *ndim, const cubareal xx[],
 
     double k = r0 * r0 * (2 * M_PI) * M_PI * (2*M_PI) * M_PI;
 
-     
     //Ia (params, q, psi_a * (2*M_PI), theta_a * M_PI, ra * r0, psi_q * (2*M_PI), theta_q * M_PI, rq * r0 );
     double int_a_E1_rho, int_a_E1_phi, int_a_E1_z;
     double int_a_E2_rho, int_a_E2_phi, int_a_E2_z;
-    double int_a_E_total_rho, int_a_E_total_phi, int_a_E_total_z;
+    double int_a_E_rho,  int_a_E_phi,  int_a_E_z;
     int_a(params, q, psi_a * (2*M_PI), theta_a * M_PI, ra * r0, psi_q * (2*M_PI), theta_q * M_PI, rq * r0,
         &int_a_E1_rho, &int_a_E1_phi, &int_a_E1_z,
         &int_a_E2_rho, &int_a_E2_phi, &int_a_E2_z,
-        &int_a_E_total_rho, &int_a_E_total_phi, &int_a_E_total_z
+        &int_a_E_rho,  &int_a_E_phi,  &int_a_E_z
         );
 
     double f1_rho = k * int_a_E1_rho;
@@ -251,6 +265,10 @@ int Integrand(const int *ndim, const cubareal xx[],
     double f2_rho = k * int_a_E2_rho;
     double f2_phi = k * int_a_E2_phi;
     double f2_z   = k * int_a_E2_z;
+
+    double f_rho = k * int_a_E_rho;
+    double f_phi = k * int_a_E_phi;
+    double f_z   = k * int_a_E_z;
 
     /*
         Твою энегрию электрического поля для сравнения с моим результатом самодействия я умножил на 2
@@ -282,7 +300,7 @@ int Integrand(const int *ndim, const cubareal xx[],
     */
 
     double U = 3.0 / (5.0 * params->R0);     /* Энергия электрического поля */
-    double m_perp_B = 2 * U; /* Вариация типа В (теоретическое значение) */
+    double m_perp_B = 2 * U;                 /* Вариация типа В (теоретическое значение) */
 
     /* Вычисление поперечной массы */
     //double m_perp_A = integral[0] / Gamma / (params.c * params.c);  /* Вариация типа А */
@@ -296,15 +314,24 @@ int Integrand(const int *ndim, const cubareal xx[],
     double m2_phi = f2_phi / Gamma / (params->c * params->c);
     double m2_z   = f2_z   / Gamma / (params->c * params->c);
 
+    double m_rho = f_rho / Gamma / (params->c * params->c);
+    double m_phi = f_phi / Gamma / (params->c * params->c);
+    double m_z   = f_z   / Gamma / (params->c * params->c);
+
     /* Проверка коэффициента 4/3 */
     double expected_ratio = 4.0 / 3.0;
 
     observed_ratio_1_rho = m1_rho / m_perp_B;
     observed_ratio_1_phi = m1_phi / m_perp_B;
     observed_ratio_1_z   = m1_z   / m_perp_B;
+
     observed_ratio_2_rho = m2_rho / m_perp_B;
     observed_ratio_2_phi = m2_phi / m_perp_B;
     observed_ratio_2_z   = m2_z   / m_perp_B;
+
+    observed_ratio_rho = m_rho / m_perp_B;
+    observed_ratio_phi = m_phi / m_perp_B;
+    observed_ratio_z   = m_z   / m_perp_B;
 
     return 0;
 }

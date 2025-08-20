@@ -73,18 +73,18 @@ static void compute_electric_field(
     double common_factor1 = 1.0 / pow(R_star, 2);
     double velocity_factor1 = 1.0 + (R_rho * a_q) / pow(params->c, 2) - pow(v_q, 2) / pow(params->c, 2);
 
-    *E1_rho = common_factor1 * (R_rho * velocity_factor1 / R_star - v_q / params->c);
-    *E1_phi = common_factor1 * (R_phi * velocity_factor1 / R_star);
-    *E1_z = common_factor1 * (R_z * velocity_factor1 / R_star);
+    *E1_rho = common_factor1 * (R_rho * velocity_factor1 / R_star);
+    *E1_phi = common_factor1 * (R_phi * velocity_factor1 / R_star - v_q / params->c);
+    *E1_z   = common_factor1 * (R_z   * velocity_factor1 / R_star);
 
     /* Вычисление поля самоиндукции E2 */
     double common_factor2 = 1.0 / pow(R_star, 2);
     double velocity_factor2 = (R / R_star) * (pow(v_q, 2) / pow(params->c, 2) - (R_rho * a_q) / pow(params->c, 2) - 1.0) + 1.0;
 
     /* ИСПРАВЛЕНО: добавлено слагаемое с ускорением */
-    *E2_rho = common_factor2 * (v_q / params->c * velocity_factor2 - a_q * R / pow(params->c, 2));
+    *E2_rho = common_factor2 * (- a_q * R / pow(params->c, 2));
     *E2_phi = common_factor2 * (v_q / params->c * velocity_factor2);
-    *E2_z = common_factor2 * (v_q / params->c * velocity_factor2);
+    *E2_z = 0;
 
     /* Вычисление суммарного поля */
     *E_total_rho = *E1_rho + *E2_rho;

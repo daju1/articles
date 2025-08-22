@@ -61,15 +61,14 @@ int main() {
     /* Параметры задачи */
     ProblemParams params;
 
-    params.R0 = 1;    /* радиус сферы (половина R1) */
+    params.R0 = 1;      /* радиус сферы (половина R1) */
     params.rho0 = 100;  /* расстояние от оси орбитального движения */
-    params.c = 1;      /* скорость света в м/с */
+    params.c = 1;       /* скорость света в м/с */
     // m = 1
     params.omega = sqrt(5 * params.R0 * Sq(params.c) / (3*2*4* Cb(params.rho0)));  /* угловая скорость орбитального движения*/
     // m = 4/3
     //params.omega = sqrt(3*5 * params.R0 * Sq(params.c) / (4*3*2*4* Cb(params.rho0)));  /* угловая скорость орбитального движения*/
     double v_c = params.omega * params.rho0 / params.c;  /* отношение скорости заряда к скорости света*/
-    printf("v_c = %f\n", v_c);
 #if 1
   printf("-------------------- Vegas test --------------------\n");
 
@@ -85,6 +84,7 @@ int main() {
     printf("VEGAS RESULT:\t%.8f +- %.8f\tp = %.3f\n",
       (double)integral[comp], (double)error[comp], (double)prob[comp]);
 #endif
+    printf("v_c = %f\n", v_c);
 
 #if 0
   printf("\n-------------------- Suave test --------------------\n");

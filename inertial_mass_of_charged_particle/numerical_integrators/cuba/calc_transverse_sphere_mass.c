@@ -10,7 +10,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+#ifdef INCLUDE_CUBA_H
 #include "cuba.h"
+#endif
 
 
 /* Структура для передачи параметров задачи */
@@ -94,9 +97,7 @@ static void compute_electric_field(
     double common_factor = 1.0 / pow(R_star, 3);
     double velocity_factor = 1.0 + (R_rho * a_q) / pow(params->c, 2) - pow(v_q, 2) / pow(params->c, 2);
 
-    *E_total_rho = common_factor * (R_rho * velocity_factor + (a_q * R_star * R) / pow(params->c, 2));
-    //*E_rho = common_factor * ((a_q * R_star * R) / pow(params->c, 2));
-    //*E_rho = ((a_q / R) / pow(params->c, 2));
+    *E_total_rho = common_factor * (R_rho * velocity_factor - (a_q * R_star * R) / pow(params->c, 2));
     *E_total_phi = common_factor * ((R_phi - (R * v_q) / params->c) * velocity_factor);
     *E_total_z = common_factor * (R_z * velocity_factor);
 }
@@ -122,7 +123,7 @@ static inline cubareal rho_q (cubareal r0, cubareal q)
 static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_a, cubareal theta_a, cubareal ra, cubareal psi_q, cubareal theta_q, cubareal rq,
     double *int_q_E1_rho, double *int_q_E1_phi, double *int_q_E1_z,
     double *int_q_E2_rho, double *int_q_E2_phi, double *int_q_E2_z,
-    double *int_q_E_total_rho, double *int_q_E_total_phi, double *int_q_E_total_z
+    double *int_q_E_rho,  double *int_q_E_phi,  double *int_q_E_z
 
  )
 {
@@ -137,34 +138,37 @@ static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_
     /* Вычисление электрического поля */
     double E1_rho, E1_phi, E1_z;
     double E2_rho, E2_phi, E2_z;
-    double E_total_rho, E_total_phi, E_total_z;
+    double E_rho,  E_phi,  E_z;
 
     compute_electric_field(ra, theta_a, psi_a, rq, theta_q, psi_q, params, 
                           &E1_rho, &E1_phi, &E1_z,
                           &E2_rho, &E2_phi, &E2_z,
-                          &E_total_rho, &E_total_phi, &E_total_z);
+                          &E_rho,  &E_phi,  &E_z);
 
 //printf("R = %e _R = %e\n", R, _R);
 //printf("1/R = %e E_rho = %e\n", 1.0/R, E_rho);
 
     double k_q = rho_q(r0, q) * Sq(rq) * sin(theta_q);
 
-    *int_q_E1_rho      = k_q * E1_rho;
-    *int_q_E1_phi      = k_q * E1_phi;
-    *int_q_E1_z        = k_q * E1_z;
-    *int_q_E2_rho      = k_q * E2_rho;
-    *int_q_E2_phi      = k_q * E2_phi;
-    *int_q_E2_z        = k_q * E2_z;
-    *int_q_E_total_rho = k_q * E_total_rho;
-    *int_q_E_total_phi = k_q * E_total_phi;
-    *int_q_E_total_z   = k_q * E_total_z;
+    *int_q_E1_rho = k_q * E1_rho;
+    *int_q_E1_phi = k_q * E1_phi;
+    *int_q_E1_z   = k_q * E1_z;
+    *int_q_E2_rho = k_q * E2_rho;
+    *int_q_E2_phi = k_q * E2_phi;
+    *int_q_E2_z   = k_q * E2_z;
+    *int_q_E_rho  = k_q * E_rho;
+    *int_q_E_phi  = k_q * E_phi;
+    *int_q_E_z    = k_q * E_z;
 
     //return mean_a * rho_q(r0, q) * Sq(rq) * sin(theta_q) / R / pow(params->c, 2);
     //return rho_q(r0, q) * Sq(rq) * sin(theta_q) / R;
 }
 
 // интегрирование по координатам точек наблюдения
-/*static inline*/ void int_a (const ProblemParams *params, cubareal q, cubareal phi_a, cubareal theta_a, cubareal ra, cubareal phi_q, cubareal theta_q, cubareal rq,
+void int_a (
+    const ProblemParams *params, cubareal q,
+    cubareal phi_a, cubareal theta_a, cubareal ra,
+    cubareal phi_q, cubareal theta_q, cubareal rq,
     double *int_a_E1_rho, double *int_a_E1_phi, double *int_a_E1_z,
     double *int_a_E2_rho, double *int_a_E2_phi, double *int_a_E2_z,
     double *int_a_E_total_rho, double *int_a_E_total_phi, double *int_a_E_total_z
@@ -241,14 +245,13 @@ int Integrand(const int *ndim, const cubareal xx[],
     }
 
     cubareal r0 = params->R0;
-    cubareal q = 1.0;
+    cubareal q  = 1.0;
 
     /* Вычисление ускорения */
     double Gamma = -params->rho0 * pow(params->omega, 2);
 
     double k = r0 * r0 * (2 * M_PI) * M_PI * (2*M_PI) * M_PI;
 
-    //Ia (params, q, psi_a * (2*M_PI), theta_a * M_PI, ra * r0, psi_q * (2*M_PI), theta_q * M_PI, rq * r0 );
     double int_a_E1_rho, int_a_E1_phi, int_a_E1_z;
     double int_a_E2_rho, int_a_E2_phi, int_a_E2_z;
     double int_a_E_rho,  int_a_E_phi,  int_a_E_z;

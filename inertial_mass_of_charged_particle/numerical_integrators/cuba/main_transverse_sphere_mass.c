@@ -10,7 +10,7 @@ int Integrand(const int *ndim, const cubareal xx[],
 #else
 #define NDIM 5
 #endif
-#define NCOMP 1
+#define NCOMP 9
 #define USERDATA NULL
 #define NVEC 1
 #define EPSREL 1e-3
@@ -48,8 +48,8 @@ int Integrand(const int *ndim, const cubareal xx[],
 /* Структура для передачи параметров задачи */
 typedef struct {
     double R0;     /* Радиус сферы */
-    double rho0;   /* Расстояние от оси вращения до центра сферы */
-    double omega;  /* Угловая скорость вращения */
+    double rho0;   /* Расстояние от оси орбитального движения до центра сферы */
+    double omega;  /* Угловая скорость орбитального движения */
     double c;      /* Скорость света */
 } ProblemParams;
 
@@ -61,14 +61,17 @@ int main() {
     /* Параметры задачи */
     ProblemParams params;
 
-    double v_c = 0.000001;
+    double v_c = 0.1;
     
     /* Скорость и ускорение источника */
     
     params.R0 = 1;    /* радиус сферы (половина R1) */
-    params.rho0 = 10;  /* расстояние от оси вращения */
+    params.rho0 = 100;  /* расстояние от оси орбитального движения */
     params.c = 1;      /* скорость света в м/с */
-    params.omega = v_c * params.c / params.rho0;  /* угловая скорость */
+    // m = 1
+    params.omega = sqrt(5 * params.R0 * Sq(params.c) / (3*2*4* Cb(params.rho0)));  /* угловая скорость орбитального движения*/
+    // m = 4/3
+    //params.omega = sqrt(3*5 * params.R0 * Sq(params.c) / (4*3*2*4* Cb(params.rho0)));  /* угловая скорость орбитального движения*/
 
 #if 1
   printf("-------------------- Vegas test --------------------\n");
@@ -120,7 +123,7 @@ int main() {
       (double)integral[comp], (double)error[comp], (double)prob[comp]);
 #endif
 
-#if 0
+#if 1
   printf("\n-------------------- Cuhre test --------------------\n");
 
   Cuhre(NDIM, NCOMP, Integrand, USERDATA, NVEC,

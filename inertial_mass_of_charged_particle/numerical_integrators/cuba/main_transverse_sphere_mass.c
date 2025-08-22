@@ -61,10 +61,6 @@ int main() {
     /* Параметры задачи */
     ProblemParams params;
 
-    double v_c = 0.1;
-    
-    /* Скорость и ускорение источника */
-    
     params.R0 = 1;    /* радиус сферы (половина R1) */
     params.rho0 = 100;  /* расстояние от оси орбитального движения */
     params.c = 1;      /* скорость света в м/с */
@@ -72,7 +68,8 @@ int main() {
     params.omega = sqrt(5 * params.R0 * Sq(params.c) / (3*2*4* Cb(params.rho0)));  /* угловая скорость орбитального движения*/
     // m = 4/3
     //params.omega = sqrt(3*5 * params.R0 * Sq(params.c) / (4*3*2*4* Cb(params.rho0)));  /* угловая скорость орбитального движения*/
-
+    double v_c = params.omega * params.rho0 / params.c;  /* отношение скорости заряда к скорости света*/
+    printf("v_c = %f\n", v_c);
 #if 1
   printf("-------------------- Vegas test --------------------\n");
 
@@ -123,7 +120,7 @@ int main() {
       (double)integral[comp], (double)error[comp], (double)prob[comp]);
 #endif
 
-#if 1
+#if 0
   printf("\n-------------------- Cuhre test --------------------\n");
 
   Cuhre(NDIM, NCOMP, Integrand, USERDATA, NVEC,

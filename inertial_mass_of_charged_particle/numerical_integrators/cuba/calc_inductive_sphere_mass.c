@@ -27,7 +27,7 @@ static inline cubareal Iq (cubareal r0, cubareal q, cubareal theta_a, cubareal r
     // и малых ускорений $a{{r}_{0}}\ll {{c}^{2}}$
     // и при игнорировании запаздывания
     cubareal R = R0 (ra, theta_a, rq, theta_q, phi_q);
-    return rho_q(r0, q) * Sq(rq) * sin(theta_q) / R;
+    return - rho_q(r0, q) * Sq(rq) * sin(theta_q) / R;
 }
 
 // интегрирование по координатам точек наблюдения

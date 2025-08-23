@@ -24,6 +24,53 @@ typedef struct {
     double c;      /* Скорость света */
 } ProblemParams;
 
+static void computing_electric_field(
+    double R,
+    double R_rho, double R_phi, double R_z,
+    double v_phi,
+    double a_rho,
+    double c,
+    double *E1_rho, double *E1_phi, double *E1_z,
+    double *E2_rho, double *E2_phi, double *E2_z,
+    double *E_total_rho, double *E_total_phi, double *E_total_z
+)
+{
+    /* Радиус Лиенара-Вихерта (учет запаздывания) */
+    double R_star = R - (R_phi * v_phi) / c;
+
+    /* Защита от деления на ноль */
+    if (R_star < 1e-10 || R < 1e-10) {
+        *E1_rho = *E1_phi = *E1_z = 0.0;
+        *E2_rho = *E2_phi = *E2_z = 0.0;
+        *E_total_rho = *E_total_phi = *E_total_z = 0.0;
+        return;
+    }
+
+    /* Вычисление градиентного поля E1 */
+    double common_factor1 = 1.0 / pow(R_star, 2);
+    double velocity_factor1 = /*1.0 +*/ (R_rho * a_rho) / pow(c, 2) /*- pow(v_q / params->c, 2)*/;
+
+    *E1_rho = common_factor1 * (R_rho * velocity_factor1 / R_star);
+    *E1_phi = common_factor1 * (R_phi * velocity_factor1 / R_star/* - v_phi / c*/);
+    *E1_z   = common_factor1 * (R_z   * velocity_factor1 / R_star);
+
+    /* Вычисление поля самоиндукции E2 */
+    double common_factor2   = 1.0 / pow(R_star, 2);
+    double velocity_factor2 = (R / R_star) * (pow(v_phi / c, 2) - (R_rho * a_rho) / pow(c, 2) - 1.0) + 1.0;
+
+    *E2_rho = common_factor2 * (- a_rho * R / pow(c, 2));
+    *E2_phi = common_factor2 * (v_phi / c * velocity_factor2);
+    *E2_z = 0;
+
+    /* Вычисление суммарного поля */
+    double common_factor = 1.0 / pow(R_star, 3);
+    double velocity_factor = /*1.0 +*/ (R_rho * a_rho) / pow(c, 2) /*- pow(v_q, 2) / pow(params->c, 2)*/;
+
+    *E_total_rho = common_factor * ((R_rho                  ) * velocity_factor - (a_rho * R_star * R) / pow(c, 2));
+    *E_total_phi = common_factor * ((R_phi - (R * v_phi) / c) * velocity_factor);
+    *E_total_z   = common_factor * ((R_z                    ) * velocity_factor);
+}
+
 /* Функция для вычисления электрического поля по Лиенару-Вихерту */
 static void compute_electric_field(
     double ra, double theta_a, double psi_a,
@@ -58,9 +105,19 @@ static void compute_electric_field(
     double R = sqrt(pow(R_rho, 2) + pow(R_phi, 2) + pow(R_z, 2));
 
     /* Скорость и ускорение источника */
-    double v_q = rho_q * params->omega;
-    double a_q = -rho_q * pow(params->omega, 2);
+    double v_phi = rho_q * params->omega;
+    double a_rho = -rho_q * pow(params->omega, 2);
 
+#if 1
+    computing_electric_field(R, R_rho, R_phi, R_z,
+        v_phi,
+        a_rho,
+        params->c,
+        E1_rho, E1_phi, E1_z,
+        E2_rho, E2_phi, E2_z,
+        E_total_rho, E_total_phi, E_total_z
+    );
+#else
     /* Радиус Лиенара-Вихерта */
     double R_star = R - (R_phi * v_q) / params->c;
 
@@ -100,6 +157,7 @@ static void compute_electric_field(
     *E_total_rho = common_factor * (R_rho * velocity_factor - (a_q * R_star * R) / pow(params->c, 2));
     *E_total_phi = common_factor * ((R_phi - (R * v_q) / params->c) * velocity_factor);
     *E_total_z = common_factor * (R_z * velocity_factor);
+#endif
 }
 
 /* Функция для вычисления электрического поля по Лиенару-Вихерту */
@@ -140,6 +198,16 @@ static void compute_electric_field_z_rho(
     double v_phi = rho_q * params->omega;
     double a_rho = -rho_q * pow(params->omega, 2);
 
+#if 1
+    computing_electric_field(R, R_rho, R_phi, R_z,
+        v_phi,
+        a_rho,
+        params->c,
+        E1_rho, E1_phi, E1_z,
+        E2_rho, E2_phi, E2_z,
+        E_total_rho, E_total_phi, E_total_z
+    );
+#else
     /* Радиус Лиенара-Вихерта */
     double R_star = R - (R_phi * v_phi) / params->c;
 
@@ -174,6 +242,7 @@ static void compute_electric_field_z_rho(
     *E_total_rho = common_factor * ((R_rho                          ) * velocity_factor - (a_rho * R_star * R) / pow(params->c, 2));
     *E_total_phi = common_factor * ((R_phi - (R * v_phi) / params->c) * velocity_factor);
     *E_total_z   = common_factor * ((R_z                            ) * velocity_factor);
+#endif
 }
 
 /* Функция для вычисления электрического поля с учетом запаздывания */
@@ -213,6 +282,16 @@ static void compute_electric_field_with_delay(
     double v_phi = rho_q * params->omega;
     double a_rho = -rho_q * pow(params->omega, 2);
 
+#if 1
+    computing_electric_field(R, R_rho, R_phi, R_z,
+        v_phi,
+        a_rho,
+        params->c,
+        E1_rho, E1_phi, E1_z,
+        E2_rho, E2_phi, E2_z,
+        E_total_rho, E_total_phi, E_total_z
+    );
+#else
     /* Радиус Лиенара-Вихерта (учет запаздывания) */
     double R_star = R - (R_phi * v_phi) / params->c;
 
@@ -247,6 +326,7 @@ static void compute_electric_field_with_delay(
     *E_total_rho = common_factor * (R_rho * velocity_factor - (a_rho * R_star * R) / pow(params->c, 2));
     *E_total_phi = common_factor * ((R_phi - (R * v_phi) / params->c) * velocity_factor);
     *E_total_z = common_factor * (R_z * velocity_factor);
+#endif
 }
 
 

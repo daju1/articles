@@ -23,6 +23,55 @@ typedef struct {
     double c;  /* Скорость света */
 } ProblemParams;
 
+static void computing_electric_field(
+    double R,
+    double R_x, double R_y, double R_z,
+    double v_x, double v_y, double v_z,
+    double a_x, double a_y, double a_z,
+    double c,
+    double *E1_x, double *E1_y, double *E1_z,
+    double *E2_x, double *E2_y, double *E2_z,
+    double *E_total_x, double *E_total_y, double *E_total_z
+)
+{
+    /* Радиус Лиенара-Вихерта (учет запаздывания) */
+    double R_star = R - (R_z * v_z) / c;
+
+    /* Защита от деления на ноль */
+    if (R_star < 1e-10 || R < 1e-10) {
+        *E1_x = *E1_y = *E1_z = 0.0;
+        *E2_x = *E2_y = *E2_z = 0.0;
+        *E_total_x = *E_total_y = *E_total_z = 0.0;
+        return;
+    }
+
+    /* Вычисление градиентного поля E1 */
+    double common_factor1 = 1.0 / pow(R_star, 2);
+    double velocity_factor1 = /*1.0 +*/ (R_z * a_z) / pow(c, 2) /*- pow(v, 2) / pow(c, 2)*/;
+    /* Вычисление градиентного поля E1 (только слагаемое с ускорением) */
+    double acceleration_factor = (R_z * a_z) / pow(c, 2);
+
+    *E1_x = common_factor1 * (R_x * velocity_factor1 / R_star);
+    *E1_y = common_factor1 * (R_y * velocity_factor1 / R_star);
+    *E1_z = common_factor1 * (R_z * velocity_factor1 / R_star /*- v / c*/);
+
+    /* Вычисление поля самоиндукции E2 */
+    double common_factor2 = 1.0 / pow(R_star, 2);
+    double velocity_factor2 = (R / R_star) * (pow(v_z, 2) / pow(c, 2) - (R_z * a_z) / pow(c, 2) - 1.0) + 1.0;
+
+    *E2_x = common_factor2 * (-a_x * R / pow(c, 2));
+    *E2_y = common_factor2 * (-a_y * R / pow(c, 2));
+    *E2_z = common_factor2 * (/*v / c * velocity_factor2*/ - a_z * R / pow(c, 2));
+
+    /* Вычисление суммарного поля по полной формуле Лиенара-Вихерта */
+    double common_factor = 1.0 / pow(R_star, 3);
+    double velocity_factor = /*1.0*/ + (R_z * a_z) / pow(c, 2)/* - pow(v_z, 2) / pow(c, 2)*/;
+
+    *E_total_x = common_factor * (R_x * velocity_factor - (a_x * R_star * R) / pow(c, 2));
+    *E_total_y = common_factor * (R_y * velocity_factor - (a_y * R_star * R) / pow(c, 2));
+    *E_total_z = common_factor * (R_z * velocity_factor - (a_z * R_star * R) / pow(c, 2));
+}
+
 /* Функция для вычисления электрического поля по Лиенару-Вихерту для продольного случая */
 static void compute_electric_field(
     double ra, double theta_a, double phi_a,
@@ -36,17 +85,17 @@ static void compute_electric_field(
     double x_a = ra * sin(theta_a) * cos(phi_a);
     double y_a = ra * sin(theta_a) * sin(phi_a);
     double z_a = ra * cos(theta_a);
-    
+
     double x_q = rq * sin(theta_q) * cos(phi_q);
     double y_q = rq * sin(theta_q) * sin(phi_q);
     double z_q = rq * cos(theta_q);
-    
+
     /* Вектор от источника к наблюдателю */
     double R_x = x_a - x_q;
     double R_y = y_a - y_q;
     double R_z = z_a - z_q;
     double R = sqrt(R_x*R_x + R_y*R_y + R_z*R_z);
-    
+
     /* Скорость и ускорение источника */
     double v_x = 0;
     double v_y = 0;
@@ -55,10 +104,21 @@ static void compute_electric_field(
     double a_x = 0;
     double a_y = 0;
     double a_z = params->a;  /* Продольное ускорение */
-    
+#if 1
+    computing_electric_field(
+        R,
+        R_x, R_y, R_z,
+        v_x, v_y, v_z,
+        a_x, a_y, a_z,
+        params->c,
+        E1_x, E1_y, E1_z,
+        E2_x, E2_y, E2_z,
+        E_total_x, E_total_y, E_total_z
+    );
+#else
     /* Радиус Лиенара-Вихерта (учет запаздывания) */
     double R_star = R - (R_z * v_z) / params->c;
-    
+
     /* Защита от деления на ноль */
     if (R_star < 1e-10 || R < 1e-10) {
         *E1_x = *E1_y = *E1_z = 0.0;
@@ -92,6 +152,7 @@ static void compute_electric_field(
     *E_total_x = common_factor * (R_x * velocity_factor - (a_x * R_star * R) / pow(params->c, 2));
     *E_total_y = common_factor * (R_y * velocity_factor - (a_y * R_star * R) / pow(params->c, 2));
     *E_total_z = common_factor * (R_z * velocity_factor - (a_z * R_star * R) / pow(params->c, 2));
+#endif
 }
 // the charge distribution
 static inline cubareal rho_q (cubareal r0, cubareal q)
@@ -292,7 +353,7 @@ int Integrand(const int *ndim, const cubareal xx[],
     */
 
     double U = 3.0 / (5.0 * params->R0);     /* Энергия электрического поля */
-    double m_perp_B = 2 * U;                 /* Вариация типа В (теоретическое значение) */
+    double m_perp_B = /*2 **/ U;                 /* Вариация типа В (теоретическое значение) */
 
     /* Вычисление продольной массы */
     //double m_perp_A = integral[0] / Gamma / (params.c * params.c);  /* Вариация типа А */

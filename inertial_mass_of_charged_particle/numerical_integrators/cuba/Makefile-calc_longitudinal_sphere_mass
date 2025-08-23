@@ -1,0 +1,9 @@
+include ./cuba.mk
+
+OBJ = calc_longitudinal_sphere_mass.o main_longitudinal_sphere_mass.o
+
+all : calc_longitudinal_sphere_mass
+
+calc_longitudinal_sphere_mass: $(OBJ)
+	$(info OBJ=$(OBJ))
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS) -lm

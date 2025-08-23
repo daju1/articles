@@ -95,7 +95,7 @@ static void compute_electric_field(
 
     /* Основная формула Лиенара-Вихерта */
     double common_factor = 1.0 / pow(R_star, 3);
-    double velocity_factor = 1.0 + (R_rho * a_q) / pow(params->c, 2) - pow(v_q, 2) / pow(params->c, 2);
+    double velocity_factor = /*1.0 +*/ (R_rho * a_q) / pow(params->c, 2) /*- pow(v_q, 2) / pow(params->c, 2)*/;
 
     *E_total_rho = common_factor * (R_rho * velocity_factor - (a_q * R_star * R) / pow(params->c, 2));
     *E_total_phi = common_factor * ((R_phi - (R * v_q) / params->c) * velocity_factor);
@@ -137,11 +137,11 @@ static void compute_electric_field_z_rho(
     double R = sqrt(pow(R_rho, 2) + pow(R_phi, 2) + pow(R_z, 2));
 
     /* Скорость и ускорение источника */
-    double v_q = rho_q * params->omega;
-    double a_q = -rho_q * pow(params->omega, 2);
+    double v_phi = rho_q * params->omega;
+    double a_rho = -rho_q * pow(params->omega, 2);
 
     /* Радиус Лиенара-Вихерта */
-    double R_star = R - (R_phi * v_q) / params->c;
+    double R_star = R - (R_phi * v_phi) / params->c;
 
     /* Защита от деления на ноль */
     if (R_star < 1e-10 || R < 1e-10) {
@@ -153,27 +153,27 @@ static void compute_electric_field_z_rho(
 
     /* Вычисление градиентного поля E1 */
     double common_factor1 = 1.0 / pow(R_star, 2);
-    double velocity_factor1 = /*1.0 +*/ (R_rho * a_q) / pow(params->c, 2) /*- pow(v_q / params->c, 2)*/;
+    double velocity_factor1 = /*1.0 +*/ (R_rho * a_rho) / pow(params->c, 2) /*- pow(v_q / params->c, 2)*/;
 
     *E1_rho = common_factor1 * (R_rho * velocity_factor1 / R_star);
-    *E1_phi = common_factor1 * (R_phi * velocity_factor1 / R_star - v_q / params->c);
+    *E1_phi = common_factor1 * (R_phi * velocity_factor1 / R_star - v_phi / params->c);
     *E1_z   = common_factor1 * (R_z   * velocity_factor1 / R_star);
 
     /* Вычисление поля самоиндукции E2 */
     double common_factor2 = 1.0 / pow(R_star, 2);
-    double velocity_factor2 = (R / R_star) * (pow(v_q / params->c, 2) - (R_rho * a_q) / pow(params->c, 2) - 1.0) + 1.0;
+    double velocity_factor2 = (R / R_star) * (pow(v_phi / params->c, 2) - (R_rho * a_rho) / pow(params->c, 2) - 1.0) + 1.0;
 
-    *E2_rho = common_factor2 * (- a_q * R / pow(params->c, 2));
-    *E2_phi = common_factor2 * (v_q / params->c * velocity_factor2);
+    *E2_rho = common_factor2 * (- a_rho * R / pow(params->c, 2));
+    *E2_phi = common_factor2 * (v_phi / params->c * velocity_factor2);
     *E2_z = 0;
 
     /* Вычисление суммарного поля */
     double common_factor = 1.0 / pow(R_star, 3);
-    double velocity_factor = /*1.0 +*/ (R_rho * a_q) / pow(params->c, 2) /*- pow(v_q, 2) / pow(params->c, 2)*/;
+    double velocity_factor = /*1.0 +*/ (R_rho * a_rho) / pow(params->c, 2) /*- pow(v_q, 2) / pow(params->c, 2)*/;
 
-    *E_total_rho = common_factor * (R_rho * velocity_factor - (a_q * R_star * R) / pow(params->c, 2));
-    *E_total_phi = common_factor * ((R_phi - (R * v_q) / params->c) * velocity_factor);
-    *E_total_z = common_factor * (R_z * velocity_factor);
+    *E_total_rho = common_factor * ((R_rho                          ) * velocity_factor - (a_rho * R_star * R) / pow(params->c, 2));
+    *E_total_phi = common_factor * ((R_phi - (R * v_phi) / params->c) * velocity_factor);
+    *E_total_z   = common_factor * ((R_z                            ) * velocity_factor);
 }
 
 /* Функция для вычисления электрического поля с учетом запаздывания */
@@ -210,11 +210,11 @@ static void compute_electric_field_with_delay(
     double R = sqrt(pow(R_rho, 2) + pow(R_phi, 2) + pow(R_z, 2));
 
     /* Скорость и ускорение источника */
-    double v_q = rho_q * params->omega;
-    double a_q = -rho_q * pow(params->omega, 2);
+    double v_phi = rho_q * params->omega;
+    double a_rho = -rho_q * pow(params->omega, 2);
 
     /* Радиус Лиенара-Вихерта (учет запаздывания) */
-    double R_star = R - (R_phi * v_q) / params->c;
+    double R_star = R - (R_phi * v_phi) / params->c;
 
     /* Защита от деления на ноль */
     if (R_star < 1e-10 || R < 1e-10) {
@@ -226,26 +226,26 @@ static void compute_electric_field_with_delay(
 
     /* Вычисление градиентного поля E1 */
     double common_factor1 = 1.0 / pow(R_star, 2);
-    double velocity_factor1 = /*1.0 +*/ (R_rho * a_q) / pow(params->c, 2) /*- pow(v_q / params->c, 2)*/;
+    double velocity_factor1 = /*1.0 +*/ (R_rho * a_rho) / pow(params->c, 2) /*- pow(v_q / params->c, 2)*/;
 
     *E1_rho = common_factor1 * (R_rho * velocity_factor1 / R_star);
-    *E1_phi = common_factor1 * (R_phi * velocity_factor1 / R_star - v_q / params->c);
+    *E1_phi = common_factor1 * (R_phi * velocity_factor1 / R_star - v_phi / params->c);
     *E1_z   = common_factor1 * (R_z   * velocity_factor1 / R_star);
 
     /* Вычисление поля самоиндукции E2 */
     double common_factor2 = 1.0 / pow(R_star, 2);
-    double velocity_factor2 = (R / R_star) * (pow(v_q / params->c, 2) - (R_rho * a_q) / pow(params->c, 2) - 1.0) + 1.0;
+    double velocity_factor2 = (R / R_star) * (pow(v_phi / params->c, 2) - (R_rho * a_rho) / pow(params->c, 2) - 1.0) + 1.0;
 
-    *E2_rho = common_factor2 * (- a_q * R / pow(params->c, 2));
-    *E2_phi = common_factor2 * (v_q / params->c * velocity_factor2);
+    *E2_rho = common_factor2 * (- a_rho * R / pow(params->c, 2));
+    *E2_phi = common_factor2 * (v_phi / params->c * velocity_factor2);
     *E2_z = 0;
 
     /* Вычисление суммарного поля */
     double common_factor = 1.0 / pow(R_star, 3);
-    double velocity_factor = /*1.0 +*/ (R_rho * a_q) / pow(params->c, 2) /*- pow(v_q, 2) / pow(params->c, 2)*/;
+    double velocity_factor = /*1.0 +*/ (R_rho * a_rho) / pow(params->c, 2) /*- pow(v_q, 2) / pow(params->c, 2)*/;
 
-    *E_total_rho = common_factor * (R_rho * velocity_factor - (a_q * R_star * R) / pow(params->c, 2));
-    *E_total_phi = common_factor * ((R_phi - (R * v_q) / params->c) * velocity_factor);
+    *E_total_rho = common_factor * (R_rho * velocity_factor - (a_rho * R_star * R) / pow(params->c, 2));
+    *E_total_phi = common_factor * ((R_phi - (R * v_phi) / params->c) * velocity_factor);
     *E_total_z = common_factor * (R_z * velocity_factor);
 }
 
@@ -287,7 +287,7 @@ static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_
     double E2_rho, E2_phi, E2_z;
     double E_rho,  E_phi,  E_z;
 
-    compute_electric_field_with_delay(ra, theta_a, psi_a,
+    compute_electric_field_z_rho/*with_delay*/(ra, theta_a, psi_a,
                            rq, theta_q, psi_q, params,
                           &E1_rho, &E1_phi, &E1_z,
                           &E2_rho, &E2_phi, &E2_z,

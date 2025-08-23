@@ -6,4 +6,4 @@ all : calc_inductive_sphere_mass
 
 calc_inductive_sphere_mass: $(OBJ)
 	$(info OBJ=$(OBJ))
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS) -lm

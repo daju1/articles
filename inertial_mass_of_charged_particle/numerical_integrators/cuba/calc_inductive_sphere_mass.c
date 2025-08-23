@@ -1,7 +1,5 @@
 /*
-	demo-c.c
-		test program for the Cuba library
-		last modified 13 Mar 15 th
+	calc_inductive_sphere_mass.c
 */
 
 #include "calc_RO.h"

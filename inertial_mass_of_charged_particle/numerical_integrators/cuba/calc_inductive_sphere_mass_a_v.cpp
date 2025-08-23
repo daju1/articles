@@ -1,8 +1,6 @@
 
 /*
-	demo-c.c
-		test program for the Cuba library
-		last modified 13 Mar 15 th
+	calc_inductive_sphere_mass_a_v.cpp
 */
 
 
@@ -262,7 +260,7 @@ static inline cubareal rho_q (cubareal r0, cubareal q)
 static inline cubareal Iq (cubareal r0, cubareal q, cubareal theta_a, cubareal ra, cubareal phi_q, cubareal theta_q, cubareal rq, cubareal c, cubareal a)
 {
     cubareal R = R_a (ra, theta_a, rq, theta_q, phi_q, c, a);
-    return (rho_q(r0, q) * Sq(rq) * sin(theta_q) / R).m_x;
+    return - (rho_q(r0, q) * Sq(rq) * sin(theta_q) / R).m_x;
 }
 
 // интегрирование по координатам точек наблюдения

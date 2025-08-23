@@ -1,7 +1,5 @@
 /*
-	demo-c.c
-		test program for the Cuba library
-		last modified 13 Mar 15 th
+	calc_gradient_sphere_mass.c
 */
 
 #include "calc_RO.h"
@@ -28,7 +26,7 @@ static inline cubareal Iq (cubareal r0, cubareal q, cubareal theta_a, cubareal r
     // и малых ускорений $a{{r}_{0}}\ll {{c}^{2}}$
     // и при игнорировании запаздывания
     cubareal R = R0 (ra, theta_a, rq, theta_q, phi_q);
-    return za_minus_zq * za_minus_zq * rho_q(r0, q) * Sq(rq) * sin(theta_q) / Cb(R);
+    return - za_minus_zq * za_minus_zq * rho_q(r0, q) * Sq(rq) * sin(theta_q) / Cb(R);
 }
 
 // интегрирование по координатам точек наблюдения

@@ -1,7 +1,5 @@
 /*
-	demo-c.c
-		test program for the Cuba library
-		last modified 13 Mar 15 th
+	calc_inductive_sphere_mass_fermi.c
 */
 
 #include "calc_RO.h"
@@ -29,7 +27,7 @@ static inline cubareal Iq (cubareal r0, cubareal q, cubareal theta_a, cubareal r
     // В приближении малых скоростей ${}^{v}/{}_{c}\ll 1$
     // но при учете запаздывания
     cubareal R = R_a (ra, theta_a, rq, theta_q, phi_q, c, a);
-    return rho_q(r0, q) * Sq(rq) * sin(theta_q) / R * (1.0 + za_minus_zq * a / Sq(c));
+    return - rho_q(r0, q) * Sq(rq) * sin(theta_q) / R * (1.0 + za_minus_zq * a / Sq(c));
 }
 
 // интегрирование по координатам точек наблюдения

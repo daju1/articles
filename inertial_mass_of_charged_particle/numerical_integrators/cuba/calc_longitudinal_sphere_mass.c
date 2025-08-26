@@ -16,12 +16,64 @@
 
 
 /* Структура для передачи параметров задачи */
+#if 0
 typedef struct {
     double R0; /* Радиус сферы */
     double v;  /* Продольная скорость */
     double a;  /* продольное ускорение */
     double c;  /* Скорость света */
 } ProblemParams;
+#else
+typedef struct {
+    double R0;    /* Радиус сферы */
+    double v0;    /* Начальная продольная скорость */
+    double a;     /* Продольное ускорение */
+    double c;     /* Скорость света */
+    double t;     /* Текущее время */
+    double t0;    /* Начальное время */
+    int use_delay;
+    int use_lorentz_factor;
+    int use_fermi_factor;
+} ProblemParams;
+#endif
+
+/* Функция для вычисления фактора Лоренца */
+static inline double lorentz_factor(double v, double c) {
+    double beta = v / c;
+    return 1.0 / sqrt(1.0 - beta * beta);
+}
+
+
+
+/* Функция для вычисления координат источника с учетом Лоренц-сокращения */
+static void get_source_position_lorentz(
+    double t_prime,
+    double t0,
+    double rq,
+    double theta_q,
+    double phi_q,
+    double v0,
+    double a,
+    double c,
+    double *x_q,
+    double *y_q,
+    double *z_q
+) {
+    double gamma = lorentz_factor(v0 + a * (t_prime - t0), c);
+
+    /* В продольном случае движение происходит только вдоль оси z */
+    double z_q0 = rq * cos(theta_q);
+    double z_q_prime = z_q0 + v0 * (t_prime - t0) + 0.5 * a * pow(t_prime - t0, 2);
+
+    /* Учет Лоренц-сокращения в направлении движения */
+    double z_q_lorentz = z_q_prime;
+    double x_q_lorentz = rq * sin(theta_q) * cos(phi_q);
+    double y_q_lorentz = rq * sin(theta_q) * sin(phi_q);
+
+    *x_q = x_q_lorentz;
+    *y_q = y_q_lorentz;
+    *z_q = z_q_lorentz;
+}
 
 static void computing_electric_field(
     double R,
@@ -71,7 +123,7 @@ static void computing_electric_field(
     *E_total_y = common_factor * (R_y * velocity_factor - (a_y * R_star * R) / pow(c, 2));
     *E_total_z = common_factor * (R_z * velocity_factor - (a_z * R_star * R) / pow(c, 2));
 }
-
+#if 1
 /* Функция для вычисления электрического поля по Лиенару-Вихерту для продольного случая */
 static void compute_electric_field(
     double ra, double theta_a, double phi_a,
@@ -99,7 +151,8 @@ static void compute_electric_field(
     /* Скорость и ускорение источника */
     double v_x = 0;
     double v_y = 0;
-    double v_z = params->v;  /* Продольная скорость */
+    // double v_z = params->v;  /* Продольная скорость */
+    double v_z = params->v0 + params->a * (params->t - params->t0);
 
     double a_x = 0;
     double a_y = 0;
@@ -154,10 +207,161 @@ static void compute_electric_field(
     *E_total_z = common_factor * (R_z * velocity_factor - (a_z * R_star * R) / pow(params->c, 2));
 #endif
 }
+#endif
+/* Функция для вычисления координат источника в запаздывающий момент времени */
+static void get_source_position(
+    double t_prime,
+    double t0,
+    double rq,
+    double theta_q,
+    double phi_q,
+    double v0,
+    double a,
+    double *x_q,
+    double *y_q,
+    double *z_q
+) {
+    /* В продольном случае движение происходит только вдоль оси z */
+    double z_q0 = rq * cos(theta_q);
+    double z_q_prime = z_q0 + v0 * (t_prime - t0) + 0.5 * a * pow(t_prime - t0, 2);
+
+    *x_q = rq * sin(theta_q) * cos(phi_q);
+    *y_q = rq * sin(theta_q) * sin(phi_q);
+    *z_q = z_q_prime;
+}
+
+/* Функция для вычисления запаздывающего времени методом итераций */
+static double compute_retarded_time(
+    double t,
+    double t0,
+    double ra,
+    double theta_a,
+    double phi_a,
+    double rq,
+    double theta_q,
+    double phi_q,
+    double v0,
+    double a,
+    double c,
+    int max_iter,
+    double tolerance
+) {
+    /* Начальное приближение */
+    double x_a = ra * sin(theta_a) * cos(phi_a);
+    double y_a = ra * sin(theta_a) * sin(phi_a);
+    double z_a = ra * cos(theta_a);
+
+    double x_q, y_q, z_q;
+    get_source_position(t, t0, rq, theta_q, phi_q, v0, a, &x_q, &y_q, &z_q);
+
+    double R = sqrt(pow(x_a - x_q, 2) + pow(y_a - y_q, 2) + pow(z_a - z_q, 2));
+    double t_prime = t - R / c;
+
+    /* Итерационное решение */
+    for (int i = 0; i < max_iter; i++) {
+        get_source_position(t_prime, t0, rq, theta_q, phi_q, v0, a, &x_q, &y_q, &z_q);
+
+        R = sqrt(pow(x_a - x_q, 2) + pow(y_a - y_q, 2) + pow(z_a - z_q, 2));
+        double t_prime_new = t - R / c;
+
+        if (fabs(t_prime_new - t_prime) < tolerance) {
+            return t_prime_new;
+        }
+
+        t_prime = t_prime_new;
+    }
+
+    /* Если не сошлось за max_iter итераций, возвращаем последнее значение */
+    return t_prime;
+}
+
+/* Функция для вычисления электрического поля с учетом запаздывания */
+static void compute_electric_field_with_delay(
+    double ra,
+    double theta_a,
+    double phi_a,
+    double rq,
+    double theta_q,
+    double phi_q,
+    const ProblemParams *params,
+    double *E1_x, double *E1_y, double *E1_z,
+    double *E2_x, double *E2_y, double *E2_z,
+    double *E_total_x,
+    double *E_total_y,
+    double *E_total_z
+) {
+    /* Преобразование в декартовы координаты для точки наблюдения */
+    double x_a = ra * sin(theta_a) * cos(phi_a);
+    double y_a = ra * sin(theta_a) * sin(phi_a);
+    double z_a = ra * cos(theta_a);
+
+    /* Вычисление запаздывающего времени */
+    double t_prime = compute_retarded_time(
+        params->t, params->t0, ra, theta_a, phi_a, rq, theta_q, phi_q,
+        params->v0, params->a, params->c, 100, 1e-10
+    );
+
+    /* Получение координат источника в запаздывающий момент времени */
+    double x_q, y_q, z_q;
+    get_source_position(t_prime, params->t0, rq, theta_q, phi_q,
+                       params->v0, params->a, &x_q, &y_q, &z_q);
+
+    /* Вектор от источника к наблюдателю */
+    double R_x = x_a - x_q;
+    double R_y = y_a - y_q;
+    double R_z = z_a - z_q;
+    double R = sqrt(R_x*R_x + R_y*R_y + R_z*R_z);
+
+    /* Скорость источника в запаздывающий момент времени */
+    double v_z = params->v0 + params->a * (t_prime - params->t0);
+    double v_x = 0.0;
+    double v_y = 0.0;
+
+    /* Ускорение источника (предполагаем постоянное) */
+    double a_x = 0.0;
+    double a_y = 0.0;
+    double a_z = params->a;
+#if 1
+    computing_electric_field(
+        R,
+        R_x, R_y, R_z,
+        v_x, v_y, v_z,
+        a_x, a_y, a_z,
+        params->c,
+        E1_x, E1_y, E1_z,
+        E2_x, E2_y, E2_z,
+        E_total_x, E_total_y, E_total_z);
+#else
+    /* Радиус Лиенара-Вихерта */
+    double R_star = R - (R_z * v_z) / params->c;
+
+    /* Защита от деления на ноль */
+    if (R_star < 1e-10 || R < 1e-10) {
+        *E_total_x = *E_total_y = *E_total_z = 0.0;
+        return;
+    }
+
+    /* Вычисление суммарного поля по полной формуле Лиенара-Вихерта */
+    double common_factor = 1.0 / pow(R_star, 3);
+    double velocity_factor = 1.0 + (R_z * a_z) / pow(params->c, 2) - pow(v_z, 2) / pow(params->c, 2);
+
+    *E_total_x = common_factor * (R_x * velocity_factor - (a_x * R_star * R) / pow(params->c, 2));
+    *E_total_y = common_factor * (R_y * velocity_factor - (a_y * R_star * R) / pow(params->c, 2));
+    *E_total_z = common_factor * (R_z * velocity_factor - (a_z * R_star * R) / pow(params->c, 2));
+#endif
+}
+
+
 // the charge distribution
 static inline cubareal rho_q (cubareal r0, cubareal q)
 {
     return 3 * (q) / (4*M_PI*(r0)*(r0)*(r0));
+}
+
+/* Функция для вычисления плотности заряда с учетом Лоренц-сокращения */
+static inline double rho_q_lorentz(double r0, double q, double v, double c) {
+    double gamma = lorentz_factor(v, c);
+    return gamma * 3.0 * q / (4.0 * M_PI * pow(r0, 3));
 }
 
 // интегрирование по координатам заряда источника потенциала
@@ -189,11 +393,21 @@ static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_
     double E2_x, E2_y, E2_z;
     double E_x,  E_y,  E_z;
 
-    compute_electric_field/*with_delay*/(ra, theta_a, psi_a,
-                           rq, theta_q, psi_q, params,
-                          &E1_x, &E1_y, &E1_z,
-                          &E2_x, &E2_y, &E2_z,
-                          &E_x,  &E_y,  &E_z);
+    if (params->use_delay)
+    {
+        compute_electric_field_with_delay(ra, theta_a, psi_a,
+            rq, theta_q, psi_q, params,
+            &E1_x, &E1_y, &E1_z,
+            &E2_x, &E2_y, &E2_z,
+            &E_x,  &E_y,  &E_z);
+    }
+    else {
+        compute_electric_field(ra, theta_a, psi_a,
+            rq, theta_q, psi_q, params,
+            &E1_x, &E1_y, &E1_z,
+            &E2_x, &E2_y, &E2_z,
+            &E_x,  &E_y,  &E_z);
+    }
 
 //printf("R = %e _R = %e\n", R, _R);
 //printf("1/R = %e E_x = %e\n", 1.0/R, E_x);

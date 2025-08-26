@@ -46,13 +46,26 @@ int Integrand(const int *ndim, const cubareal xx[],
 #define KEY 0
 
 /* Структура для передачи параметров задачи */
+#if 0
 typedef struct {
     double R0; /* Радиус сферы */
     double v;  /* Продольная скорость */
     double a;  /* продольное ускорение */
     double c;  /* Скорость света */
 } ProblemParams;
-
+#else
+typedef struct {
+    double R0;    /* Радиус сферы */
+    double v0;    /* Начальная продольная скорость */
+    double a;     /* Продольное ускорение */
+    double c;     /* Скорость света */
+    double t;     /* Текущее время */
+    double t0;    /* Начальное время */
+    int use_delay;
+    int use_lorentz_factor;
+    int use_fermi_factor;
+} ProblemParams;
+#endif
 
 int main() {
   int comp, nregions, neval, fail;
@@ -62,10 +75,23 @@ int main() {
     ProblemParams params;
 
     params.R0 = 1;      /* радиус сферы (половина R1) */
+    #if 0
     params.v = 0.001;  /* Продольная скорость */
+    #else
+    params.v0 = 0;
+    params.t0 = 0;
+    params.t = 0;
+    #endif
     params.c = 1;       /* скорость света в м/с */
     params.a = 0.00000001;  /* продольное ускорение*/
-    double v_c =  params.v / params.c;  /* отношение скорости заряда к скорости света*/
+
+    params.use_delay          = 0;
+    params.use_lorentz_factor = 0;
+    params.use_fermi_factor   = 0;
+
+    double v_z = params.v0 + params.a * (params.t - params.t0);
+
+    double v_c =  v_z / params.c;  /* отношение скорости заряда к скорости света*/
 #if 1
   printf("-------------------- Vegas test --------------------\n");
 

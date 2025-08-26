@@ -43,38 +43,6 @@ static inline double lorentz_factor(double v, double c) {
     return 1.0 / sqrt(1.0 - beta * beta);
 }
 
-
-
-/* Функция для вычисления координат источника с учетом Лоренц-сокращения */
-static void get_source_position_lorentz(
-    double t_prime,
-    double t0,
-    double rq,
-    double theta_q,
-    double phi_q,
-    double v0,
-    double a,
-    double c,
-    double *x_q,
-    double *y_q,
-    double *z_q
-) {
-    double gamma = lorentz_factor(v0 + a * (t_prime - t0), c);
-
-    /* В продольном случае движение происходит только вдоль оси z */
-    double z_q0 = rq * cos(theta_q);
-    double z_q_prime = z_q0 + v0 * (t_prime - t0) + 0.5 * a * pow(t_prime - t0, 2);
-
-    /* Учет Лоренц-сокращения в направлении движения */
-    double z_q_lorentz = z_q_prime;
-    double x_q_lorentz = rq * sin(theta_q) * cos(phi_q);
-    double y_q_lorentz = rq * sin(theta_q) * sin(phi_q);
-
-    *x_q = x_q_lorentz;
-    *y_q = y_q_lorentz;
-    *z_q = z_q_lorentz;
-}
-
 static void computing_electric_field(
     double R,
     double R_x, double R_y, double R_z,
@@ -209,6 +177,7 @@ static void compute_electric_field(
 }
 #endif
 /* Функция для вычисления координат источника в запаздывающий момент времени */
+/* Функция для вычисления координат источника с учетом Лоренц-сокращения */
 static void get_source_position(
     double t_prime,
     double t0,
@@ -217,21 +186,41 @@ static void get_source_position(
     double phi_q,
     double v0,
     double a,
+    double c,
     double *x_q,
     double *y_q,
-    double *z_q
+    double *z_q,
+    int use_lorentz_factor
 ) {
-    /* В продольном случае движение происходит только вдоль оси z */
+    /* Вычисляем мгновенную скорость в запаздывающий момент времени */
+    double v = v0 + a * (t_prime - t0);
+
+    /* Положение центра сферы в запаздывающий момент времени */
+    double z_center = v0 * (t_prime - t0) + 0.5 * a * pow(t_prime - t0, 2);
+
+    /* Координаты точки на сфере в системе покоя сферы */
     double z_q0 = rq * cos(theta_q);
-    double z_q_prime = z_q0 + v0 * (t_prime - t0) + 0.5 * a * pow(t_prime - t0, 2);
 
     *x_q = rq * sin(theta_q) * cos(phi_q);
     *y_q = rq * sin(theta_q) * sin(phi_q);
-    *z_q = z_q_prime;
+    if (use_lorentz_factor)
+    {
+        /* Учет Лоренц-сокращения в направлении движения */
+        double gamma = lorentz_factor(v, c);
+        /* Учет Лоренц-сокращения: в системе отсчета наблюдателя
+        сфера сжата вдоль направления движения (ось z) */
+        double z_q_rel = z_q0 / gamma;
+        *z_q = z_center + z_q_rel;
+    }
+    else
+    {
+        /* В продольном случае движение происходит только вдоль оси z */
+        *z_q = z_center + z_q0;
+    }
 }
 
-/* Функция для вычисления запаздывающего времени методом итераций */
-static double compute_retarded_time(
+/* Улучшенное вычисление запаздывающего времени с методом Ньютона */
+static double compute_retarded_time_newton(
     double t,
     double t0,
     double ra,
@@ -244,34 +233,50 @@ static double compute_retarded_time(
     double a,
     double c,
     int max_iter,
-    double tolerance
+    double tolerance,
+    int use_lorentz_factor
 ) {
-    /* Начальное приближение */
+    /* Начальное приближение методом итераций */
     double x_a = ra * sin(theta_a) * cos(phi_a);
     double y_a = ra * sin(theta_a) * sin(phi_a);
     double z_a = ra * cos(theta_a);
 
     double x_q, y_q, z_q;
-    get_source_position(t, t0, rq, theta_q, phi_q, v0, a, &x_q, &y_q, &z_q);
+    get_source_position(t, t0, rq, theta_q, phi_q, v0, a, c, &x_q, &y_q, &z_q, use_lorentz_factor);
 
     double R = sqrt(pow(x_a - x_q, 2) + pow(y_a - y_q, 2) + pow(z_a - z_q, 2));
     double t_prime = t - R / c;
 
     /* Итерационное решение */
     for (int i = 0; i < max_iter; i++) {
-        get_source_position(t_prime, t0, rq, theta_q, phi_q, v0, a, &x_q, &y_q, &z_q);
+        get_source_position(t_prime, t0, rq, theta_q, phi_q, v0, a, c, &x_q, &y_q, &z_q, use_lorentz_factor);
 
         R = sqrt(pow(x_a - x_q, 2) + pow(y_a - y_q, 2) + pow(z_a - z_q, 2));
         double t_prime_new = t - R / c;
 
         if (fabs(t_prime_new - t_prime) < tolerance) {
-            return t_prime_new;
+            t_prime = t_prime_new;
+            break;
         }
 
         t_prime = t_prime_new;
     }
 
-    /* Если не сошлось за max_iter итераций, возвращаем последнее значение */
+    /* Уточнение методом Ньютона */
+//    double epsilon = 1e-8;
+//    for (int i = 0; i < 5; i++) {  /* Достаточно 3-5 итераций Ньютона */
+//        double R_val = compute_R(t_prime, t, t0, ra, theta_a, phi_a, rq, theta_q, phi_q, v0, a, c);
+//        double f = t_prime - t + R_val / c;
+//        double df_dt = 1.0 + compute_dR_dt_prime(t_prime, t0, ra, theta_a, phi_a, rq, theta_q, phi_q, v0, a, c, epsilon) / c;
+
+//        double delta = -f / df_dt;
+//        t_prime += delta;
+
+//        if (fabs(delta) < tolerance) {
+//            break;
+//        }
+//    }
+
     return t_prime;
 }
 
@@ -296,15 +301,15 @@ static void compute_electric_field_with_delay(
     double z_a = ra * cos(theta_a);
 
     /* Вычисление запаздывающего времени */
-    double t_prime = compute_retarded_time(
+    double t_prime = compute_retarded_time_newton(
         params->t, params->t0, ra, theta_a, phi_a, rq, theta_q, phi_q,
-        params->v0, params->a, params->c, 100, 1e-10
+        params->v0, params->a, params->c, 100, 1e-10, params->use_lorentz_factor
     );
 
     /* Получение координат источника в запаздывающий момент времени */
     double x_q, y_q, z_q;
     get_source_position(t_prime, params->t0, rq, theta_q, phi_q,
-                       params->v0, params->a, &x_q, &y_q, &z_q);
+                       params->v0, params->a, params->c, &x_q, &y_q, &z_q, params->use_lorentz_factor);
 
     /* Вектор от источника к наблюдателю */
     double R_x = x_a - x_q;

@@ -570,10 +570,6 @@ static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_
  )
 {
     cubareal r0 = params->R0;
-    // В приближении малых скоростей ${}^{v}/{}_{c}\ll 1$
-    // и малых ускорений $a{{r}_{0}}\ll {{c}^{2}}$
-    // и при игнорировании запаздывания
-    //cubareal R = R0 (ra, theta_a, rq, theta_q, psi_q);
 
     /* Вычисление электрического поля */
     double E1_x, E1_y, E1_z;
@@ -595,9 +591,6 @@ static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_
             &E2_x, &E2_y, &E2_z,
             &E_x,  &E_y,  &E_z);
     }
-
-//printf("R = %e _R = %e\n", R, _R);
-//printf("1/R = %e E_x = %e\n", 1.0/R, E_x);
 
     double rho;
     if (params->use_lorentz_factor)
@@ -621,9 +614,6 @@ static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_
     *int_q_E_x  = k_q * E_x;
     *int_q_E_y  = k_q * E_y;
     *int_q_E_z  = k_q * E_z;
-
-    //return mean_a * rho_q(r0, q) * Sq(rq) * sin(theta_q) / R / pow(params->c, 2);
-    //return rho_q(r0, q) * Sq(rq) * sin(theta_q) / R;
 }
 
 // интегрирование по координатам точек наблюдения

@@ -33,6 +33,7 @@ typedef struct {
     double t0;    /* Начальное время */
     int use_delay;
     int use_lorentz_factor;
+    int use_lorentz_general_factor;
     int use_fermi_factor;
 } ProblemParams;
 #endif
@@ -176,6 +177,35 @@ static void compute_electric_field(
 #endif
 }
 #endif
+
+
+/* Функция для вычисления собственного времени */
+static double compute_proper_time(
+    double t,
+    double t0,
+    double v0,
+    double a,
+    double c
+) {
+    /* Для постоянного ускорения собственное время вычисляется как */
+    double v = v0 + a * (t - t0);
+    double beta = v / c;
+    double gamma = lorentz_factor(v, c);
+
+    /* Интеграл от 1/gamma(t) по координатному времени */
+    double proper_time = 0.0;
+    if (fabs(a) > 1e-10) {
+        /* Для постоянного ускорения */
+        proper_time = (c / a) * log((a * (t - t0) + v0 + sqrt(pow(c, 2) + pow(v0, 2))) / 
+                          (v0 + sqrt(pow(c, 2) + pow(v0, 2))));
+    } else {
+        /* Для случая a = 0 (постоянная скорость) */
+        proper_time = (t - t0) / gamma;
+    }
+
+    return proper_time;
+}
+
 /* Функция для вычисления координат источника в запаздывающий момент времени */
 /* Функция для вычисления координат источника с учетом Лоренц-сокращения */
 static void get_source_position(
@@ -190,7 +220,8 @@ static void get_source_position(
     double *x_q,
     double *y_q,
     double *z_q,
-    int use_lorentz_factor
+    int use_lorentz_factor,
+    int use_lorentz_general_factor
 ) {
     /* Вычисляем мгновенную скорость в запаздывающий момент времени */
     double v = v0 + a * (t_prime - t0);
@@ -211,6 +242,13 @@ static void get_source_position(
         сфера сжата вдоль направления движения (ось z) */
         double z_q_rel = z_q0 / gamma;
         *z_q = z_center + z_q_rel;
+
+        if (use_lorentz_general_factor) {
+            /* Учет дополнительного искривления из-за ускорения */
+            double proper_time = compute_proper_time(t_prime, t0, v0, a, c);
+            double acceleration_correction = 0.5 * a * pow(proper_time, 2) / gamma;
+            *z_q += acceleration_correction;
+        }
     }
     else
     {
@@ -234,7 +272,8 @@ static double compute_retarded_time_newton(
     double c,
     int max_iter,
     double tolerance,
-    int use_lorentz_factor
+    int use_lorentz_factor,
+    int use_lorentz_general_factor
 ) {
     /* Начальное приближение методом итераций */
     double x_a = ra * sin(theta_a) * cos(phi_a);
@@ -242,14 +281,16 @@ static double compute_retarded_time_newton(
     double z_a = ra * cos(theta_a);
 
     double x_q, y_q, z_q;
-    get_source_position(t, t0, rq, theta_q, phi_q, v0, a, c, &x_q, &y_q, &z_q, use_lorentz_factor);
+    get_source_position(t, t0, rq, theta_q, phi_q, v0, a, c, &x_q, &y_q, &z_q,
+        use_lorentz_factor, use_lorentz_general_factor);
 
     double R = sqrt(pow(x_a - x_q, 2) + pow(y_a - y_q, 2) + pow(z_a - z_q, 2));
     double t_prime = t - R / c;
 
     /* Итерационное решение */
     for (int i = 0; i < max_iter; i++) {
-        get_source_position(t_prime, t0, rq, theta_q, phi_q, v0, a, c, &x_q, &y_q, &z_q, use_lorentz_factor);
+        get_source_position(t_prime, t0, rq, theta_q, phi_q, v0, a, c, &x_q, &y_q, &z_q,
+            use_lorentz_factor, use_lorentz_general_factor);
 
         R = sqrt(pow(x_a - x_q, 2) + pow(y_a - y_q, 2) + pow(z_a - z_q, 2));
         double t_prime_new = t - R / c;
@@ -303,13 +344,15 @@ static void compute_electric_field_with_delay(
     /* Вычисление запаздывающего времени */
     double t_prime = compute_retarded_time_newton(
         params->t, params->t0, ra, theta_a, phi_a, rq, theta_q, phi_q,
-        params->v0, params->a, params->c, 100, 1e-10, params->use_lorentz_factor
+        params->v0, params->a, params->c, 100, 1e-10,
+        params->use_lorentz_factor, params->use_lorentz_general_factor
     );
 
     /* Получение координат источника в запаздывающий момент времени */
     double x_q, y_q, z_q;
     get_source_position(t_prime, params->t0, rq, theta_q, phi_q,
-                       params->v0, params->a, params->c, &x_q, &y_q, &z_q, params->use_lorentz_factor);
+                       params->v0, params->a, params->c, &x_q, &y_q, &z_q,
+                       params->use_lorentz_factor, params->use_lorentz_general_factor);
 
     /* Вектор от источника к наблюдателю */
     double R_x = x_a - x_q;

@@ -63,6 +63,7 @@ typedef struct {
     double t0;    /* Начальное время */
     int use_delay;
     int use_lorentz_factor;
+    int use_lorentz_general_factor;
     int use_fermi_factor;
 } ProblemParams;
 #endif
@@ -87,6 +88,7 @@ int main() {
 
     params.use_delay          = 0;
     params.use_lorentz_factor = 0;
+    params.use_lorentz_general_factor = 0;
     params.use_fermi_factor   = 0;
 
     double v_z = params.v0 + params.a * (params.t - params.t0);

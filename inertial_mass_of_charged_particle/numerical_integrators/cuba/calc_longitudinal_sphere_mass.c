@@ -140,11 +140,13 @@ static void computing_electric_field(
         v_z,
         c);
 
+    double v2_c2 = (Sq(v_x) + Sq(v_y) + Sq(v_z) ) / Sq(c);
+
     /* Вычисление градиентного поля E1 */
     double common_factor1 = 1.0 / pow(R_star, 2);
-    double velocity_factor1 = /*1.0 +*/ (R_z * a_z) / pow(c, 2) /*- pow(v, 2) / pow(c, 2)*/;
+    double velocity_factor1 = /*1.0 +*/ (R_z * a_z) / Sq(c) - v2_c2;
     /* Вычисление градиентного поля E1 (только слагаемое с ускорением) */
-    double acceleration_factor = (R_z * a_z) / pow(c, 2);
+    double acceleration_factor = (R_z * a_z) / Sq(c);
 
     if (use_fermi_general_factor)
     {
@@ -155,13 +157,13 @@ static void computing_electric_field(
         common_factor1 *= fermi_factor;
     }
 
-    *E1_x = common_factor1 * (R_x * velocity_factor1 / R_star);
-    *E1_y = common_factor1 * (R_y * velocity_factor1 / R_star);
-    *E1_z = common_factor1 * (R_z * velocity_factor1 / R_star /*- v / c*/);
+    *E1_x = common_factor1 * (R_x * velocity_factor1 / R_star - v_x / c);
+    *E1_y = common_factor1 * (R_y * velocity_factor1 / R_star - v_y / c);
+    *E1_z = common_factor1 * (R_z * velocity_factor1 / R_star - v_z / c);
 
     /* Вычисление поля самоиндукции E2 */
     double common_factor2 = 1.0 / pow(R_star, 2);
-    double velocity_factor2 = (R / R_star) * (pow(v_z, 2) / pow(c, 2) - (R_z * a_z) / pow(c, 2) - 1.0) + 1.0;
+    double velocity_factor2 = (R / R_star) * (v2_c2 - (R_z * a_z) / Sq(c) - 1.0) + 1.0;
 
     if (use_fermi_general_factor)
     {
@@ -172,13 +174,13 @@ static void computing_electric_field(
         common_factor2 *= fermi_factor;
     }
 
-    *E2_x = common_factor2 * (-a_x * R / pow(c, 2));
-    *E2_y = common_factor2 * (-a_y * R / pow(c, 2));
-    *E2_z = common_factor2 * (/*v / c * velocity_factor2*/ - a_z * R / pow(c, 2));
+    *E2_x = common_factor2 * (v_x / c * velocity_factor2 - a_x * R / Sq(c));
+    *E2_y = common_factor2 * (v_y / c * velocity_factor2 - a_y * R / Sq(c));
+    *E2_z = common_factor2 * (v_z / c * velocity_factor2 - a_z * R / Sq(c));
 
     /* Вычисление суммарного поля по полной формуле Лиенара-Вихерта */
     double common_factor = 1.0 / pow(R_star, 3);
-    double velocity_factor = /*1.0*/ + (R_z * a_z) / pow(c, 2)/* - pow(v_z, 2) / pow(c, 2)*/;
+    double velocity_factor = /*1.0*/ + (R_z * a_z) / Sq(c) - v2_c2;
 
     if (use_fermi_general_factor)
     {
@@ -189,9 +191,9 @@ static void computing_electric_field(
         common_factor *= fermi_factor;
     }
 
-    *E_total_x = common_factor * (R_x * velocity_factor - (a_x * R_star * R) / pow(c, 2));
-    *E_total_y = common_factor * (R_y * velocity_factor - (a_y * R_star * R) / pow(c, 2));
-    *E_total_z = common_factor * (R_z * velocity_factor - (a_z * R_star * R) / pow(c, 2));
+    *E_total_x = common_factor * (R_x * velocity_factor - (a_x * R_star * R) / Sq(c));
+    *E_total_y = common_factor * (R_y * velocity_factor - (a_y * R_star * R) / Sq(c));
+    *E_total_z = common_factor * (R_z * velocity_factor - (a_z * R_star * R) / Sq(c));
 }
 
 /* Функция для вычисления электрического поля по Лиенару-Вихерту для продольного случая */

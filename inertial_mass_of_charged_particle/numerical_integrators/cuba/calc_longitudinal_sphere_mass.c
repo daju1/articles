@@ -1,29 +1,22 @@
 /*
-	demo-c.c
-		test program for the Cuba library
-		last modified 13 Mar 15 th
+	calc_longitudinal_sphere_mass.c
 */
-
-#include "calc_RO.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
-#ifdef INCLUDE_CUBA_H
 #include "cuba.h"
-#endif
 
+static inline cubareal Sq(cubareal x) {
+  return x*x;
+}
+
+static inline cubareal Cb(cubareal x) {
+  return x*x*x;
+}
 
 /* Структура для передачи параметров задачи */
-#if 0
-typedef struct {
-    double R0; /* Радиус сферы */
-    double v;  /* Продольная скорость */
-    double a;  /* продольное ускорение */
-    double c;  /* Скорость света */
-} ProblemParams;
-#else
 typedef struct {
     double R0;    /* Радиус сферы */
     double v0;    /* Начальная продольная скорость */
@@ -36,7 +29,6 @@ typedef struct {
     int use_lorentz_general_factor;
     int use_fermi_factor;
 } ProblemParams;
-#endif
 
 /* Функция для вычисления фактора Лоренца */
 static inline double lorentz_factor(double v, double c) {
@@ -105,7 +97,6 @@ static double fermi_correction_general(
     /* Поправка Ферми в общем случае */
     return 0.5 * (1.0 - R_dot_a / (c * c));
 }
-
 
 static void computing_electric_field(
     double t,           /* текущее время */
@@ -188,6 +179,7 @@ static void computing_electric_field(
     *E_total_y = common_factor * (R_y * velocity_factor - (a_y * R_star * R) / pow(c, 2));
     *E_total_z = common_factor * (R_z * velocity_factor - (a_z * R_star * R) / pow(c, 2));
 }
+
 #if 1
 /* Функция для вычисления электрического поля по Лиенару-Вихерту для продольного случая */
 static void compute_electric_field(
@@ -619,7 +611,7 @@ static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_
     // В приближении малых скоростей ${}^{v}/{}_{c}\ll 1$
     // и малых ускорений $a{{r}_{0}}\ll {{c}^{2}}$
     // и при игнорировании запаздывания
-    cubareal R = R0 (ra, theta_a, rq, theta_q, psi_q);
+    //cubareal R = R0 (ra, theta_a, rq, theta_q, psi_q);
 
     /* Вычисление электрического поля */
     double E1_x, E1_y, E1_z;
@@ -859,3 +851,85 @@ int Integrand(const int *ndim, const cubareal xx[],
     return 0;
 }
 
+
+/*********************************************************************/
+#if 0
+#define NDIM 6
+#else
+#define NDIM 5
+#endif
+#define NCOMP 9
+#define USERDATA NULL
+#define NVEC 1
+#define EPSREL 1e-3
+#define EPSABS 1e-12
+#define VERBOSE 2
+#define LAST 4
+#define SEED 0
+#define MINEVAL 0
+#define MAXEVAL 500000
+
+#define NSTART 1000
+#define NINCREASE 500
+#define NBATCH 1000
+#define GRIDNO 0
+#define STATEFILE NULL
+#define SPIN NULL
+
+#define NNEW 1000
+#define NMIN 2
+#define FLATNESS 25.
+
+#define KEY1 47
+#define KEY2 1
+#define KEY3 1
+#define MAXPASS 5
+#define BORDER 0.
+#define MAXCHISQ 10.
+#define MINDEVIATION .25
+#define NGIVEN 0
+#define LDXGIVEN NDIM
+#define NEXTRA 0
+
+int integrate(
+    double R0,    /* Радиус сферы */
+    double v0,    /* Начальная продольная скорость */
+    double a,     /* Продольное ускорение */
+    double c,     /* Скорость света */
+    double t,     /* Текущее время */
+    double t0,    /* Начальное время */
+    int use_delay,
+    int use_lorentz_factor,
+    int use_lorentz_general_factor,
+    int use_fermi_factor,
+    cubareal* integral, cubareal* error, cubareal* prob)
+{
+    int comp, nregions, neval, fail;
+
+    /* Параметры задачи */
+    ProblemParams params;
+
+    params.R0 = R0;      /* радиус сферы (половина R1) */
+
+    params.v0 = v0;
+    params.t0 = t0;
+    params.t = t;
+
+    params.c = c;       /* скорость света в м/с */
+    params.a = a;  /* продольное ускорение*/
+
+    params.use_delay                  = use_delay;
+    params.use_lorentz_factor         = use_lorentz_factor;
+    params.use_lorentz_general_factor = use_lorentz_general_factor;
+    params.use_fermi_factor           = use_fermi_factor;
+
+    double v_z = params.v0 + params.a * (params.t - params.t0);
+
+    double v_c =  v_z / params.c;  /* отношение скорости заряда к скорости света*/
+
+    Vegas(NDIM, NCOMP, Integrand, &params, NVEC,
+        EPSREL, EPSABS, VERBOSE, SEED,
+        MINEVAL, MAXEVAL, NSTART, NINCREASE, NBATCH,
+        GRIDNO, STATEFILE, SPIN,
+        &neval, &fail, integral, error, prob);
+}

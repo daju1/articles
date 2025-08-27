@@ -44,7 +44,72 @@ static inline double lorentz_factor(double v, double c) {
     return 1.0 / sqrt(1.0 - beta * beta);
 }
 
+/* Функция для вычисления поправки Ферми */
+static double fermi_correction(
+    double R_x,
+    double R_y,
+    double R_z,
+    double a_x,
+    double a_y,
+    double a_z,
+    double c
+) {
+    /* Скалярное произведение R · a */
+    double R_dot_a = R_x * a_x + R_y * a_y + R_z * a_z;
+
+    /* Поправка Ферми */
+    return 0.5 * (1.0 + R_dot_a / (c * c));
+}
+
+/* Функция для вычисления поправки Ферми в общем релятивистском случае */
+static double fermi_correction_general(
+    double t,           /* текущее время */
+    double t_prime,     /* запаздывающее время */
+    double R_x,
+    double R_y,
+    double R_z,
+    double a_x,
+    double a_y,
+    double a_z,
+    double v_x,
+    double v_y,
+    double v_z,
+    double c
+) {
+    /* Вычисляем скорость */
+    double v = sqrt(v_x*v_x + v_y*v_y + v_z*v_z);
+
+    /* Фактор Лоренца */
+    double gamma = 1.0 / sqrt(1.0 - v*v/(c*c));
+    double gamma2 = gamma * gamma;
+    double gamma4 = gamma2 * gamma2;
+
+    /* Скалярное произведение v·a */
+    double v_dot_a = v_x*a_x + v_y*a_y + v_z*a_z;
+
+    /* 4-радиус-вектор */
+    double R0 = c * (t - t_prime);  /* временная компонента */
+    double R1 = R_x;
+    double R2 = R_y;
+    double R3 = R_z;
+
+    /* 4-ускорение */
+    double a0 = gamma4 * v_dot_a / c;
+    double a1 = gamma2 * a_x + gamma4 * v_dot_a * v_x / (c*c);
+    double a2 = gamma2 * a_y + gamma4 * v_dot_a * v_y / (c*c);
+    double a3 = gamma2 * a_z + gamma4 * v_dot_a * v_z / (c*c);
+
+    /* 4-скалярное произведение */
+    double R_dot_a = R0 * a0 - R1 * a1 - R2 * a2 - R3 * a3;
+
+    /* Поправка Ферми в общем случае */
+    return 0.5 * (1.0 - R_dot_a / (c * c));
+}
+
+
 static void computing_electric_field(
+    double t,           /* текущее время */
+    double t_prime,     /* запаздывающее время */
     double R,
     double R_x, double R_y, double R_z,
     double v_x, double v_y, double v_z,
@@ -52,7 +117,8 @@ static void computing_electric_field(
     double c,
     double *E1_x, double *E1_y, double *E1_z,
     double *E2_x, double *E2_y, double *E2_z,
-    double *E_total_x, double *E_total_y, double *E_total_z
+    double *E_total_x, double *E_total_y, double *E_total_z,
+    int use_fermi_factor
 )
 {
     /* Радиус Лиенара-Вихерта (учет запаздывания) */
@@ -66,11 +132,31 @@ static void computing_electric_field(
         return;
     }
 
+    //double fermi_factor = fermi_correction(R_x, R_y, R_z, a_x, a_y, a_z, c);
+    double fermi_factor = fermi_correction_general(
+        t,           /* текущее время */
+        t_prime,     /* запаздывающее время */
+        R_x,
+        R_y,
+        R_z,
+        a_x,
+        a_y,
+        a_z,
+        v_x,
+        v_y,
+        v_z,
+        c);
+
     /* Вычисление градиентного поля E1 */
     double common_factor1 = 1.0 / pow(R_star, 2);
     double velocity_factor1 = /*1.0 +*/ (R_z * a_z) / pow(c, 2) /*- pow(v, 2) / pow(c, 2)*/;
     /* Вычисление градиентного поля E1 (только слагаемое с ускорением) */
     double acceleration_factor = (R_z * a_z) / pow(c, 2);
+
+    if (use_fermi_factor)
+    {
+        common_factor1 *= fermi_factor;
+    }
 
     *E1_x = common_factor1 * (R_x * velocity_factor1 / R_star);
     *E1_y = common_factor1 * (R_y * velocity_factor1 / R_star);
@@ -80,6 +166,11 @@ static void computing_electric_field(
     double common_factor2 = 1.0 / pow(R_star, 2);
     double velocity_factor2 = (R / R_star) * (pow(v_z, 2) / pow(c, 2) - (R_z * a_z) / pow(c, 2) - 1.0) + 1.0;
 
+    if (use_fermi_factor)
+    {
+        common_factor2 *= fermi_factor;
+    }
+
     *E2_x = common_factor2 * (-a_x * R / pow(c, 2));
     *E2_y = common_factor2 * (-a_y * R / pow(c, 2));
     *E2_z = common_factor2 * (/*v / c * velocity_factor2*/ - a_z * R / pow(c, 2));
@@ -87,6 +178,11 @@ static void computing_electric_field(
     /* Вычисление суммарного поля по полной формуле Лиенара-Вихерта */
     double common_factor = 1.0 / pow(R_star, 3);
     double velocity_factor = /*1.0*/ + (R_z * a_z) / pow(c, 2)/* - pow(v_z, 2) / pow(c, 2)*/;
+
+    if (use_fermi_factor)
+    {
+        common_factor *= fermi_factor;
+    }
 
     *E_total_x = common_factor * (R_x * velocity_factor - (a_x * R_star * R) / pow(c, 2));
     *E_total_y = common_factor * (R_y * velocity_factor - (a_y * R_star * R) / pow(c, 2));
@@ -128,6 +224,8 @@ static void compute_electric_field(
     double a_z = params->a;  /* Продольное ускорение */
 #if 1
     computing_electric_field(
+        0,           /* текущее время */
+        0,     /* запаздывающее время */
         R,
         R_x, R_y, R_z,
         v_x, v_y, v_z,
@@ -135,7 +233,8 @@ static void compute_electric_field(
         params->c,
         E1_x, E1_y, E1_z,
         E2_x, E2_y, E2_z,
-        E_total_x, E_total_y, E_total_z
+        E_total_x, E_total_y, E_total_z,
+        params->use_fermi_factor
     );
 #else
     /* Радиус Лиенара-Вихерта (учет запаздывания) */
@@ -454,6 +553,8 @@ static void compute_electric_field_with_delay(
     double a_z = params->a;
 #if 1
     computing_electric_field(
+        params->t,           /* текущее время */
+        t_prime,     /* запаздывающее время */
         R,
         R_x, R_y, R_z,
         v_x, v_y, v_z,
@@ -461,7 +562,8 @@ static void compute_electric_field_with_delay(
         params->c,
         E1_x, E1_y, E1_z,
         E2_x, E2_y, E2_z,
-        E_total_x, E_total_y, E_total_z);
+        E_total_x, E_total_y, E_total_z,
+        params->use_fermi_factor);
 #else
     /* Радиус Лиенара-Вихерта */
     double R_star = R - (R_z * v_z) / params->c;

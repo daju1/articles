@@ -227,7 +227,7 @@ static void compute_electric_field(
     double a_x = 0;
     double a_y = 0;
     double a_z = params->a;  /* Продольное ускорение */
-#if 1
+
     computing_electric_field(
         0,           /* текущее время */
         0,     /* запаздывающее время */
@@ -242,44 +242,6 @@ static void compute_electric_field(
         params->use_fermi_factor,
         params->use_fermi_general_factor
     );
-#else
-    /* Радиус Лиенара-Вихерта (учет запаздывания) */
-    double R_star = R - (R_z * v_z) / params->c;
-
-    /* Защита от деления на ноль */
-    if (R_star < 1e-10 || R < 1e-10) {
-        *E1_x = *E1_y = *E1_z = 0.0;
-        *E2_x = *E2_y = *E2_z = 0.0;
-        *E_total_x = *E_total_y = *E_total_z = 0.0;
-        return;
-    }
-
-    /* Вычисление градиентного поля E1 */
-    double common_factor1 = 1.0 / pow(R_star, 2);
-    double velocity_factor1 = /*1.0 +*/ (R_z * a_z) / pow(params->c, 2) /*- pow(v, 2) / pow(params->c, 2)*/;
-    /* Вычисление градиентного поля E1 (только слагаемое с ускорением) */
-    double acceleration_factor = (R_z * a_z) / pow(params->c, 2);
-
-    *E1_x = common_factor1 * (R_x * velocity_factor1 / R_star);
-    *E1_y = common_factor1 * (R_y * velocity_factor1 / R_star);
-    *E1_z = common_factor1 * (R_z * velocity_factor1 / R_star /*- v / params->c*/);
-
-    /* Вычисление поля самоиндукции E2 */
-    double common_factor2 = 1.0 / pow(R_star, 2);
-    double velocity_factor2 = (R / R_star) * (pow(v_z, 2) / pow(params->c, 2) - (R_z * a_z) / pow(params->c, 2) - 1.0) + 1.0;
-
-    *E2_x = common_factor2 * (-a_x * R / pow(params->c, 2));
-    *E2_y = common_factor2 * (-a_y * R / pow(params->c, 2));
-    *E2_z = common_factor2 * (/*v / params->c * velocity_factor2*/ - a_z * R / pow(params->c, 2));
-
-    /* Вычисление суммарного поля по полной формуле Лиенара-Вихерта */
-    double common_factor = 1.0 / pow(R_star, 3);
-    double velocity_factor = /*1.0*/ + (R_z * a_z) / pow(params->c, 2)/* - pow(v_z, 2) / pow(params->c, 2)*/;
-
-    *E_total_x = common_factor * (R_x * velocity_factor - (a_x * R_star * R) / pow(params->c, 2));
-    *E_total_y = common_factor * (R_y * velocity_factor - (a_y * R_star * R) / pow(params->c, 2));
-    *E_total_z = common_factor * (R_z * velocity_factor - (a_z * R_star * R) / pow(params->c, 2));
-#endif
 }
 
 /* Функция для вычисления собственного времени */
@@ -561,7 +523,7 @@ static void compute_electric_field_with_delay(
     double a_x = 0.0;
     double a_y = 0.0;
     double a_z = params->a;
-#if 1
+
     computing_electric_field(
         params->t,           /* текущее время */
         t_prime,     /* запаздывающее время */
@@ -575,26 +537,7 @@ static void compute_electric_field_with_delay(
         E_total_x, E_total_y, E_total_z,
         params->use_fermi_factor,
         params->use_lorentz_general_factor);
-#else
-    /* Радиус Лиенара-Вихерта */
-    double R_star = R - (R_z * v_z) / params->c;
-
-    /* Защита от деления на ноль */
-    if (R_star < 1e-10 || R < 1e-10) {
-        *E_total_x = *E_total_y = *E_total_z = 0.0;
-        return;
-    }
-
-    /* Вычисление суммарного поля по полной формуле Лиенара-Вихерта */
-    double common_factor = 1.0 / pow(R_star, 3);
-    double velocity_factor = 1.0 + (R_z * a_z) / pow(params->c, 2) - pow(v_z, 2) / pow(params->c, 2);
-
-    *E_total_x = common_factor * (R_x * velocity_factor - (a_x * R_star * R) / pow(params->c, 2));
-    *E_total_y = common_factor * (R_y * velocity_factor - (a_y * R_star * R) / pow(params->c, 2));
-    *E_total_z = common_factor * (R_z * velocity_factor - (a_z * R_star * R) / pow(params->c, 2));
-#endif
 }
-
 
 // the charge distribution
 static inline cubareal rho_q (cubareal r0, cubareal q)

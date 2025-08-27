@@ -180,7 +180,8 @@ static void computing_electric_field(
 
     /* Вычисление суммарного поля по полной формуле Лиенара-Вихерта */
     double common_factor = 1.0 / pow(R_star, 3);
-    double velocity_factor = /*1.0*/ + (R_z * a_z) / Sq(c) - v2_c2;
+    double velocity_factor_ = /*1.0*/ + (R_z * a_z) / Sq(c) - v2_c2;
+    double velocity_factor = 1.0 + (R_z * a_z) / Sq(c) - v2_c2;
 
     if (use_fermi_general_factor)
     {
@@ -191,9 +192,9 @@ static void computing_electric_field(
         common_factor *= fermi_factor;
     }
 
-    *E_total_x = common_factor * (R_x * velocity_factor - (a_x * R_star * R) / Sq(c));
-    *E_total_y = common_factor * (R_y * velocity_factor - (a_y * R_star * R) / Sq(c));
-    *E_total_z = common_factor * (R_z * velocity_factor - (a_z * R_star * R) / Sq(c));
+    *E_total_x = common_factor * ((R_x * velocity_factor_ - R*v_x/c * velocity_factor)  - (a_x * R_star * R) / Sq(c));
+    *E_total_y = common_factor * ((R_y * velocity_factor_ - R*v_y/c * velocity_factor)  - (a_y * R_star * R) / Sq(c));
+    *E_total_z = common_factor * ((R_z * velocity_factor_ - R*v_z/c * velocity_factor)  - (a_z * R_star * R) / Sq(c));
 }
 
 /* Функция для вычисления электрического поля по Лиенару-Вихерту для продольного случая */

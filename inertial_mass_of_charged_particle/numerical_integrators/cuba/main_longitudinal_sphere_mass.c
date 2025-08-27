@@ -19,6 +19,7 @@ int integrate(
     int use_lorentz_factor,
     int use_lorentz_general_factor,
     int use_fermi_factor,
+    int use_fermi_general_factor,
     cubareal* integral, cubareal* error, cubareal* prob);
 
 int main() {
@@ -36,6 +37,7 @@ int main() {
   int use_lorentz_factor         = 0;
   int use_lorentz_general_factor = 0;
   int use_fermi_factor           = 0;
+  int use_fermi_general_factor   = 0;
 
   /* Параметры задачи */
   integrate(
@@ -49,6 +51,7 @@ int main() {
     use_lorentz_factor,
     use_lorentz_general_factor,
     use_fermi_factor,
+    use_fermi_general_factor,
     integral, error, prob);
 
   double v_z = v0 + a * (t - t0);
@@ -63,4 +66,3 @@ int main() {
 
   return 0;
 }
-

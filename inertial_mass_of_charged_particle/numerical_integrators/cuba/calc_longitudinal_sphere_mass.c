@@ -28,6 +28,7 @@ typedef struct {
     int use_lorentz_factor;
     int use_lorentz_general_factor;
     int use_fermi_factor;
+    int use_fermi_general_factor;
 } ProblemParams;
 
 /* Функция для вычисления фактора Лоренца */
@@ -109,7 +110,8 @@ static void computing_electric_field(
     double *E1_x, double *E1_y, double *E1_z,
     double *E2_x, double *E2_y, double *E2_z,
     double *E_total_x, double *E_total_y, double *E_total_z,
-    int use_fermi_factor
+    int use_fermi_factor,
+    int use_fermi_general_factor
 )
 {
     /* Радиус Лиенара-Вихерта (учет запаздывания) */
@@ -123,8 +125,8 @@ static void computing_electric_field(
         return;
     }
 
-    //double fermi_factor = fermi_correction(R_x, R_y, R_z, a_x, a_y, a_z, c);
-    double fermi_factor = fermi_correction_general(
+    double fermi_factor = fermi_correction(R_x, R_y, R_z, a_x, a_y, a_z, c);
+    double fermi_factor_general = fermi_correction_general(
         t,           /* текущее время */
         t_prime,     /* запаздывающее время */
         R_x,
@@ -144,7 +146,11 @@ static void computing_electric_field(
     /* Вычисление градиентного поля E1 (только слагаемое с ускорением) */
     double acceleration_factor = (R_z * a_z) / pow(c, 2);
 
-    if (use_fermi_factor)
+    if (use_fermi_general_factor)
+    {
+        common_factor1 *= fermi_factor_general;
+    }
+    else if (use_fermi_factor)
     {
         common_factor1 *= fermi_factor;
     }
@@ -157,7 +163,11 @@ static void computing_electric_field(
     double common_factor2 = 1.0 / pow(R_star, 2);
     double velocity_factor2 = (R / R_star) * (pow(v_z, 2) / pow(c, 2) - (R_z * a_z) / pow(c, 2) - 1.0) + 1.0;
 
-    if (use_fermi_factor)
+    if (use_fermi_general_factor)
+    {
+        common_factor2 *= fermi_factor_general;
+    }
+    else if (use_fermi_factor)
     {
         common_factor2 *= fermi_factor;
     }
@@ -170,7 +180,11 @@ static void computing_electric_field(
     double common_factor = 1.0 / pow(R_star, 3);
     double velocity_factor = /*1.0*/ + (R_z * a_z) / pow(c, 2)/* - pow(v_z, 2) / pow(c, 2)*/;
 
-    if (use_fermi_factor)
+    if (use_fermi_general_factor)
+    {
+        common_factor *= fermi_factor_general;
+    }
+    else if (use_fermi_factor)
     {
         common_factor *= fermi_factor;
     }
@@ -180,7 +194,6 @@ static void computing_electric_field(
     *E_total_z = common_factor * (R_z * velocity_factor - (a_z * R_star * R) / pow(c, 2));
 }
 
-#if 1
 /* Функция для вычисления электрического поля по Лиенару-Вихерту для продольного случая */
 static void compute_electric_field(
     double ra, double theta_a, double phi_a,
@@ -226,7 +239,8 @@ static void compute_electric_field(
         E1_x, E1_y, E1_z,
         E2_x, E2_y, E2_z,
         E_total_x, E_total_y, E_total_z,
-        params->use_fermi_factor
+        params->use_fermi_factor,
+        params->use_fermi_general_factor
     );
 #else
     /* Радиус Лиенара-Вихерта (учет запаздывания) */
@@ -267,8 +281,6 @@ static void compute_electric_field(
     *E_total_z = common_factor * (R_z * velocity_factor - (a_z * R_star * R) / pow(params->c, 2));
 #endif
 }
-#endif
-
 
 /* Функция для вычисления собственного времени */
 static double compute_proper_time(
@@ -325,7 +337,7 @@ static void get_source_position(
 
     *x_q = rq * sin(theta_q) * cos(phi_q);
     *y_q = rq * sin(theta_q) * sin(phi_q);
-    if (use_lorentz_factor)
+    if (use_lorentz_factor || use_lorentz_general_factor)
     {
         /* Учет Лоренц-сокращения в направлении движения */
         double gamma = lorentz_factor(v, c);
@@ -478,10 +490,16 @@ static double compute_retarded_time_newton(
     /* Уточнение методом Ньютона */
     /* Уточнение методом Ньютона с аналитической производной */
     for (int i = 0; i < 5; i++) {
-        double R_val = compute_R(t_prime, t, t0, ra, theta_a, phi_a, rq, theta_q, phi_q, v0, a, c,
+        double R_val = compute_R(t_prime, t, t0,
+            ra, theta_a, phi_a,
+            rq, theta_q, phi_q,
+            v0, a, c,
             use_lorentz_factor, use_lorentz_general_factor);
         double f = t_prime - t + R_val / c;
-        double df_dt = 1.0 + compute_dR_dt_prime_analytical(t_prime, t0, ra, theta_a, phi_a, rq, theta_q, phi_q, v0, a, c,
+        double df_dt = 1.0 + compute_dR_dt_prime_analytical(t_prime, t0,
+            ra, theta_a, phi_a,
+            rq, theta_q, phi_q,
+            v0, a, c,
             use_lorentz_factor, use_lorentz_general_factor) / c;
 
         double delta = -f / df_dt;
@@ -555,7 +573,8 @@ static void compute_electric_field_with_delay(
         E1_x, E1_y, E1_z,
         E2_x, E2_y, E2_z,
         E_total_x, E_total_y, E_total_z,
-        params->use_fermi_factor);
+        params->use_fermi_factor,
+        params->use_lorentz_general_factor);
 #else
     /* Радиус Лиенара-Вихерта */
     double R_star = R - (R_z * v_z) / params->c;
@@ -902,6 +921,7 @@ int integrate(
     int use_lorentz_factor,
     int use_lorentz_general_factor,
     int use_fermi_factor,
+    int use_fermi_general_factor,
     cubareal* integral, cubareal* error, cubareal* prob)
 {
     int comp, nregions, neval, fail;
@@ -922,6 +942,7 @@ int integrate(
     params.use_lorentz_factor         = use_lorentz_factor;
     params.use_lorentz_general_factor = use_lorentz_general_factor;
     params.use_fermi_factor           = use_fermi_factor;
+    params.use_fermi_general_factor   = use_fermi_general_factor;
 
     double v_z = params.v0 + params.a * (params.t - params.t0);
 

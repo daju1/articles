@@ -144,15 +144,13 @@ static void computing_electric_field(
         fermi_factor = fermi_correction(R_x, R_y, R_z, a_x, a_y, a_z, c);
     }
     double v2_c2 = (Sq(v_x) + Sq(v_y) + Sq(v_z) ) / Sq(c);
-    double Ra_v2_c2 = (R_z * a_z) / Sq(c) - v2_c2;
+    double Ra_c2 = (R_z * a_z) / Sq(c);
 
     /* Вычисление градиентного поля E1 */
     double common_factor1 = 1.0 / pow(R_star, 2);
-    double velocity_factor1 = 1.0 + Ra_v2_c2;
     /* Вычисление градиентного поля E1 (только слагаемое с ускорением) */
-    double acceleration_factor = (R_z * a_z) / Sq(c);
-    /* (1.0 + Ra_v2_c2) * (1.0+fermi_factor)  = 1.0 + Ra_v2_c2_fermi */
-    double Ra_v2_c2_fermi = Ra_v2_c2 + fermi_factor + fermi_factor * Ra_v2_c2;
+    /* (1.0 + Ra_c2 - v2_c2) * (1.0+fermi_factor)  = 1.0 + Ra_v2_c2_fermi */
+    double Ra_v2_c2_fermi = fermi_factor + Ra_c2 + fermi_factor * (Ra_c2 - v2_c2);
 
     double f_one = 1.0;
     if (use_fast_integrand)
@@ -163,16 +161,28 @@ static void computing_electric_field(
             $$R_z / Cb(R - (R_z * v_z) / c)$$
             которая теоретически при интегрировании по сфере должна дать значение близкое к нулю.
         */
+
+        /*
+            двойной интеграл:
+            $$I = \int \int \frac{v_z}{R^{*2}} \, dV_q \, dV_a$$
+
+            Где $R^* = R - \frac{v_z}{c} R_z$,
+             $R_z = z_a - z_q$,
+             $R = \sqrt{(x_a-x_q)^2 + (y_a-y_q)^2 + (z_a-z_q)^2}$.
+
+             равен нулю из-за симметрии сферы
+
+       */
         f_one = 0.0;
     }
 
-    *E1_x = common_factor1 * (R_x * (f_one + Ra_v2_c2_fermi) / R_star - v_x / c);
-    *E1_y = common_factor1 * (R_y * (f_one + Ra_v2_c2_fermi) / R_star - v_y / c);
-    *E1_z = common_factor1 * (R_z * (f_one + Ra_v2_c2_fermi) / R_star - v_z / c);
+    *E1_x = common_factor1 * (R_x * (f_one + Ra_v2_c2_fermi) / R_star - f_one * v_x / c - v_x / c * fermi_factor);
+    *E1_y = common_factor1 * (R_y * (f_one + Ra_v2_c2_fermi) / R_star - f_one * v_y / c - v_y / c * fermi_factor);
+    *E1_z = common_factor1 * (R_z * (f_one + Ra_v2_c2_fermi) / R_star - f_one * v_z / c - v_z / c * fermi_factor);
 
     /* Вычисление поля самоиндукции E2 */
     double common_factor2 = 1.0 / pow(R_star, 2);
-    double velocity_factor2 = (R / R_star) * (-Ra_v2_c2 - 1.0) + 1.0;
+    double velocity_factor2 = (R / R_star) * (v2_c2 - Ra_c2 - 1.0) + 1.0;
 
     common_factor2 *= (1.0+fermi_factor);
 
@@ -187,9 +197,9 @@ static void computing_electric_field(
     //E_x = common_factor * ((1.0 + Ra_v2_c2) * (1.0 + fermi_factor) * (R_x - R*v_x/c)  - (a_x * R_star * R) * (1.0+fermi_factor) / Sq(c));
     //E_x = common_factor * ((1.0 + Ra_v2_c2 + fermi_factor + fermi_factor * Ra_v2_c2) * (R_x - R*v_x/c)  - (a_x * R_star * R) / Sq(c) - (a_x * R_star * R) * fermi_factor / Sq(c));
     //E_x = common_factor * ((1.0 + Ra_v2_c2_fermi) * (R_x - R*v_x/c)  - (a_x * R_star * R) / Sq(c) - (a_x * R_star * R) * fermi_factor / Sq(c));
-    *E_total_x = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_x - (1.0 + Ra_v2_c2_fermi) * R*v_x/c)  - (a_x * R_star * R) / Sq(c) - (a_x * R_star * R) * fermi_factor / Sq(c));
-    *E_total_y = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_y - (1.0 + Ra_v2_c2_fermi) * R*v_y/c)  - (a_y * R_star * R) / Sq(c) - (a_y * R_star * R) * fermi_factor / Sq(c));
-    *E_total_z = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_z - (1.0 + Ra_v2_c2_fermi) * R*v_z/c)  - (a_z * R_star * R) / Sq(c) - (a_z * R_star * R) * fermi_factor / Sq(c));
+    *E_total_x = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_x - (f_one + Ra_v2_c2_fermi) * R*v_x/c)  - (a_x * R_star * R) / Sq(c) - (a_x * R_star * R) * fermi_factor / Sq(c));
+    *E_total_y = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_y - (f_one + Ra_v2_c2_fermi) * R*v_y/c)  - (a_y * R_star * R) / Sq(c) - (a_y * R_star * R) * fermi_factor / Sq(c));
+    *E_total_z = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_z - (f_one + Ra_v2_c2_fermi) * R*v_z/c)  - (a_z * R_star * R) / Sq(c) - (a_z * R_star * R) * fermi_factor / Sq(c));
 }
 
 /* Функция для вычисления фактора Лоренца */
@@ -670,7 +680,6 @@ void int_a (
     *int_a_E_total_x = k_a * int_q_E_total_x;
     *int_a_E_total_y = k_a * int_q_E_total_y;
     *int_a_E_total_z = k_a * int_q_E_total_z;
-
 }
 
 int Integrand(const int *ndim, const cubareal xx[],
@@ -776,23 +785,23 @@ int Integrand(const int *ndim, const cubareal xx[],
     */
 
     double U = 3.0 / (5.0 * params->R0);     /* Энергия электрического поля */
-    double m_perp_B = /*2 **/ U;                 /* Вариация типа В (теоретическое значение) */
+    double m_perp_B = /*2 **/ U / (params->c * params->c);                 /* Вариация типа В (теоретическое значение) */
 
     /* Вычисление продольной массы */
     //double m_perp_A = integral[0] / Gamma / (params.c * params.c);  /* Вариация типа А */
     //double m = f/Gamma/ (params->c * params->c);
 
-    double m1_x = f1_x / Gamma / (params->c * params->c);
-    double m1_y = f1_y / Gamma / (params->c * params->c);
-    double m1_z = f1_z / Gamma / (params->c * params->c);
+    double m1_x = f1_x / Gamma ;
+    double m1_y = f1_y / Gamma ;
+    double m1_z = f1_z / Gamma ;
 
-    double m2_x = f2_x / Gamma / (params->c * params->c);
-    double m2_y = f2_y / Gamma / (params->c * params->c);
-    double m2_z = f2_z / Gamma / (params->c * params->c);
+    double m2_x = f2_x / Gamma ;
+    double m2_y = f2_y / Gamma ;
+    double m2_z = f2_z / Gamma ;
 
-    double m_x = f_x / Gamma / (params->c * params->c);
-    double m_y = f_y / Gamma / (params->c * params->c);
-    double m_z = f_z / Gamma / (params->c * params->c);
+    double m_x = f_x / Gamma ;
+    double m_y = f_y / Gamma ;
+    double m_z = f_z / Gamma ;
 
     /* Проверка коэффициента 4/3 */
     double expected_ratio = 4.0 / 3.0;
@@ -822,7 +831,7 @@ int Integrand(const int *ndim, const cubareal xx[],
 #define NCOMP 9
 #define USERDATA NULL
 #define NVEC 1
-#if 0
+#if 1
 #define EPSREL 1e-8
 #define EPSABS 1e-16
 #else

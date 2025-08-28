@@ -29,6 +29,7 @@ typedef struct {
     int use_lorentz_general_factor;
     int use_fermi_factor;
     int use_fermi_general_factor;
+    int use_fast_integrand;
 } ProblemParams;
 
 /* Функция для вычисления фактора Лоренца */
@@ -51,7 +52,7 @@ static double fermi_correction(
     double R_dot_a = R_x * a_x + R_y * a_y + R_z * a_z;
 
     /* Поправка Ферми */
-    return 0.5 * (1.0 + R_dot_a / (c * c));
+    return (/*1.0*/ + 0.5 * R_dot_a / (c * c));
 }
 
 /* Функция для вычисления поправки Ферми в общем релятивистском случае */
@@ -96,7 +97,7 @@ static double fermi_correction_general(
     double R_dot_a = R0 * a0 - R1 * a1 - R2 * a2 - R3 * a3;
 
     /* Поправка Ферми в общем случае */
-    return 0.5 * (1.0 - R_dot_a / (c * c));
+    return (/*1.0*/ - 0.5 * R_dot_a / (c * c));
 }
 
 static void computing_electric_field(
@@ -111,7 +112,8 @@ static void computing_electric_field(
     double *E2_x, double *E2_y, double *E2_z,
     double *E_total_x, double *E_total_y, double *E_total_z,
     int use_fermi_factor,
-    int use_fermi_general_factor
+    int use_fermi_general_factor,
+    int use_fast_integrand
 )
 {
     /* Радиус Лиенара-Вихерта (учет запаздывания) */
@@ -125,76 +127,71 @@ static void computing_electric_field(
         return;
     }
 
-    double fermi_factor = fermi_correction(R_x, R_y, R_z, a_x, a_y, a_z, c);
-    double fermi_factor_general = fermi_correction_general(
-        t,           /* текущее время */
-        t_prime,     /* запаздывающее время */
-        R_x,
-        R_y,
-        R_z,
-        a_x,
-        a_y,
-        a_z,
-        v_x,
-        v_y,
-        v_z,
-        c);
+    double fermi_factor = 0.0;
 
+    if (use_fermi_general_factor)
+    {
+        fermi_factor = fermi_correction_general(
+            t,           /* текущее время */
+            t_prime,     /* запаздывающее время */
+            R_x,
+            R_y,
+            R_z,
+            a_x,
+            a_y,
+            a_z,
+            v_x,
+            v_y,
+            v_z,
+            c);
+    }
+    else if (use_fermi_factor)
+    {
+        fermi_factor = fermi_correction(R_x, R_y, R_z, a_x, a_y, a_z, c);
+    }
     double v2_c2 = (Sq(v_x) + Sq(v_y) + Sq(v_z) ) / Sq(c);
+    double Ra_v2_c2 = (R_z * a_z) / Sq(c) - v2_c2;
 
     /* Вычисление градиентного поля E1 */
     double common_factor1 = 1.0 / pow(R_star, 2);
-    double velocity_factor1 = /*1.0 +*/ (R_z * a_z) / Sq(c) - v2_c2;
+    double velocity_factor1 = 1.0 + Ra_v2_c2;
     /* Вычисление градиентного поля E1 (только слагаемое с ускорением) */
     double acceleration_factor = (R_z * a_z) / Sq(c);
+    /* (1.0 + Ra_v2_c2) * (1.0+fermi_factor)  = 1.0 + Ra_v2_c2_fermi */
+    double Ra_v2_c2_fermi = Ra_v2_c2 + fermi_factor + fermi_factor * Ra_v2_c2;
 
-    if (use_fermi_general_factor)
+    common_factor1 *= (1.0+fermi_factor);
+
+    double f_one = 1.0;
+    if (use_fast_integrand)
     {
-        common_factor1 *= fermi_factor_general;
-    }
-    else if (use_fermi_factor)
-    {
-        common_factor1 *= fermi_factor;
+        f_one = 0.0;
     }
 
-    *E1_x = common_factor1 * (R_x * velocity_factor1 / R_star - v_x / c);
-    *E1_y = common_factor1 * (R_y * velocity_factor1 / R_star - v_y / c);
-    *E1_z = common_factor1 * (R_z * velocity_factor1 / R_star - v_z / c);
+    *E1_x = common_factor1 * (R_x * (f_one + Ra_v2_c2_fermi) / R_star - v_x / c);
+    *E1_y = common_factor1 * (R_y * (f_one + Ra_v2_c2_fermi) / R_star - v_y / c);
+    *E1_z = common_factor1 * (R_z * (f_one + Ra_v2_c2_fermi) / R_star - v_z / c);
 
     /* Вычисление поля самоиндукции E2 */
     double common_factor2 = 1.0 / pow(R_star, 2);
-    double velocity_factor2 = (R / R_star) * (v2_c2 - (R_z * a_z) / Sq(c) - 1.0) + 1.0;
+    double velocity_factor2 = (R / R_star) * (-Ra_v2_c2 - 1.0) + 1.0;
 
-    if (use_fermi_general_factor)
-    {
-        common_factor2 *= fermi_factor_general;
-    }
-    else if (use_fermi_factor)
-    {
-        common_factor2 *= fermi_factor;
-    }
+    common_factor2 *= (1.0+fermi_factor);
 
     *E2_x = common_factor2 * (v_x / c * velocity_factor2 - a_x * R / Sq(c));
     *E2_y = common_factor2 * (v_y / c * velocity_factor2 - a_y * R / Sq(c));
     *E2_z = common_factor2 * (v_z / c * velocity_factor2 - a_z * R / Sq(c));
 
     /* Вычисление суммарного поля по полной формуле Лиенара-Вихерта */
-    double common_factor = 1.0 / pow(R_star, 3);
-    double velocity_factor_ = /*1.0*/ + (R_z * a_z) / Sq(c) - v2_c2;
-    double velocity_factor = 1.0 + (R_z * a_z) / Sq(c) - v2_c2;
+    double common_factor = 1.0 / Cb(R_star);
 
-    if (use_fermi_general_factor)
-    {
-        common_factor *= fermi_factor_general;
-    }
-    else if (use_fermi_factor)
-    {
-        common_factor *= fermi_factor;
-    }
-
-    *E_total_x = common_factor * ((R_x * velocity_factor_ - R*v_x/c * velocity_factor)  - (a_x * R_star * R) / Sq(c));
-    *E_total_y = common_factor * ((R_y * velocity_factor_ - R*v_y/c * velocity_factor)  - (a_y * R_star * R) / Sq(c));
-    *E_total_z = common_factor * ((R_z * velocity_factor_ - R*v_z/c * velocity_factor)  - (a_z * R_star * R) / Sq(c));
+    //E_x = common_factor * (1.0 + fermi_factor) * ((1.0 + Ra_v2_c2) * (R_x - R*v_x/c)  - (a_x * R_star * R) / Sq(c));
+    //E_x = common_factor * ((1.0 + Ra_v2_c2) * (1.0 + fermi_factor) * (R_x - R*v_x/c)  - (a_x * R_star * R) * (1.0+fermi_factor) / Sq(c));
+    //E_x = common_factor * ((1.0 + Ra_v2_c2 + fermi_factor + fermi_factor * Ra_v2_c2) * (R_x - R*v_x/c)  - (a_x * R_star * R) / Sq(c) - (a_x * R_star * R) * fermi_factor / Sq(c));
+    //E_x = common_factor * ((1.0 + Ra_v2_c2_fermi) * (R_x - R*v_x/c)  - (a_x * R_star * R) / Sq(c) - (a_x * R_star * R) * fermi_factor / Sq(c));
+    *E_total_x = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_x - (1.0 + Ra_v2_c2_fermi) * R*v_x/c)  - (a_x * R_star * R) / Sq(c) - (a_x * R_star * R) * fermi_factor / Sq(c));
+    *E_total_y = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_y - (1.0 + Ra_v2_c2_fermi) * R*v_y/c)  - (a_y * R_star * R) / Sq(c) - (a_y * R_star * R) * fermi_factor / Sq(c));
+    *E_total_z = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_z - (1.0 + Ra_v2_c2_fermi) * R*v_z/c)  - (a_z * R_star * R) / Sq(c) - (a_z * R_star * R) * fermi_factor / Sq(c));
 }
 
 /* Функция для вычисления электрического поля по Лиенару-Вихерту для продольного случая */
@@ -243,7 +240,8 @@ static void compute_electric_field(
         E2_x, E2_y, E2_z,
         E_total_x, E_total_y, E_total_z,
         params->use_fermi_factor,
-        params->use_fermi_general_factor
+        params->use_fermi_general_factor,
+        params->use_fast_integrand
     );
 }
 
@@ -539,7 +537,8 @@ static void compute_electric_field_with_delay(
         E2_x, E2_y, E2_z,
         E_total_x, E_total_y, E_total_z,
         params->use_fermi_factor,
-        params->use_lorentz_general_factor);
+        params->use_lorentz_general_factor,
+        params->use_fast_integrand);
 }
 
 // the charge distribution
@@ -596,7 +595,7 @@ static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_
     }
 
     double rho;
-    if (params->use_lorentz_factor)
+    if (params->use_lorentz_factor || params->use_lorentz_general_factor)
     {
         double v_z = params->v0 + params->a * (params->t - params->t0);
         rho = rho_q_lorentz(r0, q, v_z, params->c);
@@ -632,7 +631,7 @@ void int_a (
     cubareal r0 = params->R0;
 
     double rho;
-    if (params->use_lorentz_factor)
+    if (params->use_lorentz_factor || params->use_lorentz_general_factor)
     {
         double v_z = params->v0 + params->a * (params->t - params->t0);
         rho = rho_q_lorentz(r0, q, v_z, params->c);
@@ -816,16 +815,30 @@ int Integrand(const int *ndim, const cubareal xx[],
 #define NCOMP 9
 #define USERDATA NULL
 #define NVEC 1
+#if 0
+#define EPSREL 1e-8
+#define EPSABS 1e-16
+#else
 #define EPSREL 1e-3
 #define EPSABS 1e-12
+#endif
 #define VERBOSE 2
 #define LAST 4
 #define SEED 0
 #define MINEVAL 0
+#if 0
+#define MAXEVAL 500000000
+#else
 #define MAXEVAL 500000
+#endif
 
+#if 0
+#define NSTART 5000
+#define NINCREASE 1000
+#else
 #define NSTART 1000
 #define NINCREASE 500
+#endif
 #define NBATCH 1000
 #define GRIDNO 0
 #define STATEFILE NULL
@@ -858,6 +871,7 @@ int integrate(
     int use_lorentz_general_factor,
     int use_fermi_factor,
     int use_fermi_general_factor,
+    int use_fast_integrand,
     cubareal* integral, cubareal* error, cubareal* prob)
 {
     int comp, nregions, neval, fail;
@@ -865,23 +879,22 @@ int integrate(
     /* Параметры задачи */
     ProblemParams params;
 
-    params.R0 = R0;      /* радиус сферы (половина R1) */
-
+    params.R0 = R0; /* радиус сферы (половина R1) */
     params.v0 = v0;
     params.t0 = t0;
     params.t = t;
 
-    params.c = c;       /* скорость света в м/с */
-    params.a = a;  /* продольное ускорение*/
+    params.c = c;   /* скорость света в м/с */
+    params.a = a;   /* продольное ускорение*/
 
     params.use_delay                  = use_delay;
     params.use_lorentz_factor         = use_lorentz_factor;
     params.use_lorentz_general_factor = use_lorentz_general_factor;
     params.use_fermi_factor           = use_fermi_factor;
     params.use_fermi_general_factor   = use_fermi_general_factor;
+    params.use_fast_integrand         = use_fast_integrand;
 
     double v_z = params.v0 + params.a * (params.t - params.t0);
-
     double v_c =  v_z / params.c;  /* отношение скорости заряда к скорости света*/
 
     Vegas(NDIM, NCOMP, Integrand, &params, NVEC,

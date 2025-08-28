@@ -20,12 +20,14 @@ int integrate(
     int use_lorentz_general_factor,
     int use_fermi_factor,
     int use_fermi_general_factor,
+    int use_fast_integrand,
     cubareal* integral, cubareal* error, cubareal* prob);
 
 int main() {
   int comp, nregions, neval, fail;
   cubareal integral[NCOMP], error[NCOMP], prob[NCOMP];
 
+  /* Параметры задачи */
   double R0 = 1;      /* радиус сферы (половина R1) */
   double v0 = 0;
   double t0 = 0;
@@ -37,9 +39,9 @@ int main() {
   int use_lorentz_factor         = 0;
   int use_lorentz_general_factor = 0;
   int use_fermi_factor           = 0;
-  int use_fermi_general_factor   = 0;
+  int use_fermi_general_factor   = 1;
+  int use_fast_integrand         = 1;
 
-  /* Параметры задачи */
   integrate(
     R0,    /* Радиус сферы */
     v0,    /* Начальная продольная скорость */
@@ -52,6 +54,7 @@ int main() {
     use_lorentz_general_factor,
     use_fermi_factor,
     use_fermi_general_factor,
+    use_fast_integrand,
     integral, error, prob);
 
   double v_z = v0 + a * (t - t0);

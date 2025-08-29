@@ -211,7 +211,7 @@ static inline double lorentz_factor(double v, double c) {
 /* Функция для вычисления электрического поля по Лиенару-Вихерту для продольного случая */
 static void compute_electric_field(
     double ra, double theta_a, double phi_a, /*воображаемые координаты несплюснутой сферы*/
-    double rq, double theta_q, double phi_q,
+    double rq, double theta_q, double phi_q, /*по которым производится интегрирование*/
     const ProblemParams *params,
     double *E1_x, double *E1_y, double *E1_z,
     double *E2_x, double *E2_y, double *E2_z,

@@ -2,8 +2,8 @@ IDIR =$(PWD)/local/include
 $(info IDIR=$(IDIR))
 
 CC=gcc
-CFLAGS=-I$(IDIR) -g -O0
-CXXFLAGS=-I$(IDIR) -g -O0
+CFLAGS=-I$(IDIR) -g -O0 -DINCLUDE_CUBA_H
+CXXFLAGS=-I$(IDIR) -g -O0 -DINCLUDE_CUBA_H
 
 
 LDIR =../lib
@@ -20,4 +20,4 @@ $(info DEPS=$(DEPS))
 .PHONY: all clean
 
 clean:
-	rm -f *.o calc_sphere_mass calc_proton_mass
+	rm -f *.o calc_sphere_mass calc_proton_mass calc_longitudinal_sphere_mass calc_transverse_sphere_mass calc_gradient_sphere_mass

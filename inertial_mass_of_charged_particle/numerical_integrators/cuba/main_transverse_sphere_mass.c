@@ -5,137 +5,62 @@ int Integrand(const int *ndim, const cubareal xx[],
   const int *ncomp, cubareal ff[], void *userdata);
 
 /*********************************************************************/
-#if 0
-#define NDIM 6
-#else
-#define NDIM 5
-#endif
+
 #define NCOMP 9
-#define USERDATA NULL
-#define NVEC 1
-#define EPSREL 1e-3
-#define EPSABS 1e-12
-#define VERBOSE 2
-#define LAST 4
-#define SEED 0
-#define MINEVAL 0
-#define MAXEVAL 500000
 
-#define NSTART 1000
-#define NINCREASE 500
-#define NBATCH 1000
-#define GRIDNO 0
-#define STATEFILE NULL
-#define SPIN NULL
-
-#define NNEW 1000
-#define NMIN 2
-#define FLATNESS 25.
-
-#define KEY1 47
-#define KEY2 1
-#define KEY3 1
-#define MAXPASS 5
-#define BORDER 0.
-#define MAXCHISQ 10.
-#define MINDEVIATION .25
-#define NGIVEN 0
-#define LDXGIVEN NDIM
-#define NEXTRA 0
-
-#define KEY 0
-
-/* Структура для передачи параметров задачи */
-typedef struct {
-    double R0;     /* Радиус сферы */
-    double rho0;   /* Расстояние от оси орбитального движения до центра сферы */
-    double omega;  /* Угловая скорость орбитального движения */
-    double c;      /* Скорость света */
-} ProblemParams;
-
+int integrate(
+    double R0,       /* Радиус сферы */
+    double rho0,     /* Радиус орбиты */
+    double omega,    /* Угловая скорость */
+    double c,        /* Скорость света */
+    int use_delay,
+    int use_lorentz_factor,
+    int use_lorentz_general_factor,
+    int use_fermi_factor,
+    int use_fermi_general_factor,
+    int use_fast_integrand,
+    cubareal* integral, cubareal* error, cubareal* prob);
 
 int main() {
   int comp, nregions, neval, fail;
   cubareal integral[NCOMP], error[NCOMP], prob[NCOMP];
 
-    /* Параметры задачи */
-    ProblemParams params;
+  /* Параметры задачи */
 
-    params.R0 = 1;      /* радиус сферы (половина R1) */
-    params.rho0 = 100;  /* расстояние от оси орбитального движения */
-    params.c = 1;       /* скорость света в м/с */
-    // m = 1
-    params.omega = sqrt(5 * params.R0 * Sq(params.c) / (3*2*4* Cb(params.rho0)));  /* угловая скорость орбитального движения*/
-    // m = 4/3
-    //params.omega = sqrt(3*5 * params.R0 * Sq(params.c) / (4*3*2*4* Cb(params.rho0)));  /* угловая скорость орбитального движения*/
-    double v_c = params.omega * params.rho0 / params.c;  /* отношение скорости заряда к скорости света*/
-#if 1
-  printf("-------------------- Vegas test --------------------\n");
+  double R0 = 1;      /* радиус сферы (половина R1) */
+  double rho0 = 100;  /* расстояние от оси орбитального движения */
+  double c = 1;       /* скорость света в м/с */
+  // m = 1
+  double omega = sqrt(5 * R0 * Sq(c) / (3*2*4* Cb(rho0)));  /* угловая скорость орбитального движения*/
+  // m = 4/3
+  //double omega = sqrt(3*5 * R0 * Sq(c) / (4*3*2*4* Cb(rho0)));  /* угловая скорость орбитального движения*/
+  double v_c = omega * rho0 / c;  /* отношение скорости заряда к скорости света*/
 
-  Vegas(NDIM, NCOMP, Integrand, &params, NVEC,
-    EPSREL, EPSABS, VERBOSE, SEED,
-    MINEVAL, MAXEVAL, NSTART, NINCREASE, NBATCH,
-    GRIDNO, STATEFILE, SPIN,
-    &neval, &fail, integral, error, prob);
+  int use_delay                  = 0;
+  int use_lorentz_factor         = 0;
+  int use_lorentz_general_factor = 0;
+  int use_fermi_factor           = 0;
+  int use_fermi_general_factor   = 0;
+  int use_fast_integrand         = 0;
+
+  integrate(
+    R0,    /* Радиус сферы */
+    rho0,  /* Начальная продольная скорость */
+    omega, /* Продольное ускорение */
+    c,     /* Скорость света */
+    use_delay,
+    use_lorentz_factor,
+    use_lorentz_general_factor,
+    use_fermi_factor,
+    use_fermi_general_factor,
+    use_fast_integrand,
+    integral, error, prob);
 
   printf("VEGAS RESULT:\tneval %d\tfail %d\n",
     neval, fail);
   for( comp = 0; comp < NCOMP; ++comp )
     printf("VEGAS RESULT:\t%.8f +- %.8f\tp = %.3f\n",
       (double)integral[comp], (double)error[comp], (double)prob[comp]);
-#endif
-    printf("v_c = %f\n", v_c);
-
-#if 0
-  printf("\n-------------------- Suave test --------------------\n");
-
-  Suave(NDIM, NCOMP, Integrand, USERDATA, NVEC,
-    EPSREL, EPSABS, VERBOSE | LAST, SEED,
-    MINEVAL, MAXEVAL, NNEW, NMIN, FLATNESS,
-    STATEFILE, SPIN,
-    &nregions, &neval, &fail, integral, error, prob);
-
-  printf("SUAVE RESULT:\tnregions %d\tneval %d\tfail %d\n",
-    nregions, neval, fail);
-  for( comp = 0; comp < NCOMP; ++comp )
-    printf("SUAVE RESULT:\t%.8f +- %.8f\tp = %.3f\n",
-      (double)integral[comp], (double)error[comp], (double)prob[comp]);
-#endif
-
-#if 0
-  printf("\n------------------- Divonne test -------------------\n");
-
-  Divonne(NDIM, NCOMP, Integrand, USERDATA, NVEC,
-    EPSREL, EPSABS, VERBOSE, SEED,
-    MINEVAL, MAXEVAL, KEY1, KEY2, KEY3, MAXPASS,
-    BORDER, MAXCHISQ, MINDEVIATION,
-    NGIVEN, LDXGIVEN, NULL, NEXTRA, NULL,
-    STATEFILE, SPIN,
-    &nregions, &neval, &fail, integral, error, prob);
-
-  printf("DIVONNE RESULT:\tnregions %d\tneval %d\tfail %d\n",
-    nregions, neval, fail);
-  for( comp = 0; comp < NCOMP; ++comp )
-    printf("DIVONNE RESULT:\t%.8f +- %.8f\tp = %.3f\n",
-      (double)integral[comp], (double)error[comp], (double)prob[comp]);
-#endif
-
-#if 0
-  printf("\n-------------------- Cuhre test --------------------\n");
-
-  Cuhre(NDIM, NCOMP, Integrand, USERDATA, NVEC,
-    EPSREL, EPSABS, VERBOSE | LAST,
-    MINEVAL, MAXEVAL, KEY,
-    STATEFILE, SPIN,
-    &nregions, &neval, &fail, integral, error, prob);
-
-  printf("CUHRE RESULT:\tnregions %d\tneval %d\tfail %d\n",
-    nregions, neval, fail);
-  for( comp = 0; comp < NCOMP; ++comp )
-    printf("CUHRE RESULT:\t%.8f +- %.8f\tp = %.3f\n",
-      (double)integral[comp], (double)error[comp], (double)prob[comp]);
-#endif
 
   return 0;
 }
-

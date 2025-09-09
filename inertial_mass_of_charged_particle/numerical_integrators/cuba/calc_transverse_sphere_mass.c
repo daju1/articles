@@ -103,6 +103,7 @@ static double fermi_correction_general(
 }
 
 static void computing_electric_field(
+    double t_prime,     /* запаздывающее время */
     double R,
     double R_rho, double R_phi, double R_z,
     double v_phi,
@@ -110,7 +111,10 @@ static void computing_electric_field(
     double c,
     double *E1_rho, double *E1_phi, double *E1_z,
     double *E2_rho, double *E2_phi, double *E2_z,
-    double *E_total_rho, double *E_total_phi, double *E_total_z
+    double *E_total_rho, double *E_total_phi, double *E_total_z,
+    int use_fermi_factor,
+    int use_fermi_general_factor,
+    int use_fast_integrand
 )
 {
     /* Радиус Лиенара-Вихерта (учет запаздывания) */
@@ -124,17 +128,86 @@ static void computing_electric_field(
         return;
     }
 
+    double fermi_factor = 0.0;
+
+    double a_phi = 0.0;
+    double a_z = 0.0;
+
+    double v_rho = 0.0;
+    double v_z = 0.0;
+
+    if (use_fermi_general_factor)
+    {
+        double t = 0;    /* текущее время */
+
+        fermi_factor = fermi_correction_general(
+            t,           /* текущее время */
+            t_prime,     /* запаздывающее время */
+            R_rho,
+            R_phi,
+            R_z,
+            a_rho,
+            a_phi,
+            a_z,
+            v_rho,
+            v_phi,
+            v_z,
+            c);
+    }
+    else if (use_fermi_factor)
+    {
+        fermi_factor = fermi_correction(R_rho, R_phi, R_z, a_rho, a_phi, a_z, c);
+    }
+    double v2_c2 = (Sq(v_rho) + Sq(v_phi) + Sq(v_z) ) / Sq(c);
+    double Ra_c2 = (R_rho * a_rho) / Sq(c);
+
+    double f_one = 1.0;
+    if (use_fast_integrand)
+    {
+        /*
+            Режим быстрого интегранда выключает из процедуры численного интегрирования
+            симметричную часть интегранда
+            $$R_z / Cb(R - (R_z * v_z) / c)$$
+            которая теоретически при интегрировании по сфере должна дать значение близкое к нулю.
+        */
+
+        /*
+            двойной интеграл:
+            $$I = \int \int \frac{v_z}{R^{*2}} \, dV_q \, dV_a$$
+
+            Где $R^* = R - \frac{v_z}{c} R_z$,
+             $R_z = z_a - z_q$,
+             $R = \sqrt{(x_a-x_q)^2 + (y_a-y_q)^2 + (z_a-z_q)^2}$.
+
+             равен нулю из-за симметрии сферы
+
+       */
+        f_one = 0.0;
+    }
+
     /* Вычисление градиентного поля E1 */
     double common_factor1 = 1.0 / pow(R_star, 2);
-    double velocity_factor1 = /*1.0 +*/ (R_rho * a_rho) / pow(c, 2) /*- pow(v_q / params->c, 2)*/;
+#if 0
+    double velocity_factor1 = /*1.0 +*/ Ra_c2 /*- v2_c2*/;
 
     *E1_rho = common_factor1 * (R_rho * velocity_factor1 / R_star);
     *E1_phi = common_factor1 * (R_phi * velocity_factor1 / R_star/* - v_phi / c*/);
     *E1_z   = common_factor1 * (R_z   * velocity_factor1 / R_star);
+#else
+    /* Вычисление градиентного поля E1 (только слагаемое с ускорением) */
+    /* (1.0 + Ra_c2 - v2_c2) * (1.0+fermi_factor)  = 1.0 + Ra_v2_c2_fermi */
+    double Ra_v2_c2_fermi = fermi_factor + Ra_c2 + fermi_factor * (Ra_c2 - v2_c2);
+
+    *E1_rho = common_factor1 * (R_rho * (f_one + Ra_v2_c2_fermi) / R_star - f_one * v_rho / c - v_rho / c * fermi_factor);
+    *E1_phi = common_factor1 * (R_phi * (f_one + Ra_v2_c2_fermi) / R_star - f_one * v_phi / c - v_phi / c * fermi_factor);
+    *E1_z   = common_factor1 * (R_z   * (f_one + Ra_v2_c2_fermi) / R_star - f_one * v_z / c   - v_z   / c * fermi_factor);
+#endif
 
     /* Вычисление поля самоиндукции E2 */
     double common_factor2   = 1.0 / pow(R_star, 2);
-    double velocity_factor2 = (R / R_star) * (pow(v_phi / c, 2) - (R_rho * a_rho) / pow(c, 2) - 1.0) + 1.0;
+    double velocity_factor2 = (R / R_star) * (v2_c2 - Ra_c2 - 1.0) + 1.0;
+
+    common_factor2 *= (1.0+fermi_factor);
 
     *E2_rho = common_factor2 * (- a_rho * R / pow(c, 2));
     *E2_phi = common_factor2 * (v_phi / c * velocity_factor2);
@@ -142,11 +215,17 @@ static void computing_electric_field(
 
     /* Вычисление суммарного поля */
     double common_factor = 1.0 / pow(R_star, 3);
-    double velocity_factor = /*1.0 +*/ (R_rho * a_rho) / pow(c, 2) /*- pow(v_q, 2) / pow(params->c, 2)*/;
+#if 0
+    double velocity_factor = /*1.0 +*/ Ra_c2 /*- v2_c2*/;
 
     *E_total_rho = common_factor * ((R_rho                  ) * velocity_factor - (a_rho * R_star * R) / pow(c, 2));
     *E_total_phi = common_factor * ((R_phi - (R * v_phi) / c) * velocity_factor);
     *E_total_z   = common_factor * ((R_z                    ) * velocity_factor);
+#else
+    *E_total_rho = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_rho - (f_one + Ra_v2_c2_fermi) * R*v_rho/c)  - (a_rho * R_star * R) / Sq(c) - (a_rho * R_star * R) * fermi_factor / Sq(c));
+    *E_total_phi = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_phi - (f_one + Ra_v2_c2_fermi) * R*v_phi/c)  - (a_phi * R_star * R) / Sq(c) - (a_phi * R_star * R) * fermi_factor / Sq(c));
+    *E_total_z   = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_z   - (f_one + Ra_v2_c2_fermi) * R*v_z/c)    - (a_z   * R_star * R) / Sq(c) - (a_z   * R_star * R) * fermi_factor / Sq(c));
+#endif
 }
 
 /* Функция для вычисления электрического поля по Лиенару-Вихерту */
@@ -186,13 +265,20 @@ static void compute_electric_field_z_z(
     double v_phi = rho_q * params->omega;
     double a_rho = -rho_q * pow(params->omega, 2);
 
-    computing_electric_field(R, R_rho, R_phi, R_z,
+    double t_prime = 0.0;
+
+    computing_electric_field(
+        t_prime,     /* запаздывающее время */
+        R, R_rho, R_phi, R_z,
         v_phi,
         a_rho,
         params->c,
         E1_rho, E1_phi, E1_z,
         E2_rho, E2_phi, E2_z,
-        E_total_rho, E_total_phi, E_total_z
+        E_total_rho, E_total_phi, E_total_z,
+        params->use_fermi_factor,
+        params->use_fermi_general_factor,
+        params->use_fast_integrand
     );
 }
 
@@ -234,13 +320,20 @@ static void compute_electric_field_z_rho(
     double v_phi = rho_q * params->omega;
     double a_rho = -rho_q * pow(params->omega, 2);
 
-    computing_electric_field(R, R_rho, R_phi, R_z,
+    double t_prime = 0.0;
+
+    computing_electric_field(
+        t_prime,     /* запаздывающее время */
+        R, R_rho, R_phi, R_z,
         v_phi,
         a_rho,
         params->c,
         E1_rho, E1_phi, E1_z,
         E2_rho, E2_phi, E2_z,
-        E_total_rho, E_total_phi, E_total_z
+        E_total_rho, E_total_phi, E_total_z,
+        params->use_fermi_factor,
+        params->use_fermi_general_factor,
+        params->use_fast_integrand
     );
 }
 
@@ -293,6 +386,7 @@ static void compute_electric_field_z_phi(
         (она же ось y - после преобразований в декартовы координаты в локальной системе)
          */
         y_q = y_q / gamma;
+        y_a = y_a / gamma;
 
         /* Преобразование в цилиндрическую систему (исходная) */
         rho_a = sqrt(pow(x_a, 2) + pow(y_a, 2));
@@ -313,14 +407,237 @@ static void compute_electric_field_z_phi(
     double R_z = z_a - z_q;
     double R = sqrt(pow(R_rho, 2) + pow(R_phi, 2) + pow(R_z, 2));
 
-    computing_electric_field(R, R_rho, R_phi, R_z,
+    double t_prime = 0.0;
+
+    computing_electric_field(
+        t_prime,     /* запаздывающее время */
+        R, R_rho, R_phi, R_z,
         v_phi,
         a_rho,
         params->c,
         E1_rho, E1_phi, E1_z,
         E2_rho, E2_phi, E2_z,
-        E_total_rho, E_total_phi, E_total_z
+        E_total_rho, E_total_phi, E_total_z,
+        params->use_fermi_factor,
+        params->use_fermi_general_factor,
+        params->use_fast_integrand
     );
+}
+
+/* Функция для вычисления координат источника в запаздывающий момент времени */
+static void get_source_position/*_z_phi*/(
+    double t_prime,
+    double rq,
+    double theta_q,
+    double psi_q,
+    double rho0,
+    double omega,
+    double c,
+    double *x_q,
+    double *y_q,
+    double *z_q,
+    int use_lorentz_factor,
+    int use_lorentz_general_factor
+) {
+    /* Координаты точки на сфере в системе покоя сферы */
+
+    /* Преобразование в декартовы координаты в локальной системе */
+    /* Ось z сферической системы направлена азимутально (вдоль phi) */
+    /* - сонаправлено скорости - для упрощения расчёта изменения */
+    /* формы сферы в результате лоренцева сокращения */
+
+    double x_q0 = rho0 + rq * sin(theta_q) * cos(psi_q);
+    double z_q0 = rq * sin(theta_q) * sin(psi_q);
+    double y_q0 = rq * cos(theta_q);
+
+    double rho_q = sqrt(pow(x_q0, 2) + pow(y_q0, 2));
+    if (use_lorentz_factor || use_lorentz_general_factor)
+    {
+    	/* Скорость источника */
+    	double v_phi = rho_q * omega;
+        /* Учет Лоренц-сокращения в направлении движения */
+        double gamma = lorentz_factor(v_phi, c);
+        /* Учет Лоренц-сокращения: в системе отсчета наблюдателя
+        сфера сжата вдоль направления движения (ось z) */
+        y_q0 /= gamma;
+#if 0
+        if (use_lorentz_general_factor) {
+            /* Учет дополнительного искривления из-за ускорения */
+            double proper_time = compute_proper_time(t_prime, t0, v0, a, c);
+            double acceleration_correction = 0.5 * a * pow(proper_time, 2) / gamma;
+            *y_q0 += acceleration_correction;
+        }
+#endif
+        rho_q = sqrt(pow(x_q0, 2) + pow(y_q0, 2));
+    }
+    double phi_q = atan2(y_q0, x_q0);
+    if (phi_q < 0) phi_q += 2.0 * M_PI;
+
+    /* Угловая позиция источника в запаздывающий момент времени */
+    double phi_prime = omega * t_prime;
+
+    /* Поворот системы координат сферы на угол phi_prime */
+    phi_q += phi_prime;
+
+    *x_q = rho_q * sin(phi_q);
+    *y_q = rho_q * cos(phi_q);
+    *z_q = z_q0;
+}
+
+/* Функция для вычисления R(t') - расстояния от источника к наблюдателю в момент t' */
+static double compute_R(
+    double t_prime,
+    double ra,
+    double theta_a,
+    double psi_a,
+    double rq,
+    double theta_q,
+    double psi_q,
+    double rho0,
+    double omega,
+    double c,
+    int use_lorentz_factor,
+    int use_lorentz_general_factor
+) {
+    /* Координаты наблюдателя в момент 0*/
+    double x_a, y_a, z_a;
+    get_source_position(0, ra, theta_a, psi_a, rho0, omega, c, &x_a, &y_a, &z_a,
+        use_lorentz_factor,
+        use_lorentz_general_factor);
+
+    /* Координаты источника в момент t' */
+    double x_q, y_q, z_q;
+    get_source_position(t_prime, rq, theta_q, psi_q, rho0, omega, c, &x_q, &y_q, &z_q,
+        use_lorentz_factor,
+        use_lorentz_general_factor);
+
+    /* Расстояние */
+    double dx = x_a - x_q;
+    double dy = y_a - y_q;
+    double dz = z_a - z_q;
+    return sqrt(dx*dx + dy*dy + dz*dz);
+}
+
+/* Аналитическое вычисление dR/dt' с использованием Лоренц-фактора */
+static double compute_dR_dt_prime_analytical(
+    double t_prime,
+    double ra,
+    double theta_a,
+    double psi_a,
+    double rq,
+    double theta_q,
+    double psi_q,
+    double rho0,
+    double omega,
+    double c,
+    int use_lorentz_factor,
+    int use_lorentz_general_factor
+) {
+    /* Координаты наблюдателя в момент 0*/
+    double x_a, y_a, z_a;
+    get_source_position(0, ra, theta_a, psi_a, rho0, omega, c, &x_a, &y_a, &z_a,
+        use_lorentz_factor,
+        use_lorentz_general_factor);
+
+    /* Координаты источника в запаздывающий момент времени */
+    double x_q, y_q, z_q;
+    get_source_position(t_prime, rq, theta_q, psi_q, rho0, omega, c, &x_q, &y_q, &z_q,
+        use_lorentz_factor,
+        use_lorentz_general_factor);
+    double rho_q = sqrt(pow(x_q, 2) + pow(y_q, 2));
+
+    /* Вектор от источника к наблюдателю */
+    double R_x = x_a - x_q;
+    double R_y = y_a - y_q;
+    double R_z = z_a - z_q;
+    double R = sqrt(R_x*R_x + R_y*R_y + R_z*R_z);
+
+    /* Скорость источника в запаздывающий момент времени */
+    double phi_prime = omega * t_prime;
+    double v_x = rho_q * omega * cos(phi_prime);
+    double v_y = -rho_q * omega * sin(phi_prime);
+    double v_z = 0.0;
+    double v = sqrt(v_x*v_x + v_y*v_y + v_z*v_z);
+
+    double gamma = lorentz_factor(v, c);
+    double v_r = v / gamma;  /* Радиальная скорость с учетом Лоренц-сокращения */
+
+    /* Вычисляем проекцию скорости на направление к наблюдателю */
+    double cos_theta = (R_x * v_x + R_y * v_y + R_z * v_z) / (R * v);
+    double v_radial = v_r * cos_theta;
+
+    /* Аналитическое выражение для dR/dt' */
+    return -v_radial;
+}
+
+/* Улучшенное вычисление запаздывающего времени с методом Ньютона */
+static double compute_retarded_time_newton(
+    double ra,
+    double theta_a,
+    double psi_a,
+    double rq,
+    double theta_q,
+    double psi_q,
+    double rho0,
+    double omega,
+    double c,
+    int max_iter,
+    double tolerance,
+    int use_lorentz_factor,
+    int use_lorentz_general_factor
+) {
+    /* Координаты наблюдателя в момент 0*/
+    double x_a, y_a, z_a;
+    get_source_position(0, ra, theta_a, psi_a, rho0, omega, c, &x_a, &y_a, &z_a,
+        use_lorentz_factor,
+        use_lorentz_general_factor);
+
+    /* Координаты источника в момент времени 0 */
+    double x_q, y_q, z_q;
+    get_source_position(0, rq, theta_q, psi_q, rho0, omega, c, &x_q, &y_q, &z_q,
+        use_lorentz_factor,
+        use_lorentz_general_factor);
+
+    double R = sqrt(pow(x_a - x_q, 2) + pow(y_a - y_q, 2) + pow(z_a - z_q, 2));
+    double t = 0.0;
+    double t_prime = t - R / c;
+
+    /* Итерационное решение */
+    for (int i = 0; i < max_iter; i++) {
+        get_source_position(t_prime, rq, theta_q, psi_q, rho0, omega, c, &x_q, &y_q, &z_q,
+            use_lorentz_factor,
+            use_lorentz_general_factor);
+
+        R = sqrt(pow(x_a - x_q, 2) + pow(y_a - y_q, 2) + pow(z_a - z_q, 2));
+        double t_prime_new = t - R / c;
+
+        if (fabs(t_prime_new - t_prime) < tolerance) {
+            t_prime = t_prime_new;
+            break;
+        }
+
+        t_prime = t_prime_new;
+    }
+
+    /* Уточнение методом Ньютона с аналитической производной */
+    for (int i = 0; i < 5; i++) {
+        double R_val = compute_R(t_prime, ra, theta_a, psi_a, rq, theta_q, psi_q, rho0, omega, c,
+            use_lorentz_factor,
+            use_lorentz_general_factor);
+        double f = t_prime - t + R_val / c;
+        double df_dt = 1.0 + compute_dR_dt_prime_analytical(t_prime, ra, theta_a, psi_a, rq, theta_q, psi_q, rho0, omega, c,
+            use_lorentz_factor,
+            use_lorentz_general_factor) / c;
+
+        double delta = -f / df_dt;
+        t_prime += delta;
+
+        if (fabs(delta) < tolerance) {
+            break;
+        }
+    }
+
+    return t_prime;
 }
 
 /* Функция для вычисления электрического поля с учетом запаздывания */
@@ -332,14 +649,24 @@ static void compute_electric_field_with_delay(
     double *E2_rho, double *E2_phi, double *E2_z,
     double *E_total_rho, double *E_total_phi, double *E_total_z
 ) {
-    /* Преобразование в декартовы координаты в локальной системе */
-    double x_a = ra * sin(theta_a) * cos(psi_a);
-    double y_a = ra * sin(theta_a) * sin(psi_a);
-    double z_a = ra * cos(theta_a);
+    /* Вычисление запаздывающего времени */
+    double t_prime = compute_retarded_time_newton(
+        ra, theta_a, psi_a, rq, theta_q, psi_q,
+        params->rho0, params->omega, params->c, 100, 1e-10,
+        params->use_lorentz_factor, params->use_lorentz_general_factor
+    );
 
-    double x_q = rq * sin(theta_q) * cos(psi_q);
-    double y_q = rq * sin(theta_q) * sin(psi_q);
-    double z_q = rq * cos(theta_q);
+    /* Координаты наблюдателя в момент t = 0 */
+    double x_a, y_a, z_a;
+    get_source_position(0, ra, theta_a, psi_a, params->rho0, params->omega, params->c, &x_a, &y_a, &z_a,
+        params->use_lorentz_factor,
+        params->use_lorentz_general_factor);
+
+    /* Получение координат источника в запаздывающий момент времени */
+    double x_q, y_q, z_q;
+    get_source_position(t_prime, rq, theta_q, psi_q,
+                       params->rho0, params->omega, params->c, &x_q, &y_q, &z_q,
+                       params->use_lorentz_factor, params->use_lorentz_general_factor);
 
     /* Преобразование в цилиндрическую систему (исходная) */
     double rho_a = sqrt(pow(params->rho0 + x_a, 2) + pow(y_a, 2));
@@ -360,13 +687,18 @@ static void compute_electric_field_with_delay(
     double v_phi = rho_q * params->omega;
     double a_rho = -rho_q * pow(params->omega, 2);
 
-    computing_electric_field(R, R_rho, R_phi, R_z,
+    computing_electric_field(
+        t_prime,     /* запаздывающее время */
+        R, R_rho, R_phi, R_z,
         v_phi,
         a_rho,
         params->c,
         E1_rho, E1_phi, E1_z,
         E2_rho, E2_phi, E2_z,
-        E_total_rho, E_total_phi, E_total_z
+        E_total_rho, E_total_phi, E_total_z,
+        params->use_fermi_factor,
+        params->use_fermi_general_factor,
+        params->use_fast_integrand
     );
 }
 
@@ -382,7 +714,6 @@ static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_
     double *int_q_E1_rho, double *int_q_E1_phi, double *int_q_E1_z,
     double *int_q_E2_rho, double *int_q_E2_phi, double *int_q_E2_z,
     double *int_q_E_rho,  double *int_q_E_phi,  double *int_q_E_z
-
  )
 {
     cubareal r0 = params->R0;
@@ -392,11 +723,29 @@ static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_
     double E2_rho, E2_phi, E2_z;
     double E_rho,  E_phi,  E_z;
 
-    compute_electric_field_z_rho/*with_delay*/(ra, theta_a, psi_a,
+    if (params->use_delay)
+    {
+        compute_electric_field_with_delay(ra, theta_a, psi_a,
                            rq, theta_q, psi_q, params,
                           &E1_rho, &E1_phi, &E1_z,
                           &E2_rho, &E2_phi, &E2_z,
                           &E_rho,  &E_phi,  &E_z);
+    }
+    else {
+#if 0
+        compute_electric_field_z_phi(ra, theta_a, psi_a,
+                           rq, theta_q, psi_q, params,
+                          &E1_rho, &E1_phi, &E1_z,
+                          &E2_rho, &E2_phi, &E2_z,
+                          &E_rho,  &E_phi,  &E_z);
+#else
+        compute_electric_field_z_rho(ra, theta_a, psi_a,
+                           rq, theta_q, psi_q, params,
+                          &E1_rho, &E1_phi, &E1_z,
+                          &E2_rho, &E2_phi, &E2_z,
+                          &E_rho,  &E_phi,  &E_z);
+#endif
+    }
 
     double k_q = rho_q(r0, q) * Sq(rq) * sin(theta_q);
 
@@ -409,9 +758,6 @@ static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_
     *int_q_E_rho  = k_q * E_rho;
     *int_q_E_phi  = k_q * E_phi;
     *int_q_E_z    = k_q * E_z;
-
-    //return mean_a * rho_q(r0, q) * Sq(rq) * sin(theta_q) / R / pow(params->c, 2);
-    //return rho_q(r0, q) * Sq(rq) * sin(theta_q) / R;
 }
 
 // интегрирование по координатам точек наблюдения
@@ -447,7 +793,6 @@ void int_a (
     *int_a_E_total_rho = k_a * int_q_E_total_rho;
     *int_a_E_total_phi = k_a * int_q_E_total_phi;
     *int_a_E_total_z   = k_a * int_q_E_total_z;
-
 }
 
 int Integrand(const int *ndim, const cubareal xx[],
@@ -553,23 +898,23 @@ int Integrand(const int *ndim, const cubareal xx[],
     */
 
     double U = 3.0 / (5.0 * params->R0);     /* Энергия электрического поля */
-    double m_perp_B = /*2 **/ U;                 /* Вариация типа В (теоретическое значение) */
+    double m_perp_B = /*2 **/ U / (params->c * params->c);                 /* Вариация типа В (теоретическое значение) */
 
     /* Вычисление поперечной массы */
     //double m_perp_A = integral[0] / Gamma / (params.c * params.c);  /* Вариация типа А */
     //double m = f/Gamma/ (params->c * params->c);
 
-    double m1_rho = f1_rho / Gamma / (params->c * params->c);
-    double m1_phi = f1_phi / Gamma / (params->c * params->c);
-    double m1_z   = f1_z   / Gamma / (params->c * params->c);
+    double m1_rho = f1_rho / Gamma;
+    double m1_phi = f1_phi / Gamma;
+    double m1_z   = f1_z   / Gamma;
 
-    double m2_rho = f2_rho / Gamma / (params->c * params->c);
-    double m2_phi = f2_phi / Gamma / (params->c * params->c);
-    double m2_z   = f2_z   / Gamma / (params->c * params->c);
+    double m2_rho = f2_rho / Gamma;
+    double m2_phi = f2_phi / Gamma;
+    double m2_z   = f2_z   / Gamma;
 
-    double m_rho = f_rho / Gamma / (params->c * params->c);
-    double m_phi = f_phi / Gamma / (params->c * params->c);
-    double m_z   = f_z   / Gamma / (params->c * params->c);
+    double m_rho = f_rho / Gamma;
+    double m_phi = f_phi / Gamma;
+    double m_z   = f_z   / Gamma;
 
     /* Проверка коэффициента 4/3 */
     double expected_ratio = 4.0 / 3.0;
@@ -594,8 +939,13 @@ int Integrand(const int *ndim, const cubareal xx[],
 #define NCOMP 9
 #define USERDATA NULL
 #define NVEC 1
+#if 1
+#define EPSREL 1e-8
+#define EPSABS 1e-16
+#else
 #define EPSREL 1e-3
 #define EPSABS 1e-12
+#endif
 #define VERBOSE 2
 #define LAST 4
 #define SEED 0

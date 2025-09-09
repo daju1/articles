@@ -41,7 +41,7 @@ int main() {
   int use_lorentz_general_factor = 0;
   int use_fermi_factor           = 0;
   int use_fermi_general_factor   = 0;
-  int use_fast_integrand         = 0;
+  int use_fast_integrand         = 1;
 
   integrate(
     R0,    /* Радиус сферы */

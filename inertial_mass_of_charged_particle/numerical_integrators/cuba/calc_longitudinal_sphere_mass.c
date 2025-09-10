@@ -6,7 +6,9 @@
 #include <stdlib.h>
 #include <math.h>
 
+#ifdef INCLUDE_CUBA_H
 #include "cuba.h"
+#endif
 
 static inline cubareal Sq(cubareal x) {
   return x*x;

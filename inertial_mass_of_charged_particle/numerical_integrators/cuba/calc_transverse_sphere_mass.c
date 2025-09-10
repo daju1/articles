@@ -10,6 +10,10 @@
 #include "cuba.h"
 #endif
 
+//#define Z_Z
+#define Z_RHO
+//#define Z_PHI
+
 static inline cubareal Sq(cubareal x) {
   return x*x;
 }
@@ -143,20 +147,17 @@ static void computing_electric_field(
         fermi_factor = fermi_correction_general(
             t,           /* текущее время */
             t_prime,     /* запаздывающее время */
-            R_rho,
-            R_phi,
-            R_z,
-            a_rho,
-            a_phi,
-            a_z,
-            v_rho,
-            v_phi,
-            v_z,
+            R_rho, R_phi, R_z,
+            a_rho, a_phi, a_z,
+            v_rho, v_phi, v_z,
             c);
     }
     else if (use_fermi_factor)
     {
-        fermi_factor = fermi_correction(R_rho, R_phi, R_z, a_rho, a_phi, a_z, c);
+        fermi_factor = fermi_correction(
+            R_rho, R_phi, R_z,
+            a_rho, a_phi, a_z,
+            c);
     }
     double v2_c2 = (Sq(v_rho) + Sq(v_phi) + Sq(v_z) ) / Sq(c);
     double Ra_c2 = (R_rho * a_rho) / Sq(c);
@@ -227,7 +228,7 @@ static void computing_electric_field(
     *E_total_z   = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_z   - (f_one + Ra_v2_c2_fermi) * R*v_z/c)    - (a_z   * R_star * R) / Sq(c) - (a_z   * R_star * R) * fermi_factor / Sq(c));
 #endif
 }
-
+#if 0
 /* Функция для вычисления электрического поля по Лиенару-Вихерту */
 static void compute_electric_field_z_z(
     double ra, double theta_a, double psi_a,
@@ -292,7 +293,12 @@ static void compute_electric_field_z_rho(
     double *E_total_rho, double *E_total_phi, double *E_total_z
 ) {
     /* Преобразование в декартовы координаты в локальной системе */
-    /* Ось z сферической системы направлена вдоль радиального направления */
+
+    /* Ось z = r * cos(theta) сферической системы связанной с зарядом
+        направлена вдоль радиального направления
+        лабораторной цилиндрической системы координат
+        Поэтому x_a и y_a - это лабораторные декартовы координаты в момент t = 0
+     */
     double x_a = params->rho0 + ra * cos(theta_a);
     double y_a = ra * sin(theta_a) * sin(psi_a);
     double z_a = ra * sin(theta_a) * cos(psi_a);
@@ -336,6 +342,7 @@ static void compute_electric_field_z_rho(
         params->use_fast_integrand
     );
 }
+#endif
 
 /* Функция для вычисления фактора Лоренца */
 static inline double lorentz_factor(double v, double c) {
@@ -343,7 +350,7 @@ static inline double lorentz_factor(double v, double c) {
     return 1.0 / sqrt(1.0 - beta * beta);
 }
 
-static void compute_electric_field_z_phi(
+static void compute_electric_field(
     double ra, double theta_a, double psi_a, /*воображаемые координаты несплюснутой сферы*/
     double rq, double theta_q, double psi_q, /*по которым производится интегрирование*/
     const ProblemParams *params,
@@ -352,16 +359,60 @@ static void compute_electric_field_z_phi(
     double *E_total_rho, double *E_total_phi, double *E_total_z
 ) {
     /* Преобразование в декартовы координаты в локальной системе */
-    /* Ось z сферической системы направлена азимутально (вдоль phi) */
-    /* - сонаправлено скорости - для упрощения расчёта изменения */
-    /* формы сферы в результате лоренцева сокращения */
+#ifdef Z_Z
+    /* Преобразование в декартовы координаты в локальной системе */
     double x_a = params->rho0 + ra * sin(theta_a) * cos(psi_a);
-    double z_a = ra * sin(theta_a) * sin(psi_a);
-    double y_a = ra * cos(theta_a);
+    double y_a = ra * sin(theta_a) * sin(psi_a);
+    double z_a = ra * cos(theta_a);
 
     double x_q = params->rho0 + rq * sin(theta_q) * cos(psi_q);
-    double z_q = rq * sin(theta_q) * sin(psi_q);
+    double y_q = rq * sin(theta_q) * sin(psi_q);
+    double z_q = rq * cos(theta_q);
+#endif
+
+#ifdef Z_RHO
+    /* Ось z = r * cos(theta) сферической системы связанной с зарядом
+        направлена вдоль радиального направления
+        лабораторной цилиндрической системы координат
+        Поэтому x_a и y_a - это лабораторные декартовы координаты в момент t = 0
+     */
+    double x_a = params->rho0 + ra * cos(theta_a);
+    double y_a = ra * sin(theta_a) * sin(psi_a);
+    double z_a = ra * sin(theta_a) * cos(psi_a);
+
+    double x_q = params->rho0 + rq * cos(theta_q);
+    double y_q = rq * sin(theta_q) * sin(psi_q);
+    double z_q = rq * sin(theta_q) * cos(psi_q);
+#endif
+
+#ifdef Z_PHI
+    /* Ось z = r * cos(theta) сферической системы связанной с зарядом
+        направлена азимутально (вдоль phi)
+        сонаправлено скорости - для упрощения расчёта изменения
+        формы сферы в результате лоренцева сокращения
+     */
+    double x_a = params->rho0 + ra * sin(theta_a) * cos(psi_a);
+    double y_a = ra * cos(theta_a);
+    double z_a = ra * sin(theta_a) * sin(psi_a);
+
+    double x_q = params->rho0 + rq * sin(theta_q) * cos(psi_q);
     double y_q = rq * cos(theta_q);
+    double z_q = rq * sin(theta_q) * sin(psi_q);
+#endif
+
+    /*
+        Переменные x_a, y_a и z_a относятся к лабораторной
+        цилиндрической системе следующим образом
+
+        z_a - как раз соответствует оси z лабораторной
+        цилиндрической системы координат,
+
+        в рассматриваемый текущий момент времени t = 0
+        центр сферы находится в точке
+        X = params->rho0, Y = 0 - лабораторной декартовой системы.
+
+        Поэтому x_a и y_a - это лабораторные декартовы координаты в момент t = 0
+    */
 
     /* Преобразование в цилиндрическую систему (исходная) */
     double rho_a = sqrt(pow(x_a, 2) + pow(y_a, 2));
@@ -425,7 +476,7 @@ static void compute_electric_field_z_phi(
 }
 
 /* Функция для вычисления координат источника в запаздывающий момент времени */
-static void get_source_position/*_z_phi*/(
+static void get_source_position(
     double t_prime,
     double rq,
     double theta_q,
@@ -440,7 +491,25 @@ static void get_source_position/*_z_phi*/(
     int use_lorentz_general_factor
 ) {
     /* Координаты точки на сфере в системе покоя сферы */
+#ifdef Z_Z
+    /* Преобразование в декартовы координаты в локальной системе */
+    double x_q0 = rho0 + rq * sin(theta_q) * cos(psi_q);
+    double y_q0 = rq * sin(theta_q) * sin(psi_q);
+    double z_q0 = rq * cos(theta_q);
+#endif
 
+#ifdef Z_RHO
+    /* Ось z = r * cos(theta) сферической системы связанной с зарядом
+        направлена вдоль радиального направления
+        лабораторной цилиндрической системы координат
+        Поэтому x_a и y_a - это лабораторные декартовы координаты в момент t = 0
+     */
+    double x_q0 = rho0 + rq * cos(theta_q);
+    double y_q0 = rq * sin(theta_q) * sin(psi_q);
+    double z_q0 = rq * sin(theta_q) * cos(psi_q);
+#endif
+
+#ifdef Z_PHI
     /* Преобразование в декартовы координаты в локальной системе */
     /* Ось z сферической системы направлена азимутально (вдоль phi) */
     /* - сонаправлено скорости - для упрощения расчёта изменения */
@@ -449,6 +518,7 @@ static void get_source_position/*_z_phi*/(
     double x_q0 = rho0 + rq * sin(theta_q) * cos(psi_q);
     double z_q0 = rq * sin(theta_q) * sin(psi_q);
     double y_q0 = rq * cos(theta_q);
+#endif
 
     double rho_q = sqrt(pow(x_q0, 2) + pow(y_q0, 2));
     if (use_lorentz_factor || use_lorentz_general_factor)
@@ -669,12 +739,12 @@ static void compute_electric_field_with_delay(
                        params->use_lorentz_factor, params->use_lorentz_general_factor);
 
     /* Преобразование в цилиндрическую систему (исходная) */
-    double rho_a = sqrt(pow(params->rho0 + x_a, 2) + pow(y_a, 2));
-    double phi_a = atan2(y_a, params->rho0 + x_a);
+    double rho_a = sqrt(pow(x_a, 2) + pow(y_a, 2));
+    double phi_a = atan2(y_a, x_a);
     if (phi_a < 0) phi_a += 2.0 * M_PI;
 
-    double rho_q = sqrt(pow(params->rho0 + x_q, 2) + pow(y_q, 2));
-    double phi_q = atan2(y_q, params->rho0 + x_q);
+    double rho_q = sqrt(pow(x_q, 2) + pow(y_q, 2));
+    double phi_q = atan2(y_q, x_q);
     if (phi_q < 0) phi_q += 2.0 * M_PI;
 
     /* Вектор от источника к наблюдателю */
@@ -732,19 +802,11 @@ static inline void int_q (const ProblemParams *params, cubareal q, cubareal psi_
                           &E_rho,  &E_phi,  &E_z);
     }
     else {
-#if 0
-        compute_electric_field_z_phi(ra, theta_a, psi_a,
+        compute_electric_field(ra, theta_a, psi_a,
                            rq, theta_q, psi_q, params,
                           &E1_rho, &E1_phi, &E1_z,
                           &E2_rho, &E2_phi, &E2_z,
                           &E_rho,  &E_phi,  &E_z);
-#else
-        compute_electric_field_z_rho(ra, theta_a, psi_a,
-                           rq, theta_q, psi_q, params,
-                          &E1_rho, &E1_phi, &E1_z,
-                          &E2_rho, &E2_phi, &E2_z,
-                          &E_rho,  &E_phi,  &E_z);
-#endif
     }
 
     double k_q = rho_q(r0, q) * Sq(rq) * sin(theta_q);

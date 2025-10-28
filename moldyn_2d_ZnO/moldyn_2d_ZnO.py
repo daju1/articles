@@ -18,7 +18,7 @@ class moldyn():
         self.cols = cols
         self.atom_count = self.rows * self.cols
 
-        self.tstep1 = 0.5;                      # [1.0e-15 s]
+        self.tstep1 = 0.1;                      # [1.0e-15 s]
         self.tstep2 = self.tstep1 * self.tstep1;# [1.0e-30 s^2]
 
         self.vel = [];# [1.0e+3 m/s]
@@ -358,27 +358,27 @@ class moldyn():
 
                     self.acc_left_boundary[n1][n2]  = self.f_left_boundary[n1][n2] / self.mass[n1];
                     self.acc_right_boundary[n1][n2] = self.f_right_boundary[n1][n2] / self.mass[n1];
-                    
+
                     # current velocity
                     cur_vel = self.vel[n1][n2]
                     # current partial kinetic energy
                     cur_kin = tmpX * cur_vel * cur_vel
-                    
+
                     # updated velocity
                     new_vel = cur_vel + self.tstep1 * self.acc[n1][n2] * 1.0e-6
                     new_kin = tmpX * new_vel * new_vel
-                    
+
                     # velocity updated just by left boundary force
                     new_vel_left_bound = cur_vel + self.tstep1 * self.acc_left_boundary[n1][n2] * 1.0e-6
                     new_kin_left_bound = tmpX * new_vel_left_bound * new_vel_left_bound
-                    
+
                     # velocity updated just by right boundary force
                     new_vel_right_bound = cur_vel + self.tstep1 * self.acc_right_boundary[n1][n2] * 1.0e-6
                     new_kin_right_bound = tmpX * new_vel_right_bound * new_vel_right_bound
-                    
+
                     self.dkin_left_boundary[n2]  += (new_kin_left_bound - new_kin) / self.tstep1 * 1.0e+15
                     self.dkin_right_boundary[n2] += (new_kin_right_bound - new_kin) / self.tstep1 * 1.0e+15
- 
+
     def TakeMDStep(self):
         for n1 in range(self.atom_count):
             for n2 in [0,1]:
@@ -411,6 +411,34 @@ class moldyn():
                 energy += tmp2;
 
         return energy;
+
+    def MomentumX(self):
+        momentum_x = 0.0
+
+        for n1 in range(self.atom_count):
+            tmpX = 1000.0 * self.mass[n1]
+
+            for n2 in [0]:
+                tmp1 = self.vel[n1][n2];
+                tmp2 = tmpX * tmp1;
+
+                momentum_x += tmp2;
+
+        return momentum_x;
+
+    def MomentumY(self):
+        momentum_y = 0.0
+
+        for n1 in range(self.atom_count):
+            tmpX = 1000.0 * self.mass[n1]
+
+            for n2 in [1]:
+                tmp1 = self.vel[n1][n2];
+                tmp2 = tmpX * tmp1;
+
+                momentum_y += tmp2;
+
+        return momentum_y;
 
     def KineticEnergy2(self):
         counter = 0

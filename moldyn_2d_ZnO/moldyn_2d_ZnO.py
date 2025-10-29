@@ -151,78 +151,90 @@ class moldyn():
                 index = self.rc2index(r, c)
                 self.crd[index][1] += l*dy * m
 
-    def init_sin_dx(self, w, m):
+    def init_sin_dx(self, w, m, local=True):
         rw = self.rows // 2
         # w = 13
         # 2w = 26 -> 2*pi * 4 = 6.28 * 4
         a = rw//2 - w
         b = rw//2 + w
-        T = w / pi
+        if local:
+            T = w / pi
+        else:
+            T = rw / (2*pi*w)
         center = rw//2
         print(a, b, center)
 
         for r in range(self.rows):
             i = r // 2
             dx = 0
-            if i > a and i < b:
+            if (i > a and i < b) or (False == local):
                 dx = sin((i - center) / T)
 
             for c in range(self.cols):
                 index = self.rc2index(r, c)
                 self.crd[index][0] += l*dx*m
 
-    def init_sin_dy(self, w, m):
+    def init_sin_dy(self, w, m, local=True):
         rw = self.rows // 2
         a = rw//2 - w
         b = rw//2 + w
-        T = w / pi
+        if local:
+            T = w / pi
+        else:
+            T = rw / (2*pi*w)
         center = rw//2
         print(a, b, center)
 
         for r in range(self.rows):
             i = r // 2
             dy = 0
-            if i > a and i < b:
+            if (i > a and i < b) or (False == local):
                 dy = sin((i - center) / T)
 
             for c in range(self.cols):
                 index = self.rc2index(r, c)
                 self.crd[index][1] += l*dy*m
 
-    def init_sin_vx(self, w, m):
+    def init_sin_vx(self, w, m, local=True):
         rw = self.rows // 2
         # w = 13
         # 2w = 26 -> 2*pi * 4 = 6.28 * 4
         a = rw//2 - w
         b = rw//2 + w
-        T = w / pi
+        if local:
+            T = w / pi
+        else:
+            T = rw / (2*pi*w)
         center = rw//2
         print(a, b, center)
 
         for r in range(self.rows):
             i = r // 2
             vx = 0
-            if i > a and i < b:
+            if (i > a and i < b) or (False == local):
                 vx = sin((i - center) / T)
 
             for c in range(self.cols):
                 index = self.rc2index(r, c)
                 self.vel[index][0] += vx*m
 
-    def init_sin_vy(self, w, m):
+    def init_sin_vy(self, w, m, local=True):
         rw = self.rows // 2
         # w = 13
         # 2w = 26 -> 2*pi * 4 = 6.28 * 4
         a = rw//2 - w
         b = rw//2 + w
-        T = w / pi
+        if local:
+            T = w / pi
+        else:
+            T = rw / (2*pi*w)
         center = rw//2
         print(a, b, center)
 
         for r in range(self.rows):
             i = r // 2
             vy = 0
-            if i > a and i < b:
+            if (i > a and i < b) or (False == local):
                 vy = sin((i - center) / T)
 
             for c in range(self.cols):
@@ -354,10 +366,8 @@ class moldyn():
                     n1 = self.rc2index(row, col)
                     tmpX = 500.0 * self.mass[n1]
 
+                    # updated acceleration
                     acc_n1_n2 = self.f[n1][n2] / self.mass[n1];
-
-                    self.acc_left_boundary[n1][n2]  = self.f_left_boundary[n1][n2] / self.mass[n1];
-                    self.acc_right_boundary[n1][n2] = self.f_right_boundary[n1][n2] / self.mass[n1];
 
                     # current velocity
                     cur_vel = self.vel[n1][n2]
@@ -365,19 +375,26 @@ class moldyn():
                     cur_kin = tmpX * cur_vel * cur_vel
 
                     # updated velocity
-                    new_vel = cur_vel + self.tstep1 * self.acc[n1][n2] * 1.0e-6
+                    new_vel = cur_vel + self.tstep1 * acc_n1_n2 * 1.0e-6
                     new_kin = tmpX * new_vel * new_vel
 
-                    # velocity updated just by left boundary force
-                    new_vel_left_bound = cur_vel + self.tstep1 * self.acc_left_boundary[n1][n2] * 1.0e-6
-                    new_kin_left_bound = tmpX * new_vel_left_bound * new_vel_left_bound
+                    if self.f_left_boundary[n1][n2]:
+                        self.acc_left_boundary[n1][n2]  = self.f_left_boundary[n1][n2] / self.mass[n1];
 
-                    # velocity updated just by right boundary force
-                    new_vel_right_bound = cur_vel + self.tstep1 * self.acc_right_boundary[n1][n2] * 1.0e-6
-                    new_kin_right_bound = tmpX * new_vel_right_bound * new_vel_right_bound
+                        # velocity updated just by left boundary force
+                        new_vel_left_bound = cur_vel + self.tstep1 * self.acc_left_boundary[n1][n2] * 1.0e-6
+                        new_kin_left_bound = tmpX * new_vel_left_bound * new_vel_left_bound
 
-                    self.dkin_left_boundary[n2]  += (new_kin_left_bound - new_kin) / self.tstep1 * 1.0e+15
-                    self.dkin_right_boundary[n2] += (new_kin_right_bound - new_kin) / self.tstep1 * 1.0e+15
+                        self.dkin_left_boundary[n2]  += (new_kin_left_bound - new_kin) / self.tstep1 * 1.0e+15
+
+                    if self.f_right_boundary[n1][n2]:
+                        self.acc_right_boundary[n1][n2] = self.f_right_boundary[n1][n2] / self.mass[n1];
+
+                        # velocity updated just by right boundary force
+                        new_vel_right_bound = cur_vel + self.tstep1 * self.acc_right_boundary[n1][n2] * 1.0e-6
+                        new_kin_right_bound = tmpX * new_vel_right_bound * new_vel_right_bound
+
+                        self.dkin_right_boundary[n2] += (new_kin_right_bound - new_kin) / self.tstep1 * 1.0e+15
 
     def TakeMDStep(self):
         for n1 in range(self.atom_count):
@@ -474,7 +491,6 @@ class moldyn():
                     tmp1 = self.vel[counter][n2];
                     tmp2 = tmpX * tmp1 * tmp1;
                     energy += tmp2
-                    
 
                 for n2 in [0,1]:
                     crd = self.crd[counter][n2]
@@ -583,10 +599,10 @@ class moldyn():
                     energy_center[n2] += crd * (energy - tmpW)
 
                 counter+=1;
-                
+
         for n2 in [0,1]:
             energy_center[n2] /= (self.KineticEnergy()-self.PotentialEnergy())
-            
+
         return energy_center
 
     def plot(self):

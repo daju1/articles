@@ -8,28 +8,15 @@
 
 static mendrive_params_t g_params;
 
-void set_params(double c, double omega, double a,
-                double eps_l_xx, double mu_l_yy, double sigma_e_l_xx, double sigma_m_l_yy,
-                double eps_r_xx, double mu_r_yy, double sigma_e_r_xx, double sigma_m_r_yy) {
-    g_params.c = c;
-    g_params.omega = omega;
-    g_params.a = a;
-    g_params.eps_l_xx = eps_l_xx; g_params.mu_l_yy = mu_l_yy;
-    g_params.sigma_e_l_xx = sigma_e_l_xx; g_params.sigma_m_l_yy = sigma_m_l_yy;
-    g_params.eps_r_xx = eps_r_xx; g_params.mu_r_yy = mu_r_yy;
-    g_params.sigma_e_r_xx = sigma_e_r_xx; g_params.sigma_m_r_yy = sigma_m_r_yy;
-    det_init(&g_params);
-}
-
 int det_system(const gsl_vector *x, void *params, gsl_vector *f) {
-    double kz = gsl_vector_get(x, 0);
-    double sz = gsl_vector_get(x, 1);
+    long double kz = (long double) gsl_vector_get(x, 0);
+    long double sz = (long double) gsl_vector_get(x, 1);
 
-    double re, im;
+    long double re, im;
     det_eval(kz, sz, &re, &im);
 
-    gsl_vector_set(f, 0, re);  // f₁ = Re(det)
-    gsl_vector_set(f, 1, im);  // f₂ = Im(det)
+    gsl_vector_set(f, 0, (double)re);  // f₁ = Re(det)
+    gsl_vector_set(f, 1, (double)im);  // f₂ = Im(det)
     return GSL_SUCCESS;
 }
 

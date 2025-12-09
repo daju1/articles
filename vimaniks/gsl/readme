@@ -1,7 +1,9 @@
 wget https://mirror.ibcp.fr/pub/gnu/gsl/gsl-latest.tar.gz
 tar -xf gsl-latest.tar.gz
 
-./gsl-latest/gsl-2.8$ ./configure --prefix=/usr3/articles/sagemath_docker_build/work/vimaniks/gsl/local  CFLAGS=-fPIC CXXFLAGS=-fPIC --enable-shared
+cd ./gsl-latest/gsl-2.8
+
+./configure --prefix=${PWD}/local  CFLAGS=-fPIC CXXFLAGS=-fPIC --enable-shared
 
 make && make install
 

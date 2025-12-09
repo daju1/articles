@@ -1,13 +1,15 @@
 wget https://mirror.ibcp.fr/pub/gnu/gsl/gsl-latest.tar.gz
 tar -xf gsl-latest.tar.gz
 
-cd ./gsl-latest/gsl-2.8
+cd ./gsl-2.8
 
-./configure --prefix=${PWD}/local  CFLAGS=-fPIC CXXFLAGS=-fPIC --enable-shared
+./configure --prefix=$(dirname ${PWD})/local  CFLAGS=-fPIC CXXFLAGS=-fPIC --enable-shared
 
 make && make install
 
-./gsl$ make test
+cd ..
+
+make test
 gcc -o test vanderpol.o -I. -I./local/include -O0 -g -Werror -Wformat -L./local/lib -lm -lgsl -lgslcblas
-./gsl$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./local/lib 
-./gsl$ ./test 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./local/lib 
+test 

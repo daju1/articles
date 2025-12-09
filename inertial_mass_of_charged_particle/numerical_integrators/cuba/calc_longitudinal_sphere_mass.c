@@ -29,10 +29,28 @@ typedef struct {
     int use_delay;
     int use_lorentz_factor;
     int use_lorentz_general_factor;
+    int use_fermi_factor_O;
     int use_fermi_factor;
     int use_fermi_general_factor;
     int use_fast_integrand;
 } ProblemParams;
+
+/* Функция для вычисления поправки Ферми по отношению к опорной точке О*/
+static double fermi_correction_O(
+    double RO_x,
+    double RO_y,
+    double RO_z,
+    double a_x,
+    double a_y,
+    double a_z,
+    double c
+) {
+    /* Скалярное произведение R · a */
+    double RO_dot_a = RO_x * a_x + RO_y * a_y + RO_z * a_z;
+
+    /* Поправка Ферми */
+    return (/*1.0*/ + RO_dot_a / (c * c));
+}
 
 /* Функция для вычисления поправки Ферми */
 static double fermi_correction(
@@ -100,6 +118,7 @@ static void computing_electric_field(
     double t,           /* текущее время */
     double t_prime,     /* запаздывающее время */
     double R,
+    double RO_x, double RO_y, double RO_z,
     double R_x, double R_y, double R_z,
     double v_x, double v_y, double v_z,
     double a_x, double a_y, double a_z,
@@ -107,6 +126,7 @@ static void computing_electric_field(
     double *E1_x, double *E1_y, double *E1_z,
     double *E2_x, double *E2_y, double *E2_z,
     double *E_total_x, double *E_total_y, double *E_total_z,
+    int use_fermi_factor_O,
     int use_fermi_factor,
     int use_fermi_general_factor,
     int use_fast_integrand
@@ -144,6 +164,10 @@ static void computing_electric_field(
     else if (use_fermi_factor)
     {
         fermi_factor = fermi_correction(R_x, R_y, R_z, a_x, a_y, a_z, c);
+    }
+    else if (use_fermi_factor_O)
+    {
+        fermi_factor = fermi_correction_O(RO_x, RO_y, RO_z, a_x, a_y, a_z, c);
     }
     double v2_c2 = (Sq(v_x) + Sq(v_y) + Sq(v_z) ) / Sq(c);
     double Ra_c2 = (R_z * a_z) / Sq(c);
@@ -248,6 +272,11 @@ static void compute_electric_field(
         z_a = z_a / gamma;
     }
 
+    /* Вектор от точки О к наблюдателю */
+    double RO_x = x_a;
+    double RO_y = y_a;
+    double RO_z = z_a;
+
     /* Вектор от источника к наблюдателю */
     double R_x = x_a - x_q;
     double R_y = y_a - y_q;
@@ -258,6 +287,7 @@ static void compute_electric_field(
         0,           /* текущее время */
         0,           /* запаздывающее время */
         R,
+        RO_x, RO_y, RO_z,
         R_x, R_y, R_z,
         v_x, v_y, v_z,
         a_x, a_y, a_z,
@@ -265,6 +295,7 @@ static void compute_electric_field(
         E1_x, E1_y, E1_z,
         E2_x, E2_y, E2_z,
         E_total_x, E_total_y, E_total_z,
+        params->use_fermi_factor_O,
         params->use_fermi_factor,
         params->use_fermi_general_factor,
         params->use_fast_integrand
@@ -536,6 +567,11 @@ static void compute_electric_field_with_delay(
                        params->v0, params->a, params->c, &x_q, &y_q, &z_q,
                        params->use_lorentz_factor, params->use_lorentz_general_factor);
 
+    /* Вектор от точки О к наблюдателю */
+    double RO_x = x_a;
+    double RO_y = y_a;
+    double RO_z = z_a;
+
     /* Вектор от источника к наблюдателю */
     double R_x = x_a - x_q;
     double R_y = y_a - y_q;
@@ -556,6 +592,7 @@ static void compute_electric_field_with_delay(
         params->t,           /* текущее время */
         t_prime,     /* запаздывающее время */
         R,
+        RO_x, RO_y, RO_z,
         R_x, R_y, R_z,
         v_x, v_y, v_z,
         a_x, a_y, a_z,
@@ -563,8 +600,9 @@ static void compute_electric_field_with_delay(
         E1_x, E1_y, E1_z,
         E2_x, E2_y, E2_z,
         E_total_x, E_total_y, E_total_z,
+        params->use_fermi_factor_O,
         params->use_fermi_factor,
-        params->use_lorentz_general_factor,
+        params->use_fermi_general_factor,
         params->use_fast_integrand);
 }
 
@@ -887,6 +925,7 @@ int integrate(
     int use_delay,
     int use_lorentz_factor,
     int use_lorentz_general_factor,
+    int use_fermi_factor_O,
     int use_fermi_factor,
     int use_fermi_general_factor,
     int use_fast_integrand,
@@ -908,6 +947,7 @@ int integrate(
     params.use_delay                  = use_delay;
     params.use_lorentz_factor         = use_lorentz_factor;
     params.use_lorentz_general_factor = use_lorentz_general_factor;
+    params.use_fermi_factor_O         = use_fermi_factor_O;
     params.use_fermi_factor           = use_fermi_factor;
     params.use_fermi_general_factor   = use_fermi_general_factor;
     params.use_fast_integrand         = use_fast_integrand;

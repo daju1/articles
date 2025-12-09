@@ -31,6 +31,7 @@ typedef struct {
     int use_delay;
     int use_lorentz_factor;
     int use_lorentz_general_factor;
+    int use_fermi_factor_O;
     int use_fermi_factor;
     int use_fermi_general_factor;
     int use_fast_integrand;
@@ -931,6 +932,7 @@ int integrate(
     int use_delay,
     int use_lorentz_factor,
     int use_lorentz_general_factor,
+    int use_fermi_factor_O,
     int use_fermi_factor,
     int use_fermi_general_factor,
     int use_fast_integrand,
@@ -949,6 +951,7 @@ int integrate(
     params.use_delay                  = use_delay;
     params.use_lorentz_factor         = use_lorentz_factor;
     params.use_lorentz_general_factor = use_lorentz_general_factor;
+    params.use_fermi_factor_O         = use_fermi_factor_O;
     params.use_fermi_factor           = use_fermi_factor;
     params.use_fermi_general_factor   = use_fermi_general_factor;
     params.use_fast_integrand         = use_fast_integrand;

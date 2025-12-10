@@ -9,7 +9,22 @@ make && make install
 
 cd ..
 
+make clean
 make test
+
+gcc -c -o vanderpol.o vanderpol.c -I. -I./local/include  -fPIC -O0 -g -Werror -Wformat
 gcc -o test vanderpol.o -I. -I./local/include -O0 -g -Werror -Wformat -L./local/lib -lm -lgsl -lgslcblas
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./local/lib 
-test 
+./test
+
+make vanderpol
+./vanderpol
+
+make pendulum
+./pendulum
+
+make pendulumlib
+make pendulumtest
+./pendulumtest
+
+

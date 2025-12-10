@@ -5,26 +5,33 @@ LDLIBS= -Wl,-Bstatic -lgsl -lgslcblas -Wl,-Bdynamic -lm
 #LDLIBS=-lm
 LDFLAGS=#-L./local/lib
 
-# OBJ = vanderpol.o
-OBJ = pendulum.o
-LIB = pendulum_lib.o pendulum_tensor.o
-LIBTEST = $(LIB) pendulum_lib_test.o
+VANDERPOL = vanderpol.o
+PENDULUM = pendulum.o
+PENDULUMLIB = pendulum_lib.o pendulum_tensor.o
+PENDULUMLIBTEST = $(PENDULUMLIB) pendulum_lib_test.o
+
+test: vanderpol pendulum pendulumlib pendulumlibtest
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-test: $(OBJ)
+vanderpol: $(VANDERPOL)
 	$(CC) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
-libtest: $(LIBTEST)
+pendulum: $(PENDULUM)
 	$(CC) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
-mylib: $(LIB)
+pendulumlib: $(PENDULUMLIB)
 	$(CC)  -shared  -o $@.so $^ $(LDFLAGS) $(LDLIBS)
+
+pendulumlibtest: $(PENDULUMLIBTEST)
+	$(CC) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
 clean:
 	rm -f $(OBJ)
-	rm -f test
+	rm -f vanderpol
+	rm -f pendulum
 	rm -f libtest
-	rm -f mylib.so
+	rm -f libtest
+	rm -f pendulumlib.so
 	rm *.o

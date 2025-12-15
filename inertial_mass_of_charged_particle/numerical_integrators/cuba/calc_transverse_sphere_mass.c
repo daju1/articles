@@ -37,6 +37,23 @@ typedef struct {
     int use_fast_integrand;
 } ProblemParams;
 
+/* Функция для вычисления поправки Ферми по отношению к опорной точке О*/
+static double fermi_correction_O(
+    double R_rho_O,
+    double R_phi_O,
+    double R_z_O,
+    double a_rho,
+    double a_phi,
+    double a_z,
+    double c
+) {
+    /* Скалярное произведение R · a */
+    double R_dot_a_O = R_rho_O * a_rho + R_phi_O * a_phi + R_z_O * a_z;
+
+    /* Поправка Ферми */
+    return (/*1.0*/ + R_dot_a_O / (c * c));
+}
+
 /* Функция для вычисления поправки Ферми */
 static double fermi_correction(
     double R_rho,
@@ -110,6 +127,7 @@ static double fermi_correction_general(
 static void computing_electric_field(
     double t_prime,     /* запаздывающее время */
     double R,
+    double R_rho_O, double R_phi_O, double R_z_O,
     double R_rho, double R_phi, double R_z,
     double v_phi,
     double a_rho,
@@ -117,6 +135,7 @@ static void computing_electric_field(
     double *E1_rho, double *E1_phi, double *E1_z,
     double *E2_rho, double *E2_phi, double *E2_z,
     double *E_total_rho, double *E_total_phi, double *E_total_z,
+    int use_fermi_factor_O,
     int use_fermi_factor,
     int use_fermi_general_factor,
     int use_fast_integrand
@@ -157,6 +176,13 @@ static void computing_electric_field(
     {
         fermi_factor = fermi_correction(
             R_rho, R_phi, R_z,
+            a_rho, a_phi, a_z,
+            c);
+    }
+    else if (use_fermi_factor_O)
+    {
+        fermi_factor = fermi_correction_O(
+            R_rho_O, R_phi_O, R_z_O,
             a_rho, a_phi, a_z,
             c);
     }
@@ -269,6 +295,10 @@ static void compute_electric_field(
     double x_q = params->rho0 + rq * cos(theta_q);
     double y_q = rq * sin(theta_q) * sin(psi_q);
     double z_q = rq * sin(theta_q) * cos(psi_q);
+
+    double x_O = params->rho0;
+    double y_O = 0.0;
+    double z_O = 0.0;
 #endif
 
 #ifdef Z_PHI
@@ -309,6 +339,13 @@ static void compute_electric_field(
     double phi_q = atan2(y_q, x_q);
     if (phi_q < 0) phi_q += 2.0 * M_PI;
 
+    // double rho_O = sqrt(pow(x_O, 2) + pow(y_O, 2));
+    // double phi_O = atan2(y_O, x_O);
+    // if (phi_O < 0) phi_O += 2.0 * M_PI;
+
+    double rho_O = x_O;
+    double phi_O = 0.0;
+
     /* Скорость и ускорение источника */
     double v_phi = rho_q * params->omega;
     double a_rho = -rho_q * pow(params->omega, 2);
@@ -338,6 +375,11 @@ static void compute_electric_field(
         a_rho = -rho_q * pow(params->omega, 2);
     }
 
+    /* Вектор от точки О к наблюдателю */
+    double R_rho_O = rho_a * cos(phi_a - phi_O) - rho_O;
+    double R_phi_O = rho_a * sin(phi_a - phi_O);
+    double R_z_O = z_a - z_O;
+
     /* Вектор от источника к наблюдателю */
     double R_rho = rho_a * cos(phi_a - phi_q) - rho_q;
     double R_phi = rho_a * sin(phi_a - phi_q);
@@ -348,13 +390,16 @@ static void compute_electric_field(
 
     computing_electric_field(
         t_prime,     /* запаздывающее время */
-        R, R_rho, R_phi, R_z,
+        R,
+        R_rho_O, R_phi_O, R_z_O,
+        R_rho, R_phi, R_z,
         v_phi,
         a_rho,
         params->c,
         E1_rho, E1_phi, E1_z,
         E2_rho, E2_phi, E2_z,
         E_total_rho, E_total_phi, E_total_z,
+        params->use_fermi_factor_O,
         params->use_fermi_factor,
         params->use_fermi_general_factor,
         params->use_fast_integrand
@@ -605,6 +650,13 @@ static void compute_electric_field_with_delay(
     double *E2_rho, double *E2_phi, double *E2_z,
     double *E_total_rho, double *E_total_phi, double *E_total_z
 ) {
+    /* Вычисление запаздывающего времени точки О */
+    double tO_prime = compute_retarded_time_newton(
+        ra, theta_a, psi_a, 0, 0, 0,
+        params->rho0, params->omega, params->c, 100, 1e-10,
+        params->use_lorentz_factor, params->use_lorentz_general_factor
+    );
+
     /* Вычисление запаздывающего времени */
     double t_prime = compute_retarded_time_newton(
         ra, theta_a, psi_a, rq, theta_q, psi_q,
@@ -617,6 +669,12 @@ static void compute_electric_field_with_delay(
     get_source_position(0, ra, theta_a, psi_a, params->rho0, params->omega, params->c, &x_a, &y_a, &z_a,
         params->use_lorentz_factor,
         params->use_lorentz_general_factor);
+
+    /* Получение координат точки О в запаздывающий момент времени */
+    double x_O, y_O, z_O;
+    get_source_position(tO_prime, 0, 0, 0,
+                       params->rho0, params->omega, params->c, &x_O, &y_O, &z_O,
+                       params->use_lorentz_factor, params->use_lorentz_general_factor);
 
     /* Получение координат источника в запаздывающий момент времени */
     double x_q, y_q, z_q;
@@ -633,6 +691,15 @@ static void compute_electric_field_with_delay(
     double phi_q = atan2(y_q, x_q);
     if (phi_q < 0) phi_q += 2.0 * M_PI;
 
+    double rho_O = sqrt(pow(x_O, 2) + pow(y_O, 2));
+    double phi_O = atan2(y_O, x_O);
+    if (phi_O < 0) phi_O += 2.0 * M_PI;
+
+    /* Вектор от точки О к наблюдателю */
+    double R_rho_O = rho_a * cos(phi_a - phi_O) - rho_O;
+    double R_phi_O = rho_a * sin(phi_a - phi_O);
+    double R_z_O = z_a - z_O;
+
     /* Вектор от источника к наблюдателю */
     double R_rho = rho_a * cos(phi_a - phi_q) - rho_q;
     double R_phi = rho_a * sin(phi_a - phi_q);
@@ -645,13 +712,16 @@ static void compute_electric_field_with_delay(
 
     computing_electric_field(
         t_prime,     /* запаздывающее время */
-        R, R_rho, R_phi, R_z,
+        R,
+        R_rho_O, R_phi_O, R_z_O,
+        R_rho, R_phi, R_z,
         v_phi,
         a_rho,
         params->c,
         E1_rho, E1_phi, E1_z,
         E2_rho, E2_phi, E2_z,
         E_total_rho, E_total_phi, E_total_z,
+        params->use_fermi_factor_O,
         params->use_fermi_factor,
         params->use_fermi_general_factor,
         params->use_fast_integrand

@@ -62,12 +62,23 @@ int main() {
 
   double v_z = v0 + a * (t - t0);
   double v_c =  v_z / c;  /* отношение скорости заряда к скорости света*/
+
   printf("v_c = %f\n", v_c);
+    char result_names[9][32] = {
+        "observed_ratio_1_x ",
+        "observed_ratio_1_y ",
+        "observed_ratio_1_z ",
+        "observed_ratio_2_x ",
+        "observed_ratio_2_y ",
+        "observed_ratio_2_z ",
+        "observed_ratio_x   ",
+        "observed_ratio_y   ",
+        "observed_ratio_z   "};
 
   printf("VEGAS RESULT:\tneval %d\tfail %d\n",
     neval, fail);
   for( comp = 0; comp < NCOMP; ++comp )
-    printf("VEGAS RESULT:\t%.8f +- %.8f\tp = %.3f\n",
+    printf("VEGAS RESULT: %s %.8f +- %.8f\tp = %.3f\n", result_names[comp],
       (double)integral[comp], (double)error[comp], (double)prob[comp]);
 
   return 0;

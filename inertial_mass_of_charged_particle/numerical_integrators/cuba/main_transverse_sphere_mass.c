@@ -16,6 +16,7 @@ int integrate(
     int use_delay,
     int use_lorentz_factor,
     int use_lorentz_general_factor,
+    int use_fermi_factor_O,
     int use_fermi_factor,
     int use_fermi_general_factor,
     int use_fast_integrand,
@@ -39,6 +40,7 @@ int main() {
   int use_delay                  = 0;
   int use_lorentz_factor         = 0;
   int use_lorentz_general_factor = 0;
+  int use_fermi_factor_O         = 0;
   int use_fermi_factor           = 0;
   int use_fermi_general_factor   = 0;
   int use_fast_integrand         = 1;
@@ -51,15 +53,27 @@ int main() {
     use_delay,
     use_lorentz_factor,
     use_lorentz_general_factor,
+    use_fermi_factor_O,
     use_fermi_factor,
     use_fermi_general_factor,
     use_fast_integrand,
     integral, error, prob);
 
+    char result_names[9][32] = {
+        "observed_ratio_1_rho",
+        "observed_ratio_1_phi",
+        "observed_ratio_1_z  ",
+        "observed_ratio_2_rho",
+        "observed_ratio_2_phi",
+        "observed_ratio_2_z  ",
+        "observed_ratio_rho  ",
+        "observed_ratio_phi  ",
+        "observed_ratio_z    "};
+
   printf("VEGAS RESULT:\tneval %d\tfail %d\n",
     neval, fail);
   for( comp = 0; comp < NCOMP; ++comp )
-    printf("VEGAS RESULT:\t%.8f +- %.8f\tp = %.3f\n",
+    printf("VEGAS RESULT: %s %.8f +- %.8f\tp = %.3f\n", result_names[comp],
       (double)integral[comp], (double)error[comp], (double)prob[comp]);
 
   return 0;

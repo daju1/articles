@@ -548,6 +548,13 @@ static void compute_electric_field_with_delay(
     double *E_total_y,
     double *E_total_z
 ) {
+    /* Вычисление запаздывающего времени точки О */
+    double tO_prime = compute_retarded_time_newton(
+        params->t, params->t0, ra, theta_a, phi_a, 0, 0, 0,
+        params->v0, params->a, params->c, 100, 1e-10,
+        params->use_lorentz_factor, params->use_lorentz_general_factor
+    );
+
     /* Вычисление запаздывающего времени */
     double t_prime = compute_retarded_time_newton(
         params->t, params->t0, ra, theta_a, phi_a, rq, theta_q, phi_q,
@@ -561,6 +568,12 @@ static void compute_electric_field_with_delay(
         params->use_lorentz_factor,
         params->use_lorentz_general_factor);
 
+    /* Получение координат точки О в запаздывающий момент времени */
+    double x_O, y_O, z_O;
+    get_source_position(t_prime, params->t0, 0, 0, 0,
+                       params->v0, params->a, params->c, &x_O, &y_O, &z_O,
+                       params->use_lorentz_factor, params->use_lorentz_general_factor);
+
     /* Получение координат источника в запаздывающий момент времени */
     double x_q, y_q, z_q;
     get_source_position(t_prime, params->t0, rq, theta_q, phi_q,
@@ -568,9 +581,9 @@ static void compute_electric_field_with_delay(
                        params->use_lorentz_factor, params->use_lorentz_general_factor);
 
     /* Вектор от точки О к наблюдателю */
-    double RO_x = x_a;
-    double RO_y = y_a;
-    double RO_z = z_a;
+    double RO_x = x_a - x_O;
+    double RO_y = y_a - y_O;
+    double RO_z = z_a - z_O;
 
     /* Вектор от источника к наблюдателю */
     double R_x = x_a - x_q;

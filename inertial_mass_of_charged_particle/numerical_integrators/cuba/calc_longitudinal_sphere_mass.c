@@ -9,7 +9,7 @@
 #ifdef INCLUDE_CUBA_H
 #include "cuba.h"
 #else
-#define cubareal double
+typedef double cubareal;
 #endif
 
 static inline cubareal Sq(cubareal x) {
@@ -119,9 +119,9 @@ static double fermi_correction_general(
 static void computing_electric_field(
     double t,           /* текущее время */
     double t_prime,     /* запаздывающее время */
-    double R,
+    double R_prime,
     double RO_x, double RO_y, double RO_z,
-    double R_x, double R_y, double R_z,
+    double R_x_prime, double R_y_prime, double R_z_prime,
     double v_x, double v_y, double v_z,
     double a_x, double a_y, double a_z,
     double c,
@@ -135,10 +135,10 @@ static void computing_electric_field(
 )
 {
     /* Радиус Лиенара-Вихерта (учет запаздывания) */
-    double R_star = R - (R_z * v_z) / c;
+    double R_star = R_prime - (R_z_prime * v_z) / c;
 
     /* Защита от деления на ноль */
-    if (R_star < 1e-10 || R < 1e-10) {
+    if (R_star < 1e-10 || R_prime < 1e-10) {
         *E1_x = *E1_y = *E1_z = 0.0;
         *E2_x = *E2_y = *E2_z = 0.0;
         *E_total_x = *E_total_y = *E_total_z = 0.0;
@@ -152,9 +152,9 @@ static void computing_electric_field(
         fermi_factor = fermi_correction_general(
             t,           /* текущее время */
             t_prime,     /* запаздывающее время */
-            R_x,
-            R_y,
-            R_z,
+            R_x_prime,
+            R_y_prime,
+            R_z_prime,
             a_x,
             a_y,
             a_z,
@@ -165,14 +165,14 @@ static void computing_electric_field(
     }
     else if (use_fermi_factor)
     {
-        fermi_factor = fermi_correction(R_x, R_y, R_z, a_x, a_y, a_z, c);
+        fermi_factor = fermi_correction(R_x_prime, R_y_prime, R_z_prime, a_x, a_y, a_z, c);
     }
     else if (use_fermi_factor_O)
     {
         fermi_factor = fermi_correction_O(RO_x, RO_y, RO_z, a_x, a_y, a_z, c);
     }
     double v2_c2 = (Sq(v_x) + Sq(v_y) + Sq(v_z) ) / Sq(c);
-    double Ra_c2 = (R_z * a_z) / Sq(c);
+    double Ra_c2 = (R_z_prime * a_z) / Sq(c);
 
     /* Вычисление градиентного поля E1 */
     double common_factor1 = 1.0 / pow(R_star, 2);
@@ -204,19 +204,19 @@ static void computing_electric_field(
         f_one = 0.0;
     }
 
-    *E1_x = common_factor1 * (R_x * (f_one + Ra_v2_c2_fermi) / R_star - f_one * v_x / c - v_x / c * fermi_factor);
-    *E1_y = common_factor1 * (R_y * (f_one + Ra_v2_c2_fermi) / R_star - f_one * v_y / c - v_y / c * fermi_factor);
-    *E1_z = common_factor1 * (R_z * (f_one + Ra_v2_c2_fermi) / R_star - f_one * v_z / c - v_z / c * fermi_factor);
+    *E1_x = common_factor1 * (R_x_prime * (f_one + Ra_v2_c2_fermi) / R_star - f_one * v_x / c - v_x / c * fermi_factor);
+    *E1_y = common_factor1 * (R_y_prime * (f_one + Ra_v2_c2_fermi) / R_star - f_one * v_y / c - v_y / c * fermi_factor);
+    *E1_z = common_factor1 * (R_z_prime * (f_one + Ra_v2_c2_fermi) / R_star - f_one * v_z / c - v_z / c * fermi_factor);
 
     /* Вычисление поля самоиндукции E2 */
     double common_factor2 = 1.0 / pow(R_star, 2);
-    double velocity_factor2 = (R / R_star) * (v2_c2 - Ra_c2 - 1.0) + 1.0;
+    double velocity_factor2 = (R_prime / R_star) * (v2_c2 - Ra_c2 - 1.0) + 1.0;
 
     common_factor2 *= (1.0+fermi_factor);
 
-    *E2_x = common_factor2 * (v_x / c * velocity_factor2 - a_x * R / Sq(c));
-    *E2_y = common_factor2 * (v_y / c * velocity_factor2 - a_y * R / Sq(c));
-    *E2_z = common_factor2 * (v_z / c * velocity_factor2 - a_z * R / Sq(c));
+    *E2_x = common_factor2 * (v_x / c * velocity_factor2 - a_x * R_prime / Sq(c));
+    *E2_y = common_factor2 * (v_y / c * velocity_factor2 - a_y * R_prime / Sq(c));
+    *E2_z = common_factor2 * (v_z / c * velocity_factor2 - a_z * R_prime / Sq(c));
 
     /* Вычисление суммарного поля по полной формуле Лиенара-Вихерта */
     double common_factor = 1.0 / Cb(R_star);
@@ -225,9 +225,9 @@ static void computing_electric_field(
     //E_x = common_factor * ((1.0 + Ra_v2_c2) * (1.0 + fermi_factor) * (R_x - R*v_x/c)  - (a_x * R_star * R) * (1.0+fermi_factor) / Sq(c));
     //E_x = common_factor * ((1.0 + Ra_v2_c2 + fermi_factor + fermi_factor * Ra_v2_c2) * (R_x - R*v_x/c)  - (a_x * R_star * R) / Sq(c) - (a_x * R_star * R) * fermi_factor / Sq(c));
     //E_x = common_factor * ((1.0 + Ra_v2_c2_fermi) * (R_x - R*v_x/c)  - (a_x * R_star * R) / Sq(c) - (a_x * R_star * R) * fermi_factor / Sq(c));
-    *E_total_x = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_x - (f_one + Ra_v2_c2_fermi) * R*v_x/c)  - (a_x * R_star * R) / Sq(c) - (a_x * R_star * R) * fermi_factor / Sq(c));
-    *E_total_y = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_y - (f_one + Ra_v2_c2_fermi) * R*v_y/c)  - (a_y * R_star * R) / Sq(c) - (a_y * R_star * R) * fermi_factor / Sq(c));
-    *E_total_z = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_z - (f_one + Ra_v2_c2_fermi) * R*v_z/c)  - (a_z * R_star * R) / Sq(c) - (a_z * R_star * R) * fermi_factor / Sq(c));
+    *E_total_x = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_x_prime - (f_one + Ra_v2_c2_fermi) * R_prime*v_x/c)  - (a_x * R_star * R_prime) / Sq(c) - (a_x * R_star * R_prime) * fermi_factor / Sq(c));
+    *E_total_y = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_y_prime - (f_one + Ra_v2_c2_fermi) * R_prime*v_y/c)  - (a_y * R_star * R_prime) / Sq(c) - (a_y * R_star * R_prime) * fermi_factor / Sq(c));
+    *E_total_z = common_factor * ( ((f_one + Ra_v2_c2_fermi) * R_z_prime - (f_one + Ra_v2_c2_fermi) * R_prime*v_z/c)  - (a_z * R_star * R_prime) / Sq(c) - (a_z * R_star * R_prime) * fermi_factor / Sq(c));
 }
 
 /* Функция для вычисления фактора Лоренца */
@@ -570,16 +570,16 @@ static void compute_electric_field_with_delay(
         params->use_lorentz_factor,
         params->use_lorentz_general_factor);
 
-    /* Получение координат точки О в запаздывающий момент времени */
+    /* Получение координат точки О в момент t */
     double x_O, y_O, z_O;
-    get_source_position(t_prime, params->t0, 0, 0, 0,
+    get_source_position(params->t, params->t0, 0, 0, 0,
                        params->v0, params->a, params->c, &x_O, &y_O, &z_O,
                        params->use_lorentz_factor, params->use_lorentz_general_factor);
 
     /* Получение координат источника в запаздывающий момент времени */
-    double x_q, y_q, z_q;
+    double x_q_prime, y_q_prime, z_q_prime;
     get_source_position(t_prime, params->t0, rq, theta_q, phi_q,
-                       params->v0, params->a, params->c, &x_q, &y_q, &z_q,
+                       params->v0, params->a, params->c, &x_q_prime, &y_q_prime, &z_q_prime,
                        params->use_lorentz_factor, params->use_lorentz_general_factor);
 
     /* Вектор от точки О к наблюдателю */
@@ -588,10 +588,10 @@ static void compute_electric_field_with_delay(
     double RO_z = z_a - z_O;
 
     /* Вектор от источника к наблюдателю */
-    double R_x = x_a - x_q;
-    double R_y = y_a - y_q;
-    double R_z = z_a - z_q;
-    double R = sqrt(R_x*R_x + R_y*R_y + R_z*R_z);
+    double R_x_prime = x_a - x_q_prime;
+    double R_y_prime = y_a - y_q_prime;
+    double R_z_prime = z_a - z_q_prime;
+    double R_prime = sqrt(R_x_prime*R_x_prime + R_y_prime*R_y_prime + R_z_prime*R_z_prime);
 
     /* Скорость источника в запаздывающий момент времени */
     double v_z = params->v0 + params->a * (t_prime - params->t0);
@@ -606,9 +606,9 @@ static void compute_electric_field_with_delay(
     computing_electric_field(
         params->t,           /* текущее время */
         t_prime,     /* запаздывающее время */
-        R,
+        R_prime,
         RO_x, RO_y, RO_z,
-        R_x, R_y, R_z,
+        R_x_prime, R_y_prime, R_z_prime,
         v_x, v_y, v_z,
         a_x, a_y, a_z,
         params->c,

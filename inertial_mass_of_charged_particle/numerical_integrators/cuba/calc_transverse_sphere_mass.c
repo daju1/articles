@@ -9,7 +9,7 @@
 #ifdef INCLUDE_CUBA_H
 #include "cuba.h"
 #else
-#define cubareal double
+typedef double cubareal;
 #endif
 
 //#define Z_Z

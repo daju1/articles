@@ -8,6 +8,8 @@
 
 #ifdef INCLUDE_CUBA_H
 #include "cuba.h"
+#else
+#define cubareal double
 #endif
 
 static inline cubareal Sq(cubareal x) {
@@ -767,7 +769,7 @@ int Integrand(const int *ndim, const cubareal xx[],
     #define observed_ratio_y ff[7]
     #define observed_ratio_z   ff[8]
 
-    if ( fabs(theta_a - theta_q) < 1e-12 && fabs(ra - rq) < 1e-12 && fabs(psi_q - psi_a) < 1e-12)
+    if ( fabs(theta_a - theta_q) < 1e-16 && fabs(ra - rq) < 1e-16 && fabs(psi_q - psi_a) < 1e-16)
     {
         printf ("theta_a = %e ", theta_a);
         printf ("theta_q = %e ", theta_q);
@@ -809,7 +811,7 @@ int Integrand(const int *ndim, const cubareal xx[],
     double f_z = k * int_a_E_z;
 
     /*
-        Твою энегрию электрического поля для сравнения с моим результатом самодействия я умножил на 2
+        Твою энергию электрического поля для сравнения с моим результатом самодействия я умножил на 2
         double U = 3.0 / (5.0 * params.R0);     // Энергия электрического поля 
         double m_perp_B = 2 * U / (params.c * params.c);  // Вариация типа В (теоретическое значение) 
         Потому что никто за сто с лишним лет на это не обращает внимание, но даже у Ферми есть ошибка в строке 
@@ -874,6 +876,7 @@ int Integrand(const int *ndim, const cubareal xx[],
     return 0;
 }
 
+#ifdef INCLUDE_CUBA_H
 
 /*********************************************************************/
 #if 0
@@ -885,7 +888,7 @@ int Integrand(const int *ndim, const cubareal xx[],
 #define USERDATA NULL
 #define NVEC 1
 #if 1
-#define EPSREL 1e-8
+#define EPSREL 1e-12
 #define EPSABS 1e-16
 #else
 #define EPSREL 1e-3
@@ -974,3 +977,5 @@ int integrate(
         GRIDNO, STATEFILE, SPIN,
         &neval, &fail, integral, error, prob);
 }
+
+#endif // #ifdef INCLUDE_CUBA_H

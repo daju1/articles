@@ -8,6 +8,8 @@
 
 #ifdef INCLUDE_CUBA_H
 #include "cuba.h"
+#else
+#define cubareal double
 #endif
 
 //#define Z_Z
@@ -952,6 +954,7 @@ int Integrand(const int *ndim, const cubareal xx[],
     return 0;
 }
 
+#ifdef INCLUDE_CUBA_H
 /*********************************************************************/
 #define NDIM 6
 #define NCOMP 9
@@ -1072,3 +1075,4 @@ int integrate(
 #endif
 
 }
+#endif // #ifdef INCLUDE_CUBA_H

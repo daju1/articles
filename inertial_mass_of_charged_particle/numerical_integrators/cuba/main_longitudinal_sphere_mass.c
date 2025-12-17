@@ -36,10 +36,10 @@ int main() {
   double c  = 1;       /* скорость света в м/с */
   double a  = 0.00000001;  /* продольное ускорение*/
 
-  int use_delay                  = 0;
+  int use_delay                  = 1;
   int use_lorentz_factor         = 0;
-  int use_lorentz_general_factor = 1;
-  int use_fermi_factor_O         = 1;
+  int use_lorentz_general_factor = 0;
+  int use_fermi_factor_O         = 0;
   int use_fermi_factor           = 0;
   int use_fermi_general_factor   = 0;
   int use_fast_integrand         = 1;

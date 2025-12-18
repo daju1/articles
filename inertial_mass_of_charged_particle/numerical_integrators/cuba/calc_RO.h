@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 
 #ifdef INCLUDE_CUBA_H
 #if REALSIZE == 16
@@ -136,6 +137,7 @@ $\mathit{dz} = z_{a'} - z_{q'}$
 где
 $\mathit{R} = c\frac{\sqrt{2 \, c^{2} - 2 \, a \mathit{dz} - 2 \, \sqrt{-R_{0}^{2} a^{2} + c^{4} - 2 \, a c^{2} \mathit{dz} + a^{2} \mathit{dz}^{2}}}}{a}$
 */
+#if 0
 
 static inline cubareal R_a (cubareal ra, cubareal theta_a, cubareal rq, cubareal theta_q, cubareal phi_q, cubareal c, cubareal a)
 {
@@ -155,6 +157,42 @@ static inline cubareal R_a (cubareal ra, cubareal theta_a, cubareal rq, cubareal
     //printf("tt1 = %f, tt2 = %f, R = %f R0 = %f , ra = %f, theta_a = %f, rq = %f, theta_q = %f, phi_q = %f\n", tt1, tt2, R, R_0, ra, theta_a, rq, theta_q, phi_q);
     return R;
 }
+
+#else
+
+static inline cubareal R_a/*_qwen*/(cubareal ra, cubareal theta_a, cubareal rq, cubareal theta_q, cubareal phi_q, cubareal c, cubareal a)
+{
+    cubareal xa = ra * sin(theta_a) * cos(0.0);
+    cubareal ya = ra * sin(theta_a) * sin(0.0);
+    cubareal za = ra * cos(theta_a);
+
+    cubareal xq = rq * sin(theta_q) * cos(phi_q);
+    cubareal yq = rq * sin(theta_q) * sin(phi_q);
+    cubareal zq = rq * cos(theta_q);
+
+    cubareal dx = xa - xq;
+    cubareal dy = ya - yq;
+    cubareal dz = za - zq;  // мгновенное z_a - z_q при t=0
+    cubareal R_perp2 = dx*dx + dy*dy;
+
+    // D = c^4 + 2*a*c^2*dz - a^2 * R_perp2
+    cubareal D = Sq(Sq(c)) + 2.0 * a * Sq(c) * dz - Sq(a) * R_perp2;
+
+    if (D < 0.0) {
+        // fallback: разложение до O(a)
+        cubareal R0 = sqrt(dx*dx + dy*dy + dz*dz);
+        return R0 + a * dz * R0 / (2.0 * Sq(c));  // dt ≈ R0/c + a dz R0/(2c^3)
+    }
+
+    cubareal sqrtD = sqrt(D);
+    // Физический корень: малый tau
+    cubareal tau2 = (2.0 * (Sq(c) + a * dz) - 2.0 * sqrtD) / Sq(a);
+    if (tau2 <= 0) return DBL_MAX;
+
+    cubareal tau = sqrt(tau2);
+    return c * tau;  // R = c * tau
+}
+#endif
 
 static inline cubareal R_v (cubareal ra, cubareal theta_a, cubareal rq, cubareal theta_q, cubareal phi_q, cubareal c, cubareal v)
 {

@@ -8,17 +8,41 @@ typedef struct {
 
     // left conductor
     long double eps_l_xx, eps_l_yy, eps_l_zz;
+#ifndef GYRO_TENSOR
     long double mu_l_xx, mu_l_yy, mu_l_zz;
     long double mu_l_yz, mu_l_zy;
+#else
+    long double mu_l_perp;
+    long double kappa_l;
+    long double mu_l_parallel;
+#endif
     long double sigma_e_l_xx, sigma_e_l_yy, sigma_e_l_zz;
+#ifndef GYRO_TENSOR
     long double sigma_m_l_xx, sigma_m_l_yy, sigma_m_l_zz;
+#else
+    long double sigma_m_l_perp;
+    long double sigma_m_l_gyro;
+    long double sigma_m_l_parallel;
+#endif
 
     // right conductor
     long double eps_r_xx, eps_r_yy, eps_r_zz;
+#ifndef GYRO_TENSOR
     long double mu_r_xx, mu_r_yy, mu_r_zz;
     long double mu_r_yz, mu_r_zy;
+#else
+    long double mu_r_perp;
+    long double kappa_r;
+    long double mu_r_parallel;
+#endif
     long double sigma_e_r_xx, sigma_e_r_yy, sigma_e_r_zz;
+#ifndef GYRO_TENSOR
     long double sigma_m_r_xx, sigma_m_r_yy, sigma_m_r_zz;
+#else
+    long double sigma_m_r_perp;
+    long double sigma_m_r_gyro;
+    long double sigma_m_r_parallel;
+#endif
 } mendrive_params_t;
 
 void det_init( const mendrive_params_t* params );

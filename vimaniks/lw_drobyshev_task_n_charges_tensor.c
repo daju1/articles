@@ -69,6 +69,7 @@ int ccalc_Maxwells_stress_tensor(
 
     long double E_x, E_y, E_z, B_x, B_y, B_z, A_x, A_y, A_z;
     long double j_x, j_y, j_z;
+    long double four_a_four_R_c2;
 
     coordinate rlagerror;
     *sum_rlagerror_square = 0.0;
@@ -86,7 +87,9 @@ int ccalc_Maxwells_stress_tensor(
                 &B_x, &B_y, &B_z,
                 &A_x, &A_y, &A_z,
                 &j_x, &j_y, &j_z,
-                &rlagerror);
+                &four_a_four_R_c2,
+                &rlagerror
+                );
 
         *sum_rlagerror_square += Sq(rlagerror);
 

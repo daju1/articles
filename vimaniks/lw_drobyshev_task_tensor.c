@@ -39,6 +39,14 @@ int ccalc_Maxwells_stress_tensor(
 {
     long double _q = 1.0;
 
+    long double E1x = 0;
+    long double E1y = 0;
+    long double E1z = 0;
+
+    long double E2x = 0;
+    long double E2y = 0;
+    long double E2z = 0;
+
     long double Ex = 0;
     long double Ey = 0;
     long double Ez = 0;
@@ -55,6 +63,9 @@ int ccalc_Maxwells_stress_tensor(
     long double jy = 0;
     long double jz = 0;
 
+    long double E1_x, E1_y, E1_z;
+    long double E2_x, E2_y, E2_z;
+
     long double E_x, E_y, E_z, B_x, B_y, B_z, A_x, A_y, A_z;
     long double j_x, j_y, j_z;
 
@@ -66,6 +77,8 @@ int ccalc_Maxwells_stress_tensor(
             sx, sy, sz, vx, vy, vz, wx, wy, wz,
             dot_wx, dot_wy, dot_wz,
             _q,
+            &E1_x, &E1_y, &E1_z,
+            &E2_x, &E2_y, &E2_z,
             &E_x, &E_y, &E_z,
             &B_x, &B_y, &B_z,
             &A_x, &A_y, &A_z,
@@ -73,6 +86,14 @@ int ccalc_Maxwells_stress_tensor(
             &rlagerror);
 
     *sum_rlagerror_square += Sq(rlagerror);
+
+    E1x += E1_x;
+    E1y += E1_y;
+    E1z += E1_z;
+
+    E2x += E2_x;
+    E2y += E2_y;
+    E2z += E2_z;
 
     Ex += E_x;
     Ey += E_y;

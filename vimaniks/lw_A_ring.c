@@ -109,6 +109,31 @@ long double wz(long double t, long double xc, long double yc, long double zc,
     return result;
 }
 
+long double dot_wx(long double t, long double xc, long double yc, long double zc,
+               long double R, long double omega, long double alpha)
+{
+    long double result;
+    long double current_angle = omega * t + alpha;
+    result = omega*omega*omega*R*sinl(current_angle);
+    return result;
+}
+long double dot_wy(long double t, long double xc, long double yc, long double zc,
+               long double R, long double omega, long double alpha)
+{
+    long double result;
+    long double current_angle = omega * t + alpha;
+    result = -omega*omega*omega*R*cosl(current_angle);
+    return result;
+}
+
+long double dot_wz(long double t, long double xc, long double yc, long double zc,
+               long double R, long double omega, long double alpha)
+{
+    long double result;
+    result = 0;
+    return result;
+}
+
 int ccalc_A_ring(long double X_a, long double Y_a, long double Z_a, long double t,
                  charge q, long double alpha0, long double * A_phi, coordinate * rlagerror)
 {

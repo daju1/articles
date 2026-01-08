@@ -3,7 +3,11 @@
 
 typedef struct {
     long double c;
+#ifndef QNM
     long double omega;
+#else
+    long double L_z;
+#endif
     long double a;
 
     // left conductor
@@ -46,6 +50,8 @@ typedef struct {
 } mendrive_params_t;
 
 void det_init( const mendrive_params_t* params );
+
+#ifndef QNM
 void det_eval( long double kz, long double sz, long double *det_re, long double *det_im );
 
 void det_div_diff_kz_eval(long double kz, long double sz,
@@ -53,11 +59,28 @@ void det_div_diff_kz_eval(long double kz, long double sz,
 
 void det_div_diff_sz_eval(long double kz, long double sz,
     long double *div_re, long double *div_im);
+#else
+void det_eval( long double omega_r, long double omega_i, long double *det_re, long double *det_im );
 
+void det_div_diff_kz_eval(long double omega_r, long double omega_i,
+    long double *div_re, long double *div_im);
+
+void det_div_diff_sz_eval(long double omega_r, long double omega_i,
+    long double *div_re, long double *div_im);
+
+#endif
+
+#ifndef QNM
 // Численные производные (по-умолчанию — центральная разность)
 void det_derivatives(long double kz, long double sz,
                      long double* dfdkz_re, long double* dfdkz_im,
                      long double* dfdsz_re, long double* dfdsz_im);
+#else
+void det_derivatives(long double omega_r, long double omega_i,
+                     long double* dfdomega_r_re, long double* dfdomega_r_im,
+                     long double* dfdomega_i_re, long double* dfdomega_i_im);
+
+#endif
 
 // Шаг метода Ньютона
 int newton_step(long double* xn_re, long double* xn_im,

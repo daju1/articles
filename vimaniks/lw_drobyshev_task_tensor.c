@@ -70,6 +70,7 @@ int ccalc_Maxwells_stress_tensor(
     long double j_x, j_y, j_z;
 
     coordinate rlagerror;
+    long double four_a_four_R_c2;
     *sum_rlagerror_square = 0.0;
 
     // поле в точке наблюдения создаваемое левым зарядом
@@ -83,6 +84,7 @@ int ccalc_Maxwells_stress_tensor(
             &B_x, &B_y, &B_z,
             &A_x, &A_y, &A_z,
             &j_x, &j_y, &j_z,
+            &four_a_four_R_c2,
             &rlagerror);
 
     *sum_rlagerror_square += Sq(rlagerror);

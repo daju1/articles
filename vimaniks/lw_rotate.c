@@ -573,7 +573,8 @@ int calc_fields(long double k, distance r,
     long double one = (long double)(1.0);
 
     long double v2_c2 = (Sq(vx) + Sq(vy) + Sq(vz)) / (c*c);
-             (*ra_c2) = r * (nx*wx + ny*wy + nz*wz) / (c*c);
+    long double gamma_2 = one / (one - v2_c2);
+                (*ra_c2) = r * (nx*wx + ny*wy + nz*wz) / (c*c);
     long double va_c2 = (vx*wx + vy*wy + vz*wz) / (c*c);
     long double one_m_v2_c2_p_ra_c2 = (one - v2_c2 + (*ra_c2));
     long double rdota_c2 = r * (nx*dot_wx + ny*dot_wy + nz*dot_wz) / (c*c);

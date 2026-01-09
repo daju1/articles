@@ -316,6 +316,8 @@ int ccalc_Maxwells_stress_tensor(long double X_a, long double Y_a, long double Z
 
     long double E_x, E_y, E_z, B_x, B_y, B_z, A_x, A_y, A_z;
     long double j_x, j_y, j_z;
+    long double ra_c2;
+    long double four_a_four_R_c2;
 
     coordinate rlagerror;
     *sum_rlagerror_square = 0.0;

@@ -37,6 +37,8 @@ int ccalc_Maxwells_stress_tensor(
     long double * H_n,
     long double * A_n,
     long double * j_n,
+    long double * ra_c2_sum,
+    long double * four_a_four_R_c2_sum,
     long double * sum_rlagerror_square
     )
 {
@@ -64,11 +66,16 @@ int ccalc_Maxwells_stress_tensor(
     long double jy = 0;
     long double jz = 0;
 
+    (*ra_c2_sum) = 0.0;
+    (*four_a_four_R_c2_sum) = 0.0;
+
     long double E1_x, E1_y, E1_z;
     long double E2_x, E2_y, E2_z;
 
     long double E_x, E_y, E_z, B_x, B_y, B_z, A_x, A_y, A_z;
     long double j_x, j_y, j_z;
+
+    long double ra_c2;
     long double four_a_four_R_c2;
 
     coordinate rlagerror;
@@ -87,6 +94,7 @@ int ccalc_Maxwells_stress_tensor(
                 &B_x, &B_y, &B_z,
                 &A_x, &A_y, &A_z,
                 &j_x, &j_y, &j_z,
+                &ra_c2,
                 &four_a_four_R_c2,
                 &rlagerror
                 );
@@ -116,6 +124,9 @@ int ccalc_Maxwells_stress_tensor(
         jx += j_x;
         jy += j_y;
         jz += j_z;
+
+        (*ra_c2_sum) += ra_c2;
+        (*four_a_four_R_c2_sum) += four_a_four_R_c2;
     }
 
 
@@ -194,6 +205,8 @@ int spherical_y_ccalc_Maxwells_stress_tensor(
     long double * Hn,
     long double * An,
     long double * jn,
+    long double * ra_c2_sum,
+    long double * four_a_four_R_c2_sum,
     long double * sum_rlagerror_square)
 {
     return ccalc_Maxwells_stress_tensor(
@@ -218,6 +231,8 @@ int spherical_y_ccalc_Maxwells_stress_tensor(
         Hn,
         An,
         jn,
+        ra_c2_sum,
+        four_a_four_R_c2_sum,
         sum_rlagerror_square);
 }
 
@@ -244,6 +259,8 @@ int spherical_x_ccalc_Maxwells_stress_tensor(long double xc,
     long double * Hn,
     long double * An,
     long double * jn,
+    long double * ra_c2_sum,
+    long double * four_a_four_R_c2_sum,
     long double * sum_rlagerror_square)
 {
     return ccalc_Maxwells_stress_tensor(
@@ -268,6 +285,8 @@ int spherical_x_ccalc_Maxwells_stress_tensor(long double xc,
         Hn,
         An,
         jn,
+        ra_c2_sum,
+        four_a_four_R_c2_sum,
         sum_rlagerror_square);
 }
 long double sphere_R;
@@ -297,6 +316,8 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
     long double * pHn,
     long double * pAn,
     long double * pjn,
+    long double * pra_c2_sum,
+    long double * pfour_a_four_R_c2_sum,
     long double * sum_rlagerror_square)
 {
     long double Txn;
@@ -312,6 +333,8 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
     long double Hn;
     long double An;
     long double jn;
+    long double ra_c2_sum;
+    long double four_a_four_R_c2_sum;
 
     int ret = spherical_y_ccalc_Maxwells_stress_tensor(sphere_R, theta, varphi, t,
         n_charges, _q,
@@ -326,6 +349,8 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
         &Hn,
         &An,
         &jn,
+        &ra_c2_sum,
+        &four_a_four_R_c2_sum,
         sum_rlagerror_square);
 
     *pTxn = sphere_R * sphere_R * sinl(theta) * Txn;
@@ -347,6 +372,9 @@ int spherical_y_ccalc_Maxwells_stress_tensor_R_t(
     *pHn  = - sphere_R * sphere_R * sinl(theta) * Hn;
     *pAn  = - sphere_R * sphere_R * sinl(theta) * An;
     *pjn  = - sphere_R * sphere_R * sinl(theta) * jn;
+
+    *pra_c2_sum             = - sphere_R * sphere_R * sinl(theta) * ra_c2_sum;
+    *pfour_a_four_R_c2_sum  = - sphere_R * sphere_R * sinl(theta) * four_a_four_R_c2_sum;
 
     return ret;
 }
@@ -367,6 +395,8 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(long double xc,
     long double * pHn,
     long double * pAn,
     long double * pjn,
+    long double * pra_c2_sum,
+    long double * pfour_a_four_R_c2_sum,
     long double * sum_rlagerror_square)
 {
     long double Txn;
@@ -382,6 +412,8 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(long double xc,
     long double Hn;
     long double An;
     long double jn;
+    long double ra_c2_sum;
+    long double four_a_four_R_c2_sum;
 
     int ret = spherical_x_ccalc_Maxwells_stress_tensor(xc, sphere_R, theta, varphi, t,
         n_charges, _q,
@@ -396,6 +428,8 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(long double xc,
         &Hn,
         &An,
         &jn,
+        &ra_c2_sum,
+        &four_a_four_R_c2_sum,
         sum_rlagerror_square);
 
     *pTxn = sphere_R * sphere_R * sinl(theta) * Txn;
@@ -416,6 +450,9 @@ int spherical_x_ccalc_Maxwells_stress_tensor_R_t(long double xc,
     *pHn  = - sphere_R * sphere_R * sinl(theta) * Hn;
     *pAn  = - sphere_R * sphere_R * sinl(theta) * An;
     *pjn  = - sphere_R * sphere_R * sinl(theta) * jn;
+
+    *pra_c2_sum             = - sphere_R * sphere_R * sinl(theta) * ra_c2_sum;
+    *pfour_a_four_R_c2_sum  = - sphere_R * sphere_R * sinl(theta) * four_a_four_R_c2_sum;
 
     return ret;
 }

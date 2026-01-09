@@ -19,6 +19,9 @@ typedef velocity (*Velocity)(timevalue t_zap,
 typedef acceleration (*Acceleration)(timevalue t_zap,
                                  coordinate xc, coordinate yc, coordinate zc,
                                  distance R, anglevelocity omega, angle alpha);
+typedef acceleration (*DotAcceleration)(timevalue t_zap,
+                                 coordinate xc, coordinate yc, coordinate zc,
+                                 distance R, anglevelocity omega, angle alpha);
 
 // расчет итерациями запаздывающего момента
 
@@ -153,6 +156,7 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
                    //Coordinate sx, Coordinate sy, Coordinate sz,
                    //Velocity vx, Velocity vy, Velocity vz,
                    //Acceleration wx, Acceleration wy, Acceleration wz,
+                   //DotAcceleration dot_wx, DotAcceleration dot_wy, DotAcceleration dot_wz,
                    charge q,
                    field * E1_x, field * E1_y, field * E1_z,
                    field * E2_x, field * E2_y, field * E2_z,
@@ -160,6 +164,8 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
                    field * B_x, field * B_y, field * B_z,
                    field * A_x, field * A_y, field * A_z,
                    field * j_x, field * j_y, field * j_z,
+                   long double  * ra_c2,
+                   long double * four_a_four_R_c2,
                    coordinate * rlagerror,
                    coordinate xc, coordinate yc, coordinate zc,
                    distance R, anglevelocity omega, angle alpha);

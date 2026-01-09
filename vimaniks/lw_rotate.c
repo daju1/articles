@@ -29,12 +29,6 @@ velocity cget_c()
     return c;
 }
 
-int fermi_field = 0;
-void cset_fermi_field(int _f)
-{
-    fermi_field = _f;
-}
-
 // вращение заряда в плоскости xy вокруг центра в точке 
 // coordinate xc, coordinate yc, coordinate zc
 // по радиусу distance R
@@ -558,7 +552,7 @@ int electr_magnet(coordinate x, coordinate y, coordinate z, timevalue t,
     return -1;
 }
 
-int calc_fields(double k, distance r,
+int calc_fields(long double k, distance r,
                 distance nx,
                 distance ny,
                 distance nz,
@@ -571,16 +565,27 @@ int calc_fields(double k, distance r,
                 field * E_x, field * E_y, field * E_z,
                 field * B_x, field * B_y, field * B_z,
                 field * A_x, field * A_y, field * A_z,
-                field * j_x, field * j_y, field * j_z
+                field * j_x, field * j_y, field * j_z,
+                long double  * ra_c2,
+                long double  * four_a_four_R_c2
                 )
 {
     long double one = (long double)(1.0);
 
     long double v2_c2 = (Sq(vx) + Sq(vy) + Sq(vz)) / (c*c);
-    long double ra_c2 = r * (nx*wx + ny*wy + nz*wz) / (c*c);
+             (*ra_c2) = r * (nx*wx + ny*wy + nz*wz) / (c*c);
     long double va_c2 = (vx*wx + vy*wy + vz*wz) / (c*c);
-    long double one_m_v2_c2_p_ra_c2 = (one - v2_c2 + ra_c2);
+    long double one_m_v2_c2_p_ra_c2 = (one - v2_c2 + (*ra_c2));
     long double rdota_c2 = r * (nx*dot_wx + ny*dot_wy + nz*dot_wz) / (c*c);
+
+    // скалярное произведение 4-ускорения заряда и 4-вектора,
+    // проведённого из точки наблюдения в запаздывающую точку на траектории заряда
+    // делить на квадрат скорости света
+    *four_a_four_R_c2 = gamma_2 * (
+        (*ra_c2) +
+        gamma_2 * va_c2 * r * ((nx*vx + ny*vy + nz*vz) / c - one) / c
+    );
+    // fermi_geometry = (one + ra_c2 / 2.0);
 
     (*E1_x) = q*(one/(k*k*r*r)) * (one_m_v2_c2_p_ra_c2*nx/k - vx/c);
     (*E1_y) = q*(one/(k*k*r*r)) * (one_m_v2_c2_p_ra_c2*ny/k - vy/c);
@@ -615,24 +620,13 @@ int calc_fields(double k, distance r,
     (*j_z) = (-3*q*c/(k*k*k*k*r*r*r) * (one - one_m_v2_c2_p_ra_c2/k) * (one_m_v2_c2_p_ra_c2*(nz - vz/c) - (k*r)*wz/(c*c))
               + q/(k*k*k*r*r) * (-vz/r*one_m_v2_c2_p_ra_c2 + (nz - vz/c)/k*(rdota_c2-3*va_c2) - r*dot_wz/(c*c) - wz*k*r/c))
               /(4*M_PI);
-
-    if (fermi_field) {
-        long double fermi_m = (one + ra_c2);
-
-        (*E_x) *= fermi_m;
-        (*E_y) *= fermi_m;
-        (*E_z) *= fermi_m;
-
-        (*B_x) *= fermi_m;
-        (*B_y) *= fermi_m;
-        (*B_z) *= fermi_m;
-    }
 }
 
 int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
                    //Coordinate sx, Coordinate sy, Coordinate sz,
                    //Velocity vx, Velocity vy, Velocity vz,
                    //Acceleration wx, Acceleration wy, Acceleration wz,
+                   //DotAcceleration dot_wx, DotAcceleration dot_wy, DotAcceleration dot_wz,
                    charge q,
                    field * E1_x, field * E1_y, field * E1_z,
                    field * E2_x, field * E2_y, field * E2_z,
@@ -640,6 +634,8 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
                    field * B_x, field * B_y, field * B_z,
                    field * A_x, field * A_y, field * A_z,
                    field * j_x, field * j_y, field * j_z,
+                   long double  * ra_c2,
+                   long double  * four_a_four_R_c2,
                    coordinate * rlagerror,
                    coordinate xc, coordinate yc, coordinate zc,
                    distance R, anglevelocity omega, angle alpha)
@@ -699,7 +695,9 @@ int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,
                 E_x, E_y, E_z,
                 B_x, B_y, B_z,
                 A_x, A_y, A_z,
-                j_x, j_y, j_z
+                j_x, j_y, j_z,
+                ra_c2,
+                four_a_four_R_c2
                 );
         #endif
 

@@ -59,6 +59,107 @@ static int extract_contours_from_grid(
     size_t seg_count = 0, seg_cap = 1024;
     segments = (pt_ld*)malloc(seg_cap * 2 * sizeof(pt_ld));
     if (!segments) return -1;
+#if 1
+    // === Аналитический поиск пересечений с уровнем 0 через билинейную модель ===
+    for (int j = 0; j < ns - 1; ++j) {
+        for (int i = 0; i < nk - 1; ++i) {
+            // Значения в углах ячейки
+            long double f00 = F[i + j*nk];
+            long double f10 = F[(i+1) + j*nk];
+            long double f11 = F[(i+1) + (j+1)*nk];
+            long double f01 = F[i + (j+1)*nk];
+
+            // Проверка на NaN/Inf
+            if (IS_INVALID(f00, eps_nan) || IS_INVALID(f10, eps_nan) ||
+                IS_INVALID(f11, eps_nan) || IS_INVALID(f01, eps_nan)) continue;
+
+            // Координаты углов
+            long double k0 = kz_grid[i],     k1 = kz_grid[i+1];
+            long double s0 = sz_grid[j],     s1 = sz_grid[j+1];
+
+            // Билинейная модель: F(k,s) = A*k*s + B*k + C*s + D
+            long double denom = (k1 - k0) * (s1 - s0);
+            if (fabsl(denom) < 1e-18L) continue;
+
+            long double A = (f00 - f10 - f01 + f11) / denom;
+            long double B = (f10 - f00) / (k1 - k0) - A * s0;
+            long double C = (f01 - f00) / (s1 - s0) - A * k0;
+            long double D = f00 - B*k0 - C*s0 - A*k0*s0;
+
+            // Сдвигаем уровень: ищем F = level → F - level = 0
+            D -= level;
+
+            pt_ld verts[4];
+            int vcount = 0;
+
+            // --- Нижнее ребро: s = s0 ---
+            {
+                long double denom_edge = A * s0 + B;
+                if (fabsl(denom_edge) > 1e-18L) {
+                    long double k = -(C * s0 + D) / denom_edge;
+                    if (k >= k0 && k <= k1) {
+                        verts[vcount].x = k;
+                        verts[vcount].y = s0;
+                        vcount++;
+                    }
+                }
+            }
+
+            // --- Правое ребро: k = k1 ---
+            {
+                long double denom_edge = A * k1 + C;
+                if (fabsl(denom_edge) > 1e-18L) {
+                    long double s = -(B * k1 + D) / denom_edge;
+                    if (s >= s0 && s <= s1) {
+                        verts[vcount].x = k1;
+                        verts[vcount].y = s;
+                        vcount++;
+                    }
+                }
+            }
+
+            // --- Верхнее ребро: s = s1 ---
+            {
+                long double denom_edge = A * s1 + B;
+                if (fabsl(denom_edge) > 1e-18L) {
+                    long double k = -(C * s1 + D) / denom_edge;
+                    if (k >= k0 && k <= k1) {
+                        verts[vcount].x = k;
+                        verts[vcount].y = s1;
+                        vcount++;
+                    }
+                }
+            }
+
+            // --- Левое ребро: k = k0 ---
+            {
+                long double denom_edge = A * k0 + C;
+                if (fabsl(denom_edge) > 1e-18L) {
+                    long double s = -(B * k0 + D) / denom_edge;
+                    if (s >= s0 && s <= s1) {
+                        verts[vcount].x = k0;
+                        verts[vcount].y = s;
+                        vcount++;
+                    }
+                }
+            }
+
+            // Добавляем отрезки (по 2 точки)
+            for (int vi = 0; vi < vcount - 1; vi += 2) {
+                if (seg_count >= seg_cap) {
+                    seg_cap *= 2;
+                    pt_ld* tmp = (pt_ld*)realloc(segments, seg_cap * 2 * sizeof(pt_ld));
+                    if (!tmp) { free(segments); return -1; }
+                    segments = tmp;
+                }
+                segments[2*seg_count] = verts[vi];
+                segments[2*seg_count + 1] = verts[vi+1];
+                seg_count++;
+            }
+        }
+    }
+
+#else
 
     // Обход всех ячеек
     for (int j = 0; j < ns - 1; ++j) {
@@ -129,7 +230,7 @@ static int extract_contours_from_grid(
             }
         }
     }
-
+#endif
     // === Сборка ломаных из отрезков ===
     if (seg_count == 0) {
         free(segments);

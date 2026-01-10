@@ -1,5 +1,6 @@
 #include <math.h>
 #include <complex.h>
+#include "mendrive_point2d.h"
 #include "mendrive_contour_intersections.h"
 #include <stdio.h> // This line includes the standard input/output library
 

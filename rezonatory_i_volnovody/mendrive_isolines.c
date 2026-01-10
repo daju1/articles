@@ -35,8 +35,8 @@ typedef struct {
 static int compare_pts(const void* a, const void* b) {
     pt_ld* pa = (pt_ld*)a;
     pt_ld* pb = (pt_ld*)b;
-    if (fabsl(pa->x - pb->x) > 1e-18L) return (pa->x > pb->x) ? 1 : -1;
-    if (fabsl(pa->y - pb->y) > 1e-18L) return (pa->y > pb->y) ? 1 : -1;
+    if (fabsl(pa->x - pb->x) > 1e-16L) return (pa->x > pb->x) ? 1 : -1;
+    if (fabsl(pa->y - pb->y) > 1e-16L) return (pa->y > pb->y) ? 1 : -1;
     return 0;
 }
 
@@ -136,6 +136,176 @@ static int extract_contours_from_grid(
         return 0;
     }
 
+#if 1
+    // === УЛУЧШЕННАЯ СБОРКА ЛОМАНЫХ С ДОПУСКОМ ===
+    const long double eps_merge = 1e-10L; // ← подберите под масштаб ваших данных
+
+    // Создаём список всех концов отрезков
+    typedef struct {
+        pt_ld p;
+        int seg_index;
+        int is_end; // 0 = начало, 1 = конец
+    } endpoint_t;
+
+    endpoint_t* endpoints = (endpoint_t*)malloc(2 * seg_count * sizeof(endpoint_t));
+    if (!endpoints) { free(segments); return -1; }
+
+    for (size_t i = 0; i < seg_count; ++i) {
+        endpoints[2*i].p = segments[2*i];
+        endpoints[2*i].seg_index = i;
+        endpoints[2*i].is_end = 0;
+
+        endpoints[2*i + 1].p = segments[2*i + 1];
+        endpoints[2*i + 1].seg_index = i;
+        endpoints[2*i + 1].is_end = 1;
+    }
+
+    char* used_seg = (char*)calloc(seg_count, 1);
+    if (!used_seg) { free(segments); free(endpoints); return -1; }
+
+    contour_line_t* contours = NULL;
+    int n_c = 0, cap_c = 16;
+    contours = (contour_line_t*)malloc(cap_c * sizeof(contour_line_t));
+
+    // Основной цикл: для каждого неиспользованного отрезка — строим цепочку
+    for (size_t start_i = 0; start_i < seg_count; ++start_i) {
+        if (used_seg[start_i]) continue;
+
+        point2d_t* pts = NULL;
+        int pcount = 0, pcap = 64;
+        pts = (point2d_t*)malloc(pcap * sizeof(point2d_t));
+        if (!pts) goto cleanup;
+
+        // Начинаем с этого отрезка
+        pt_ld current_start = segments[2*start_i];
+        pt_ld current_end   = segments[2*start_i + 1];
+
+        pts[pcount].kz = current_start.x;
+        pts[pcount].sz = current_start.y;
+        pcount++;
+        pts[pcount].kz = current_end.x;
+        pts[pcount].sz = current_end.y;
+        pcount++;
+
+        used_seg[start_i] = 1;
+
+        // Продолжаем вперёд от current_end
+        pt_ld tail = current_end;
+        int extended;
+        do {
+            extended = 0;
+            for (size_t j = 0; j < seg_count; ++j) {
+                if (used_seg[j]) continue;
+                pt_ld a = segments[2*j], b = segments[2*j + 1];
+                if (fabsl(a.x - tail.x) < eps_merge && fabsl(a.y - tail.y) < eps_merge) {
+                    // Присоединяем b
+                    if (pcount >= pcap) {
+                        pcap *= 2;
+                        point2d_t* tmp = (point2d_t*)realloc(pts, pcap * sizeof(point2d_t));
+                        if (!tmp) goto cleanup;
+                        pts = tmp;
+                    }
+                    pts[pcount].kz = b.x;
+                    pts[pcount].sz = b.y;
+                    pcount++;
+                    tail = b;
+                    used_seg[j] = 1;
+                    extended = 1;
+                    break;
+                }
+                if (fabsl(b.x - tail.x) < eps_merge && fabsl(b.y - tail.y) < eps_merge) {
+                    // Присоединяем a
+                    if (pcount >= pcap) {
+                        pcap *= 2;
+                        point2d_t* tmp = (point2d_t*)realloc(pts, pcap * sizeof(point2d_t));
+                        if (!tmp) goto cleanup;
+                        pts = tmp;
+                    }
+                    pts[pcount].kz = a.x;
+                    pts[pcount].sz = a.y;
+                    pcount++;
+                    tail = a;
+                    used_seg[j] = 1;
+                    extended = 1;
+                    break;
+                }
+            }
+        } while (extended);
+
+        // Теперь пробуем "нарастить" назад от current_start
+        pt_ld head = current_start;
+        do {
+            extended = 0;
+            for (size_t j = 0; j < seg_count; ++j) {
+                if (used_seg[j]) continue;
+                pt_ld a = segments[2*j], b = segments[2*j + 1];
+                if (fabsl(b.x - head.x) < eps_merge && fabsl(b.y - head.y) < eps_merge) {
+                    // Присоединяем a В НАЧАЛО
+                    if (pcount >= pcap) {
+                        pcap *= 2;
+                        point2d_t* tmp = (point2d_t*)realloc(pts, pcap * sizeof(point2d_t));
+                        if (!tmp) goto cleanup;
+                        pts = tmp;
+                    }
+                    // Сдвигаем все точки вправо
+                    memmove(&pts[1], &pts[0], pcount * sizeof(point2d_t));
+                    pts[0].kz = a.x;
+                    pts[0].sz = a.y;
+                    pcount++;
+                    head = a;
+                    used_seg[j] = 1;
+                    extended = 1;
+                    break;
+                }
+                if (fabsl(a.x - head.x) < eps_merge && fabsl(a.y - head.y) < eps_merge) {
+                    // Присоединяем b В НАЧАЛО
+                    if (pcount >= pcap) {
+                        pcap *= 2;
+                        point2d_t* tmp = (point2d_t*)realloc(pts, pcap * sizeof(point2d_t));
+                        if (!tmp) goto cleanup;
+                        pts = tmp;
+                    }
+                    memmove(&pts[1], &pts[0], pcount * sizeof(point2d_t));
+                    pts[0].kz = b.x;
+                    pts[0].sz = b.y;
+                    pcount++;
+                    head = b;
+                    used_seg[j] = 1;
+                    extended = 1;
+                    break;
+                }
+            }
+        } while (extended);
+
+        // Сохраняем ломаную
+        if (n_c >= cap_c) {
+            cap_c *= 2;
+            contour_line_t* tmp = (contour_line_t*)realloc(contours, cap_c * sizeof(contour_line_t));
+            if (!tmp) goto cleanup;
+            contours = tmp;
+        }
+        contours[n_c].points = pts;
+        contours[n_c].n_points = pcount;
+        n_c++;
+        continue;
+
+    cleanup:
+        free(pts);
+        free(contours);
+        free(segments);
+        free(endpoints);
+        free(used_seg);
+        return -1;
+    }
+
+    free(segments);
+    free(endpoints);
+    free(used_seg);
+
+    *out_contours = contours;
+    *n_contours = n_c;
+    return 0;
+#else
     // Создаём хэш-подобный список концов
     pt_ld* all_pts = (pt_ld*)malloc(2 * seg_count * sizeof(pt_ld));
     if (!all_pts) { free(segments); return -1; }
@@ -237,6 +407,7 @@ static int extract_contours_from_grid(
     *out_contours = contours;
     *n_contours = n_c;
     return 0;
+#endif
 }
 
 // === Основная экспортная функция ===
@@ -307,23 +478,4 @@ void free_det_contours(det_contours_result_t* r) {
         r->im_zero = NULL;
     }
     r->n_re_contours = r->n_im_contours = 0;
-}
-
-// === Функции для ctypes ===
-void get_contour_kz(const contour_line_t* c, int idx, long double** x, int* n) {
-    if (!c || idx < 0 || idx >= 1) return; // ctypes вызывает по одной ломаной за раз
-    *x = (long double*)malloc(c->n_points * sizeof(long double));
-    for (int i = 0; i < c->n_points; ++i) {
-        (*x)[i] = c->points[i].kz;
-    }
-    *n = c->n_points;
-}
-
-void get_contour_sz(const contour_line_t* c, int idx, long double** y, int* n) {
-    if (!c || idx < 0 || idx >= 1) return;
-    *y = (long double*)malloc(c->n_points * sizeof(long double));
-    for (int i = 0; i < c->n_points; ++i) {
-        (*y)[i] = c->points[i].sz;
-    }
-    *n = c->n_points;
 }

@@ -30,8 +30,4 @@ int compute_det_contours(
 // Освобождение памяти
 void free_det_contours(det_contours_result_t* r);
 
-// Вспомогательные функции для ctypes (чтобы Python мог читать данные)
-void get_contour_kz(const contour_line_t* c, int idx, long double** x, int* n);
-void get_contour_sz(const contour_line_t* c, int idx, long double** y, int* n);
-
 #endif

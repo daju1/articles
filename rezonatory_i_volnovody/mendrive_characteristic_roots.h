@@ -11,6 +11,7 @@ typedef struct {
 int find_characteristic_roots(
     long double kz_min, long double kz_max, int nk,
     long double sz_min, long double sz_max, int ns,
+    det_contours_result_t* contours,
     characteristic_roots_t* result,
     long double eps_nan,
     long double eps_det,
@@ -18,5 +19,8 @@ int find_characteristic_roots(
     long double cos_max_angle,
     int use_tracing  // 0 — Marching Squares, 1 — трассировка
 );
+
+// Освобождение памяти
+void free_characteristic_roots(characteristic_roots_t* r);
 
 #endif

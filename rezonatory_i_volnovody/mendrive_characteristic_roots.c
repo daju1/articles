@@ -12,6 +12,7 @@
 int find_characteristic_roots(
     long double kz_min, long double kz_max, int nk,
     long double sz_min, long double sz_max, int ns,
+    det_contours_result_t* contours,
     characteristic_roots_t* result,
     long double eps_nan,
     long double eps_det,
@@ -23,17 +24,15 @@ int find_characteristic_roots(
     result->roots = NULL;
     result->n_roots = 0;
 
-    det_contours_result_t contours = {0};
-
     // Шаг 1: Построение изолиний
     int status;
     if (use_tracing) {
         status = compute_det_contours_traced(
-            kz_min, kz_max, nk, sz_min, sz_max, ns, &contours, eps_nan
+            kz_min, kz_max, nk, sz_min, sz_max, ns, contours, eps_nan
         );
     } else {
         status = compute_det_contours(
-            kz_min, kz_max, nk, sz_min, sz_max, ns, &contours, eps_nan
+            kz_min, kz_max, nk, sz_min, sz_max, ns, contours, eps_nan
         );
     }
 
@@ -45,17 +44,17 @@ int find_characteristic_roots(
     const int MAX_INTERSECTIONS = 10000;
     point2d_t* intersections = (point2d_t*)malloc(MAX_INTERSECTIONS * sizeof(point2d_t));
     if (!intersections) {
-        free_det_contours(&contours);
+        free_det_contours(contours);
         return -1;
     }
 
     int total_count = 0;
 
     // Перебираем все пары ломаных: каждая Re=0 с каждой Im=0
-    for (int i = 0; i < contours.n_re_contours && total_count < MAX_INTERSECTIONS; ++i) {
-        for (int j = 0; j < contours.n_im_contours && total_count < MAX_INTERSECTIONS; ++j) {
-            const contour_line_t* cu = &contours.re_zero[i];
-            const contour_line_t* cv = &contours.im_zero[j];
+    for (int i = 0; i < contours->n_re_contours && total_count < MAX_INTERSECTIONS; ++i) {
+        for (int j = 0; j < contours->n_im_contours && total_count < MAX_INTERSECTIONS; ++j) {
+            const contour_line_t* cu = &contours->re_zero[i];
+            const contour_line_t* cv = &contours->im_zero[j];
 
             if (cu->n_points < 2 || cv->n_points < 2) continue;
 
@@ -93,8 +92,6 @@ int find_characteristic_roots(
             if (total_count >= MAX_INTERSECTIONS) break;
         }
     }
-
-    free_det_contours(&contours);
 
     if (total_count == 0) {
         free(intersections);

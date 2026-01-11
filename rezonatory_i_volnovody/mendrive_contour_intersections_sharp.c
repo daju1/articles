@@ -233,8 +233,8 @@ int find_contour_intersections_with_corners(
 
                 // Экстраполированный отрезок: t ∈ [0, 1] (мы его задали длиной extrap_len)
                 // Отрезок cv: u ∈ [0, 1]
-                //if (t >= 0.0L && t <= 1.0L && u >= 0.0L && u <= 1.0L) {
-                if (t >= -0.5L && t <= 1.5L && u >= -0.5L && u <= 1.5L) {
+                if (t >= 0.0L && t <= 1.0L && u >= 0.0L && u <= 1.0L) {
+                //if (t >= -0.5L && t <= 1.5L && u >= -0.5L && u <= 1.5L) {
                     x = p_x + t * r_x;
                     y = p_y + t * r_y;
                     if (count >= max_intersections) goto overflow;
@@ -268,8 +268,8 @@ int find_contour_intersections_with_corners(
                 long double t = (qm_px * s_y - qm_py * s_x) / r_cross_s;
                 long double u = (qm_px * r_y - qm_py * r_x) / r_cross_s;
 
-                //if (t >= 0.0L && t <= 1.0L && u >= 0.0L && u <= 1.0L) {
-                if (t >= -0.5L && t <= 1.5L && u >= -0.5L && u <= 1.5L) {
+                if (t >= 0.0L && t <= 1.0L && u >= 0.0L && u <= 1.0L) {
+                //if (t >= -0.5L && t <= 1.5L && u >= -0.5L && u <= 1.5L) {
                     x = p_x + t * r_x;
                     y = p_y + t * r_y;
                     if (count >= max_intersections) goto overflow;

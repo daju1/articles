@@ -143,7 +143,7 @@ static int extract_contours_from_grid(
                     }
                 }
             }
-
+#if 0
             // Добавляем отрезки (по 2 точки)
             for (int vi = 0; vi < vcount - 1; vi += 2) {
                 if (seg_count >= seg_cap) {
@@ -156,11 +156,146 @@ static int extract_contours_from_grid(
                 segments[2*seg_count + 1] = verts[vi+1];
                 seg_count++;
             }
+#else
+            // === КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: правильно соединяем точки ===
+            // В билинейной модели изолиния — гипербола, которая может пересекать
+            // ячейку в 0, 2 или 4 точках. Но никогда в 1 или 3!
+            // Однако из-за численных ошибок может быть 3 точки.
+            // Поэтому мы сортируем точки по углам ячейки и соединяем соседние.
+
+            if (vcount == 0 || vcount > 4) continue;
+
+            // Сортируем точки по порядку обхода ячейки (нижнее -> правое -> верхнее -> левое)
+            // Для простоты — просто добавляем все возможные отрезки между парами
+            for (int a = 0; a < vcount; ++a) {
+                for (int b = a + 1; b < vcount; ++b) {
+                    // Добавляем отрезок между a и b
+                    if (seg_count >= seg_cap) {
+                        seg_cap *= 2;
+                        pt_ld* tmp = (pt_ld*)realloc(segments, seg_cap * 2 * sizeof(pt_ld));
+                        if (!tmp) { free(segments); return -1; }
+                        segments = tmp;
+                    }
+                    segments[2*seg_count] = verts[a];
+                    segments[2*seg_count + 1] = verts[b];
+                    seg_count++;
+                }
+            }
+#endif
         }
     }
 
 #else
+    #if 1
+    // Обход всех ячеек
+    for (int j = 0; j < ns - 1; ++j) {
+        for (int i = 0; i < nk - 1; ++i) {
+            // Значения в углах
+            long double f00 = F[i + j*nk];
+            long double f10 = F[(i+1) + j*nk];
+            long double f11 = F[(i+1) + (j+1)*nk];
+            long double f01 = F[i + (j+1)*nk];
 
+            // Проверка валидности
+            if (IS_INVALID(f00, eps_nan) || IS_INVALID(f10, eps_nan) ||
+                IS_INVALID(f11, eps_nan) || IS_INVALID(f01, eps_nan)) continue;
+
+            // Координаты углов
+            long double k0 = kz_grid[i], k1 = kz_grid[i+1];
+            long double s0 = sz_grid[j], s1 = sz_grid[j+1];
+
+            pt_ld verts[4];
+            int vcount = 0;
+
+            // --- Нижнее ребро (между (k0,s0) и (k1,s0)) ---
+            if ((f00 < level && level < f10 ) || ( f10 < level && level < f00 )) {
+                long double t = (level - f00) / (f10 - f00);
+                // Учитываем направление сетки
+                long double k_min = k0 > k1 ? k1 : k0;
+                long double k_max = k0 < k1 ? k1 : k0;
+                long double k = k0 + t * (k1 - k0);
+                if (k > k_min && k < k_max) {
+                    verts[vcount].x = k;
+                    verts[vcount].y = s0;
+                    vcount++;
+                }
+            }
+
+            // --- Правое ребро (между (k1,s0) и (k1,s1)) ---
+            if ((f10 < level && f11 > level) || (f10 > level && f11 < level)) {
+                long double t = (level - f10) / (f11 - f10);
+                //printf("right t=%Lf f10=%Le f11=%Le\n", t, f10, f11); fflush(stdout);
+                long double s_min = s0 > s1 ? s1 : s0;
+                long double s_max = s0 < s1 ? s1 : s0;
+                long double s = s0 + t * (s1 - s0);
+                if (s > s_min && s < s_max) {
+                    verts[vcount].x = k1;
+                    verts[vcount].y = s;
+                    vcount++;
+                }
+            }
+
+            // --- Верхнее ребро (между (k1,s1) и (k0,s1)) ---
+            if (( f11 < level && level < f01 ) || ( f01 < level && level < f11 )) {
+                long double t = (level - f11) / (f01 - f11);
+                long double k_min = k0 > k1 ? k1 : k0;
+                long double k_max = k0 < k1 ? k1 : k0;
+                long double k = k1 + t * (k0 - k1);
+                if (k > k_min && k < k_max) {
+                    verts[vcount].x = k;
+                    verts[vcount].y = s1;
+                    vcount++;
+                }
+            }
+
+            // --- Левое ребро (между (k0,s1) и (k0,s0)) ---
+            if ((f01 < level && level < f00 ) || (f00 < level && level < f01)) {
+                long double t = (level - f00) / (f01 - f00);
+                //printf("left  t=%Lf f00=%Le f01=%Le\n", t, f00, f01); fflush(stdout);
+                long double s_min = s0 > s1 ? s1 : s0;
+                long double s_max = s0 < s1 ? s1 : s0;
+                long double s = s0 + t * (s1 - s0);
+                if (s > s_min && s < s_max) {
+                    verts[vcount].x = k0;
+                    verts[vcount].y = s;
+                    vcount++;
+                }
+            }
+
+            // === КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: правильно соединяем точки ===
+            // В простом случае должно быть 0 или 2 точки, но из-за ошибок может быть 4
+            if (vcount == 2) {
+                // Добавляем один отрезок
+                if (seg_count >= seg_cap) {
+                    seg_cap *= 2;
+                    pt_ld* tmp = (pt_ld*)realloc(segments, seg_cap * 2 * sizeof(pt_ld));
+                    if (!tmp) { free(segments); return -1; }
+                    segments = tmp;
+                }
+                segments[2*seg_count] = verts[0];
+                segments[2*seg_count + 1] = verts[1];
+                seg_count++;
+            }
+            /*else if (vcount == 4) {
+                // Добавляем два отрезка: (0-1) и (2-3)
+                // Но сначала отсортируем точки по порядку обхода ячейки
+                // Для простоты — просто добавим все возможные пары
+                for (int a = 0; a < 4; a += 2) {
+                    if (seg_count >= seg_cap) {
+                        seg_cap *= 2;
+                        pt_ld* tmp = (pt_ld*)realloc(segments, seg_cap * 2 * sizeof(pt_ld));
+                        if (!tmp) { free(segments); return -1; }
+                        segments = tmp;
+                    }
+                    segments[2*seg_count] = verts[a];
+                    segments[2*seg_count + 1] = verts[a+1];
+                    seg_count++;
+                }
+            }*/
+            // Если vcount == 1 или 3 — игнорируем (численная ошибка)
+        }
+    }
+    #else
     // Обход всех ячеек
     for (int j = 0; j < ns - 1; ++j) {
         for (int i = 0; i < nk - 1; ++i) {
@@ -230,6 +365,7 @@ static int extract_contours_from_grid(
             }
         }
     }
+    #endif
 #endif
     // === Сборка ломаных из отрезков ===
     if (seg_count == 0) {

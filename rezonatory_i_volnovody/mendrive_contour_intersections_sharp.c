@@ -1,21 +1,22 @@
+#include <stdlib.h>
 #include <math.h>
 #include <complex.h>
 #include "mendrive_point2d.h"
 #include "mendrive_contour_intersections_sharp.h"
 #include <stdio.h> // This line includes the standard input/output library
 
+#if 0
 // Возвращает true, если точка i в ломаной является "острым" изломом
 static int is_sharp_corner(
     const long double* x, const long double* y, int n, int i,
     long double cos_max_angle  // например, -0.866L для угла > 150°
 ) {
-    int m = 10;
-    if (i <= m || i >= n - m - 1) return 0; // концевые точки не считаются
+    if (i <= m || i >= n - 1) return 0; // концевые точки не считаются
 
-    long double v1x = x[i] - x[i-1-m];
-    long double v1y = y[i] - y[i-1-m];
-    long double v2x = x[i+1+m] - x[i];
-    long double v2y = y[i+1+m] - y[i];
+    long double v1x = x[i] - x[i-1];
+    long double v1y = y[i] - y[i-1];
+    long double v2x = x[i+1] - x[i];
+    long double v2y = y[i+1] - y[i];
 
     long double len1 = sqrtl(v1x*v1x + v1y*v1y);
     long double len2 = sqrtl(v2x*v2x + v2y*v2y);
@@ -33,6 +34,134 @@ static int is_sharp_corner(
 
     return (cos_angle > cos_max_angle); // например, cos_max_angle = -0.94L (~160°)
 }
+#else
+
+// Вспомогательная функция: вычисление косинуса угла в точке i
+static long double compute_cosine_at_point(
+    const long double* x, const long double* y, int n, int i
+) {
+    if (i <= 0 || i >= n - 1) return -2.0L; // недопустимое значение
+
+    long double v1x = x[i] - x[i-1];
+    long double v1y = y[i] - y[i-1];
+    long double v2x = x[i+1] - x[i];
+    long double v2y = y[i+1] - y[i];
+
+    long double len1 = sqrtl(v1x*v1x + v1y*v1y);
+    long double len2 = sqrtl(v2x*v2x + v2y*v2y);
+
+    if (len1 < 1e-18L || len2 < 1e-18L) return -2.0L;
+
+    long double dot = v1x * v2x + v1y * v2y;
+    long double cos_angle = dot / (len1 * len2);
+
+    // Ограничиваем диапазон [-1, 1]
+    if (cos_angle < -1.0L) cos_angle = -1.0L;
+    if (cos_angle > 1.0L) cos_angle = 1.0L;
+
+    return cos_angle;
+}
+
+static int compare_long_double(const void* a, const void* b);
+
+// Адаптивное определение острых углов
+void find_sharp_corners_adaptive(
+    const long double* x, const long double* y, int n,
+    char* is_sharp  // выходной массив: 1 если излом, 0 иначе
+) {
+    if (n < 3) {
+        for (int i = 0; i < n; ++i) is_sharp[i] = 0;
+        return;
+    }
+
+    // Шаг 1: вычисляем все косинусы
+    long double* cosines = (long double*)malloc((n - 2) * sizeof(long double));
+    int valid_count = 0;
+
+    for (int i = 1; i < n - 1; ++i) {
+        long double cos_val = compute_cosine_at_point(x, y, n, i);
+        if (cos_val >= -1.5L) { // валидное значение
+            cosines[valid_count++] = cos_val;
+        }
+    }
+
+    if (valid_count == 0) {
+        free(cosines);
+        for (int i = 0; i < n; ++i) is_sharp[i] = 0;
+        return;
+    }
+
+    // Шаг 2: сортируем косинусы
+    qsort(cosines, valid_count, sizeof(long double), 
+          (int(*)(const void*, const void*))compare_long_double);
+
+    // Шаг 3: строим гистограмму и ищем разрыв
+    const int HIST_BINS = 50;
+    int hist[HIST_BINS];
+    for (int i = 0; i < HIST_BINS ; ++i) {
+        hist[i] = 0;
+    }
+    long double min_cos = -1.0L;
+    long double max_cos = 1.0L;
+    long double bin_width = (max_cos - min_cos) / HIST_BINS;
+
+    for (int i = 0; i < valid_count; ++i) {
+        int bin = (int)((cosines[i] - min_cos) / bin_width);
+        if (bin < 0) bin = 0;
+        if (bin >= HIST_BINS) bin = HIST_BINS - 1;
+        hist[bin]++;
+    }
+
+    // Шаг 4: ищем максимальный разрыв между соседними бинами
+    int max_gap = 0;
+    int gap_bin = HIST_BINS / 2; // по умолчанию — середина
+
+    for (int i = 0; i < HIST_BINS - 1; ++i) {
+        int gap = hist[i] + hist[i+1];
+        // Ищем место, где оба бина малы, но окрестности заполнены
+        if (hist[i] < 5 && hist[i+1] < 5) {
+            // Проверяем, что слева и справа есть данные
+            int left_sum = 0, right_sum = 0;
+            for (int j = 0; j < i; ++j) left_sum += hist[j];
+            for (int j = i+2; j < HIST_BINS; ++j) right_sum += hist[j];
+            
+            if (left_sum > 10 && right_sum > 10) {
+                gap_bin = i+1;
+                break;
+            }
+        }
+    }
+
+    // Альтернатива: используем процентиль
+    // Берём 90-й процентиль как порог для "острых" углов
+    int percentile_idx = (int)(valid_count * 0.90);
+    if (percentile_idx >= valid_count) percentile_idx = valid_count - 1;
+    long double adaptive_threshold = cosines[percentile_idx];
+
+    // Но оставляем минимальный порог
+    if (adaptive_threshold < -0.8L) adaptive_threshold = -0.8L;
+
+    // Шаг 5: помечаем острые углы
+    for (int i = 0; i < n; ++i) is_sharp[i] = 0;
+
+    for (int i = 1; i < n - 1; ++i) {
+        long double cos_val = compute_cosine_at_point(x, y, n, i);
+        if (cos_val >= adaptive_threshold) {
+            is_sharp[i] = 1;
+        }
+    }
+
+    free(cosines);
+}
+
+// Вспомогательная функция сравнения для qsort
+static int compare_long_double(const void* a, const void* b) {
+    long double da = *(const long double*)a;
+    long double db = *(const long double*)b;
+    return (da > db) - (da < db);
+}
+
+#endif
 
 // Экстраполирует одно плечо угла назад или вперёд
 // dir = -1 → экстраполяция "назад" (через [i-1] -> [i])
@@ -205,10 +334,15 @@ int find_contour_intersections_with_corners(
             }*/
         }
     }
+    
+    // Вместо цикла с is_sharp_corner
+    char* sharp_mask = (char*)calloc(cu_n, 1);
+    find_sharp_corners_adaptive(cu_x, cu_y, cu_n, sharp_mask);
 
     // 2. Обработка острых изломов на cu → экстраполяция → пересечение с cv
     for (int i = 1; i < cu_n - 1; ++i) {
-        if (!is_sharp_corner(cu_x, cu_y, cu_n, i, cos_max_angle)) continue;
+        //if (!is_sharp_corner(cu_x, cu_y, cu_n, i, cos_max_angle)) continue;
+        if (!sharp_mask[i]) continue;
 
         // Два плеча: назад и вперёд
         for (int dir = -1; dir <= 1; dir += 2) {
@@ -237,7 +371,11 @@ int find_contour_intersections_with_corners(
                 //if (t >= -0.5L && t <= 1.5L && u >= -0.5L && u <= 1.5L) {
                     x = p_x + t * r_x;
                     y = p_y + t * r_y;
-                    if (count >= max_intersections) goto overflow;
+                    if (count >= max_intersections)
+                    {
+                        free(sharp_mask);
+                        goto overflow;
+                    }
                     intersections[count].kz = x;
                     intersections[count].sz = y;
                     count++;
@@ -245,10 +383,17 @@ int find_contour_intersections_with_corners(
             }
         }
     }
+    
+    free(sharp_mask);
+    
+    // Вместо цикла с is_sharp_corner
+    sharp_mask = (char*)calloc(cv_n, 1);
+    find_sharp_corners_adaptive(cv_x, cv_y, cv_n, sharp_mask);
 
     // 3. Обработка острых изломов на cv → экстраполяция → пересечение с cu
     for (int j = 1; j < cv_n - 1; ++j) {
-        if (!is_sharp_corner(cv_x, cv_y, cv_n, j, cos_max_angle)) continue;
+        //if (!is_sharp_corner(cv_x, cv_y, cv_n, j, cos_max_angle)) continue;
+        if (!sharp_mask[j]) continue;
 
         for (int dir = -1; dir <= 1; dir += 2) {
             long double p_x, p_y, r_x, r_y;
@@ -272,7 +417,11 @@ int find_contour_intersections_with_corners(
                 //if (t >= -0.5L && t <= 1.5L && u >= -0.5L && u <= 1.5L) {
                     x = p_x + t * r_x;
                     y = p_y + t * r_y;
-                    if (count >= max_intersections) goto overflow;
+                    if (count >= max_intersections)
+                    {
+                        free(sharp_mask);
+                        goto overflow;
+                    }
                     intersections[count].kz = x;
                     intersections[count].sz = y;
                     count++;
@@ -280,6 +429,7 @@ int find_contour_intersections_with_corners(
             }
         }
     }
+    free(sharp_mask);
 
     return count;
 

@@ -1,6 +1,12 @@
 #ifndef MENDDRIVE_SHARP_CONTOUR_INTERSECTION_H
 #define MENDDRIVE_SHARP_CONTOUR_INTERSECTION_H
 
+// Адаптивное определение острых углов
+void find_sharp_corners_adaptive(
+    const long double* x, const long double* y, int n,
+    char* is_sharp  // выходной массив: 1 если излом, 0 иначе
+);
+
 // Находит все пересечения ломаных cu и cv
 // Возвращает число найденных точек, записывает их в intersections (память выделяет вызывающая сторона)
 // eps_det — порог |det| для фильтрации (например, 1e-6)

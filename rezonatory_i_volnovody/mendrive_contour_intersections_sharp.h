@@ -2,9 +2,10 @@
 #define MENDDRIVE_SHARP_CONTOUR_INTERSECTION_H
 
 // Адаптивное определение острых углов
-void find_sharp_corners_adaptive(
-    const long double* x, const long double* y, int n,
-    char* is_sharp  // выходной массив: 1 если излом, 0 иначе
+void find_sharp_corners(
+    const long double* x, const long double* y, int n, long double cos_max_angle,
+    char* is_sharp,  // выходной массив: 1 если излом, 0 иначе
+    long double* cosines
 );
 
 // Находит все пересечения ломаных cu и cv
@@ -18,5 +19,12 @@ int find_contour_intersections_with_corners(
     long double extrap_len,          // длина экстраполяции (например, 1e-3)
     long double cos_max_angle        // порог остроты угла, например -0.94L
 );
+
+// Тестовая функция для острых углов
+int test_sharp_corners(const contour_line_t* line,
+                       long double cos_max_angle,
+                       const char* name,
+                       point2d_t* sharp_corners,
+                       int max_sharp_corners);
 
 #endif

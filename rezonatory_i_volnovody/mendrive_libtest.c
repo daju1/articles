@@ -21,58 +21,16 @@ typedef int (*compute_det_contours_t)(
 typedef void (*free_det_contours_t)(det_contours_result_t*);
 
 // Находим острые углы (предполагаем, что функция в той же библиотеке)
-typedef void (*find_sharp_corners_adaptive_t)(
-    const long double*, const long double*, int, char*
+typedef void (*find_sharp_corners_t)(
+    const long double*, const long double*, int, long double, char*, long double *
 );
 
 // Тестовая функция для острых углов
-void test_sharp_corners(void* h, const contour_line_t* line, const char* name) {
-    if (!line || line->n_points < 3) return;
-
-    // Находим острые углы (предполагаем, что функция в той же библиотеке)
-    find_sharp_corners_adaptive_t find_sharp_corners_adaptive_fn =
-        (find_sharp_corners_adaptive_t)dlsym(h, "find_sharp_corners_adaptive");
-
-    if (!find_sharp_corners_adaptive_fn) {
-        printf("Не найдены символы: %s\n", dlerror());
-        return;
-    }
-
-    // Выделяем память для маски
-    char* sharp_mask = (char*)calloc(line->n_points, 1);
-    if (!sharp_mask) return;
-
-    // Извлекаем координаты
-    long double* x = (long double*)malloc(line->n_points * sizeof(long double));
-    long double* y = (long double*)malloc(line->n_points * sizeof(long double));
-    if (!x || !y) {
-        free(sharp_mask); free(x); free(y);
-        return;
-    }
-
-    for (int i = 0; i < line->n_points; ++i) {
-        x[i] = line->points[i].kz;
-        y[i] = line->points[i].sz;
-    }
-
-    find_sharp_corners_adaptive_fn(x, y, line->n_points, sharp_mask);
-
-    // Выводим результаты
-    printf("\n=== Острые углы в %s n_points=%d === \n", name, line->n_points);
-    int sharp_count = 0;
-    for (int i = 1; i < line->n_points - 1; ++i) {
-        if (sharp_mask[i]) {
-            printf("  Точка %d: (%.6Lf, %.6Lf)\n",
-                   i, x[i], y[i]);
-            sharp_count++;
-        }
-    }
-    printf("Найдено острых углов: %d\n", sharp_count);
-
-    free(sharp_mask);
-    free(x);
-    free(y);
-}
+typedef int (*test_sharp_corners_t)(const contour_line_t* line,
+                                   long double cos_max_angle,
+                                   const char* name,
+                                   point2d_t* sharp_corners,
+                                   int max_sharp_corners);
 
 int main() {
     void* h = dlopen("./mendrive.so", RTLD_NOW);
@@ -91,6 +49,9 @@ int main() {
         (compute_det_contours_t)dlsym(h, "compute_det_contours");
     free_det_contours_t free_det_contours_fn =
         (free_det_contours_t)dlsym(h, "free_det_contours");
+
+    test_sharp_corners_t test_sharp_corners_fn =
+        (test_sharp_corners_t)dlsym(h, "test_sharp_corners");
 
     if (!compute_det_contours_fn || !free_det_contours_fn) {
         printf("Не найдены символы: %s\n", dlerror());
@@ -155,16 +116,18 @@ int main() {
     printf("Im=0: %d линий\n", contours.n_im_contours);
 
     char name[128];
-    // Тестируем первую линию Re=0
+    const int max_sharp_corners = 100;
+    point2d_t sharp_corners[max_sharp_corners];
+    // Тестируем линии Re=0
     for (int i = 0; i < contours.n_re_contours; ++i) {
         sprintf(name, "Re=0 line=%d", i);
-        test_sharp_corners(h, &contours.re_zero[i], name);
+        test_sharp_corners_fn(&contours.re_zero[i], 0.5, name, sharp_corners, max_sharp_corners);
     }
 
-    // Тестируем первую линию Im=0
+    // Тестируем линии Im=0
     for (int i = 0; i < contours.n_im_contours; ++i) {
         sprintf(name, "Im=0 line=%d", i);
-        test_sharp_corners(h, &contours.im_zero[i], name);
+        test_sharp_corners_fn(&contours.im_zero[i], 0.5, name, sharp_corners, max_sharp_corners);
     }
 
     // Освобождаем память

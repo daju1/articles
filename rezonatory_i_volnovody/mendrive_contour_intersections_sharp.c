@@ -274,8 +274,6 @@ void find_sharp_corners(
     }
 }
 
-
-
 // Экстраполирует одно плечо угла назад или вперёд
 // dir = -1 → экстраполяция "назад" (через [i-1] -> [i])
 // dir = +1 → экстраполяция "вперёд" (через [i] -> [i+1])
@@ -397,6 +395,96 @@ static int segment_intersection(
     return 1;
 }*/
 
+// Возвращает длину самого длинного гладкого участка, центрированного в точке center_idx
+// Гладкость определяется по разнице между соседними значениями (cosines или sines)
+static int smooth_segment_length(
+    const long double* values,   // массив значений (cosines или sines)
+    int n_vals,                  // размер массива (обычно n-2)
+    int center_idx,              // индекс в массиве values (соответствует точке i+1 в исходных данных)
+    long double eps_smooth       // порог изменения, например 0.05L
+) {
+    if (center_idx < 0 || center_idx >= n_vals) return 0;
+
+    int max_len = 1; // минимум — сама точка
+
+    // Ищем влево
+    int left = center_idx;
+    while (left > 0) {
+        long double diff = fabsl(values[left] - values[left - 1]);
+        if (diff > eps_smooth) break;
+        left--;
+    }
+
+    // Ищем вправо
+    int right = center_idx;
+    while (right < n_vals - 1) {
+        long double diff = fabsl(values[right + 1] - values[right]);
+        if (diff > eps_smooth) break;
+        right++;
+    }
+
+    return right - left + 1;
+}
+
+
+// Уточняет позицию острой вершины, выбирая ту из трёх (i-1, i, i+1),
+// которая лежит на самом длинном гладком участке (по косинусам и/или синусам)
+// Возвращает индекс лучшей точки (в пределах [1, n-2])
+static int refine_sharp_corner_by_smoothness(
+    const long double* cosines, int n_cos,
+    const long double* sines,   int n_sin,
+    int i,                      // текущая формально острая вершина (индекс в исходной ломаной)
+    int n_points,               // общее число точек ломаной
+    long double eps_smooth      // порог гладкости, например 0.05L
+) {
+    if (n_points < 5 || i < 2 || i >= n_points - 2) {
+        return i; // недостаточно точек для анализа
+    }
+
+    int candidates[3] = {i-1, i, i+1};
+    int smooth_lengths[3] = {0, 0, 0};
+
+    for (int k = 0; k < 3; ++k) {
+        int cand = candidates[k];
+        if (cand < 1 || cand >= n_points - 1) {
+            smooth_lengths[k] = 0;
+            continue;
+        }
+
+        // индекс в массивах cosines/sines: cand - 1
+        int cos_idx = cand - 1;
+        int sin_idx = cand - 1;
+
+        if (cos_idx < 0 || cos_idx >= n_cos) {
+            smooth_lengths[k] = 0;
+            continue;
+        }
+        if (sin_idx < 0 || sin_idx >= n_sin) {
+            smooth_lengths[k] = 0;
+            continue;
+        }
+
+        // Вычисляем длину гладкого участка по косинусам
+        int len_cos = smooth_segment_length(cosines, n_cos, cos_idx, eps_smooth);
+
+        // Вычисляем длину гладкого участка по синусам
+        int len_sin = smooth_segment_length(  sines, n_sin, sin_idx, eps_smooth);
+
+        // Берём максимум из двух — можно также усреднять или взвешивать
+        smooth_lengths[k] = len_cos > len_sin ? len_cos : len_sin;
+    }
+
+    // Находим кандидата с максимальной длиной гладкого участка
+    int best_k = 0;
+    for (int k = 1; k < 3; ++k) {
+        if (smooth_lengths[k] > smooth_lengths[best_k]) {
+            best_k = k;
+        }
+    }
+
+    return candidates[best_k];
+}
+
 int find_contour_intersections_with_corners(
     const long double* cu_x, const long double* cu_y, int cu_n,
     const long double* cv_x, const long double* cv_y, int cv_n,
@@ -449,7 +537,7 @@ int find_contour_intersections_with_corners(
             }*/
         }
     }
-    
+
     // Вместо цикла с is_sharp_corner
     char* sharp_mask_cos = (char*)calloc(cu_n, sizeof(char));
     char* sharp_mask_sin = (char*)calloc(cu_n, sizeof(char));
@@ -468,10 +556,29 @@ int find_contour_intersections_with_corners(
     for (int i = 1; i < cu_n - 1; ++i) {
         if (!sharp_mask_cos[i] && !sharp_mask_sin[i]) continue;
 
-        // Два плеча: назад и вперёд
+        // Уточняем позицию излома по гладкости
+        int refined_i = refine_sharp_corner_by_smoothness(
+            cosines, cu_n - 2,
+            sines,   cu_n - 2,
+            i, cu_n,
+            0.05L  // eps_smooth — подберите под вашу задачу
+        );
+
+        // Проверяем, что refined_i валиден
+        if (refined_i < 1 || refined_i >= cu_n - 1) {
+            refined_i = i; // fallback
+        }
+
+        // Теперь работаем с refined_i
         for (int dir = -1; dir <= 1; dir += 2) {
             long double p_x, p_y, r_x, r_y;
-            extrapolate_segment(cu_x, cu_y, i, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
+
+            extrapolate_segment(cu_x, cu_y, refined_i, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
+
+        // Два плеча: назад и вперёд
+        //for (int dir = -1; dir <= 1; dir += 2) {
+        //    long double p_x, p_y, r_x, r_y;
+        //    extrapolate_segment(cu_x, cu_y, i, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
 
             // Пересекаем этот экстраполированный отрезок со всеми отрезками cv
             for (int j = 0; j < cv_n - 1; ++j) {
@@ -510,12 +617,12 @@ int find_contour_intersections_with_corners(
             }
         }
     }
-    
+
     free(sines);
     free(cosines);
     free(sharp_mask_cos);
     free(sharp_mask_sin);
-    
+
     // Вместо цикла с is_sharp_corner
     sharp_mask_cos = (char*)calloc(cv_n, sizeof(char));
     sharp_mask_sin = (char*)calloc(cv_n, sizeof(char));
@@ -534,9 +641,25 @@ int find_contour_intersections_with_corners(
     for (int j = 1; j < cv_n - 1; ++j) {
         if (!sharp_mask_cos[j] && !sharp_mask_sin[j]) continue;
 
+        // Уточняем позицию излома по гладкости
+        int refined_j = refine_sharp_corner_by_smoothness(
+            cosines, cv_n - 2,
+            sines,   cv_n - 2,
+            j, cv_n,
+            0.05L  // eps_smooth
+        );
+
+        if (refined_j < 1 || refined_j >= cv_n - 1) {
+            refined_j = j;
+        }
+
         for (int dir = -1; dir <= 1; dir += 2) {
             long double p_x, p_y, r_x, r_y;
-            extrapolate_segment(cv_x, cv_y, j, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
+            extrapolate_segment(cv_x, cv_y, refined_j, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
+
+        //for (int dir = -1; dir <= 1; dir += 2) {
+        //    long double p_x, p_y, r_x, r_y;
+        //    extrapolate_segment(cv_x, cv_y, j, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
 
             for (int i = 0; i < cu_n - 1; ++i) {
                 long double q_x = cu_x[i], q_y = cu_y[i];
@@ -582,7 +705,6 @@ overflow:
     fprintf(stderr, "find_contour_intersections_with_corners: max_intersections exceeded\n");
     return count;
 }
-
 
 // Тестовая функция для острых углов
 int test_sharp_corners(const contour_line_t* line,
@@ -659,8 +781,30 @@ int test_sharp_corners(const contour_line_t* line,
                 goto overflow;
             }
 
-            if (logging) printf("  Точка %d: (%.6Lf, %.6Lf) cos = %Lf sin = %Lf %d %d\n",
-                   i, x[i], y[i], cosines[i-1], sines[i-1], sharp_mask_cos[i], sharp_mask_sin[i]);
+            // Уточняем позицию излома по гладкости
+            int refined_i = refine_sharp_corner_by_smoothness(
+                cosines, line->n_points - 2,
+                sines,   line->n_points - 2,
+                i, line->n_points,
+                0.05L  // eps_smooth — подберите под вашу задачу
+            );
+
+            // Проверяем, что refined_i валиден
+            if (refined_i < 1 || refined_i >= line->n_points - 1) {
+                refined_i = i; // fallback
+            }
+
+            // Теперь работаем с refined_i
+            //for (int dir = -1; dir <= 1; dir += 2) {
+            //    long double p_x, p_y, r_x, r_y;
+            //    extrapolate_segment(cu_x, cu_y, refined_i, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
+
+            if (logging)
+                printf("  Точка %d: (%.6Lf, %.6Lf) cos = %Lf sin = %Lf mask_cos=%d mask_sin=%d refined_i=%d refined_pt: (%.6Lf, %.6Lf)\n",
+                       i, x[i], y[i],
+                       cosines[i-1], sines[i-1],
+                       sharp_mask_cos[i], sharp_mask_sin[i],
+                       refined_i, x[refined_i], y[refined_i]);
 
             sharp_corners[sharp_count].kz = x[i];
             sharp_corners[sharp_count].sz = y[i];
@@ -672,6 +816,11 @@ int test_sharp_corners(const contour_line_t* line,
                 sharp_corners[sharp_count].type = 2;
             else if (sharp_mask_sin[i])
                 sharp_corners[sharp_count].type = 3;
+            sharp_corners[sharp_count].i = i;
+            sharp_corners[sharp_count].refined_i;
+            sharp_corners[sharp_count].refined_pt.kz = x[refined_i];
+            sharp_corners[sharp_count].refined_pt.sz = y[refined_i];
+
             sharp_count++;
         }
     }

@@ -12,6 +12,9 @@ typedef struct {
     long double cosine;
     long double sine;
     int type;
+    int i;
+    int refined_i;
+    point2d_t refined_pt;
 } corner2d_t;
 
 #endif

@@ -3,9 +3,14 @@
 
 // Адаптивное определение острых углов
 void find_sharp_corners(
-    const long double* x, const long double* y, int n, long double cos_max_angle,
-    char* is_sharp,  // выходной массив: 1 если излом, 0 иначе
-    long double* cosines
+    const long double* x, const long double* y, int n,
+    long double cos_max_angle,
+    long double sin_min_angle,
+    long double sin_max_angle,
+    char* is_sharp_cos,  // выходной массив: 1 если излом, 0 иначе
+    char* is_sharp_sin,  // выходной массив: 1 если излом, 0 иначе
+    long double* cosines,
+    long double* sines
 );
 
 // Находит все пересечения ломаных cu и cv
@@ -17,14 +22,18 @@ int find_contour_intersections_with_corners(
     point2d_t* intersections, int max_intersections,
     long double eps_det,
     long double extrap_len,          // длина экстраполяции (например, 1e-3)
-    long double cos_max_angle        // порог остроты угла, например -0.94L
+    long double cos_max_angle,       // порог остроты угла, например -0.94L
+    long double sin_min_angle,        // порог остроты угла, например 0.5L
+    long double sin_max_angle        // порог остроты угла, например 0.5L
 );
 
 // Тестовая функция для острых углов
 int test_sharp_corners(const contour_line_t* line,
                        long double cos_max_angle,
+                       long double sin_min_angle,
+                       long double sin_max_angle,
                        const char* name,
-                       point2d_t* sharp_corners,
+                       corner2d_t* sharp_corners,
                        int max_sharp_corners);
 
 #endif

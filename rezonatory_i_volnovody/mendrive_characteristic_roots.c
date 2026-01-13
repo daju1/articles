@@ -18,6 +18,8 @@ int find_characteristic_roots(
     long double eps_det,
     long double extrap_len,
     long double cos_max_angle,
+    long double sin_min_angle,
+    long double sin_max_angle,
     int use_tracing
 ) {
     if (!result) return -1;
@@ -81,7 +83,9 @@ int find_characteristic_roots(
                 MAX_INTERSECTIONS - total_count,
                 eps_det,
                 extrap_len,
-                cos_max_angle
+                cos_max_angle,
+                sin_min_angle,
+                sin_max_angle
             );
 
             total_count += count;

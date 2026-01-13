@@ -28,8 +28,10 @@ typedef void (*find_sharp_corners_t)(
 // Тестовая функция для острых углов
 typedef int (*test_sharp_corners_t)(const contour_line_t* line,
                                    long double cos_max_angle,
+                                   long double sin_min_angle,
+                                   long double sin_max_angle,
                                    const char* name,
-                                   point2d_t* sharp_corners,
+                                   corner2d_t* sharp_corners,
                                    int max_sharp_corners);
 
 int main() {
@@ -100,8 +102,8 @@ int main() {
     // Тестируем построение изолиний
     det_contours_result_t contours = {0};
     int status = compute_det_contours_fn(
-        -200.0L, 200.0L, 1000,  // kz
-        -10.0L,   10.0L, 1000,  // sz
+        -200.0L, 200.0L, 400,  // kz
+        -10.0L,   10.0L, 400,  // sz
         &contours,
         1e300L
     );
@@ -117,18 +119,20 @@ int main() {
 
     char name[128];
     const int max_sharp_corners = 100;
-    point2d_t sharp_corners[max_sharp_corners];
+    corner2d_t sharp_corners[max_sharp_corners];
     // Тестируем линии Re=0
-    for (int i = 0; i < contours.n_re_contours; ++i) {
+    //for (int i = 0; i < contours.n_re_contours; ++i) {
+    for (int i = 4; i < 7/*contours.n_re_contours*/; ++i) {
         sprintf(name, "Re=0 line=%d", i);
-        test_sharp_corners_fn(&contours.re_zero[i], 0.5, name, sharp_corners, max_sharp_corners);
+        test_sharp_corners_fn(&contours.re_zero[i], -0.94, 0.5, 0.8, name, sharp_corners, max_sharp_corners);
+        //break;
     }
 
     // Тестируем линии Im=0
-    for (int i = 0; i < contours.n_im_contours; ++i) {
-        sprintf(name, "Im=0 line=%d", i);
-        test_sharp_corners_fn(&contours.im_zero[i], 0.5, name, sharp_corners, max_sharp_corners);
-    }
+//     for (int i = 0; i < contours.n_im_contours; ++i) {
+//         sprintf(name, "Im=0 line=%d", i);
+//         test_sharp_corners_fn(&contours.im_zero[i], -0.94, 0.5, 0.8, name, sharp_corners, max_sharp_corners);
+//     }
 
     // Освобождаем память
     free_det_contours_fn(&contours);

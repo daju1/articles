@@ -423,12 +423,15 @@ static int smooth_segment_length(
         right++;
     }
 
+    #if LOGGING
+    printf("n_vals=%d, center_idx=%d left=%d, right=%d\n", n_vals, center_idx, left, right);
+    #endif
+
     return right - left + 1;
 }
 
-
 // Уточняет позицию острой вершины, выбирая ту из трёх (i-1, i, i+1),
-// которая лежит на самом длинном гладком участке (по косинусам и/или синусам)
+// которая начинает самый длинный гладкий участок
 // Возвращает индекс лучшей точки (в пределах [1, n-2])
 static int refine_sharp_corner_by_smoothness(
     const long double* cosines, int n_cos,
@@ -467,8 +470,16 @@ static int refine_sharp_corner_by_smoothness(
         // Вычисляем длину гладкого участка по косинусам
         int len_cos = smooth_segment_length(cosines, n_cos, cos_idx, eps_smooth);
 
+        #if LOGGING
+        printf("k=%d, cand=%d, i=%d, n_points=%d len_cos = %d\n", k, cand, i, n_points, len_cos);
+        #endif
+
         // Вычисляем длину гладкого участка по синусам
         int len_sin = smooth_segment_length(  sines, n_sin, sin_idx, eps_smooth);
+
+        #if LOGGING
+        printf("k=%d, cand=%d, i=%d, n_points=%d len_sin = %d\n\n", k, cand, i, n_points, len_sin);
+        #endif
 
         // Берём максимум из двух — можно также усреднять или взвешивать
         smooth_lengths[k] = len_cos > len_sin ? len_cos : len_sin;
@@ -786,7 +797,7 @@ int test_sharp_corners(const contour_line_t* line,
                 cosines, line->n_points - 2,
                 sines,   line->n_points - 2,
                 i, line->n_points,
-                0.05L  // eps_smooth — подберите под вашу задачу
+                0.005L  // eps_smooth — подберите под вашу задачу
             );
 
             // Проверяем, что refined_i валиден

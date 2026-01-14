@@ -17,6 +17,7 @@ gcc -shared -fPIC -O3 -o mendrive.so \
         mendrive_linsolve.c \
         -I../vimaniks/gsl/local/include \
         -L../vimaniks/gsl/local/lib \
+        -DLOGGING \
         -Wl,-rpath='$ORIGIN/../vimaniks/gsl/local/lib' \
         -lgsl -lgslcblas -lm
 

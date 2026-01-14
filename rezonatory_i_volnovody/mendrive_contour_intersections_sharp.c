@@ -7,7 +7,15 @@
 #include <stdio.h> // This line includes the standard input/output library
 
 #define USE_ADAPTIVE_SHARP
-#define LOGGING 0
+// #define LOGGING 1
+
+//#define REFINED_INTERSECTIONS
+
+#ifdef LOGGING
+#define VERBOSE 1
+#else
+#define VERBOSE 0
+#endif
 
 // Вспомогательная функция: вычисление косинуса угла в точке i
 static long double compute_cosine_at_point(
@@ -148,7 +156,7 @@ void find_sharp_corners(
         return;
     }
 
-    _Bool logging = LOGGING;
+    _Bool logging = VERBOSE;
 
     // Шаг 1: вычисляем все косинусы
     int valid_count = 0;
@@ -208,7 +216,8 @@ void find_sharp_corners(
     int left_dense_end = -1;
     for (int i = 0; i < HIST_BINS; ++i) {
         if (logging) printf("%Lf cos_hist[%d]=%d\n", min_cos + i*cos_bin_width, i, cos_hist[i]);
-        if (cos_hist[i] > 4) {
+        if (cos_hist[i] > 0 && cos_hist[i+1] == 0) {
+            left_dense_end = i+1;
             break; // нашли конец плотной области
         }
         else if (cos_hist[i] > 0 && i < HIST_BINS / 2) { // порог плотности
@@ -233,10 +242,7 @@ void find_sharp_corners(
     left_dense_end = -1;
     for (int i = 0; i < HIST_BINS; ++i) {
         if (logging) printf("%Lf sin_hist[%d]=%d\n", min_sin + i*sin_bin_width, i, sin_hist[i]);
-        if (sin_hist[i] > 4) {
-            break; // нашли конец плотной области
-        }
-        else if (sin_hist[i] > 0 && i < HIST_BINS / 2) { // порог плотности
+        if (sin_hist[i] > 0 && i < HIST_BINS) { // порог плотности
             left_dense_end = i;
         }
     }
@@ -401,33 +407,47 @@ static int smooth_segment_length(
     const long double* values,   // массив значений (cosines или sines)
     int n_vals,                  // размер массива (обычно n-2)
     int center_idx,              // индекс в массиве values (соответствует точке i+1 в исходных данных)
-    long double eps_smooth       // порог изменения, например 0.05L
+    long double eps_smooth,      // порог изменения, например 0.05L
+    int * left,
+    int * right
 ) {
     if (center_idx < 0 || center_idx >= n_vals) return 0;
 
     int max_len = 1; // минимум — сама точка
 
     // Ищем влево
-    int left = center_idx;
-    while (left > 0) {
-        long double diff = fabsl(values[left] - values[left - 1]);
-        if (diff > eps_smooth) break;
-        left--;
+    (*left) = center_idx;
+    while ((*left) > 0) {
+        //long double diff = fabsl(values[(*left)] - values[(*left) - 1]);
+        long double val = fabsl(values[(*left) - 1]);
+        if (val > eps_smooth) {
+            #ifdef LOGGING
+            printf("val=%Lf, left=%d break\n", val, (*left));
+            #endif
+            break;
+        }
+        (*left)--;
     }
 
     // Ищем вправо
-    int right = center_idx;
-    while (right < n_vals - 1) {
-        long double diff = fabsl(values[right + 1] - values[right]);
-        if (diff > eps_smooth) break;
-        right++;
+    (*right) = center_idx;
+    while ((*right) < n_vals - 1) {
+        //long double diff = fabsl(values[(*right) + 1] - values[(*right)]);
+        long double val = fabsl(values[(*right) + 1]);
+        if (val > eps_smooth) {
+            #ifdef LOGGING
+            printf("val=%Lf, right=%d break\n", val, (*right));
+            #endif
+            break;
+        }
+        (*right)++;
     }
 
-    #if LOGGING
-    printf("n_vals=%d, center_idx=%d left=%d, right=%d\n", n_vals, center_idx, left, right);
+    #ifdef LOGGING
+    printf("n_vals=%d, center_idx=%d left=%d, right=%d\n", n_vals, center_idx, (*left), (*right));
     #endif
 
-    return right - left + 1;
+    return (*right) - (*left);
 }
 
 // Уточняет позицию острой вершины, выбирая ту из трёх (i-1, i, i+1),
@@ -444,52 +464,54 @@ static int refine_sharp_corner_by_smoothness(
         return i; // недостаточно точек для анализа
     }
 
-    int candidates[3] = {i-1, i, i+1};
-    int smooth_lengths[3] = {0, 0, 0};
+    int candidates          [3] = {i-1, i, i+1};
+    int smooth_left_lengths [3] = {0, 0, 0};
+    int smooth_right_lengths[3] = {0, 0, 0};
 
     for (int k = 0; k < 3; ++k) {
         int cand = candidates[k];
-        if (cand < 1 || cand >= n_points - 1) {
-            smooth_lengths[k] = 0;
-            continue;
-        }
 
         // индекс в массивах cosines/sines: cand - 1
         int cos_idx = cand - 1;
         int sin_idx = cand - 1;
 
-        if (cos_idx < 0 || cos_idx >= n_cos) {
-            smooth_lengths[k] = 0;
-            continue;
-        }
-        if (sin_idx < 0 || sin_idx >= n_sin) {
-            smooth_lengths[k] = 0;
-            continue;
-        }
-
         // Вычисляем длину гладкого участка по косинусам
-        int len_cos = smooth_segment_length(cosines, n_cos, cos_idx, eps_smooth);
+        // int len_cos = smooth_segment_length(cosines, n_cos, cos_idx, eps_smooth);
 
-        #if LOGGING
-        printf("k=%d, cand=%d, i=%d, n_points=%d len_cos = %d\n", k, cand, i, n_points, len_cos);
-        #endif
+        // #if LOGGING
+        // printf("k=%d, cand=%d, i=%d, n_points=%d len_cos = %d\n", k, cand, i, n_points, len_cos);
+        // #endif
 
         // Вычисляем длину гладкого участка по синусам
-        int len_sin = smooth_segment_length(  sines, n_sin, sin_idx, eps_smooth);
+        int left_sin, right_sin;
+        int len_sin = smooth_segment_length( sines, n_sin, sin_idx, eps_smooth, &left_sin, &right_sin );
 
-        #if LOGGING
+        #ifdef LOGGING
         printf("k=%d, cand=%d, i=%d, n_points=%d len_sin = %d\n\n", k, cand, i, n_points, len_sin);
         #endif
 
         // Берём максимум из двух — можно также усреднять или взвешивать
-        smooth_lengths[k] = len_cos > len_sin ? len_cos : len_sin;
+        // smooth_lengths[k] = len_cos > len_sin ? len_cos : len_sin;
+        smooth_left_lengths [k] = cand - left_sin;
+        smooth_right_lengths[k] = right_sin - cand;
     }
 
     // Находим кандидата с максимальной длиной гладкого участка
-    int best_k = 0;
-    for (int k = 1; k < 3; ++k) {
-        if (smooth_lengths[k] > smooth_lengths[best_k]) {
-            best_k = k;
+    int best_k = 1;
+    if (smooth_left_lengths[0] > smooth_right_lengths[2])
+    {
+        best_k = 0;
+        if (smooth_left_lengths[1] > smooth_left_lengths[0])
+        {
+            best_k = 1;
+        }
+    }
+    else if (smooth_right_lengths[2] > smooth_left_lengths[0])
+    {
+        best_k = 2;
+        if (smooth_right_lengths[1] > smooth_right_lengths[2])
+        {
+             best_k = 1;
         }
     }
 
@@ -540,12 +562,12 @@ int find_contour_intersections_with_corners(
             );
 #endif
 
-            /*if (res == 1 || res == 2) {  // 1 — пересечение, 2 — касание
+            if (res == 1 || res == 2) {  // 1 — пересечение, 2 — касание
                 if (count >= max_intersections) goto overflow;
                 intersections[count].kz = x;
                 intersections[count].sz = y;
                 count++;
-            }*/
+            }
         }
     }
 
@@ -566,7 +588,7 @@ int find_contour_intersections_with_corners(
     // 2. Обработка острых изломов на cu → экстраполяция → пересечение с cv
     for (int i = 1; i < cu_n - 1; ++i) {
         if (!sharp_mask_cos[i] && !sharp_mask_sin[i]) continue;
-
+#ifdef REFINED_INTERSECTIONS
         // Уточняем позицию излома по гладкости
         int refined_i = refine_sharp_corner_by_smoothness(
             cosines, cu_n - 2,
@@ -585,12 +607,12 @@ int find_contour_intersections_with_corners(
             long double p_x, p_y, r_x, r_y;
 
             extrapolate_segment(cu_x, cu_y, refined_i, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
-
+#else
         // Два плеча: назад и вперёд
-        //for (int dir = -1; dir <= 1; dir += 2) {
-        //    long double p_x, p_y, r_x, r_y;
-        //    extrapolate_segment(cu_x, cu_y, i, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
-
+        for (int dir = -1; dir <= 1; dir += 2) {
+            long double p_x, p_y, r_x, r_y;
+            extrapolate_segment(cu_x, cu_y, i, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
+#endif
             // Пересекаем этот экстраполированный отрезок со всеми отрезками cv
             for (int j = 0; j < cv_n - 1; ++j) {
                 long double q_x = cv_x[j], q_y = cv_y[j];
@@ -651,7 +673,7 @@ int find_contour_intersections_with_corners(
     // 3. Обработка острых изломов на cv → экстраполяция → пересечение с cu
     for (int j = 1; j < cv_n - 1; ++j) {
         if (!sharp_mask_cos[j] && !sharp_mask_sin[j]) continue;
-
+#ifdef REFINED_INTERSECTIONS
         // Уточняем позицию излома по гладкости
         int refined_j = refine_sharp_corner_by_smoothness(
             cosines, cv_n - 2,
@@ -667,11 +689,11 @@ int find_contour_intersections_with_corners(
         for (int dir = -1; dir <= 1; dir += 2) {
             long double p_x, p_y, r_x, r_y;
             extrapolate_segment(cv_x, cv_y, refined_j, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
-
-        //for (int dir = -1; dir <= 1; dir += 2) {
-        //    long double p_x, p_y, r_x, r_y;
-        //    extrapolate_segment(cv_x, cv_y, j, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
-
+#else
+        for (int dir = -1; dir <= 1; dir += 2) {
+            long double p_x, p_y, r_x, r_y;
+            extrapolate_segment(cv_x, cv_y, j, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
+#endif
             for (int i = 0; i < cu_n - 1; ++i) {
                 long double q_x = cu_x[i], q_y = cu_y[i];
                 long double s_x = cu_x[i+1] - q_x;
@@ -727,7 +749,7 @@ int test_sharp_corners(const contour_line_t* line,
                        int max_sharp_corners) {
     if (!line || line->n_points < 3) return 0;
 
-    _Bool logging = LOGGING;
+    _Bool logging = VERBOSE;
 
     // Выделяем память для маски
     char* sharp_mask_cos = (char*)calloc(line->n_points, sizeof(char));
@@ -806,10 +828,6 @@ int test_sharp_corners(const contour_line_t* line,
             }
 
             // Теперь работаем с refined_i
-            //for (int dir = -1; dir <= 1; dir += 2) {
-            //    long double p_x, p_y, r_x, r_y;
-            //    extrapolate_segment(cu_x, cu_y, refined_i, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
-
             if (logging)
                 printf("  Точка %d: (%.6Lf, %.6Lf) cos = %Lf sin = %Lf mask_cos=%d mask_sin=%d refined_i=%d refined_pt: (%.6Lf, %.6Lf)\n",
                        i, x[i], y[i],

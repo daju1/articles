@@ -122,7 +122,7 @@ int main() {
     corner2d_t sharp_corners[max_sharp_corners];
     // Тестируем линии Re=0
     //for (int i = 0; i < contours.n_re_contours; ++i) {
-    for (int i = 4; i < 7/*contours.n_re_contours*/; ++i) {
+    for (int i = 5; i < 6/*contours.n_re_contours*/; ++i) {
         sprintf(name, "Re=0 line=%d", i);
         test_sharp_corners_fn(&contours.re_zero[i], -0.94, 0.5, 0.8, name, sharp_corners, max_sharp_corners);
         //break;

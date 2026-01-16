@@ -47,6 +47,9 @@ typedef struct {
     long double sigma_m_r_gyro;
     long double sigma_m_r_parallel;
 #endif
+    long double mu_0;
+    long double epsilon_0;
+    long double sigma_0;
 } mendrive_params_t;
 
 void det_init( const mendrive_params_t* params );

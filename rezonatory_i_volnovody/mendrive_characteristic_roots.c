@@ -20,7 +20,9 @@ int find_characteristic_roots(
     long double cos_max_angle,
     long double sin_min_angle,
     long double sin_max_angle,
-    int use_tracing
+    int use_tracing,
+    int min_isoline_points_count,
+    int sharp
 ) {
     if (!result) return -1;
     result->roots = NULL;
@@ -34,7 +36,7 @@ int find_characteristic_roots(
         );
     } else {
         status = compute_det_contours(
-            kz_min, kz_max, nk, sz_min, sz_max, ns, contours, eps_nan
+            kz_min, kz_max, nk, sz_min, sz_max, ns, contours, eps_nan, min_isoline_points_count
         );
     }
 
@@ -76,17 +78,30 @@ int find_characteristic_roots(
             }
 
             // Находим пересечения
-            int count = find_contour_intersections_with_corners(
-                cu_x, cu_y, cu->n_points,
-                cv_x, cv_y, cv->n_points,
-                intersections + total_count,
-                MAX_INTERSECTIONS - total_count,
-                eps_det,
-                extrap_len,
-                cos_max_angle,
-                sin_min_angle,
-                sin_max_angle
-            );
+            int count;
+            if (sharp) {
+                count = find_contour_intersections_with_corners(
+                    cu_x, cu_y, cu->n_points,
+                    cv_x, cv_y, cv->n_points,
+                    intersections + total_count,
+                    MAX_INTERSECTIONS - total_count,
+                    eps_det,
+                    extrap_len,
+                    cos_max_angle,
+                    sin_min_angle,
+                    sin_max_angle
+                );
+            }
+            else
+            {
+                count = find_contour_intersections(
+                    cu_x, cu_y, cu->n_points,
+                    cv_x, cv_y, cv->n_points,
+                    intersections + total_count,
+                    MAX_INTERSECTIONS - total_count,
+                    eps_det
+                );
+            }
 
             total_count += count;
 

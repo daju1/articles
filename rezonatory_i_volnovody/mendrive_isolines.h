@@ -24,7 +24,8 @@ int compute_det_contours(
     long double kz_min, long double kz_max, int nk,
     long double sz_min, long double sz_max, int ns,
     det_contours_result_t* result,
-    long double eps_nan      // порог для NaN/Inf: если |val| > eps_nan → считаем invalid
+    long double eps_nan,      // порог для NaN/Inf: если |val| > eps_nan → считаем invalid
+    int min_points_count
 );
 
 // Освобождение памяти

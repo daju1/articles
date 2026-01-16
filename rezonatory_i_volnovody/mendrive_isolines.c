@@ -5,15 +5,6 @@
 #include "mendrive_point2d.h"
 #include "mendrive_isolines.h"
 
-static int extract_contours_from_grid(
-    const long double* F, int nk, int ns,
-    const long double* kz_grid, const long double* sz_grid,
-    long double level,
-    long double eps_nan,
-    contour_line_t** out_contours,
-    int* n_contours
-);
-
 // Внешние функции (вы должны убедиться, что они видны при линковке)
 extern void det_init(const void* params);
 extern void det_eval(long double kz, long double sz, long double* det_re, long double* det_im);
@@ -47,7 +38,7 @@ static int extract_contours_from_grid(
     long double level,
     long double eps_nan,
     contour_line_t** out_contours,
-    int* n_contours
+    int* n_contours, int min_points_count
 ) {
     *out_contours = NULL;
     *n_contours = 0;
@@ -515,15 +506,18 @@ static int extract_contours_from_grid(
         } while (extended);
 
         // Сохраняем ломаную
-        if (n_c >= cap_c) {
-            cap_c *= 2;
-            contour_line_t* tmp = (contour_line_t*)realloc(contours, cap_c * sizeof(contour_line_t));
-            if (!tmp) goto cleanup;
-            contours = tmp;
+        if (pcount > min_points_count)
+        {
+            if (n_c >= cap_c) {
+                cap_c *= 2;
+                contour_line_t* tmp = (contour_line_t*)realloc(contours, cap_c * sizeof(contour_line_t));
+                if (!tmp) goto cleanup;
+                contours = tmp;
+            }
+            contours[n_c].points = pts;
+            contours[n_c].n_points = pcount;
+            n_c++;
         }
-        contours[n_c].points = pts;
-        contours[n_c].n_points = pcount;
-        n_c++;
         continue;
 
     cleanup:
@@ -617,15 +611,18 @@ static int extract_contours_from_grid(
         } while (extended);
 
         // Сохраняем ломаную
-        if (n_c >= cap_c) {
-            cap_c *= 2;
-            contour_line_t* tmp = (contour_line_t*)realloc(contours, cap_c * sizeof(contour_line_t));
-            if (!tmp) goto cleanup;
-            contours = tmp;
+        if (pcount > min_points_count)
+        {
+            if (n_c >= cap_c) {
+                cap_c *= 2;
+                contour_line_t* tmp = (contour_line_t*)realloc(contours, cap_c * sizeof(contour_line_t));
+                if (!tmp) goto cleanup;
+                contours = tmp;
+            }
+            contours[n_c].points = pts;
+            contours[n_c].n_points = pcount;
+            n_c++;
         }
-        contours[n_c].points = pts;
-        contours[n_c].n_points = pcount;
-        n_c++;
         continue;
 
     cleanup:
@@ -652,7 +649,7 @@ int compute_det_contours(
     long double kz_min, long double kz_max, int nk,
     long double sz_min, long double sz_max, int ns,
     det_contours_result_t* result,
-    long double eps_nan
+    long double eps_nan, int min_points_count
 ) {
     if (!result || nk < 2 || ns < 2) return -1;
 
@@ -682,8 +679,8 @@ int compute_det_contours(
     }
 
     // Извлечение контуров
-    int err1 = extract_contours_from_grid(det_re, nk, ns, kz_grid, sz_grid, 0.0L, eps_nan, &result->re_zero, &result->n_re_contours);
-    int err2 = extract_contours_from_grid(det_im, nk, ns, kz_grid, sz_grid, 0.0L, eps_nan, &result->im_zero, &result->n_im_contours);
+    int err1 = extract_contours_from_grid(det_re, nk, ns, kz_grid, sz_grid, 0.0L, eps_nan, &result->re_zero, &result->n_re_contours, min_points_count);
+    int err2 = extract_contours_from_grid(det_im, nk, ns, kz_grid, sz_grid, 0.0L, eps_nan, &result->im_zero, &result->n_im_contours, min_points_count);
 
     free(kz_grid);
     free(sz_grid);

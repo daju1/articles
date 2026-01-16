@@ -19,7 +19,9 @@ int find_characteristic_roots(
     long double cos_max_angle,
     long double sin_min_angle,
     long double sin_max_angle,
-    int use_tracing  // 0 — Marching Squares, 1 — трассировка
+    int use_tracing,  // 0 — Marching Squares, 1 — трассировка
+    int min_isoline_points_count,
+    int sharp
 );
 
 // Освобождение памяти

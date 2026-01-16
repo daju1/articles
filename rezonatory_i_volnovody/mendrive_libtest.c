@@ -65,37 +65,37 @@ int main() {
 
     mendrive_params_t params;
 
-    params.a = 0.50000000000000000000000000000000000000;
-    params.mu_l_xx = 1.0000000000000000000000000000000000000;
-    params.mu_l_yy = 1.0000000000000000000000000000000000000;
-    params.mu_l_zz = 1.0000000000000000000000000000000000000;
-    params.mu_r_xx = 100.00000000000000000000000000000000000;
-    params.mu_r_yy = 100.00000000000000000000000000000000000;
-    params.mu_r_zz = 100.00000000000000000000000000000000000;
-    params.mu_l_yz = 0.00000000000000000000000000000000000000;
-    params.mu_l_zy = 0.00000000000000000000000000000000000000;
-    params.mu_r_yz = 0.00000000000000000000000000000000000000;
-    params.mu_r_zy = 0.00000000000000000000000000000000000000;
-    params.sigma_e_l_xx = 5.6250000000000000000000000000000000000e17;
-    params.sigma_e_l_yy = 5.6250000000000000000000000000000000000e17;
-    params.sigma_e_l_zz = 5.6250000000000000000000000000000000000e17;
-    params.sigma_e_r_xx = 9.9000000000000000000000000000000000000e12;
-    params.sigma_e_r_yy = 9.9000000000000000000000000000000000000e12;
-    params.sigma_e_r_zz = 9.9000000000000000000000000000000000000e12;
-    params.sigma_m_l_xx = 0.00000000000000000000000000000000000000;
-    params.sigma_m_l_yy = 0.00000000000000000000000000000000000000;
-    params.sigma_m_l_zz = 0.00000000000000000000000000000000000000;
-    params.sigma_m_r_xx = 6.4800000000000000000000000000000000000e7;
-    params.sigma_m_r_yy = 6.4800000000000000000000000000000000000e7;
-    params.sigma_m_r_zz = 6.4800000000000000000000000000000000000e7;
-    params.eps_l_xx = 1.0000000000000000000000000000000000000;
-    params.eps_l_yy = 1.0000000000000000000000000000000000000;
-    params.eps_l_zz = 1.0000000000000000000000000000000000000;
-    params.eps_r_xx = 16.000000000000000000000000000000000000;
-    params.eps_r_yy = 16.000000000000000000000000000000000000;
-    params.eps_r_zz = 16.000000000000000000000000000000000000;
-    params.c = 2.9979245800000000000000000000000000000e10;
-    params.omega = 1.0000000000000000000000000000000000000e7;
+    params.a = 0.5;
+    params.mu_l_xx = 1.0;
+    params.mu_l_yy = 1.0;
+    params.mu_l_zz = 1.0;
+    params.mu_r_xx = 1000.0;
+    params.mu_r_yy = 1000.0;
+    params.mu_r_zz = 1000.0;
+    params.mu_l_yz = 0.0;
+    params.mu_l_zy = 0.0;
+    params.mu_r_yz = 0.0;
+    params.mu_r_zy = 0.0;
+    params.sigma_e_l_xx = 0.0069444444444444444444444444444444444445;
+    params.sigma_e_l_yy = 0.0069444444444444444444444444444444444445;
+    params.sigma_e_l_zz = 0.0069444444444444444444444444444444444445;
+    params.sigma_e_r_xx = 1.2222222222222222222222222222222222222e-7;
+    params.sigma_e_r_yy = 1.2222222222222222222222222222222222222e-7;
+    params.sigma_e_r_zz = 1.2222222222222222222222222222222222222e-7;
+    params.sigma_m_l_xx = 0.0;
+    params.sigma_m_l_yy = 0.0;
+    params.sigma_m_l_zz = 0.0;
+    params.sigma_m_r_xx = 8.0000000000000002429899645072029673088e-13;
+    params.sigma_m_r_yy = 8.0000000000000002429899645072029673088e-13;
+    params.sigma_m_r_zz = 8.0000000000000002429899645072029673088e-13;
+    params.eps_l_xx = 1.0;
+    params.eps_l_yy = 1.0;
+    params.eps_l_zz = 1.0;
+    params.eps_r_xx = 16.0;
+    params.eps_r_yy = 16.0;
+    params.eps_r_zz = 16.0;
+    params.c = 2.9979245800e10;
+    params.omega = 1.0e7;
 
     det_init_fn(&params);
 
@@ -121,18 +121,17 @@ int main() {
     const int max_sharp_corners = 100;
     corner2d_t sharp_corners[max_sharp_corners];
     // Тестируем линии Re=0
-    //for (int i = 0; i < contours.n_re_contours; ++i) {
-    for (int i = 5; i < 6/*contours.n_re_contours*/; ++i) {
+    for (int i = 0; i < contours.n_re_contours; ++i) {
         sprintf(name, "Re=0 line=%d", i);
         test_sharp_corners_fn(&contours.re_zero[i], -0.94, 0.5, 0.8, name, sharp_corners, max_sharp_corners);
         //break;
     }
 
     // Тестируем линии Im=0
-//     for (int i = 0; i < contours.n_im_contours; ++i) {
-//         sprintf(name, "Im=0 line=%d", i);
-//         test_sharp_corners_fn(&contours.im_zero[i], -0.94, 0.5, 0.8, name, sharp_corners, max_sharp_corners);
-//     }
+    for (int i = 0; i < contours.n_im_contours; ++i) {
+         sprintf(name, "Im=0 line=%d", i);
+         test_sharp_corners_fn(&contours.im_zero[i], -0.94, 0.5, 0.8, name, sharp_corners, max_sharp_corners);
+    }
 
     // Освобождаем память
     free_det_contours_fn(&contours);

@@ -9,6 +9,10 @@ typedef struct {
     long double L_z;
 #endif
     long double a;
+#ifdef KY
+    long double b;
+    int m;
+#endif
 
     // left conductor
     long double eps_l_xx, eps_l_yy, eps_l_zz;

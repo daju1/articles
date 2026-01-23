@@ -25,7 +25,8 @@ int compute_det_contours(
     long double sz_min, long double sz_max, int ns,
     det_contours_result_t* result,
     long double eps_nan,      // порог для NaN/Inf: если |val| > eps_nan → считаем invalid
-    int min_points_count
+    int min_points_count,
+    const long double merge_segments_epsilon // СБОРКА ЛОМАНЫХ С ДОПУСКОМ eps_merge = 1e-10L; подберите под масштаб ваших данных
 );
 
 // Освобождение памяти

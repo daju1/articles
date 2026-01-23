@@ -1,11 +1,6 @@
-# gcc -shared -fPIC -O3 -lm -lgsl -lgslcblas \
-#     mendrive_det.c \
-#     mendrive_isolines.c \
-#     mendrive_contour_intersections.c \
-#     mendrive_contour_intersections_sharp.c \
-#     -o mendrive.so
+rm mendrive_libtest.so
 
-gcc -shared -fPIC -O3 -o mendrive.so \
+gcc -shared -fPIC -O3 -o mendrive_libtest.so \
         mendrive_det.c \
         mendrive_isolines.c \
         mendrive_isolines_traced.c \
@@ -17,8 +12,8 @@ gcc -shared -fPIC -O3 -o mendrive.so \
         mendrive_linsolve.c \
         -I../vimaniks/gsl/local/include \
         -L../vimaniks/gsl/local/lib \
-        -DLOGGING \
+        -DLOGGING -DKY \
         -Wl,-rpath='$ORIGIN/../vimaniks/gsl/local/lib' \
         -lgsl -lgslcblas -lm
 
-gcc mendrive_libtest.c -ldl -o mendrive_libtest
+gcc mendrive_libtest.c -DKY -ldl -o mendrive_libtest

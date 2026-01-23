@@ -22,6 +22,7 @@ int find_characteristic_roots(
     long double sin_max_angle,
     int use_tracing,
     int min_isoline_points_count,
+    long double isoline_merge_segments_epsilon,
     int sharp
 ) {
     if (!result) return -1;
@@ -36,7 +37,8 @@ int find_characteristic_roots(
         );
     } else {
         status = compute_det_contours(
-            kz_min, kz_max, nk, sz_min, sz_max, ns, contours, eps_nan, min_isoline_points_count
+            kz_min, kz_max, nk, sz_min, sz_max, ns, contours, eps_nan,
+            min_isoline_points_count, isoline_merge_segments_epsilon
         );
     }
 

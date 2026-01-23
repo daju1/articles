@@ -38,7 +38,8 @@ static int extract_contours_from_grid(
     long double level,
     long double eps_nan,
     contour_line_t** out_contours,
-    int* n_contours, int min_points_count
+    int* n_contours, int min_points_count,
+    const long double eps_merge
 ) {
     *out_contours = NULL;
     *n_contours = 0;
@@ -91,6 +92,7 @@ static int extract_contours_from_grid(
                     if (k >= k0 && k <= k1) {
                         verts[vcount].x = k;
                         verts[vcount].y = s0;
+                        //printf("vcount=%d down k=%Lf k0=%Le k1=%Le s0=%Le\n", vcount, k, k0, k1, s0); fflush(stdout);
                         vcount++;
                     }
                 }
@@ -104,6 +106,7 @@ static int extract_contours_from_grid(
                     if (s >= s0 && s <= s1) {
                         verts[vcount].x = k1;
                         verts[vcount].y = s;
+                        //printf("vcount=%d right s=%Lf s0=%Le s1=%Le k1=%Le\n", vcount, s, s0, s1, k1); fflush(stdout);
                         vcount++;
                     }
                 }
@@ -117,6 +120,7 @@ static int extract_contours_from_grid(
                     if (k >= k0 && k <= k1) {
                         verts[vcount].x = k;
                         verts[vcount].y = s1;
+                        //printf("vcount=%d up k=%Lf k0=%Le k1=%Le s1=%Le\n", vcount, k, k0, k1, s1); fflush(stdout);
                         vcount++;
                     }
                 }
@@ -130,6 +134,7 @@ static int extract_contours_from_grid(
                     if (s >= s0 && s <= s1) {
                         verts[vcount].x = k0;
                         verts[vcount].y = s;
+                        //printf("vcount=%d left s=%Lf s0=%Le s1=%Le k0=%Le\n", vcount, s, s0, s1, k0); fflush(stdout);
                         vcount++;
                     }
                 }
@@ -169,6 +174,12 @@ static int extract_contours_from_grid(
                     }
                     segments[2*seg_count] = verts[a];
                     segments[2*seg_count + 1] = verts[b];
+                    #if 0
+                    printf("a=%d b=%d seg_count=%lu verts[a].x = %Lf verts[a].y = %Lf verts[b].x = %Lf verts[b].y = %Lf\n",
+                        a, b, seg_count,
+                        verts[a].x, verts[a].y,
+                        verts[a].x, verts[a].y); fflush(stdout);
+                    #endif
                     seg_count++;
                 }
             }
@@ -366,7 +377,7 @@ static int extract_contours_from_grid(
 
 #if 1
     // === УЛУЧШЕННАЯ СБОРКА ЛОМАНЫХ С ДОПУСКОМ ===
-    const long double eps_merge = 1e-10L; // ← подберите под масштаб ваших данных
+    // const long double eps_merge = 1e-10L; // подберите под масштаб ваших данных
 
     // Создаём список всех концов отрезков
     typedef struct {
@@ -649,7 +660,9 @@ int compute_det_contours(
     long double kz_min, long double kz_max, int nk,
     long double sz_min, long double sz_max, int ns,
     det_contours_result_t* result,
-    long double eps_nan, int min_points_count
+    long double eps_nan,
+    int min_points_count,
+    const long double merge_segments_epsilon
 ) {
     if (!result || nk < 2 || ns < 2) return -1;
 
@@ -675,12 +688,14 @@ int compute_det_contours(
     for (int j = 0; j < ns; ++j) {
         for (int i = 0; i < nk; ++i) {
             det_eval(kz_grid[i], sz_grid[j], &det_re[i + j*nk], &det_im[i + j*nk]);
+            //printf("%Lf %Lf %Le %Le\n", kz_grid[i], sz_grid[j], det_re[i + j*nk], det_im[i + j*nk]);
         }
     }
 
     // Извлечение контуров
-    int err1 = extract_contours_from_grid(det_re, nk, ns, kz_grid, sz_grid, 0.0L, eps_nan, &result->re_zero, &result->n_re_contours, min_points_count);
-    int err2 = extract_contours_from_grid(det_im, nk, ns, kz_grid, sz_grid, 0.0L, eps_nan, &result->im_zero, &result->n_im_contours, min_points_count);
+    long double level = 0.0L;
+    int err1 = extract_contours_from_grid(det_re, nk, ns, kz_grid, sz_grid, level, eps_nan, &result->re_zero, &result->n_re_contours, min_points_count, merge_segments_epsilon);
+    int err2 = extract_contours_from_grid(det_im, nk, ns, kz_grid, sz_grid, level, eps_nan, &result->im_zero, &result->n_im_contours, min_points_count, merge_segments_epsilon);
 
     free(kz_grid);
     free(sz_grid);

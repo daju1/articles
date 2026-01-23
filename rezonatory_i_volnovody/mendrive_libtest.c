@@ -15,6 +15,8 @@ typedef int (*compute_det_contours_t)(
     long double, long double, int,
     long double, long double, int,
     det_contours_result_t*,
+    long double,
+    int,
     long double
 );
 
@@ -35,7 +37,7 @@ typedef int (*test_sharp_corners_t)(const contour_line_t* line,
                                    int max_sharp_corners);
 
 int main() {
-    void* h = dlopen("./mendrive.so", RTLD_NOW);
+    void* h = dlopen("./mendrive_libtest.so", RTLD_NOW);
     if (!h) {
         printf("dlopen failed: %s\n", dlerror());
         return 1;
@@ -65,29 +67,33 @@ int main() {
 
     mendrive_params_t params;
 
-    params.a = 0.5;
+    long double sigma_0_d = 9.0e9;
+
+    params.a = 0.1;
+    params.b = 0.5;
+    params.m = 0;
     params.mu_l_xx = 1.0;
     params.mu_l_yy = 1.0;
     params.mu_l_zz = 1.0;
-    params.mu_r_xx = 1000.0;
-    params.mu_r_yy = 1000.0;
-    params.mu_r_zz = 1000.0;
+    params.mu_r_xx = 10.0;
+    params.mu_r_yy = 10.0;
+    params.mu_r_zz = 10.0;
     params.mu_l_yz = 0.0;
     params.mu_l_zy = 0.0;
     params.mu_r_yz = 0.0;
     params.mu_r_zy = 0.0;
-    params.sigma_e_l_xx = 0.0069444444444444444444444444444444444445;
-    params.sigma_e_l_yy = 0.0069444444444444444444444444444444444445;
-    params.sigma_e_l_zz = 0.0069444444444444444444444444444444444445;
-    params.sigma_e_r_xx = 1.2222222222222222222222222222222222222e-7;
-    params.sigma_e_r_yy = 1.2222222222222222222222222222222222222e-7;
-    params.sigma_e_r_zz = 1.2222222222222222222222222222222222222e-7;
+    params.sigma_e_l_xx = 62500000 * sigma_0_d;
+    params.sigma_e_l_yy = 62500000 * sigma_0_d;
+    params.sigma_e_l_zz = 62500000 * sigma_0_d;
+    params.sigma_e_r_xx = 0.000110000 * sigma_0_d;
+    params.sigma_e_r_yy = 0.000110000 * sigma_0_d;
+    params.sigma_e_r_zz = 0.000110000 * sigma_0_d;
     params.sigma_m_l_xx = 0.0;
     params.sigma_m_l_yy = 0.0;
     params.sigma_m_l_zz = 0.0;
-    params.sigma_m_r_xx = 8.0000000000000002429899645072029673088e-13;
-    params.sigma_m_r_yy = 8.0000000000000002429899645072029673088e-13;
-    params.sigma_m_r_zz = 8.0000000000000002429899645072029673088e-13;
+    params.sigma_m_r_xx = 0.000062500 * sigma_0_d;
+    params.sigma_m_r_yy = 0.000062500 * sigma_0_d;
+    params.sigma_m_r_zz = 0.000062500 * sigma_0_d;
     params.eps_l_xx = 1.0;
     params.eps_l_yy = 1.0;
     params.eps_l_zz = 1.0;
@@ -95,17 +101,21 @@ int main() {
     params.eps_r_yy = 16.0;
     params.eps_r_zz = 16.0;
     params.c = 2.9979245800e10;
-    params.omega = 1.0e7;
+    params.omega = 1.0e6;
+    params.mu_0 = 1.0;
+    params.epsilon_0 = 1.0;
 
     det_init_fn(&params);
 
     // Тестируем построение изолиний
     det_contours_result_t contours = {0};
     int status = compute_det_contours_fn(
-        -200.0L, 200.0L, 400,  // kz
-        -10.0L,   10.0L, 400,  // sz
+        -4.0L, 4.0L, 1000,  // kz
+        -5.0L, 5.0L, 1000,  // sz
         &contours,
-        1e300L
+        1e300L,
+        0,
+        1e-10
     );
 
     if (status != 0) {

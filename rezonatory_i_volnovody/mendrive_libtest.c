@@ -32,6 +32,7 @@ typedef int (*test_sharp_corners_t)(const contour_line_t* line,
                                    long double cos_max_angle,
                                    long double sin_min_angle,
                                    long double sin_max_angle,
+                                   int window_size,
                                    const char* name,
                                    corner2d_t* sharp_corners,
                                    int max_sharp_corners);
@@ -129,18 +130,28 @@ int main() {
 
     char name[128];
     const int max_sharp_corners = 100;
+    int  window_size = 10;
+    long double cos_max_angle = -0.94;
     corner2d_t sharp_corners[max_sharp_corners];
     // Тестируем линии Re=0
     for (int i = 0; i < contours.n_re_contours; ++i) {
         sprintf(name, "Re=0 line=%d", i);
-        test_sharp_corners_fn(&contours.re_zero[i], -0.94, 0.5, 0.8, name, sharp_corners, max_sharp_corners);
+        test_sharp_corners_fn(&contours.re_zero[i],
+        cos_max_angle,
+        0.5, 0.8,
+          window_size,
+          name, sharp_corners, max_sharp_corners);
         //break;
     }
 
     // Тестируем линии Im=0
     for (int i = 0; i < contours.n_im_contours; ++i) {
          sprintf(name, "Im=0 line=%d", i);
-         test_sharp_corners_fn(&contours.im_zero[i], -0.94, 0.5, 0.8, name, sharp_corners, max_sharp_corners);
+         test_sharp_corners_fn(&contours.im_zero[i],
+         cos_max_angle,
+         0.5, 0.8,
+         window_size,
+         name, sharp_corners, max_sharp_corners);
     }
 
     // Освобождаем память

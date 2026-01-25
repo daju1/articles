@@ -20,6 +20,7 @@ int find_characteristic_roots(
     long double cos_max_angle,
     long double sin_min_angle,
     long double sin_max_angle,
+    int window_size,
     int use_tracing,
     int min_isoline_points_count,
     long double isoline_merge_segments_epsilon,
@@ -91,7 +92,8 @@ int find_characteristic_roots(
                     extrap_len,
                     cos_max_angle,
                     sin_min_angle,
-                    sin_max_angle
+                    sin_max_angle,
+                    window_size
                 );
             }
             else

@@ -19,6 +19,7 @@ int find_characteristic_roots(
     long double cos_max_angle,
     long double sin_min_angle,
     long double sin_max_angle,
+    int window_size,
     int use_tracing,  // 0 — Marching Squares, 1 — трассировка
     int min_isoline_points_count,
     long double isoline_merge_segments_epsilon,

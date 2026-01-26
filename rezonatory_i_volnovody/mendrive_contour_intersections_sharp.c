@@ -77,7 +77,9 @@ static long double compute_sin_at_point(
 // Структура для результата анализа угла
 typedef struct {
     int is_real_corner;      // 1 = реальный угол, 0 = артефакт
+    long double local_angle;
     long double curvature;   // накопленная кривизна в окне
+    long double concentration;
     long double arc_length;  // длина дуги в окне
     int oscillation_count;   // число осцилляций знака кривизны
 } CornerAnalysis;
@@ -115,10 +117,13 @@ static long double compute_oriented_angle(
 CornerAnalysis analyze_corner(
     const long double* x, const long double* y,
     int n, int i,
-    int window_size,         // размер окна анализа (например, 5-10 точек)
-    long double grid_step    // шаг сетки (для нормализации), 0 = не использовать
+    int window_size,                              // размер окна анализа (например, 5-10 точек)
+    long double local_angle_staircase_threshold,  // 0.3L
+    long double total_angle_threshold,            // 0.3L
+    long double concentration_threshold,          // 0.4L
+    long double local_angle_sharp_threshold       // 0.6L
 ) {
-    CornerAnalysis result = {0, 0.0L, 0.0L, 0};
+    CornerAnalysis result = {0, 0.0L, 0.0L, 0.0L, 0.0L, 0};
 
     if (i <= 0 || i >= n - 1 || n < 3) {
         return result;
@@ -154,6 +159,8 @@ CornerAnalysis analyze_corner(
     if (fabsl(total_angle) > 1e-10L) {
         concentration = fabsl(local_angle) / fabsl(total_angle);
     }
+    result.concentration = concentration;
+    result.local_angle   = local_angle;
 
     // 3. Детектирование ступенчатых артефактов:
     // Ступеньки имеют ОСЦИЛЛИРУЮЩУЮ кривизну: +90°, -90°, +90°...
@@ -174,15 +181,15 @@ CornerAnalysis analyze_corner(
     // - Локальный угол близок к ±90° (типично для ступенек)
     int window_points = end - start + 1;
     _Bool is_staircase = (oscillation_count > window_points / 2) &&
-                         (fabsl(fabsl(local_angle) - M_PI_2) < 0.3L);  // ~17° от 90°
+                         (fabsl(fabsl(local_angle) - M_PI_2) < local_angle_staircase_threshold);  // ~17° от 90°
 
     // 5. Итоговое решение
     if (is_staircase) {
         result.is_real_corner = 0;  // артефакт
-    } else if (fabsl(total_angle) > 0.3L && concentration > 0.4L) {
+    } else if (fabsl(total_angle) > total_angle_threshold && concentration > concentration_threshold) {
         // Накопленный угол значителен И сосредоточен в узкой области
         result.is_real_corner = 1;  // реальный угол
-    } else if (fabsl(local_angle) > M_PI * 0.6L) {
+    } else if (fabsl(local_angle) > M_PI * local_angle_sharp_threshold) {
         // Очень острый локальный угол (> ~108°) — вероятно реальный
         result.is_real_corner = 1;
     }
@@ -198,7 +205,13 @@ void find_sharp_corners_filtered(
     long double cos_threshold,    // порог косинуса (например, -0.94 для 160°)
     int window_size,              // размер окна анализа (например, 5)
     char* is_sharp,               // выходной массив: 1 если реальный угол
-    long double* angles_out       // выходной массив углов (может быть NULL)
+    long double* cosines,         // выходной массив углов (может быть NULL)
+    long double* sines,           // выходной массив углов (может быть NULL)
+    CornerAnalysis* corners,
+    long double local_angle_staircase_threshold,  // 0.3L
+    long double total_angle_threshold,            // 0.3L
+    long double concentration_threshold,          // 0.4L
+    long double local_angle_sharp_threshold       // 0.6L
 ) {
     for (int i = 0; i < n; ++i) {
         is_sharp[i] = 0;
@@ -216,22 +229,74 @@ void find_sharp_corners_filtered(
     for (int i = 1; i < n - 1; ++i) {
         // Сначала проверяем базовый критерий по косинусу
         long double cos_val = compute_cosine_at_point(x, y, n, i);
+        long double sin_val = compute_sin_at_point(x, y, n, i);
 
-        if (angles_out != NULL) {
-            angles_out[i-1] = cos_val;
+        if (cosines != NULL) {
+            cosines[i-1] = cos_val;
         }
+
+        if (sines != NULL) {
+            sines[i-1] = sin_val;
+        }
+
 #if 0
         // Если угол не острый по базовому критерию — пропускаем
         if (cos_val > cos_threshold) {
             continue;
         }
 #endif
-        // Анализируем угол с помощью скользящего окна
-        CornerAnalysis analysis = analyze_corner(x, y, n, i, window_size, 0.0L);
+    // }
 
-        // Помечаем только реальные углы
-        if (analysis.is_real_corner) {
-            is_sharp[i] = 1;
+    // for (int i = 1; i < n - 1; ++i) {
+#if 0
+        // Истинный экстремум — это точка, где производная меняет знак:
+        // - Локальный минимум cos: `cos[i-1] > cos[i] < cos[i+1]`
+        // - Локальный максимум sin: `sin[i-1] < sin[i] > sin[i+1]`
+
+        int is_extremum = 0;
+
+        if (cosines[i-1] > cosines[i] && cosines[i] < cosines[i+1]) {
+            is_extremum = 1;
+        }
+
+        if (sines[i-1] < sines[i] && sines[i] > sines[i+1]) {
+            is_extremum = 1;
+        }
+
+        if (is_extremum)
+#endif
+        {
+#if 1
+            // Анализируем угол с помощью скользящего окна
+            CornerAnalysis analysis = analyze_corner(x, y, n, i, window_size,
+                local_angle_staircase_threshold,  // 0.3L
+                total_angle_threshold,            // 0.3L
+                concentration_threshold,          // 0.4L
+                local_angle_sharp_threshold);     // 0.6L
+            if (corners != NULL)
+            {
+                corners[i-1] = analysis;
+            }
+
+            #ifdef LOGGING
+            printf("%d %Lf %Lf cos_val=%Lf sin_val=%Lf local_angle=%Lf curv=%Lf conc=%Lf arc_len=%Lf osc_cnt=%d is_real=%d\n",
+                i, x[i], y[i],
+                cos_val, sin_val,
+                analysis.local_angle,
+                analysis.curvature,
+                analysis.concentration,
+                analysis.arc_length,
+                analysis.oscillation_count,
+                analysis.is_real_corner
+            );
+            #endif
+
+            // Помечаем только реальные углы
+            if (analysis.is_real_corner)
+#endif
+            {
+                is_sharp[i] = 1;
+            }
         }
     }
 }
@@ -395,9 +460,9 @@ void find_sharp_corners(
 
     // Ищем первый бин с малым количеством точек после плотной области
     long double min_cos = -1.0L;
-    long double max_cos = 1.0L;
+    long double max_cos =  1.0L;
     long double min_sin = -1.0L;
-    long double max_sin = 1.0L;
+    long double max_sin =  1.0L;
     long double cos_bin_width = (max_cos - min_cos) / HIST_BINS;
     long double sin_bin_width = (max_sin - min_sin) / HIST_BINS;
 
@@ -727,7 +792,11 @@ int find_contour_intersections_with_corners(
     long double cos_max_angle,        // порог остроты угла, например -0.94L
     long double sin_min_angle,        // порог остроты угла, например 0.5L
     long double sin_max_angle,        // порог остроты угла, например 0.8L
-    int window_size
+    int window_size,
+    long double local_angle_staircase_threshold,  // 0.3L
+    long double total_angle_threshold,            // 0.3L
+    long double concentration_threshold,          // 0.4L
+    long double local_angle_sharp_threshold       // 0.6L
 ) {
     if (cu_n < 2 || cv_n < 2 || !intersections || max_intersections <= 0) {
         return 0;
@@ -775,8 +844,9 @@ int find_contour_intersections_with_corners(
     // Вместо цикла с is_sharp_corner
     char* sharp_mask_cos = (char*)calloc(cu_n, sizeof(char));
     char* sharp_mask_sin = (char*)calloc(cu_n, sizeof(char));
-    long double* cosines = (long double*)malloc((cu_n - 2) * sizeof(long double));
-    long double* sines = (long double*)malloc((cu_n - 2) * sizeof(long double));
+    long double* cosines    = (long double*)malloc((cu_n - 2) * sizeof(long double));
+    long double* sines      = (long double*)malloc((cu_n - 2) * sizeof(long double));
+    CornerAnalysis* corners = (CornerAnalysis*)malloc((cu_n - 2) * sizeof(CornerAnalysis));
 
 #ifdef SHARP_CORNERS_ON_COSINES_SINES_USING_HIST
     find_sharp_corners(cu_x, cu_y, cu_n,
@@ -794,7 +864,13 @@ int find_contour_intersections_with_corners(
         cos_max_angle,    // cos_threshold порог косинуса (например, -0.94 для 160°)
         window_size,      // размер окна анализа (например, 5)
         sharp_mask_cos,   // is_sharp выходной массив: 1 если реальный угол
-        NULL              // выходной массив углов (может быть NULL)
+        cosines,          // выходной массив cosines углов (может быть NULL)
+        sines,            // выходной массив sines углов (может быть NULL)
+        corners,
+        local_angle_staircase_threshold,  // 0.3L
+        total_angle_threshold,            // 0.3L
+        concentration_threshold,          // 0.4L
+        local_angle_sharp_threshold       // 0.6L
     );
 #endif
 
@@ -864,6 +940,7 @@ int find_contour_intersections_with_corners(
         }
     }
 
+    free(corners);
     free(sines);
     free(cosines);
     free(sharp_mask_cos);
@@ -873,7 +950,8 @@ int find_contour_intersections_with_corners(
     sharp_mask_cos = (char*)calloc(cv_n, sizeof(char));
     sharp_mask_sin = (char*)calloc(cv_n, sizeof(char));
     cosines = (long double*)malloc((cv_n - 2) * sizeof(long double));
-    sines = (long double*)malloc((cv_n - 2) * sizeof(long double));
+    sines   = (long double*)malloc((cv_n - 2) * sizeof(long double));
+    corners = (CornerAnalysis*)malloc((cv_n - 2) * sizeof(CornerAnalysis));
 
 #ifdef SHARP_CORNERS_ON_COSINES_SINES_USING_HIST
     find_sharp_corners(cv_x, cv_y, cv_n,
@@ -889,9 +967,15 @@ int find_contour_intersections_with_corners(
     find_sharp_corners_filtered(
         cv_x, cv_y, cv_n,
         cos_max_angle,    // cos_threshold порог косинуса (например, -0.94 для 160°)
-        window_size,                // размер окна анализа (например, 5)
+        window_size,      // размер окна анализа (например, 5)
         sharp_mask_cos,   // is_sharp выходной массив: 1 если реальный угол
-        NULL              // выходной массив углов (может быть NULL)
+        cosines,          // выходной массив cosines углов (может быть NULL)
+        sines,            // выходной массив sines углов (может быть NULL)
+        corners,
+        local_angle_staircase_threshold,  // 0.3L
+        total_angle_threshold,            // 0.3L
+        concentration_threshold,          // 0.4L
+        local_angle_sharp_threshold       // 0.6L
     );
 #endif
     // 3. Обработка острых изломов на cv → экстраполяция → пересечение с cu
@@ -951,6 +1035,8 @@ int find_contour_intersections_with_corners(
             }
         }
     }
+
+    free(corners);
     free(sines);
     free(cosines);
     free(sharp_mask_cos);
@@ -969,9 +1055,14 @@ int test_sharp_corners(const contour_line_t* line,
                        long double sin_min_angle,
                        long double sin_max_angle,
                        int window_size,
+                       long double local_angle_staircase_threshold,  // 0.3L
+                       long double total_angle_threshold,            // 0.3L
+                       long double concentration_threshold,          // 0.4L
+                       long double local_angle_sharp_threshold,      // 0.6L
                        const char* name,
                        corner2d_t* sharp_corners,
-                       int max_sharp_corners) {
+                       int max_sharp_corners
+                       ) {
     if (!line || line->n_points < 3) return 0;
 
     _Bool logging = VERBOSE;
@@ -981,31 +1072,26 @@ int test_sharp_corners(const contour_line_t* line,
     char* sharp_mask_sin = (char*)calloc(line->n_points, sizeof(char));
     long double* cosines = (long double*)malloc((line->n_points - 2) * sizeof(long double));
     long double* sines = (long double*)malloc((line->n_points - 2) * sizeof(long double));
-    if (!sharp_mask_cos || !sharp_mask_sin ) {
-        free(sharp_mask_cos);
-        free(sharp_mask_sin);
-        return 0;
-    }
-    if (!cosines)
-    {
-        free(sharp_mask_cos);
-        free(sharp_mask_sin);
-        return 0;
-    }
-    if (!sines)
-    {
+    CornerAnalysis* corners = (CornerAnalysis*)malloc((line->n_points - 2) * sizeof(CornerAnalysis));
+    if (!sharp_mask_cos || !sharp_mask_sin || !corners || !cosines || !sines) {
         free(cosines);
+        free(sines);
+        free(corners);
         free(sharp_mask_cos);
         free(sharp_mask_sin);
         return 0;
     }
+
     // Извлекаем координаты
     long double* x = (long double*)malloc(line->n_points * sizeof(long double));
     long double* y = (long double*)malloc(line->n_points * sizeof(long double));
     if (!x || !y) {
+        free(cosines);
+        free(sines);
+        free(corners);
         free(sharp_mask_cos);
         free(sharp_mask_sin);
-        free(cosines); free(x); free(y);
+        free(x); free(y);
         return 0;
     }
 
@@ -1029,9 +1115,15 @@ int test_sharp_corners(const contour_line_t* line,
         x, y,
         line->n_points,
         cos_max_angle,    // cos_threshold порог косинуса (например, -0.94 для 160°)
-        window_size ,     // window_size размер окна анализа (например, 5)
+        window_size,      // window_size размер окна анализа (например, 5)
         sharp_mask_cos,   // is_sharp выходной массив: 1 если реальный угол
-        NULL              // выходной массив углов (может быть NULL)
+        cosines,          // выходной массив cosines углов (может быть NULL)
+        sines,            // выходной массив sines углов (может быть NULL)
+        corners,
+        local_angle_staircase_threshold,  // 0.3L
+        total_angle_threshold,            // 0.3L
+        concentration_threshold,          // 0.4L
+        local_angle_sharp_threshold       // 0.6L
     );
 #endif
     // Выводим результаты
@@ -1042,6 +1134,7 @@ int test_sharp_corners(const contour_line_t* line,
         if (sharp_mask_cos[i] || sharp_mask_sin[i]) {
             if (sharp_count >= max_sharp_corners)
             {
+                free(corners);
                 free(sharp_mask_cos);
                 free(sharp_mask_sin);
                 free(cosines);
@@ -1092,6 +1185,7 @@ int test_sharp_corners(const contour_line_t* line,
     }
     if (logging) printf("Найдено острых углов: %d\n", sharp_count);
 
+    free(corners);
     free(sharp_mask_cos);
     free(sharp_mask_sin);
     free(cosines);

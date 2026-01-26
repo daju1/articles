@@ -24,7 +24,11 @@ int find_characteristic_roots(
     int use_tracing,
     int min_isoline_points_count,
     long double isoline_merge_segments_epsilon,
-    int sharp
+    int sharp,
+    long double local_angle_staircase_threshold,  // 0.3L
+    long double total_angle_threshold,            // 0.3L
+    long double concentration_threshold,          // 0.4L
+    long double local_angle_sharp_threshold       // 0.6L
 ) {
     if (!result) return -1;
     result->roots = NULL;
@@ -93,7 +97,11 @@ int find_characteristic_roots(
                     cos_max_angle,
                     sin_min_angle,
                     sin_max_angle,
-                    window_size
+                    window_size,
+                    local_angle_staircase_threshold,  // 0.3L
+                    total_angle_threshold,            // 0.3L
+                    concentration_threshold,          // 0.4L
+                    local_angle_sharp_threshold       // 0.6L
                 );
             }
             else

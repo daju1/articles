@@ -33,9 +33,14 @@ typedef int (*test_sharp_corners_t)(const contour_line_t* line,
                                    long double sin_min_angle,
                                    long double sin_max_angle,
                                    int window_size,
+                                   long double local_angle_staircase_threshold,  // 0.3L
+                                   long double total_angle_threshold,            // 0.3L
+                                   long double concentration_threshold,          // 0.4L
+                                   long double local_angle_sharp_threshold,      // 0.6L
                                    const char* name,
                                    corner2d_t* sharp_corners,
-                                   int max_sharp_corners);
+                                   int max_sharp_corners
+                                   );
 
 int main() {
     void* h = dlopen("./mendrive_libtest.so", RTLD_NOW);
@@ -132,6 +137,10 @@ int main() {
     const int max_sharp_corners = 100;
     int  window_size = 10;
     long double cos_max_angle = -0.94;
+    long double local_angle_staircase_threshold = 0.3L;
+    long double total_angle_threshold           = 0.3L;
+    long double concentration_threshold         = 0.4L;
+    long double local_angle_sharp_threshold     = 0.6L;
     corner2d_t sharp_corners[max_sharp_corners];
     // Тестируем линии Re=0
     for (int i = 0; i < contours.n_re_contours; ++i) {
@@ -139,19 +148,28 @@ int main() {
         test_sharp_corners_fn(&contours.re_zero[i],
         cos_max_angle,
         0.5, 0.8,
-          window_size,
-          name, sharp_corners, max_sharp_corners);
+        window_size,
+        local_angle_staircase_threshold,  // 0.3L
+        total_angle_threshold,            // 0.3L
+        concentration_threshold,          // 0.4L
+        local_angle_sharp_threshold,      // 0.6L
+        name, sharp_corners, max_sharp_corners);
         //break;
     }
 
     // Тестируем линии Im=0
     for (int i = 0; i < contours.n_im_contours; ++i) {
-         sprintf(name, "Im=0 line=%d", i);
-         test_sharp_corners_fn(&contours.im_zero[i],
-         cos_max_angle,
-         0.5, 0.8,
-         window_size,
-         name, sharp_corners, max_sharp_corners);
+        sprintf(name, "Im=0 line=%d", i);
+        test_sharp_corners_fn(&contours.im_zero[i],
+        cos_max_angle,
+        0.5, 0.8,
+        window_size,
+        local_angle_staircase_threshold,  // 0.3L
+        total_angle_threshold,            // 0.3L
+        concentration_threshold,          // 0.4L
+        local_angle_sharp_threshold,      // 0.6L
+        name, sharp_corners, max_sharp_corners
+        );
     }
 
     // Освобождаем память

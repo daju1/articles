@@ -10,6 +10,7 @@
 // #define LOGGING 1
 
 //#define REFINED_INTERSECTIONS
+//#define SHARP_CORNERS_ON_COSINES_SINES_USING_HIST
 
 #ifdef LOGGING
 #define VERBOSE 1
@@ -219,12 +220,12 @@ void find_sharp_corners_filtered(
         if (angles_out != NULL) {
             angles_out[i-1] = cos_val;
         }
-
+#if 0
         // Если угол не острый по базовому критерию — пропускаем
         if (cos_val > cos_threshold) {
             continue;
         }
-
+#endif
         // Анализируем угол с помощью скользящего окна
         CornerAnalysis analysis = analyze_corner(x, y, n, i, window_size, 0.0L);
 
@@ -386,7 +387,7 @@ void find_sharp_corners(
     qsort(sines, valid_count, sizeof(long double), 
           (int(*)(const void*, const void*))compare_long_double);
 
-    const int HIST_BINS = 45;
+    const int HIST_BINS = 15;
     int cos_hist[HIST_BINS];
     int sin_hist[HIST_BINS];
     for (int i = 0; i < HIST_BINS ; ++i) {cos_hist[i] = 0;}

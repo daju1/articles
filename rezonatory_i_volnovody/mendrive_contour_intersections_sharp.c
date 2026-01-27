@@ -6,6 +6,8 @@
 #include "mendrive_contour_intersections_sharp.h"
 #include <stdio.h> // This line includes the standard input/output library
 
+extern void det_eval( long double kz, long double sz, long double *det_re, long double *det_im );
+
 #define USE_ADAPTIVE_SHARP
 // #define LOGGING 1
 
@@ -211,7 +213,8 @@ void find_sharp_corners_filtered(
     long double local_angle_staircase_threshold,  // 0.3L
     long double total_angle_threshold,            // 0.3L
     long double concentration_threshold,          // 0.4L
-    long double local_angle_sharp_threshold       // 0.6L
+    long double local_angle_sharp_threshold,      // 0.6L
+    long double det_threshold
 ) {
     for (int i = 0; i < n; ++i) {
         is_sharp[i] = 0;
@@ -295,8 +298,19 @@ void find_sharp_corners_filtered(
             if (analysis.is_real_corner)
 #endif
             {
-                is_sharp[i] = 1;
+                long double det_re, det_im;
+                det_eval( x[i], y[i], &det_re, &det_im );
+                long double res = sqrtl(det_re*det_re + det_im*det_im);
+
+                #ifdef LOGGING
+                printf("det_re=%Lf, det_im=%Lf, res=%Lf\n", det_re, det_im, res); fflush(stdout);
+                #endif
+
+                if (res < det_threshold) {
+                    is_sharp[i] = 1;
+                }
             }
+
         }
     }
 }
@@ -796,7 +810,8 @@ int find_contour_intersections_with_corners(
     long double local_angle_staircase_threshold,  // 0.3L
     long double total_angle_threshold,            // 0.3L
     long double concentration_threshold,          // 0.4L
-    long double local_angle_sharp_threshold       // 0.6L
+    long double local_angle_sharp_threshold,      // 0.6L
+    long double det_threshold
 ) {
     if (cu_n < 2 || cv_n < 2 || !intersections || max_intersections <= 0) {
         return 0;
@@ -870,7 +885,8 @@ int find_contour_intersections_with_corners(
         local_angle_staircase_threshold,  // 0.3L
         total_angle_threshold,            // 0.3L
         concentration_threshold,          // 0.4L
-        local_angle_sharp_threshold       // 0.6L
+        local_angle_sharp_threshold,      // 0.6L
+        det_threshold
     );
 #endif
 
@@ -975,7 +991,8 @@ int find_contour_intersections_with_corners(
         local_angle_staircase_threshold,  // 0.3L
         total_angle_threshold,            // 0.3L
         concentration_threshold,          // 0.4L
-        local_angle_sharp_threshold       // 0.6L
+        local_angle_sharp_threshold,      // 0.6L
+        det_threshold
     );
 #endif
     // 3. Обработка острых изломов на cv → экстраполяция → пересечение с cu
@@ -1059,6 +1076,7 @@ int test_sharp_corners(const contour_line_t* line,
                        long double total_angle_threshold,            // 0.3L
                        long double concentration_threshold,          // 0.4L
                        long double local_angle_sharp_threshold,      // 0.6L
+                       long double det_threshold,
                        const char* name,
                        corner2d_t* sharp_corners,
                        int max_sharp_corners
@@ -1123,7 +1141,8 @@ int test_sharp_corners(const contour_line_t* line,
         local_angle_staircase_threshold,  // 0.3L
         total_angle_threshold,            // 0.3L
         concentration_threshold,          // 0.4L
-        local_angle_sharp_threshold       // 0.6L
+        local_angle_sharp_threshold,      // 0.6L
+        det_threshold
     );
 #endif
     // Выводим результаты

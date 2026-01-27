@@ -27,7 +27,8 @@ int find_characteristic_roots(
     long double local_angle_staircase_threshold,  // 0.3L
     long double total_angle_threshold,            // 0.3L
     long double concentration_threshold,          // 0.4L
-    long double local_angle_sharp_threshold       // 0.6L
+    long double local_angle_sharp_threshold,      // 0.6L
+    long double det_threshold
 );
 
 // Освобождение памяти

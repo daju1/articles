@@ -37,6 +37,7 @@ typedef int (*test_sharp_corners_t)(const contour_line_t* line,
                                    long double total_angle_threshold,            // 0.3L
                                    long double concentration_threshold,          // 0.4L
                                    long double local_angle_sharp_threshold,      // 0.6L
+                                   long double det_threshold,
                                    const char* name,
                                    corner2d_t* sharp_corners,
                                    int max_sharp_corners
@@ -141,6 +142,7 @@ int main() {
     long double total_angle_threshold           = 0.3L;
     long double concentration_threshold         = 0.4L;
     long double local_angle_sharp_threshold     = 0.6L;
+    long double det_threshold = 1.0;
     corner2d_t sharp_corners[max_sharp_corners];
     // Тестируем линии Re=0
     for (int i = 0; i < contours.n_re_contours; ++i) {
@@ -153,6 +155,7 @@ int main() {
         total_angle_threshold,            // 0.3L
         concentration_threshold,          // 0.4L
         local_angle_sharp_threshold,      // 0.6L
+        det_threshold,
         name, sharp_corners, max_sharp_corners);
         //break;
     }
@@ -168,6 +171,7 @@ int main() {
         total_angle_threshold,            // 0.3L
         concentration_threshold,          // 0.4L
         local_angle_sharp_threshold,      // 0.6L
+        det_threshold,
         name, sharp_corners, max_sharp_corners
         );
     }

@@ -29,7 +29,8 @@ int find_contour_intersections_with_corners(
     long double local_angle_staircase_threshold,  // 0.3L
     long double total_angle_threshold,            // 0.3L
     long double concentration_threshold,          // 0.4L
-    long double local_angle_sharp_threshold       // 0.6L
+    long double local_angle_sharp_threshold,      // 0.6L
+    long double det_threshold
 );
 
 // Тестовая функция для острых углов
@@ -41,7 +42,8 @@ int test_sharp_corners(const contour_line_t* line,
                        long double local_angle_staircase_threshold,  // 0.3L
                        long double total_angle_threshold,            // 0.3L
                        long double concentration_threshold,          // 0.4L
-                       long double local_angle_sharp_threshold,       // 0.6L
+                       long double local_angle_sharp_threshold,      // 0.6L
+                       long double det_threshold,
                        const char* name,
                        corner2d_t* sharp_corners,
                        int max_sharp_corners

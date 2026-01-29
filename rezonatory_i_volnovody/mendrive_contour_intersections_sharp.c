@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <complex.h>
+#include <string.h>
+
+#define USE_REFILTER
 #include "mendrive_point2d.h"
 #include "mendrive_isolines.h"
 #include "mendrive_contour_intersections_sharp.h"
@@ -9,6 +12,7 @@
 extern void det_eval( long double kz, long double sz, long double *det_re, long double *det_im );
 
 #define USE_ADAPTIVE_SHARP
+
 // #define LOGGING 1
 
 //#define REFINED_INTERSECTIONS
@@ -85,6 +89,115 @@ typedef struct {
     long double arc_length;  // длина дуги в окне
     int oscillation_count;   // число осцилляций знака кривизны
 } CornerAnalysis;
+
+//=============================================================================
+// РАЗДЕЛ: ПОВТОРНАЯ ФИЛЬТРАЦИЯ НАЙДЕННЫХ ИЗЛОМОВ
+// Идея: если найденные кандидаты образуют гладкую линию — это артефакты
+//=============================================================================
+
+#ifdef USE_REFILTER
+
+// Параметры повторной фильтрации
+typedef struct {
+    int enable_refilter;
+    int min_corners_for_refilter;
+    long double refilter_cos_threshold;
+    long double refilter_sin_threshold;
+} refilter_params_t;
+
+static const refilter_params_t DEFAULT_REFILTER_PARAMS = {
+    .enable_refilter = 1,
+    .min_corners_for_refilter = 5,
+    .refilter_cos_threshold = 0.85L,
+    .refilter_sin_threshold = 0.35L
+};
+
+// Анализирует гладкость линии кандидатов
+static int analyze_corners_smoothness(
+    const corner2d_t* corners, int n_corners,
+    long double cos_threshold, long double sin_threshold,
+    char* is_smooth
+) {
+    if (n_corners < 3) {
+        for (int i = 0; i < n_corners; ++i) is_smooth[i] = 0;
+        return 0;
+    }
+
+    long double* x = (long double*)malloc(n_corners * sizeof(long double));
+    long double* y = (long double*)malloc(n_corners * sizeof(long double));
+    if (!x || !y) { free(x); free(y); return 0; }
+
+    for (int i = 0; i < n_corners; ++i) {
+        x[i] = corners[i].kz;
+        y[i] = corners[i].sz;
+    }
+
+    int smooth_count = 0;
+    is_smooth[0] = 0;
+    is_smooth[n_corners - 1] = 0;
+
+    for (int i = 1; i < n_corners - 1; ++i) {
+        long double cos_val = compute_cosine_at_point(x, y, n_corners, i);
+        long double sin_val = compute_sin_at_point(x, y, n_corners, i);
+
+        if (cos_val > cos_threshold || sin_val < sin_threshold) {
+            is_smooth[i] = 1;
+            smooth_count++;
+            #ifdef LOGGING
+            printf("  [REFILTER] Corner %d: cos=%.4Lf sin=%.4Lf → ARTIFACT\n", i, cos_val, sin_val);
+            #endif
+        } else {
+            is_smooth[i] = 0;
+        }
+    }
+
+    free(x); free(y);
+    return smooth_count;
+}
+
+// Повторная фильтрация найденных кандидатов
+static int refilter_corners(
+    corner2d_t* corners, int n_corners,
+    const refilter_params_t* params
+) {
+    if (n_corners < params->min_corners_for_refilter) {
+        for (int i = 0; i < n_corners; ++i) corners[i].is_confirmed = 1;
+        return n_corners;
+    }
+
+    #ifdef LOGGING
+    printf("\n=== REFILTER: Analyzing %d candidates ===\n", n_corners);
+    #endif
+
+    char* is_smooth = (char*)calloc(n_corners, sizeof(char));
+    if (!is_smooth) {
+        for (int i = 0; i < n_corners; ++i) corners[i].is_confirmed = 1;
+        return n_corners;
+    }
+
+    analyze_corners_smoothness(corners, n_corners,
+        params->refilter_cos_threshold,
+        params->refilter_sin_threshold, is_smooth);
+
+    int confirmed = 0;
+    for (int i = 0; i < n_corners; ++i) {
+        corners[i].is_confirmed = is_smooth[i] ? 0 : 1;
+        if (corners[i].is_confirmed) confirmed++;
+    }
+
+    #ifdef LOGGING
+    printf("=== REFILTER: %d/%d confirmed ===\n\n", confirmed, n_corners);
+    #endif
+
+    free(is_smooth);
+    return confirmed;
+}
+
+#endif // USE_REFILTER
+
+//=============================================================================
+// Конец раздела повторной фильтрации
+//=============================================================================
 
 // Вычисляет ориентированный угол (с учётом знака) в точке i
 // Возвращает угол в радианах: положительный = поворот влево, отрицательный = вправо
@@ -797,6 +910,126 @@ static int refine_sharp_corner_by_smoothness(
     return candidates[best_k];
 }
 
+// === ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ: обнаружение и фильтрация изломов на контуре ===
+#define MAX_TEMP_CORNERS 1024
+typedef struct {
+    int idx;
+    int refined_idx;
+    char is_cos;
+    char is_sin;
+} temp_corner_t;
+
+static int detect_and_refilter_corners(
+    const long double* x, const long double* y, int n,
+    long double cos_max_angle,
+    long double sin_min_angle,
+    long double sin_max_angle,
+    int window_size,
+    long double local_angle_staircase_threshold,
+    long double total_angle_threshold,
+    long double concentration_threshold,
+    long double local_angle_sharp_threshold,
+    long double det_threshold,
+    temp_corner_t* out_corners,
+    int max_out
+) {
+    char* sharp_mask_cos = (char*)calloc(n, sizeof(char));
+    char* sharp_mask_sin = (char*)calloc(n, sizeof(char));
+    long double* cosines = (long double*)malloc((n - 2) * sizeof(long double));
+    long double* sines   = (long double*)malloc((n - 2) * sizeof(long double));
+    CornerAnalysis* corners_analysis = (CornerAnalysis*)malloc((n - 2) * sizeof(CornerAnalysis));
+
+    if (!sharp_mask_cos || !sharp_mask_sin || !cosines || !sines || !corners_analysis) {
+        free(sharp_mask_cos); free(sharp_mask_sin); free(cosines); free(sines); free(corners_analysis);
+        return 0;
+    }
+
+    // Обнаружение кандидатов
+#ifdef SHARP_CORNERS_ON_COSINES_SINES_USING_HIST
+find_sharp_corners(x, y, n,
+                    cos_max_angle,
+                    sin_min_angle,
+                    sin_max_angle,
+                    sharp_mask_cos,
+                    sharp_mask_sin,
+                    cosines, sines);
+#else
+// Находит острые углы с фильтрацией ступенчатых артефактов
+// Использует оконный анализ вместо гистограммного подхода
+find_sharp_corners_filtered(
+    x, y, n,
+    cos_max_angle,    // cos_threshold порог косинуса (например, -0.94 для 160°)
+    window_size,      // размер окна анализа (например, 5)
+    sharp_mask_cos,   // is_sharp выходной массив: 1 если реальный угол
+    cosines,          // выходной массив cosines углов (может быть NULL)
+    sines,            // выходной массив sines углов (может быть NULL)
+    corners_analysis,
+    local_angle_staircase_threshold,  // 0.3L
+    total_angle_threshold,            // 0.3L
+    concentration_threshold,          // 0.4L
+    local_angle_sharp_threshold,      // 0.6L
+    det_threshold
+);
+#endif
+
+    // Сбор кандидатов во временный буфер
+    int candidate_count = 0;
+    for (int i = 1; i < n - 1 && candidate_count < max_out; ++i) {
+        if (sharp_mask_cos[i] || sharp_mask_sin[i]) {
+            // Уточнение позиции
+            int refined_i = refine_sharp_corner_by_smoothness(
+                cosines, n - 2, sines, n - 2, i, n, 0.005L);
+            if (refined_i < 1 || refined_i >= n - 1) refined_i = i;
+
+            out_corners[candidate_count].idx = i;
+            out_corners[candidate_count].refined_idx = refined_i;
+            out_corners[candidate_count].is_cos = sharp_mask_cos[i];
+            out_corners[candidate_count].is_sin = sharp_mask_sin[i];
+            candidate_count++;
+        }
+    }
+
+    // === ПОВТОРНАЯ ФИЛЬТРАЦИЯ КАНДИДАТОВ ===
+    #ifdef USE_REFILTER
+    if (candidate_count >= DEFAULT_REFILTER_PARAMS.min_corners_for_refilter && candidate_count <= MAX_TEMP_CORNERS) {
+        // Создаём временный массив corner2d_t для refilter_corners
+        corner2d_t* temp_corners = (corner2d_t*)malloc(candidate_count * sizeof(corner2d_t));
+        if (temp_corners) {
+            for (int i = 0; i < candidate_count; ++i) {
+                temp_corners[i].kz = x[out_corners[i].idx];
+                temp_corners[i].sz = y[out_corners[i].idx];
+                temp_corners[i].cosine = cosines[out_corners[i].idx - 1];
+                temp_corners[i].sine   = sines[out_corners[i].idx - 1];
+                temp_corners[i].is_confirmed = 1;
+            }
+
+            refilter_corners(temp_corners, candidate_count, &DEFAULT_REFILTER_PARAMS);
+
+            // Сжатие: оставляем только подтверждённые
+            int confirmed_count = 0;
+            for (int i = 0; i < candidate_count; ++i) {
+                if (temp_corners[i].is_confirmed) {
+                    if (i != confirmed_count) {
+                        memcpy(&out_corners[confirmed_count], &out_corners[i], sizeof(temp_corner_t));
+                    }
+                    confirmed_count++;
+                }
+            }
+            candidate_count = confirmed_count;
+            free(temp_corners);
+        }
+    }
+    #endif
+
+    free(sharp_mask_cos);
+    free(sharp_mask_sin);
+    free(cosines);
+    free(sines);
+    free(corners_analysis);
+
+    return candidate_count;
+}
+
 int find_contour_intersections_with_corners(
     const long double* cu_x, const long double* cu_y, int cu_n,
     const long double* cv_x, const long double* cv_y, int cv_n,
@@ -856,75 +1089,30 @@ int find_contour_intersections_with_corners(
         }
     }
 
-    // Вместо цикла с is_sharp_corner
-    char* sharp_mask_cos = (char*)calloc(cu_n, sizeof(char));
-    char* sharp_mask_sin = (char*)calloc(cu_n, sizeof(char));
-    long double* cosines    = (long double*)malloc((cu_n - 2) * sizeof(long double));
-    long double* sines      = (long double*)malloc((cu_n - 2) * sizeof(long double));
-    CornerAnalysis* corners = (CornerAnalysis*)malloc((cu_n - 2) * sizeof(CornerAnalysis));
-
-#ifdef SHARP_CORNERS_ON_COSINES_SINES_USING_HIST
-    find_sharp_corners(cu_x, cu_y, cu_n,
-                       cos_max_angle,
-                       sin_min_angle,
-                       sin_max_angle,
-                       sharp_mask_cos,
-                       sharp_mask_sin,
-                       cosines, sines);
-#else
-    // Находит острые углы с фильтрацией ступенчатых артефактов
-    // Использует оконный анализ вместо гистограммного подхода
-    find_sharp_corners_filtered(
+    // === ШАГ 2: Обработка изломов на контуре cu ===
+    temp_corner_t cu_corners[MAX_TEMP_CORNERS];
+    int cu_corner_count = detect_and_refilter_corners(
         cu_x, cu_y, cu_n,
-        cos_max_angle,    // cos_threshold порог косинуса (например, -0.94 для 160°)
-        window_size,      // размер окна анализа (например, 5)
-        sharp_mask_cos,   // is_sharp выходной массив: 1 если реальный угол
-        cosines,          // выходной массив cosines углов (может быть NULL)
-        sines,            // выходной массив sines углов (может быть NULL)
-        corners,
-        local_angle_staircase_threshold,  // 0.3L
-        total_angle_threshold,            // 0.3L
-        concentration_threshold,          // 0.4L
-        local_angle_sharp_threshold,      // 0.6L
-        det_threshold
-    );
-#endif
+        cos_max_angle, sin_min_angle, sin_max_angle,
+        window_size,
+        local_angle_staircase_threshold,
+        total_angle_threshold,
+        concentration_threshold,
+        local_angle_sharp_threshold,
+        det_threshold,
+        cu_corners, MAX_TEMP_CORNERS);
 
-    // 2. Обработка острых изломов на cu → экстраполяция → пересечение с cv
-    for (int i = 1; i < cu_n - 1; ++i) {
-        if (!sharp_mask_cos[i] && !sharp_mask_sin[i]) continue;
-#ifdef REFINED_INTERSECTIONS
-        // Уточняем позицию излома по гладкости
-        int refined_i = refine_sharp_corner_by_smoothness(
-            cosines, cu_n - 2,
-            sines,   cu_n - 2,
-            i, cu_n,
-            0.05L  // eps_smooth — подберите под вашу задачу
-        );
-
-        // Проверяем, что refined_i валиден
-        if (refined_i < 1 || refined_i >= cu_n - 1) {
-            refined_i = i; // fallback
-        }
-
-        // Теперь работаем с refined_i
-        for (int dir = -1; dir <= 1; dir += 2) {
-            long double p_x, p_y, r_x, r_y;
-
-            extrapolate_segment(cu_x, cu_y, refined_i, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
-#else
-        // Два плеча: назад и вперёд
+    for (int c = 0; c < cu_corner_count; ++c) {
+        int i = cu_corners[c].refined_idx;
         for (int dir = -1; dir <= 1; dir += 2) {
             long double p_x, p_y, r_x, r_y;
             extrapolate_segment(cu_x, cu_y, i, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
-#endif
-            // Пересекаем этот экстраполированный отрезок со всеми отрезками cv
+
+            // Пересечение с отрезками контура cv
             for (int j = 0; j < cv_n - 1; ++j) {
                 long double q_x = cv_x[j], q_y = cv_y[j];
                 long double s_x = cv_x[j+1] - q_x;
                 long double s_y = cv_y[j+1] - q_y;
-
-                long double x, y;
                 // Важно: используем eps_det!
                 long double r_cross_s = r_x * s_y - r_y * s_x;
                 if (fabsl(r_cross_s) < eps_det) continue;
@@ -937,17 +1125,9 @@ int find_contour_intersections_with_corners(
                 // Экстраполированный отрезок: t ∈ [0, 1] (мы его задали длиной extrap_len)
                 // Отрезок cv: u ∈ [0, 1]
                 if (t >= 0.0L && t <= 1.0L && u >= 0.0L && u <= 1.0L) {
-                //if (t >= -0.5L && t <= 1.5L && u >= -0.5L && u <= 1.5L) {
-                    x = p_x + t * r_x;
-                    y = p_y + t * r_y;
-                    if (count >= max_intersections)
-                    {
-                        free(sines);
-                        free(cosines);
-                        free(sharp_mask_cos);
-                        free(sharp_mask_sin);
-                        goto overflow;
-                    }
+                    long double x = p_x + t * r_x;
+                    long double y = p_y + t * r_y;
+                    if (count >= max_intersections) goto overflow;
                     intersections[count].kz = x;
                     intersections[count].sz = y;
                     count++;
@@ -956,75 +1136,31 @@ int find_contour_intersections_with_corners(
         }
     }
 
-    free(corners);
-    free(sines);
-    free(cosines);
-    free(sharp_mask_cos);
-    free(sharp_mask_sin);
-
-    // Вместо цикла с is_sharp_corner
-    sharp_mask_cos = (char*)calloc(cv_n, sizeof(char));
-    sharp_mask_sin = (char*)calloc(cv_n, sizeof(char));
-    cosines = (long double*)malloc((cv_n - 2) * sizeof(long double));
-    sines   = (long double*)malloc((cv_n - 2) * sizeof(long double));
-    corners = (CornerAnalysis*)malloc((cv_n - 2) * sizeof(CornerAnalysis));
-
-#ifdef SHARP_CORNERS_ON_COSINES_SINES_USING_HIST
-    find_sharp_corners(cv_x, cv_y, cv_n,
-                       cos_max_angle,
-                       sin_min_angle,
-                       sin_max_angle,
-                       sharp_mask_cos,
-                       sharp_mask_sin,
-                       cosines, sines);
-#else
-    // Находит острые углы с фильтрацией ступенчатых артефактов
-    // Использует оконный анализ вместо гистограммного подхода
-    find_sharp_corners_filtered(
+    // === ШАГ 3: Обработка изломов на контуре cv ===
+    temp_corner_t cv_corners[MAX_TEMP_CORNERS];
+    int cv_corner_count = detect_and_refilter_corners(
         cv_x, cv_y, cv_n,
-        cos_max_angle,    // cos_threshold порог косинуса (например, -0.94 для 160°)
-        window_size,      // размер окна анализа (например, 5)
-        sharp_mask_cos,   // is_sharp выходной массив: 1 если реальный угол
-        cosines,          // выходной массив cosines углов (может быть NULL)
-        sines,            // выходной массив sines углов (может быть NULL)
-        corners,
-        local_angle_staircase_threshold,  // 0.3L
-        total_angle_threshold,            // 0.3L
-        concentration_threshold,          // 0.4L
-        local_angle_sharp_threshold,      // 0.6L
-        det_threshold
-    );
-#endif
-    // 3. Обработка острых изломов на cv → экстраполяция → пересечение с cu
-    for (int j = 1; j < cv_n - 1; ++j) {
-        if (!sharp_mask_cos[j] && !sharp_mask_sin[j]) continue;
-#ifdef REFINED_INTERSECTIONS
-        // Уточняем позицию излома по гладкости
-        int refined_j = refine_sharp_corner_by_smoothness(
-            cosines, cv_n - 2,
-            sines,   cv_n - 2,
-            j, cv_n,
-            0.05L  // eps_smooth
-        );
+        cos_max_angle, sin_min_angle, sin_max_angle,
+        window_size,
+        local_angle_staircase_threshold,
+        total_angle_threshold,
+        concentration_threshold,
+        local_angle_sharp_threshold,
+        det_threshold,
+        cv_corners, MAX_TEMP_CORNERS);
 
-        if (refined_j < 1 || refined_j >= cv_n - 1) {
-            refined_j = j;
-        }
-
-        for (int dir = -1; dir <= 1; dir += 2) {
-            long double p_x, p_y, r_x, r_y;
-            extrapolate_segment(cv_x, cv_y, refined_j, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
-#else
+    for (int c = 0; c < cv_corner_count; ++c) {
+        int j = cv_corners[c].refined_idx;
         for (int dir = -1; dir <= 1; dir += 2) {
             long double p_x, p_y, r_x, r_y;
             extrapolate_segment(cv_x, cv_y, j, dir, extrap_len, &p_x, &p_y, &r_x, &r_y);
-#endif
+
+            // Пересечение с отрезками контура cu
             for (int i = 0; i < cu_n - 1; ++i) {
                 long double q_x = cu_x[i], q_y = cu_y[i];
                 long double s_x = cu_x[i+1] - q_x;
                 long double s_y = cu_y[i+1] - q_y;
 
-                long double x, y;
                 long double r_cross_s = r_x * s_y - r_y * s_x;
                 if (fabsl(r_cross_s) < eps_det) continue;
 
@@ -1034,17 +1170,9 @@ int find_contour_intersections_with_corners(
                 long double u = (qm_px * r_y - qm_py * r_x) / r_cross_s;
 
                 if (t >= 0.0L && t <= 1.0L && u >= 0.0L && u <= 1.0L) {
-                //if (t >= -0.5L && t <= 1.5L && u >= -0.5L && u <= 1.5L) {
-                    x = p_x + t * r_x;
-                    y = p_y + t * r_y;
-                    if (count >= max_intersections)
-                    {
-                        free(sines);
-                        free(cosines);
-                        free(sharp_mask_cos);
-                        free(sharp_mask_sin);
-                        goto overflow;
-                    }
+                    long double x = p_x + t * r_x;
+                    long double y = p_y + t * r_y;
+                    if (count >= max_intersections) goto overflow;
                     intersections[count].kz = x;
                     intersections[count].sz = y;
                     count++;
@@ -1052,12 +1180,6 @@ int find_contour_intersections_with_corners(
             }
         }
     }
-
-    free(corners);
-    free(sines);
-    free(cosines);
-    free(sharp_mask_cos);
-    free(sharp_mask_sin);
 
     return count;
 
@@ -1081,7 +1203,7 @@ int test_sharp_corners(const contour_line_t* line,
                        corner2d_t* sharp_corners,
                        int max_sharp_corners
                        ) {
-    if (!line || line->n_points < 3) return 0;
+    if (!line || line->n_points < 3 || !sharp_corners || max_sharp_corners <= 0) return 0;
 
     _Bool logging = VERBOSE;
 
@@ -1148,62 +1270,95 @@ int test_sharp_corners(const contour_line_t* line,
     // Выводим результаты
 
     if (logging) printf("\n=== Острые углы в %s n_points=%d === \n", name, line->n_points);
-    int sharp_count = 0;
-    for (int i = 1; i < line->n_points - 1; ++i) {
-        if (sharp_mask_cos[i] || sharp_mask_sin[i]) {
-            if (sharp_count >= max_sharp_corners)
-            {
-                free(corners);
-                free(sharp_mask_cos);
-                free(sharp_mask_sin);
-                free(cosines);
-                free(sines);
-                free(x);
-                free(y);
-                goto overflow;
-            }
 
-            // Уточняем позицию излома по гладкости
+    // === ШАГ 3: Сбор кандидатов во ВРЕМЕННЫЙ буфер (без риска переполнения) ===
+    #define MAX_TEMP_CANDIDATES 1024
+    corner2d_t temp_candidates[MAX_TEMP_CANDIDATES];
+    int candidate_count = 0;
+
+    for (int i = 1; i < line->n_points - 1 && candidate_count < MAX_TEMP_CANDIDATES; ++i) {
+        if (sharp_mask_cos[i] || sharp_mask_sin[i]) {
+            // Уточнение позиции
             int refined_i = refine_sharp_corner_by_smoothness(
                 cosines, line->n_points - 2,
                 sines,   line->n_points - 2,
-                i, line->n_points,
-                0.005L  // eps_smooth — подберите под вашу задачу
+                i, line->n_points, 0.005L
             );
+            if (refined_i < 1 || refined_i >= line->n_points - 1) refined_i = i;
 
-            // Проверяем, что refined_i валиден
-            if (refined_i < 1 || refined_i >= line->n_points - 1) {
-                refined_i = i; // fallback
-            }
+            temp_candidates[candidate_count].kz = x[i];
+            temp_candidates[candidate_count].sz = y[i];
+            temp_candidates[candidate_count].cosine = cosines[i-1];
+            temp_candidates[candidate_count].sine   = sines[i-1];
+            temp_candidates[candidate_count].type =
+                (sharp_mask_cos[i] && sharp_mask_sin[i]) ? 1 :
+                (sharp_mask_cos[i] ? 2 : 3);
+            temp_candidates[candidate_count].i = i;
+            temp_candidates[candidate_count].refined_i = refined_i;
+            temp_candidates[candidate_count].refined_pt.kz = x[refined_i];
+            temp_candidates[candidate_count].refined_pt.sz = y[refined_i];
 
-            // Теперь работаем с refined_i
-            if (logging)
-                printf("  Точка %d: (%.6Lf, %.6Lf) cos = %Lf sin = %Lf mask_cos=%d mask_sin=%d refined_i=%d refined_pt: (%.6Lf, %.6Lf)\n",
-                       i, x[i], y[i],
-                       cosines[i-1], sines[i-1],
-                       sharp_mask_cos[i], sharp_mask_sin[i],
-                       refined_i, x[refined_i], y[refined_i]);
+            #ifdef USE_REFILTER
+            temp_candidates[candidate_count].is_confirmed = 1;  // по умолчанию подтверждён
+            #endif
 
-            sharp_corners[sharp_count].kz = x[i];
-            sharp_corners[sharp_count].sz = y[i];
-            sharp_corners[sharp_count].cosine = cosines[i-1];
-            sharp_corners[sharp_count].sine   = sines[i-1];
-            if (sharp_mask_cos[i] && sharp_mask_sin[i])
-                sharp_corners[sharp_count].type = 1;
-            else if (sharp_mask_cos[i])
-                sharp_corners[sharp_count].type = 2;
-            else if (sharp_mask_sin[i])
-                sharp_corners[sharp_count].type = 3;
-            sharp_corners[sharp_count].i = i;
-            sharp_corners[sharp_count].refined_i;
-            sharp_corners[sharp_count].refined_pt.kz = x[refined_i];
-            sharp_corners[sharp_count].refined_pt.sz = y[refined_i];
-
-            sharp_count++;
+            candidate_count++;
         }
     }
-    if (logging) printf("Найдено острых углов: %d\n", sharp_count);
 
+    // === ШАГ 4: Повторная фильтрация (только если включена и достаточно кандидатов) ===
+    #ifdef USE_REFILTER
+    int confirmed_count = candidate_count;
+    if (candidate_count >= DEFAULT_REFILTER_PARAMS.min_corners_for_refilter &&
+        candidate_count <= MAX_TEMP_CANDIDATES) {
+
+        if (logging) printf("  [REFILTER] Applying to %d candidates...\n", candidate_count);
+        refilter_corners(temp_candidates, candidate_count, &DEFAULT_REFILTER_PARAMS);
+
+        // Подсчёт подтверждённых
+        confirmed_count = 0;
+        for (int i = 0; i < candidate_count; ++i) {
+            if (temp_candidates[i].is_confirmed) confirmed_count++;
+        }
+
+        if (logging) printf("  [REFILTER] Result: %d confirmed (from %d candidates)\n",
+            confirmed_count, candidate_count);
+    }
+    #else
+    int confirmed_count = candidate_count;
+    #endif
+
+    // === ШАГ 5: Копирование подтверждённых кандидатов в выходной буфер с проверкой границ ===
+    int sharp_count = 0;
+    for (int i = 0; i < candidate_count && sharp_count < max_sharp_corners; ++i) {
+        #ifdef USE_REFILTER
+        if (!temp_candidates[i].is_confirmed) continue;
+        #endif
+
+        memcpy(&sharp_corners[sharp_count], &temp_candidates[i], sizeof(corner2d_t));
+        sharp_count++;
+    }
+
+    if (sharp_count >= max_sharp_corners && confirmed_count > max_sharp_corners) {
+        fprintf(stderr, "test_sharp_corners: WARNING: output buffer truncated (%d/%d candidates kept)\n",
+            sharp_count, confirmed_count);
+    }
+
+    if (logging) {
+        printf("\n=== Острые углы в %s n_points=%d ===\n", name, line->n_points);
+        printf("Найдено кандидатов: %d, подтверждено: %d, сохранено: %d\n",
+            candidate_count, confirmed_count, sharp_count);
+
+        for (int i = 0; i < sharp_count && i < 10; ++i) {  // выводим первые 10 для краткости
+            printf("  Точка %d: (%.6Lf, %.6Lf) cos=%.6Lf sin=%.6Lf type=%d refined_i=%d\n",
+                sharp_corners[i].i, sharp_corners[i].kz, sharp_corners[i].sz,
+                sharp_corners[i].cosine, sharp_corners[i].sine,
+                sharp_corners[i].type, sharp_corners[i].refined_i);
+        }
+        if (sharp_count > 10) printf("  ... (%d more points)\n", sharp_count - 10);
+    }
+
+    // === Очистка памяти ===
     free(corners);
     free(sharp_mask_cos);
     free(sharp_mask_sin);
@@ -1211,6 +1366,7 @@ int test_sharp_corners(const contour_line_t* line,
     free(sines);
     free(x);
     free(y);
+
     return sharp_count;
 
 overflow:

@@ -15,6 +15,9 @@ typedef struct {
     int i;
     int refined_i;
     point2d_t refined_pt;
+    #ifdef USE_REFILTER
+    int is_confirmed;
+    #endif
 } corner2d_t;
 
 #endif

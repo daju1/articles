@@ -1,4 +1,7 @@
+#include <stdio.h>
+#include "mendrive_det.h"
 #include "mendrive_newton.h"
+#include "mendrive_log.h"
 #include <math.h>
 #include <complex.h>
 
@@ -15,46 +18,52 @@
  */
 
 int newton_adaptive_step(
-    long double *kz, long double *sz,
-    long double *step_re_re, long double *step_im_re,
-    long double *step_re_im, long double *step_im_im,
-    long double *f_abs_out,
-    long double abs_m,
-    long double step_decrease,   // было step__m = 0.1 в Python
-    long double step_increase,   // было step_m = 0.2 в Python (делим на него)
-    long double delta_eps,
-    long double f_abs_eps,
+    mendrive_scalar_t *kz, mendrive_scalar_t *sz,
+    mendrive_scalar_t *step_re_re, mendrive_scalar_t *step_im_re,
+    mendrive_scalar_t *step_re_im, mendrive_scalar_t *step_im_im,
+    mendrive_scalar_t *f_abs_out,
+    mendrive_scalar_t step_decrease,   // было step__m = 0.1 в Python
+    mendrive_scalar_t step_increase,   // было step_m = 0.2 в Python (делим на него)
+    mendrive_scalar_t delta_eps,
+    mendrive_scalar_t f_abs_eps,
     int max_retries              // N = 10 в Python
 ) {
     // Вычисляем текущее значение функции
-    long double f_re, f_im;
+    mendrive_scalar_t f_re, f_im;
     det_eval(*kz, *sz, &f_re, &f_im);
-    long double f_abs = sqrtl(f_re * f_re + f_im * f_im);
+
+    mendrive_scalar_t f_abs = MENDRIVE_SQRT(f_re * f_re + f_im * f_im);
     *f_abs_out = f_abs;
 
+    MPREC_LOG_DEBUG("Начало итерации Ньютона: |f|=" MPREC_LOG_FMT_SCALAR " kz=" MPREC_LOG_FMT_SCALAR
+                    ", sz=" MPREC_LOG_FMT_SCALAR "", f_abs,
+                    *kz, *sz);
+
     // Проверка сходимости по |f|
-    if (f_abs < f_abs_eps) return 2; // converged by |f|
+    // if (f_abs < f_abs_eps) return 2; // converged by |f|
 
     // Вычисляем f/df для обоих направлений
-    long double div_kz_re, div_kz_im, div_sz_re, div_sz_im;
+    mendrive_scalar_t div_kz_re, div_kz_im;
     det_div_diff_kz_eval(*kz, *sz, &div_kz_re, &div_kz_im);
-    det_div_diff_sz_eval(*kz, *sz, &div_sz_re, &div_sz_im);
+    MPREC_LOG_TRACE("f/df_kz = (" MPREC_LOG_FMT_SCALAR ", " MPREC_LOG_FMT_SCALAR ")",
+                    div_kz_re, div_kz_im);
 
     // Проверка на вырожденность производных
-    long double div_kz_abs = sqrtl(div_kz_re * div_kz_re + div_kz_im * div_kz_im);
-    long double div_sz_abs = sqrtl(div_sz_re * div_sz_re + div_sz_im * div_sz_im);
-    if (div_kz_abs < 1e-30L || div_sz_abs < 1e-30L) return -1; // degenerate
+    mendrive_scalar_t div_kz_abs = MENDRIVE_SQRT(div_kz_re * div_kz_re + div_kz_im * div_kz_im);
+    if (div_kz_abs < 1e-64L) {
+        MPREC_LOG_INFO("degenerate derivative div_kz_abs " MPREC_LOG_FMT_SCALAR "",
+            div_kz_abs );
+       return -1; // degenerate
+    }
 
     // Сохраняем дельты для проверки сходимости
     // delta = f / df (это то, что вычитаем из координаты)
-    long double delta_re_re = div_kz_re;  // Re(f/df_kz) -> применяется к kz
-    long double delta_im_re = div_kz_im;  // Im(f/df_kz) -> применяется к kz
-    long double delta_re_im = div_sz_re;  // Re(f/df_sz) -> применяется к sz
-    long double delta_im_im = div_sz_im;  // Im(f/df_sz) -> применяется к sz
+    mendrive_scalar_t delta_re_re = div_kz_re;  // Re(f/df_kz) -> применяется к kz
+    mendrive_scalar_t delta_im_re = div_kz_im;  // Im(f/df_kz) -> применяется к kz
 
-    long double f_re_new, f_im_new, f_abs_new;
-    long double kz_new, sz_new;
-    int n;
+    mendrive_scalar_t f_re_new, f_im_new, f_abs_new;
+    mendrive_scalar_t kz_new, sz_new;
+    int n, accepted = 0;
 
     // ===== ШАГ 1: re_d_re - обновление kz по Re(f/df_kz) =====
     n = max_retries;
@@ -62,17 +71,26 @@ int newton_adaptive_step(
         n--;
         kz_new = *kz - (*step_re_re) * delta_re_re;
         det_eval(kz_new, *sz, &f_re_new, &f_im_new);
-        f_abs_new = sqrtl(f_re_new * f_re_new + f_im_new * f_im_new);
+        f_abs_new = MENDRIVE_SQRT(f_re_new * f_re_new + f_im_new * f_im_new);
 
-        if (f_abs_new > abs_m * f_abs) {
+        if (f_abs_new > f_abs) {
+            step_decrease = f_abs / f_abs_new;
             *step_re_re *= step_decrease;
+            MPREC_LOG_TRACE("Шаг 1 отклонён: |f|_new=" MPREC_LOG_FMT_SCALAR " > " MPREC_LOG_FMT_SCALAR " step_decrease=" MPREC_LOG_FMT_SCALAR " step_re_re=" MPREC_LOG_FMT_SCALAR "", 
+                           f_abs_new, (f_abs), step_decrease, *step_re_re);
             continue;
         } else {
             *kz = kz_new;
+            MPREC_LOG_DEBUG("Шаг 1 принят: |f|=" MPREC_LOG_FMT_SCALAR "->" MPREC_LOG_FMT_SCALAR ", step=" MPREC_LOG_FMT_SCALAR "kz=" MPREC_LOG_FMT_SCALAR ", ",
+                            f_abs, f_abs_new, *step_re_re, *kz);
             f_abs = f_abs_new;
-            if (*step_re_re < 0.9L) {
-                *step_re_re /= step_increase;
-            }
+
+            *step_re_re /= step_increase;
+            *step_im_re /= step_increase;
+            *step_re_im /= step_increase;
+            *step_im_im /= step_increase;
+
+            accepted += 1;
             break;
         }
     }
@@ -87,42 +105,76 @@ int newton_adaptive_step(
         n--;
         kz_new = *kz - (*step_im_re) * delta_im_re;
         det_eval(kz_new, *sz, &f_re_new, &f_im_new);
-        f_abs_new = sqrtl(f_re_new * f_re_new + f_im_new * f_im_new);
+        f_abs_new = MENDRIVE_SQRT(f_re_new * f_re_new + f_im_new * f_im_new);
 
-        if (f_abs_new > abs_m * f_abs) {
+        if (f_abs_new > f_abs) {
+            step_decrease = f_abs / f_abs_new;
             *step_im_re *= step_decrease;
+            MPREC_LOG_TRACE("Шаг 2 отклонён: |f|_new=" MPREC_LOG_FMT_SCALAR " > " MPREC_LOG_FMT_SCALAR " step_decrease=" MPREC_LOG_FMT_SCALAR " step_im_re=" MPREC_LOG_FMT_SCALAR "", 
+                           f_abs_new, (f_abs), step_decrease, *step_im_re);
             continue;
         } else {
             *kz = kz_new;
+            MPREC_LOG_DEBUG("Шаг 2 принят: |f|=" MPREC_LOG_FMT_SCALAR "->" MPREC_LOG_FMT_SCALAR ", step=" MPREC_LOG_FMT_SCALAR ", kz=" MPREC_LOG_FMT_SCALAR "",
+                            f_abs, f_abs_new, *step_im_re, *kz);
             f_abs = f_abs_new;
-            if (*step_im_re < 0.9L) {
-                *step_im_re /= step_increase;
-            }
+
+            *step_re_re /= step_increase;
+            *step_im_re /= step_increase;
+            *step_re_im /= step_increase;
+            *step_im_im /= step_increase;
+
+            accepted += 1;
             break;
         }
     }
 
     // ===== ШАГ 3: re_d_im - обновление sz по Re(f/df_sz) =====
     // Пересчитываем f/df_sz с новым kz
+    mendrive_scalar_t div_sz_re, div_sz_im;
     det_div_diff_sz_eval(*kz, *sz, &div_sz_re, &div_sz_im);
-    delta_re_im = div_sz_re;
+    MPREC_LOG_TRACE("f/df_sz = (" MPREC_LOG_FMT_SCALAR ", " MPREC_LOG_FMT_SCALAR ")",
+                    div_sz_re, div_sz_im);
+
+    // Проверка на вырожденность производных
+    mendrive_scalar_t div_sz_abs = MENDRIVE_SQRT(div_sz_re * div_sz_re + div_sz_im * div_sz_im);
+    if (div_sz_abs < 1e-64L) {
+        MPREC_LOG_INFO("degenerate derivative div_sz_abs " MPREC_LOG_FMT_SCALAR "",
+            div_sz_abs );
+       return -1; // degenerate
+    }
+
+    mendrive_scalar_t delta_re_im = div_sz_re;  // Re(f/df_sz) -> применяется к sz
+    mendrive_scalar_t delta_im_im = div_sz_im;  // Im(f/df_sz) -> применяется к sz
+
+    // det_div_diff_sz_eval(*kz, *sz, &div_sz_re, &div_sz_im);
+    // delta_re_im = div_sz_re;
 
     n = max_retries;
     while (n > 0) {
         n--;
         sz_new = *sz - (*step_re_im) * delta_re_im;
         det_eval(*kz, sz_new, &f_re_new, &f_im_new);
-        f_abs_new = sqrtl(f_re_new * f_re_new + f_im_new * f_im_new);
+        f_abs_new = MENDRIVE_SQRT(f_re_new * f_re_new + f_im_new * f_im_new);
 
-        if (f_abs_new > abs_m * f_abs) {
+        if (f_abs_new > f_abs) {
+            step_decrease = f_abs / f_abs_new;
             *step_re_im *= step_decrease;
+            MPREC_LOG_TRACE("Шаг 3 отклонён: |f|_new=" MPREC_LOG_FMT_SCALAR " > " MPREC_LOG_FMT_SCALAR " step_decrease=" MPREC_LOG_FMT_SCALAR " step_re_im=" MPREC_LOG_FMT_SCALAR "", 
+                           f_abs_new, (f_abs), step_decrease, *step_re_im);
             continue;
         } else {
             *sz = sz_new;
+            MPREC_LOG_DEBUG("Шаг 3 принят: |f|=" MPREC_LOG_FMT_SCALAR "->" MPREC_LOG_FMT_SCALAR ", step=" MPREC_LOG_FMT_SCALAR ", sz=" MPREC_LOG_FMT_SCALAR "",
+                            f_abs, f_abs_new, *step_re_im, *sz);
             f_abs = f_abs_new;
-            if (*step_re_im < 0.9L) {
-                *step_re_im /= step_increase;
-            }
+
+            *step_re_re /= step_increase;
+            *step_im_re /= step_increase;
+            *step_re_im /= step_increase;
+            *step_im_im /= step_increase;
+
+            accepted += 1;
             break;
         }
     }
@@ -137,36 +189,55 @@ int newton_adaptive_step(
         n--;
         sz_new = *sz - (*step_im_im) * delta_im_im;
         det_eval(*kz, sz_new, &f_re_new, &f_im_new);
-        f_abs_new = sqrtl(f_re_new * f_re_new + f_im_new * f_im_new);
+        f_abs_new = MENDRIVE_SQRT(f_re_new * f_re_new + f_im_new * f_im_new);
 
-        if (f_abs_new > abs_m * f_abs) {
+        if (f_abs_new > f_abs) {
+            step_decrease = f_abs / f_abs_new;
             *step_im_im *= step_decrease;
+            MPREC_LOG_TRACE("Шаг 4 отклонён: |f|_new=" MPREC_LOG_FMT_SCALAR " > " MPREC_LOG_FMT_SCALAR " step_decrease=" MPREC_LOG_FMT_SCALAR " step_im_im=" MPREC_LOG_FMT_SCALAR "", 
+                           f_abs_new, (f_abs), step_decrease, *step_im_im);
             continue;
         } else {
             *sz = sz_new;
+            MPREC_LOG_DEBUG("Шаг 4 принят: |f|=" MPREC_LOG_FMT_SCALAR "->" MPREC_LOG_FMT_SCALAR ", step=" MPREC_LOG_FMT_SCALAR ", sz=" MPREC_LOG_FMT_SCALAR "",
+                            f_abs, f_abs_new, *step_re_im, *sz);
             f_abs = f_abs_new;
-            if (*step_im_im < 0.9L) {
-                *step_im_im /= step_increase;
-            }
+
+            *step_re_re /= step_increase;
+            *step_im_re /= step_increase;
+            *step_re_im /= step_increase;
+            *step_im_im /= step_increase;
+
+            accepted += 1;
             break;
         }
     }
 
     // Обновляем выходное значение |f|
+    det_eval(*kz, *sz, &f_re, &f_im);
+    f_abs = MENDRIVE_SQRT(f_re * f_re + f_im * f_im);
     *f_abs_out = f_abs;
 
     // Проверка сходимости по дельтам
-    if (fabsl(delta_re_re) < delta_eps &&
-        fabsl(delta_im_re) < delta_eps &&
-        fabsl(delta_re_im) < delta_eps &&
-        fabsl(delta_im_im) < delta_eps) {
+    if (MENDRIVE_FABS(delta_re_re) < delta_eps &&
+        MENDRIVE_FABS(delta_im_re) < delta_eps &&
+        MENDRIVE_FABS(delta_re_im) < delta_eps &&
+        MENDRIVE_FABS(delta_im_im) < delta_eps) {
+        MPREC_LOG_INFO("Сошлось по дельтам: |Δ| < " MPREC_LOG_FMT_SCALAR "", delta_eps);
         return 1; // converged by delta
     }
 
     // Проверка сходимости по |f| после всех шагов
     if (f_abs < f_abs_eps) {
+        MPREC_LOG_INFO("Сошлось по |f|: |f| = " MPREC_LOG_FMT_SCALAR " < " MPREC_LOG_FMT_SCALAR "", f_abs, f_abs_eps);
         return 2; // converged by |f|
     }
 
+    if (0 == accepted) {
+        MPREC_LOG_INFO("no accepted steps");
+        return -2;
+    }
+
+    MPREC_LOG_DEBUG("Итерация завершена: |f| = " MPREC_LOG_FMT_SCALAR "\n", f_abs);
     return 0; // continue iterations
 }

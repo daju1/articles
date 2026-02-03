@@ -12,7 +12,7 @@ int det_system(const gsl_vector *x, void *params, gsl_vector *f) {
     long double kz = (long double) gsl_vector_get(x, 0);
     long double sz = (long double) gsl_vector_get(x, 1);
 
-    long double re, im;
+    mendrive_scalar_t re, im;
     det_eval(kz, sz, &re, &im);
 
     gsl_vector_set(f, 0, (double)re);  // f₁ = Re(det)

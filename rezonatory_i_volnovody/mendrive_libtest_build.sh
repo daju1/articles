@@ -1,3 +1,25 @@
+#     # Выбор флагов компиляции
+#     if precision == 'float128':
+#         define_flag = "-DARITH_FLOAT128"
+#         extra_libs = "-lquadmath"
+#     elif precision == 'mpfr_512':
+#         define_flag = "-DARITH_MPFR_512"
+#         extra_libs = "-lmpfr -lgmp"
+#     else:  # long_double
+#         define_flag = "-DARITH_LONG_DOUBLE"
+#         extra_libs = "-lm"
+
+#     if 'DEBUG' == loglevel:
+#         define_flag += ' -DMPREC_LOG_LEVEL=MPREC_LOG_LEVEL_DEBUG'
+#     elif 'TRACE' == lglevel:
+#         define_flag += ' --DMPREC_LOG_LEVEL=MPREC_LOG_LEVEL_TRACE'
+#     else:
+#         define_flag += '-DMPREC_LOG_LEVEL=MPREC_LOG_LEVEL_OFF'
+
+
+
+
+
 rm mendrive_libtest.so
 
 gcc -shared -fPIC -O3 -o mendrive_libtest.so \
@@ -13,7 +35,11 @@ gcc -shared -fPIC -O3 -o mendrive_libtest.so \
         -I../vimaniks/gsl/local/include \
         -L../vimaniks/gsl/local/lib \
         -DLOGGING -DKY \
+        -DARITH_FLOAT128 \
+        -DMPREC_LOG_LEVEL=MPREC_LOG_LEVEL_TRACE \
         -Wl,-rpath='$ORIGIN/../vimaniks/gsl/local/lib' \
-        -lgsl -lgslcblas -lm
+        -lgsl -lgslcblas -lm -lquadmath
 
-gcc mendrive_libtest.c -DKY -ldl -o mendrive_libtest
+gcc mendrive_libtest.c -DKY -DARITH_FLOAT128 \
+        -DMPREC_LOG_LEVEL=MPREC_LOG_LEVEL_TRACE \
+        -ldl  -lm -lquadmath -o mendrive_libtest

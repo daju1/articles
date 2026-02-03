@@ -7,14 +7,7 @@
  * - det_div_diff_kz_eval: вычисление f(kz,sz) / (df/dkz)
  * - det_div_diff_sz_eval: вычисление f(kz,sz) / (df/dsz)
  */
-void det_eval(long double kz, long double sz,
-              long double *re, long double *im);
 
-void det_div_diff_kz_eval(long double kz, long double sz,
-                          long double *re, long double *im);
-
-void det_div_diff_sz_eval(long double kz, long double sz,
-                          long double *re, long double *im);
 
 /**
  * newton_adaptive_step - один шаг адаптивного метода Ньютона
@@ -40,15 +33,14 @@ void det_div_diff_sz_eval(long double kz, long double sz,
  *    2 : сходимость по |f|
  */
 int newton_adaptive_step(
-    long double *kz, long double *sz,
-    long double *step_re_re, long double *step_im_re,
-    long double *step_re_im, long double *step_im_im,
-    long double *f_abs_out,
-    long double abs_m,
-    long double step_decrease,
-    long double step_increase,
-    long double delta_eps,
-    long double f_abs_eps,
+    mendrive_scalar_t *kz, mendrive_scalar_t *sz,
+    mendrive_scalar_t *step_re_re, mendrive_scalar_t *step_im_re,
+    mendrive_scalar_t *step_re_im, mendrive_scalar_t *step_im_im,
+    mendrive_scalar_t *f_abs_out,
+    mendrive_scalar_t step_decrease,
+    mendrive_scalar_t step_increase,
+    mendrive_scalar_t delta_eps,
+    mendrive_scalar_t f_abs_eps,
     int max_retries
 );
 

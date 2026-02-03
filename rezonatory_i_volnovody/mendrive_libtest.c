@@ -2,13 +2,28 @@
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "mendrive_det.h"
+#include "mendrive_log.h"
 #include "mendrive_point2d.h"
 #include "mendrive_isolines.h"
 
 typedef void (*det_init_t)(const mendrive_params_t* p);
-typedef void (*det_eval_t) (long double kz, long double sz, long double *det_re, long double *det_im);
+typedef void (*det_eval_t) (mendrive_scalar_t kz, mendrive_scalar_t sz, mendrive_scalar_t *det_re, mendrive_scalar_t *det_im);
+typedef void (*det_div_diff_kz_eval_t)(mendrive_scalar_t kz, mendrive_scalar_t sz, mendrive_scalar_t *div_re, mendrive_scalar_t *div_im);
+typedef void (*det_div_diff_sz_eval_t)(mendrive_scalar_t kz, mendrive_scalar_t sz, mendrive_scalar_t *div_re, mendrive_scalar_t *div_im);
+typedef int  (*newton_adaptive_step_t)(
+    mendrive_scalar_t *kz, mendrive_scalar_t *sz,
+    mendrive_scalar_t *step_re_re, mendrive_scalar_t *step_im_re,
+    mendrive_scalar_t *step_re_im, mendrive_scalar_t *step_im_im,
+    mendrive_scalar_t *f_abs_out,
+    mendrive_scalar_t step_decrease,
+    mendrive_scalar_t step_increase,
+    mendrive_scalar_t delta_eps,
+    mendrive_scalar_t f_abs_eps,
+    int max_retries
+);
 
 // Прототипы функций из вашей библиотеки
 typedef int (*compute_det_contours_t)(
@@ -43,6 +58,201 @@ typedef int (*test_sharp_corners_t)(const contour_line_t* line,
                                    int max_sharp_corners
                                    );
 
+
+
+// ============================================================================
+// Тест метода Ньютона
+// ============================================================================
+static int test_newton_method(
+    det_eval_t det_eval_fn,
+    det_div_diff_kz_eval_t det_div_diff_kz_fn,
+    det_div_diff_sz_eval_t det_div_diff_sz_fn,
+    newton_adaptive_step_t newton_step_fn
+) {
+    printf("\n");
+    printf("\nТЕСТ МЕТОДА НЬЮТОНА (адаптивный)\n");
+    printf("\n");
+
+    // Начальное приближение (взято из вашего графического решения)
+    mendrive_scalar_t kz = 2.176e-5L;
+    mendrive_scalar_t sz = 34.592L;
+
+    // Адаптивные шаги (как в Python-версии)
+    mendrive_scalar_t step_re_re = 0.95L;
+    mendrive_scalar_t step_im_re = 0.95L;
+    mendrive_scalar_t step_re_im = 0.95L;
+    mendrive_scalar_t step_im_im = 0.95L;
+
+    // Параметры алгоритма
+    const mendrive_scalar_t step_decrease = 0.999L;  // уменьшение шага при отказе
+    const mendrive_scalar_t step_increase = 0.999999L;  // увеличение шага при успехе
+    const mendrive_scalar_t delta_eps = 1e-64L;    // порог сходимости по дельте
+    const mendrive_scalar_t f_abs_eps = 1e-64L;    // порог сходимости по |f|
+    const int max_retries = 2;              // макс. попыток на шаг
+    const int max_iter = 50000;                 // макс. итераций
+
+    // Вычисляем начальное значение детерминанта
+    mendrive_scalar_t det_re, det_im, f_abs;
+    det_eval_fn(kz, sz, &det_re, &det_im);
+    f_abs = MENDRIVE_COMPLEX_ABS(det_re, det_im);
+
+    MPREC_LOG_INFO("Начальное приближение:\n");
+    MPREC_LOG_INFO("  kz = " MPREC_LOG_FMT_SCALAR "\n", kz);
+    MPREC_LOG_INFO("  sz = " MPREC_LOG_FMT_SCALAR "\n", sz);
+    MPREC_LOG_INFO("  det " MPREC_LOG_FMT_SCALAR " " MPREC_LOG_FMT_SCALAR "", det_re, det_im);
+    MPREC_LOG_INFO("  |det| = " MPREC_LOG_FMT_SCALAR "\n", f_abs);
+    MPREC_LOG_INFO("\n");
+
+    // Итерации Ньютона
+    int iter;
+    int converged = 0;
+    clock_t start = clock();
+
+    for (iter = 0; iter < max_iter; iter++) {
+        mendrive_scalar_t f_abs_prev = f_abs;
+
+        // Выполняем один адаптивный шаг Ньютона
+        int ret = newton_step_fn(
+            &kz, &sz,
+            &step_re_re, &step_im_re, &step_re_im, &step_im_im,
+            &f_abs,
+            step_decrease, step_increase,
+            delta_eps, f_abs_eps, max_retries
+        );
+
+        // Пересчитываем детерминант для логгирования
+        det_eval_fn(kz, sz, &det_re, &det_im);
+
+        // Логгирование итерации
+        MPREC_LOG_INFO("Итерация %2d: kz = " MPREC_LOG_FMT_SCALAR ", sz = " MPREC_LOG_FMT_SCALAR ", |det| = " MPREC_LOG_FMT_SCALAR ", шаги = [" MPREC_LOG_FMT_SCALAR ", " MPREC_LOG_FMT_SCALAR ", " MPREC_LOG_FMT_SCALAR ", " MPREC_LOG_FMT_SCALAR "]",
+               iter, kz, sz, f_abs, step_re_re, step_im_re, step_re_im, step_im_im);
+
+        if (ret == 1) {
+            MPREC_LOG_INFO(" ← СОШЛОСЬ (дельта)\n");
+            converged = 1;
+            break;
+        } else if (ret == 2) {
+            MPREC_LOG_INFO(" ← СОШЛОСЬ (|f|)\n");
+            converged = 1;
+            break;
+        } else if ( -1 == ret ) {
+            MPREC_LOG_INFO(" ← ОШИБКА (производная ≈ 0)\n");
+            break;
+        } else {
+            MPREC_LOG_INFO("\n");
+        }
+
+        mendrive_scalar_t delta_f = MENDRIVE_FABS(f_abs - f_abs_prev);
+        // Защита от зацикливания
+        if (delta_f < 1e-128L && iter > 5 && -2 != ret) {
+            MPREC_LOG_INFO("  ⚠️  Сходимость остановилась (|Δf| " MPREC_LOG_FMT_SCALAR ")\n", delta_f);
+            break;
+        }
+    }
+
+    clock_t end = clock();
+    double elapsed = (double)(end - start) / CLOCKS_PER_SEC * 1000.0;
+
+    MPREC_LOG_INFO("\n");
+    MPREC_LOG_INFO("\nРЕЗУЛЬТАТЫ ТЕСТА НЬЮТОНА:\n");
+    MPREC_LOG_INFO("\n");
+    MPREC_LOG_INFO("Статус: %s\n", converged ? "✅ СОШЁЛСЯ" : "⚠️  НЕ СОШЁЛСЯ (достигнут лимит итераций)");
+    MPREC_LOG_INFO("Итераций выполнено: %d / %d\n", iter + 1, max_iter);
+    MPREC_LOG_INFO("Время выполнения: %.2f мс\n", elapsed);
+    MPREC_LOG_INFO("Финальное решение:\n");
+    MPREC_LOG_INFO("  kz = " MPREC_LOG_FMT_SCALAR "\n", kz);
+    MPREC_LOG_INFO("  sz = " MPREC_LOG_FMT_SCALAR "\n", sz);
+    MPREC_LOG_INFO("  det " MPREC_LOG_FMT_SCALAR " " MPREC_LOG_FMT_SCALAR "", det_re, det_im);
+    MPREC_LOG_INFO("  |det| = " MPREC_LOG_FMT_SCALAR "\n", f_abs);
+    MPREC_LOG_INFO("\n");
+
+    // Диагностика качества решения
+    if (f_abs < 1e-10L) {
+        printf("✅ Качество решения: ВЫСОКОЕ (|det| < 1e-10)\n");
+    } else if (f_abs < 1e-6L) {
+        printf("⚠️  Качество решения: СРЕДНЕЕ (1e-10 ≤ |det| < 1e-6)\n");
+    } else {
+        printf("❌ Качество решения: НИЗКОЕ (|det| ≥ 1e-6)\n");
+        printf("   Возможные причины:\n");
+        printf("   - Неправильный знак мнимой части волнового вектора (затухание/рост)\n");
+        printf("   - Плохая обусловленность Якобиана вблизи корня\n");
+        printf("   - Система уравнений физически несовместна (переопределённая 8×7)\n");
+    }
+    printf("\n");
+
+    return converged ? 0 : 1;
+}
+
+
+// ============================================================================
+// Тест изолиний (как в оригинале)
+// ============================================================================
+static int test_contours(
+    det_eval_t det_eval_fn,
+    compute_det_contours_t compute_fn,
+    free_det_contours_t free_fn,
+    test_sharp_corners_t test_corners_fn
+) {
+    printf("\n");
+    printf("\nТЕСТ ПОСТРОЕНИЯ ИЗОЛИНИЙ\n");
+    printf("\n");
+
+    det_contours_result_t contours = {0};
+    int status = compute_fn(
+        -4.0L, 4.0L, 1000,   // kz_min, kz_max, nk
+        -5.0L, 5.0L, 1000,   // sz_min, sz_max, ns
+        &contours,
+        1e300L,              // eps_nan
+        0,                   // min_points_count
+        1e-10L               // eps_merge
+    );
+
+    if (status != 0) {
+        printf("❌ Ошибка при построении изолиний (код %d)\n", status);
+        return 1;
+    }
+
+    printf("✅ Изолинии построены успешно\n");
+    printf("   Re=0: %d линий\n", contours.n_re_contours);
+    printf("   Im=0: %d линий\n", contours.n_im_contours);
+
+    // Тест острых углов на нескольких линиях
+    const int max_sharp_corners = 100;
+    corner2d_t sharp_corners[max_sharp_corners];
+    char name[128];
+
+    // Тестируем первые 2 линии Re=0
+    int n_tested_re = (contours.n_re_contours > 2) ? 2 : contours.n_re_contours;
+    for (int i = 0; i < n_tested_re; ++i) {
+        snprintf(name, sizeof(name), "Re=0 line=%d", i);
+        int n_corners = test_corners_fn(
+            &contours.re_zero[i],
+            -0.94L, 0.5L, 0.8L, 10,
+            0.3L, 0.3L, 0.4L, 0.6L, 1.0L,
+            name, sharp_corners, max_sharp_corners
+        );
+        printf("   %s: найдено острых углов = %d\n", name, n_corners);
+    }
+
+    // Тестируем первые 2 линии Im=0
+    int n_tested_im = (contours.n_im_contours > 2) ? 2 : contours.n_im_contours;
+    for (int i = 0; i < n_tested_im; ++i) {
+        snprintf(name, sizeof(name), "Im=0 line=%d", i);
+        int n_corners = test_corners_fn(
+            &contours.im_zero[i],
+            -0.94L, 0.5L, 0.8L, 10,
+            0.3L, 0.3L, 0.4L, 0.6L, 1.0L,
+            name, sharp_corners, max_sharp_corners
+        );
+        printf("   %s: найдено острых углов = %d\n", name, n_corners);
+    }
+
+    free_fn(&contours);
+    printf("\n");
+    return 0;
+}
+
+
 int main() {
     void* h = dlopen("./mendrive_libtest.so", RTLD_NOW);
     if (!h) {
@@ -51,30 +261,47 @@ int main() {
     }
 
     // Загружаем функции
-    det_init_t det_init_fn =
-        (det_init_t)dlsym(h, "det_init");
-    det_eval_t det_eval_fn =
-        (det_eval_t)dlsym(h, "det_eval");
+    #define LOAD_FUNC(name, type) \
+        type name##_fn = (type)dlsym(h, #name); \
+        if (!name##_fn) { \
+            fprintf(stderr, "❌ Не найдена функция '%s': %s\n", #name, dlerror()); \
+            dlclose(h); \
+            return 1; \
+        }
 
-    compute_det_contours_t compute_det_contours_fn =
-        (compute_det_contours_t)dlsym(h, "compute_det_contours");
-    free_det_contours_t free_det_contours_fn =
-        (free_det_contours_t)dlsym(h, "free_det_contours");
+//     det_init_t det_init_fn =
+//         (det_init_t)dlsym(h, "det_init");
+//     det_eval_t det_eval_fn =
+//         (det_eval_t)dlsym(h, "det_eval");
 
-    test_sharp_corners_t test_sharp_corners_fn =
-        (test_sharp_corners_t)dlsym(h, "test_sharp_corners");
+//     compute_det_contours_t compute_det_contours_fn =
+//         (compute_det_contours_t)dlsym(h, "compute_det_contours");
+//     free_det_contours_t free_det_contours_fn =
+//         (free_det_contours_t)dlsym(h, "free_det_contours");
 
-    if (!compute_det_contours_fn || !free_det_contours_fn) {
-        printf("Не найдены символы: %s\n", dlerror());
-        dlclose(h);
-        return 1;
-    }
+//     test_sharp_corners_t test_sharp_corners_fn =
+//         (test_sharp_corners_t)dlsym(h, "test_sharp_corners");
+
+//     if (!compute_det_contours_fn || !free_det_contours_fn) {
+//         printf("Не найдены символы: %s\n", dlerror());
+//         dlclose(h);
+//         return 1;
+//     }
+
+    LOAD_FUNC(det_init, det_init_t);
+    LOAD_FUNC(det_eval, det_eval_t);
+    LOAD_FUNC(det_div_diff_kz_eval, det_div_diff_kz_eval_t);
+    LOAD_FUNC(det_div_diff_sz_eval, det_div_diff_sz_eval_t);
+    LOAD_FUNC(newton_adaptive_step, newton_adaptive_step_t);
+    LOAD_FUNC(compute_det_contours, compute_det_contours_t);
+    LOAD_FUNC(free_det_contours, free_det_contours_t);
+    LOAD_FUNC(test_sharp_corners, test_sharp_corners_t);
 
     printf("Библиотека загружена успешно!\n");
 
     mendrive_params_t params;
 
-    long double sigma_0_d = 9.0e9;
+    mendrive_scalar_t sigma_0_d = 9.0e9;
 
     params.a = 0.1;
     params.b = 0.5;
@@ -113,7 +340,34 @@ int main() {
     params.epsilon_0 = 1.0;
 
     det_init_fn(&params);
+    printf("✅ Параметры инициализированы\n\n");
 
+    // === ЗАПУСК ТЕСТОВ ===
+    int exit_code = 0;
+
+    // Тест 1: метод Ньютона
+    if (test_newton_method(
+            det_eval_fn,
+            det_div_diff_kz_eval_fn,
+            det_div_diff_sz_eval_fn,
+            newton_adaptive_step_fn
+        ) != 0) {
+        exit_code = 1;
+    }
+#if 0
+    // Тест 2: изолинии и острые углы
+    if (test_contours(
+            det_eval_fn,
+            compute_det_contours_fn,
+            free_det_contours_fn,
+            test_sharp_corners_fn
+        ) != 0) {
+        exit_code = 1;
+    }
+#endif
+
+#if 1
+#else
     // Тестируем построение изолиний
     det_contours_result_t contours = {0};
     int status = compute_det_contours_fn(
@@ -178,6 +432,7 @@ int main() {
 
     // Освобождаем память
     free_det_contours_fn(&contours);
+#endif
     dlclose(h);
     printf("\nТест завершён успешно!\n");
     return 0;

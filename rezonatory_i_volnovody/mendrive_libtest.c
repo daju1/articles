@@ -13,6 +13,11 @@ typedef void (*det_init_t)(const mendrive_params_t* p);
 typedef void (*det_eval_t) (mendrive_scalar_t kz, mendrive_scalar_t sz, mendrive_scalar_t *det_re, mendrive_scalar_t *det_im);
 typedef void (*det_div_diff_kz_eval_t)(mendrive_scalar_t kz, mendrive_scalar_t sz, mendrive_scalar_t *div_re, mendrive_scalar_t *div_im);
 typedef void (*det_div_diff_sz_eval_t)(mendrive_scalar_t kz, mendrive_scalar_t sz, mendrive_scalar_t *div_re, mendrive_scalar_t *div_im);
+
+int (*solve_newton_root_t)(double *kz_guess, double *sz_guess,
+                      double *kz_sol, double *sz_sol,
+                      double epsabs, int max_iter);
+
 typedef int  (*newton_adaptive_step_t)(
     mendrive_scalar_t *kz, mendrive_scalar_t *sz,
     mendrive_scalar_t *step_re_re, mendrive_scalar_t *step_im_re,
@@ -23,6 +28,19 @@ typedef int  (*newton_adaptive_step_t)(
     mendrive_scalar_t delta_eps,
     mendrive_scalar_t f_abs_eps,
     int max_retries
+);
+
+typedef int (*newton_adaptive_t) (
+    mendrive_scalar_t *kz,
+    mendrive_scalar_t *sz
+);
+
+/**
+ * Solve with verbose output
+ */
+typedef int (*newton_classic_solve_verbose_t) (
+    mendrive_scalar_t* kz_inout,
+    mendrive_scalar_t* sz_inout
 );
 
 // Прототипы функций из вашей библиотеки
@@ -58,17 +76,10 @@ typedef int (*test_sharp_corners_t)(const contour_line_t* line,
                                    int max_sharp_corners
                                    );
 
-
-
 // ============================================================================
 // Тест метода Ньютона
 // ============================================================================
-static int test_newton_method(
-    det_eval_t det_eval_fn,
-    det_div_diff_kz_eval_t det_div_diff_kz_fn,
-    det_div_diff_sz_eval_t det_div_diff_sz_fn,
-    newton_adaptive_step_t newton_step_fn
-) {
+int test_newton_method(newton_adaptive_t newton_adaptive_fn) {
     printf("\n");
     printf("\nТЕСТ МЕТОДА НЬЮТОНА (адаптивный)\n");
     printf("\n");
@@ -77,112 +88,20 @@ static int test_newton_method(
     mendrive_scalar_t kz = 2.176e-5L;
     mendrive_scalar_t sz = 34.592L;
 
-    // Адаптивные шаги (как в Python-версии)
-    mendrive_scalar_t step_re_re = 0.95L;
-    mendrive_scalar_t step_im_re = 0.95L;
-    mendrive_scalar_t step_re_im = 0.95L;
-    mendrive_scalar_t step_im_im = 0.95L;
-
-    // Параметры алгоритма
-    const mendrive_scalar_t step_decrease = 0.999L;  // уменьшение шага при отказе
-    const mendrive_scalar_t step_increase = 0.999999L;  // увеличение шага при успехе
-    const mendrive_scalar_t delta_eps = 1e-64L;    // порог сходимости по дельте
-    const mendrive_scalar_t f_abs_eps = 1e-64L;    // порог сходимости по |f|
-    const int max_retries = 2;              // макс. попыток на шаг
-    const int max_iter = 50000;                 // макс. итераций
-
-    // Вычисляем начальное значение детерминанта
-    mendrive_scalar_t det_re, det_im, f_abs;
-    det_eval_fn(kz, sz, &det_re, &det_im);
-    f_abs = MENDRIVE_COMPLEX_ABS(det_re, det_im);
-
-    MPREC_LOG_INFO("Начальное приближение:\n");
-    MPREC_LOG_INFO("  kz = " MPREC_LOG_FMT_SCALAR "\n", kz);
-    MPREC_LOG_INFO("  sz = " MPREC_LOG_FMT_SCALAR "\n", sz);
-    MPREC_LOG_INFO("  det " MPREC_LOG_FMT_SCALAR " " MPREC_LOG_FMT_SCALAR "", det_re, det_im);
-    MPREC_LOG_INFO("  |det| = " MPREC_LOG_FMT_SCALAR "\n", f_abs);
-    MPREC_LOG_INFO("\n");
-
-    // Итерации Ньютона
-    int iter;
-    int converged = 0;
-    clock_t start = clock();
-
-    for (iter = 0; iter < max_iter; iter++) {
-        mendrive_scalar_t f_abs_prev = f_abs;
-
-        // Выполняем один адаптивный шаг Ньютона
-        int ret = newton_step_fn(
-            &kz, &sz,
-            &step_re_re, &step_im_re, &step_re_im, &step_im_im,
-            &f_abs,
-            step_decrease, step_increase,
-            delta_eps, f_abs_eps, max_retries
-        );
-
-        // Пересчитываем детерминант для логгирования
-        det_eval_fn(kz, sz, &det_re, &det_im);
-
-        // Логгирование итерации
-        MPREC_LOG_INFO("Итерация %2d: kz = " MPREC_LOG_FMT_SCALAR ", sz = " MPREC_LOG_FMT_SCALAR ", |det| = " MPREC_LOG_FMT_SCALAR ", шаги = [" MPREC_LOG_FMT_SCALAR ", " MPREC_LOG_FMT_SCALAR ", " MPREC_LOG_FMT_SCALAR ", " MPREC_LOG_FMT_SCALAR "]",
-               iter, kz, sz, f_abs, step_re_re, step_im_re, step_re_im, step_im_im);
-
-        if (ret == 1) {
-            MPREC_LOG_INFO(" ← СОШЛОСЬ (дельта)\n");
-            converged = 1;
-            break;
-        } else if (ret == 2) {
-            MPREC_LOG_INFO(" ← СОШЛОСЬ (|f|)\n");
-            converged = 1;
-            break;
-        } else if ( -1 == ret ) {
-            MPREC_LOG_INFO(" ← ОШИБКА (производная ≈ 0)\n");
-            break;
-        } else {
-            MPREC_LOG_INFO("\n");
-        }
-
-        mendrive_scalar_t delta_f = MENDRIVE_FABS(f_abs - f_abs_prev);
-        // Защита от зацикливания
-        if (delta_f < 1e-128L && iter > 5 && -2 != ret) {
-            MPREC_LOG_INFO("  ⚠️  Сходимость остановилась (|Δf| " MPREC_LOG_FMT_SCALAR ")\n", delta_f);
-            break;
-        }
-    }
-
-    clock_t end = clock();
-    double elapsed = (double)(end - start) / CLOCKS_PER_SEC * 1000.0;
-
-    MPREC_LOG_INFO("\n");
-    MPREC_LOG_INFO("\nРЕЗУЛЬТАТЫ ТЕСТА НЬЮТОНА:\n");
-    MPREC_LOG_INFO("\n");
-    MPREC_LOG_INFO("Статус: %s\n", converged ? "✅ СОШЁЛСЯ" : "⚠️  НЕ СОШЁЛСЯ (достигнут лимит итераций)");
-    MPREC_LOG_INFO("Итераций выполнено: %d / %d\n", iter + 1, max_iter);
-    MPREC_LOG_INFO("Время выполнения: %.2f мс\n", elapsed);
-    MPREC_LOG_INFO("Финальное решение:\n");
-    MPREC_LOG_INFO("  kz = " MPREC_LOG_FMT_SCALAR "\n", kz);
-    MPREC_LOG_INFO("  sz = " MPREC_LOG_FMT_SCALAR "\n", sz);
-    MPREC_LOG_INFO("  det " MPREC_LOG_FMT_SCALAR " " MPREC_LOG_FMT_SCALAR "", det_re, det_im);
-    MPREC_LOG_INFO("  |det| = " MPREC_LOG_FMT_SCALAR "\n", f_abs);
-    MPREC_LOG_INFO("\n");
-
-    // Диагностика качества решения
-    if (f_abs < 1e-10L) {
-        printf("✅ Качество решения: ВЫСОКОЕ (|det| < 1e-10)\n");
-    } else if (f_abs < 1e-6L) {
-        printf("⚠️  Качество решения: СРЕДНЕЕ (1e-10 ≤ |det| < 1e-6)\n");
-    } else {
-        printf("❌ Качество решения: НИЗКОЕ (|det| ≥ 1e-6)\n");
-        printf("   Возможные причины:\n");
-        printf("   - Неправильный знак мнимой части волнового вектора (затухание/рост)\n");
-        printf("   - Плохая обусловленность Якобиана вблизи корня\n");
-        printf("   - Система уравнений физически несовместна (переопределённая 8×7)\n");
-    }
-    printf("\n");
-
-    return converged ? 0 : 1;
+    return newton_adaptive_fn(&kz, &sz);
 }
 
+int test_newton_classic_method_verbose(newton_classic_solve_verbose_t newton_classic_solve_verbose_fn) {
+    printf("\n");
+    printf("\nТЕСТ МЕТОДА НЬЮТОНА (classic verbose)\n");
+    printf("\n");
+
+    // Начальное приближение (взято из вашего графического решения)
+    mendrive_scalar_t kz = 2.176e-5L;
+    mendrive_scalar_t sz = 34.592L;
+
+    return newton_classic_solve_verbose_fn(&kz, &sz);
+}
 
 // ============================================================================
 // Тест изолиний (как в оригинале)
@@ -292,7 +211,10 @@ int main() {
     LOAD_FUNC(det_eval, det_eval_t);
     LOAD_FUNC(det_div_diff_kz_eval, det_div_diff_kz_eval_t);
     LOAD_FUNC(det_div_diff_sz_eval, det_div_diff_sz_eval_t);
+    LOAD_FUNC(solve_newton_root, solve_newton_root_t);
     LOAD_FUNC(newton_adaptive_step, newton_adaptive_step_t);
+    LOAD_FUNC(newton_adaptive, newton_adaptive_t);
+    LOAD_FUNC(newton_classic_solve_verbose, newton_classic_solve_verbose_t);
     LOAD_FUNC(compute_det_contours, compute_det_contours_t);
     LOAD_FUNC(free_det_contours, free_det_contours_t);
     LOAD_FUNC(test_sharp_corners, test_sharp_corners_t);
@@ -347,13 +269,13 @@ int main() {
 
     // Тест 1: метод Ньютона
     if (test_newton_method(
-            det_eval_fn,
-            det_div_diff_kz_eval_fn,
-            det_div_diff_sz_eval_fn,
-            newton_adaptive_step_fn
+            newton_adaptive_fn
         ) != 0) {
         exit_code = 1;
     }
+
+    test_newton_classic_method_verbose(newton_classic_solve_verbose_fn);
+
 #if 0
     // Тест 2: изолинии и острые углы
     if (test_contours(

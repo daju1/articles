@@ -207,10 +207,28 @@ typedef struct {
 
     void det_init(const mendrive_params_t* p);
 
-    void det_eval(
+    void det_eval_old(
         mendrive_scalar_t kz, mendrive_scalar_t sz,
         mendrive_scalar_t* det_re, mendrive_scalar_t* det_im
     );
+
+    void K_E_v_eval(mendrive_scalar_t kz, mendrive_scalar_t sz,
+        mendrive_complex_t *K_E_vacuum);
+    void K_H_v_eval(mendrive_scalar_t kz, mendrive_scalar_t sz,
+        mendrive_complex_t *K_H_vacuum);
+
+    void K_E_l_eval(mendrive_scalar_t kz, mendrive_scalar_t sz,
+        mendrive_complex_t *K_E_left_conductor);
+    void K_H_l_eval(mendrive_scalar_t kz, mendrive_scalar_t sz,
+        mendrive_complex_t *K_H_left_conductor);
+
+    void K_E_r_eval(mendrive_scalar_t kz, mendrive_scalar_t sz,
+        mendrive_complex_t *K_E_right_conductor) ;
+    void K_H_r_eval(mendrive_scalar_t kz, mendrive_scalar_t sz,
+        mendrive_complex_t *K_H_right_conductor);
+
+    void det_eval(mendrive_scalar_t kz, mendrive_scalar_t sz,
+        mendrive_scalar_t *det_re, mendrive_scalar_t *det_im);
 
     void det_div_diff_kz_eval(
         mendrive_scalar_t kz, mendrive_scalar_t sz,

@@ -272,7 +272,7 @@ int newton_adaptive(
     const mendrive_scalar_t delta_eps = 1e-64L;         // порог сходимости по дельте
     const mendrive_scalar_t f_abs_eps = 1e-64L;         // порог сходимости по |f|
     const int max_retries = 5;                          // макс. попыток на шаг
-    const int max_iter = 50000;                         // макс. итераций
+    const int max_iter = 100;                           // макс. итераций
 
     // Вычисляем начальное значение детерминанта
     mendrive_scalar_t det_re, det_im, f_abs;

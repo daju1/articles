@@ -11,8 +11,24 @@
 
 typedef void (*det_init_t)(const mendrive_params_t* p);
 typedef void (*det_eval_t) (mendrive_scalar_t kz, mendrive_scalar_t sz, mendrive_scalar_t *det_re, mendrive_scalar_t *det_im);
+typedef void (*det_eval_old_t) (mendrive_scalar_t kz, mendrive_scalar_t sz, mendrive_scalar_t *det_re, mendrive_scalar_t *det_im);
 typedef void (*det_div_diff_kz_eval_t)(mendrive_scalar_t kz, mendrive_scalar_t sz, mendrive_scalar_t *div_re, mendrive_scalar_t *div_im);
 typedef void (*det_div_diff_sz_eval_t)(mendrive_scalar_t kz, mendrive_scalar_t sz, mendrive_scalar_t *div_re, mendrive_scalar_t *div_im);
+
+typedef void (*K_E_v_eval_t)(mendrive_scalar_t kz, mendrive_scalar_t sz,
+        mendrive_complex_t *K_E_vacuum);
+typedef void (*K_H_v_eval_t)(mendrive_scalar_t kz, mendrive_scalar_t sz,
+        mendrive_complex_t *K_H_vacuum);
+
+typedef void (*K_E_l_eval_t)(mendrive_scalar_t kz, mendrive_scalar_t sz,
+        mendrive_complex_t *K_E_left_conductor);
+typedef void (*K_H_l_eval_t)(mendrive_scalar_t kz, mendrive_scalar_t sz,
+        mendrive_complex_t *K_H_left_conductor);
+
+typedef void (*K_E_r_eval_t)(mendrive_scalar_t kz, mendrive_scalar_t sz,
+        mendrive_complex_t *K_E_right_conductor) ;
+typedef void (*K_H_r_eval_t)(mendrive_scalar_t kz, mendrive_scalar_t sz,
+        mendrive_complex_t *K_H_right_conductor);
 
 int (*solve_newton_root_t)(double *kz_guess, double *sz_guess,
                       double *kz_sol, double *sz_sol,
@@ -75,6 +91,28 @@ typedef int (*test_sharp_corners_t)(const contour_line_t* line,
                                    corner2d_t* sharp_corners,
                                    int max_sharp_corners
                                    );
+
+// ============================================================================
+// Тест метода Ньютона
+// ============================================================================
+int test_det_eval(det_eval_t det_eval_fn, det_eval_old_t det_eval_old_fn) {
+    printf("\n");
+    printf("\nТЕСТ det_eval (адаптивный)\n");
+    printf("\n");
+
+    // Начальное приближение (взято из вашего графического решения)
+    mendrive_scalar_t kz = 2.176e-5L;
+    mendrive_scalar_t sz = 34.592L;
+
+    mendrive_scalar_t det_re;
+    mendrive_scalar_t det_im;
+
+    det_eval_old_fn(kz, sz, &det_re, &det_im);
+    printf("det_old = " MPREC_LOG_FMT_SCALAR " " MPREC_LOG_FMT_SCALAR "\n", det_re, det_im);
+
+    det_eval_fn(kz, sz, &det_re, &det_im);
+    printf("det = " MPREC_LOG_FMT_SCALAR " " MPREC_LOG_FMT_SCALAR "\n", det_re, det_im);
+}
 
 // ============================================================================
 // Тест метода Ньютона
@@ -209,9 +247,10 @@ int main() {
 
     LOAD_FUNC(det_init, det_init_t);
     LOAD_FUNC(det_eval, det_eval_t);
+    LOAD_FUNC(det_eval_old, det_eval_old_t);
     LOAD_FUNC(det_div_diff_kz_eval, det_div_diff_kz_eval_t);
     LOAD_FUNC(det_div_diff_sz_eval, det_div_diff_sz_eval_t);
-    LOAD_FUNC(solve_newton_root, solve_newton_root_t);
+//    LOAD_FUNC(solve_newton_root, solve_newton_root_t);
     LOAD_FUNC(newton_adaptive_step, newton_adaptive_step_t);
     LOAD_FUNC(newton_adaptive, newton_adaptive_t);
     LOAD_FUNC(newton_classic_solve_verbose, newton_classic_solve_verbose_t);
@@ -267,6 +306,7 @@ int main() {
     // === ЗАПУСК ТЕСТОВ ===
     int exit_code = 0;
 
+#if 1
     // Тест 1: метод Ньютона
     if (test_newton_method(
             newton_adaptive_fn
@@ -275,6 +315,9 @@ int main() {
     }
 
     test_newton_classic_method_verbose(newton_classic_solve_verbose_fn);
+#endif
+
+    test_det_eval(det_eval_fn, det_eval_old_fn);
 
 #if 0
     // Тест 2: изолинии и острые углы

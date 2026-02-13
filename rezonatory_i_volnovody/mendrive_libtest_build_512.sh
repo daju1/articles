@@ -31,6 +31,7 @@ gcc -shared -fPIC -O3 -o mendrive_libtest.so \
         mendrive_characteristic_roots.c \
         mendrive_root.c \
         mendrive_newton_512.c \
+        mendrive_newton_classic/mendrive_newton_classic.c \
         mendrive_linsolve.c \
         -I../vimaniks/gsl/local/include \
         -L../vimaniks/gsl/local/lib \

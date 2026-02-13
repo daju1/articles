@@ -253,6 +253,7 @@ SOURCES=(
     mendrive_characteristic_roots.c
     mendrive_root.c
     mendrive_newton.c
+    mendrive_newton_classic/mendrive_newton_classic.c
     mendrive_linsolve.c
 )
 

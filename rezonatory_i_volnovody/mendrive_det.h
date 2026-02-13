@@ -207,6 +207,11 @@ typedef struct {
 
     void det_init(const mendrive_params_t* p);
 
+    void get_sign_K(
+        int * sign_K_H_l_d, int * sign_K_E_l_d,
+        int * sign_K_H_r_d, int * sign_K_E_r_d
+    );
+
     void det_eval_old(
         mendrive_scalar_t kz, mendrive_scalar_t sz,
         mendrive_scalar_t* det_re, mendrive_scalar_t* det_im

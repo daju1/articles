@@ -12,8 +12,9 @@
  *   -DQNM  — enable QNM mode (omega search instead of kz/sz)
  */
 
-#include "newton_complex_classic.h"
 #include "../mendrive_det.h"
+#include "newton_complex_classic.h"
+#include "mendrive_newton_classic.h"
 
 #include <stdio.h>
 #include <stdlib.h>

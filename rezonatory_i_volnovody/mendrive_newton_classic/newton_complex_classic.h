@@ -443,4 +443,10 @@ static inline int newton_complex_solve(
     return NEWTON_MAX_ITER;
 }
 
+int solve_newton_root_classic(
+    mendrive_scalar_t kz0, mendrive_scalar_t sz0,
+    mendrive_scalar_t* kz_out, mendrive_scalar_t* sz_out,
+    mendrive_scalar_t* f_abs_out,
+    int max_iter);
+
 #endif /* NEWTON_COMPLEX_CLASSIC_H */

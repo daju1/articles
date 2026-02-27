@@ -1,0 +1,273 @@
+\documentclass[12pt]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{cite}
+
+\geometry{margin=1in}
+
+\title{Electron as a Precessing Magnetic Dipole: \\ Classical Model and Connection to Stern-Gerlach Experiment}
+\author{Alexey Drozdov}
+\date{27.02.2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This paper presents a classical model of the electron as a precessing magnetic dipole with internal structure. The model addresses the fundamental problem of spin without requiring superluminal rotation speeds. We derive equations of motion for the precessing dipole in inhomogeneous magnetic fields and demonstrate how this model explains the discrete outcomes observed in the Stern-Gerlach experiment. The analysis reveals additional stationary states beyond the conventional two, and establishes a correspondence between the classical parameters and quantum mechanical formalism (Dirac equation, Pauli matrices). The model provides a mechanistic interpretation of spin while avoiding the conceptual difficulties of point-particle quantum mechanics.
+\end{abstract}
+
+\section{Introduction}
+
+The Stern-Gerlach experiment (1922) demonstrated that atomic beams split into discrete components when passing through inhomogeneous magnetic fields. This result fundamentally contradicted classical electrodynamics, which predicted a continuous distribution of deflections. Quantum mechanics resolved this paradox by postulating intrinsic angular momentum (spin) with quantized projections.
+
+However, the quantum mechanical description of spin remains purely formal — it postulates rather than explains. The Dirac equation derives spin naturally from relativistic invariance, but offers no mechanical picture of what spin actually is.
+
+This paper proposes a classical model where the electron is treated as a precessing magnetic dipole with internal structure. This approach:
+\begin{itemize}
+\item Avoids superluminal rotation speeds that plague classical spinning sphere models
+\item Explains the two discrete states observed in Stern-Gerlach experiments
+\item Predicts additional stationary states under certain conditions
+\item Establishes correspondence with quantum mechanical formalism
+\end{itemize}
+
+\section{Classical Model of Precessing Magnetic Dipole}
+
+\subsection{Internal Structure}
+
+The electron is modeled as a magnetic dipole with effective moment of inertia $I_{\text{eff}}$ undergoing precession with angular velocity $\Omega$. The magnetic moment $\boldsymbol{\mu}$ is related to the kinetic moment of precession:
+
+\begin{equation}
+\boldsymbol{\mu} = \gamma \boldsymbol{L}_{\text{prec}}, \quad \boldsymbol{L}_{\text{prec}} = I_{\text{eff}} \boldsymbol{\Omega}
+\end{equation}
+
+where $\gamma$ is the gyromagnetic ratio.
+
+\subsection{Vector Potential of Electrostatic Field}
+
+A key insight of this model is that the electrostatic field of a point charge possesses a vector potential associated with rotating magnetic charges:
+
+\begin{equation}
+\vec{A}_E = -\frac{\cot\theta}{r} \, \vec{e}_\varphi
+\end{equation}
+
+This vector potential is connected to the internal rotation of magnetic charges within the electron structure and plays a crucial role in stabilizing the precession.
+
+\section{Dynamics in Inhomogeneous Magnetic Field}
+
+\subsection{Equations of Motion}
+
+The motion of a precessing dipole in an inhomogeneous field $\boldsymbol{B}(\boldsymbol{r})$ is governed by:
+
+\begin{equation}
+\frac{d\boldsymbol{\mu}}{dt} = \gamma \boldsymbol{\mu} \times \boldsymbol{B}(\boldsymbol{r})
+\end{equation}
+
+\begin{equation}
+\frac{d^2\boldsymbol{r}}{dt^2} = \frac{\mu}{m} \nabla(B \cos\theta)
+\end{equation}
+
+where $\theta$ is the angle between $\boldsymbol{\mu}$ and $\boldsymbol{B}$.
+
+\subsection{Effective Potential}
+
+The total energy of the system includes both potential energy in the magnetic field and kinetic energy of precession:
+
+\begin{equation}
+E_{\text{total}} = -\mu B \cos\theta + \frac{1}{2} I_{\text{eff}} \Omega^2 \sin^2\theta
+\end{equation}
+
+The first term represents magnetic interaction energy, while the second term represents the kinetic energy of precession.
+
+\subsection{Stationary States}
+
+Setting $\frac{dE_{\text{total}}}{d\theta} = 0$ yields:
+
+\begin{equation}
+\sin\theta \left( \mu B - I_{\text{eff}} \Omega^2 \cos\theta \right) = 0
+\end{equation}
+
+This equation has solutions:
+\begin{itemize}
+\item $\theta = 0, \pi$ (parallel and antiparallel states)
+\item $\cos\theta = \frac{\mu B}{I_{\text{eff}} \Omega^2}$ (additional states when $|\alpha| < 1$)
+\end{itemize}
+
+where $\alpha = \frac{\mu B}{I_{\text{eff}} \Omega^2}$.
+
+\section{Connection to Stern-Gerlach Experiment}
+
+\subsection{Standard Configuration}
+
+In the conventional Stern-Gerlach setup, the magnetic field gradient is parallel to the field direction. The force on the dipole is:
+
+\begin{equation}
+F_z = \mu_z \frac{\partial B_z}{\partial z} = \mu \cos\theta \frac{\partial B_z}{\partial z}
+\end{equation}
+
+The beam splits into components corresponding to discrete values of $\cos\theta$.
+
+\subsection{Perpendicular Configuration}
+
+A modified configuration with perpendicular field and gradient ($\boldsymbol{B} \parallel z$, $\nabla\boldsymbol{B} \parallel x$) presents a fundamental question: what defines the measurement axis?
+
+\begin{itemize}
+\item Field direction $\boldsymbol{B}$ determines quantization axis
+\item Gradient direction $\nabla\boldsymbol{B}$ determines spatial separation axis
+\end{itemize}
+
+In standard experiments, these axes coincide. However, in the perpendicular configuration, they differ, raising conceptual questions about the nature of quantum measurement.
+
+\subsection{Explanation of Two Spots}
+
+The classical model explains the two discrete spots through two stable stationary states:
+
+\begin{itemize}
+\item $\theta = 0$: Parallel state (energy minimum)
+\item $\theta = \pi$: Antiparallel state (stabilized by gyroscopic effect of precession)
+\end{itemize}
+
+The kinetic moment of precession provides gyroscopic stabilization that prevents the antiparallel state from flipping, unlike in simple classical models where it would be unstable.
+
+\section{Correspondence with Quantum Mechanics}
+
+\subsection{Pauli Matrices}
+
+The classical precession model establishes correspondence with Pauli matrix formalism:
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Pauli Matrix} & \textbf{Physical Meaning} & \textbf{Classical Analog} \\
+\hline
+$\sigma_z$ & Spin projection on $z$-axis & Angle $\theta$ of precession \\
+$\sigma_x, \sigma_y$ & Perpendicular components & Phase $\varphi$ of precession \\
+$\sigma^2 = 3$ & Total spin squared & Intensity of precession \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Dirac Equation}
+
+The effective Hamiltonian for the precessing dipole:
+
+\begin{equation}
+H_{\text{eff}} = \frac{p^2}{2m} - \boldsymbol{\mu} \cdot \boldsymbol{B} + \frac{1}{2} I_{\text{eff}} \Omega^2 \sin^2\theta + q\phi
+\end{equation}
+
+corresponds to the Dirac Hamiltonian when quantized. The matrices $\alpha$ and $\beta$ find interpretation:
+
+\begin{itemize}
+\item $\alpha^i$: Spatial rotation operators of the dipole
+\item $\beta$: Dipole flip operator (north $\leftrightarrow$ south)
+\end{itemize}
+
+\subsection{Parameter Correspondence}
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Quantum Parameter} & \textbf{Classical Analog} & \textbf{Physical Meaning} \\
+\hline
+$\hbar/2$ & $I_{\text{eff}} \Omega$ & Action quantum \\
+$\mu_B$ & $\mu$ & Magnetic moment \\
+$\gamma$ & $\mu/L_{\text{prec}}$ & Gyromagnetic ratio \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Additional Stationary States}
+
+\subsection{Bifurcation Diagram}
+
+The parameter $\alpha = \frac{\mu B}{I_{\text{eff}} \Omega^2}$ determines the number of stationary states:
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+$\alpha$ & \textbf{Stationary States} & \textbf{Physical Interpretation} \\
+\hline
+$\alpha > 1$ & $\theta = 0$ & Only parallel state \\
+$0 < \alpha < 1$ & $\theta = 0, \arccos\alpha, \pi - \arccos\alpha$ & Three stable states \\
+$\alpha = 0$ & All $\theta$ & Isotropy (no field) \\
+$-1 < \alpha < 0$ & $\theta = \pi, \arccos\alpha, 2\pi - \arccos\alpha$ & Three stable states \\
+$\alpha < -1$ & $\theta = \pi$ & Only antiparallel state \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Experimental Implications}
+
+When $|\alpha| < 1$, four distinct spots should appear on the Stern-Gerlach detector:
+
+\begin{itemize}
+\item $\theta = 0$: $\mu_z = +\mu$
+\item $\theta = \arccos\alpha$: $\mu_z = +\mu\alpha$
+\item $\theta = \pi - \arccos\alpha$: $\mu_z = -\mu\alpha$
+\item $\theta = \pi$: $\mu_z = -\mu$
+\end{itemize}
+
+In conventional experiments, parameters were such that $|\alpha| \approx 1$, causing intermediate states to merge with the main ones.
+
+\section{Stability Analysis}
+
+The second derivative of energy determines stability:
+
+\begin{equation}
+\frac{d^2E}{d\theta^2} = \mu B \cos\theta - I_{\text{eff}}\Omega^2 \cos 2\theta
+\end{equation}
+
+For intermediate states ($\cos\theta = \alpha$):
+
+\begin{equation}
+\frac{d^2E}{d\theta^2} = I_{\text{eff}}\Omega^2 (1 - \alpha^2) > 0 \quad \text{when} \quad |\alpha| < 1
+\end{equation}
+
+Thus, intermediate states are stable when they exist.
+
+\section{Discussion}
+
+\subsection{Advantages of the Model}
+
+\begin{itemize}
+\item Provides mechanistic explanation of spin without superluminal speeds
+\item Explains both parallel and antiparallel states through gyroscopic stabilization
+\item Predicts additional states testable in weak-field experiments
+\item Establishes clear correspondence with quantum formalism
+\item Offers intuitive picture of vector potential and geometric phase
+\end{itemize}
+
+\subsection{Open Questions}
+
+\begin{itemize}
+\item Determination of $I_{\text{eff}}$ and $\Omega$ from first principles
+\item Connection to relativistic effects and $Zitterbewegung$
+\item Explanation of antiparticles and annihilation
+\item Quantization of precession angle $\theta$
+\end{itemize}
+
+\section{Conclusion}
+
+The precessing magnetic dipole model offers a classical interpretation of electron spin that resolves fundamental conceptual difficulties. By treating the electron as a structured object with internal precession, the model explains:
+
+\begin{itemize}
+\item The discrete outcomes of Stern-Gerlach experiments
+\item The stability of both parallel and antiparallel states
+\item The correspondence with quantum mechanical formalism
+\item The existence of additional stationary states
+\end{itemize}
+
+This approach bridges the gap between classical intuition and quantum formalism, suggesting that spin may have a deeper mechanical origin than previously thought. Experimental verification of additional states in weak-field Stern-Gerlach configurations could provide crucial evidence for this model.
+
+\section*{Acknowledgments}
+
+The author acknowledges valuable discussions on the structure of electron and vector potential of electrostatic fields.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

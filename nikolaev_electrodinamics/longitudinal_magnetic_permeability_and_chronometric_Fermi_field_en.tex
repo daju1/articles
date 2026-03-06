@@ -1,0 +1,472 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+\title{Connection Between Longitudinal Magnetic Permeability and the Vector Potential of Total Current and Fermi's Chronometric Field: From Contradictions of Classical Electrodynamics to Modified Theory}
+\author{A.Yu. Drozdov}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This paper presents a detailed investigation of the connection between the longitudinal magnetic permeability $\mu_{\parallel}$ introduced in Nikolaev's electrodynamics and two fundamental concepts: (1) the vector potential of total current (conduction + displacement) and (2) Fermi's chronometric correction to the action integration measure. Based on analysis of the author's series of works (2023--2025), it is shown that the problem of ``gauge juggling'' in the classical derivation of the d'Alembert wave equation can be solved through introduction of $\mu_{\parallel}$, which is physically interpreted as a manifestation of the world tube geometry of an accelerating charge in Fermi's formalism (1923). An explicit expression for $\mu_{\parallel}$ is derived through Fermi's type B variation, equivalence of Nikolaev's and Fermi's approaches is demonstrated, and applications to ponderomotive force calculations in MenDrive-type resonators and electromagnetic impulses of centrally-symmetric plasma explosions are discussed.
+\end{abstract}
+
+\section{Introduction}
+
+Classical electrodynamics, despite its century-long history, continues to contain a number of fundamental contradictions that become particularly evident when considering problems with accelerating charges and non-stationary fields. Key problems include:
+
+\begin{enumerate}
+    \item \textbf{The problem of ``gauge juggling''} in the derivation of the d'Alembert wave equation \cite{JugglingCalibrations};
+    \item \textbf{The 4/3 problem} of electromagnetic mass \cite{Fermi1923};
+    \item \textbf{Discrepancy of electromagnetic impulse sign} in experiments with centrally-symmetric plasma explosions \cite{PlasmaExplosion};
+    \item \textbf{Impossibility of obtaining thrust} in closed resonators within standard theory \cite{MenDrive}.
+\end{enumerate}
+
+In a series of the author's works (2023--2025), it was shown that all these problems can be solved through introduction of \textbf{longitudinal magnetic permeability} $\mu_{\parallel}$, which differs from the ordinary transverse permeability $\mu$. The goal of this paper is to establish a strict mathematical connection between $\mu_{\parallel}$ and two independent concepts: the vector potential of total current and Fermi's chronometric field.
+
+\section{Contradictions in the Classical Derivation of the Wave Equation}
+
+\subsection{Analysis of Tamm's Derivation}
+
+In work \cite{JugglingCalibrations}, a detailed analysis of the wave equation derivation in I.E. Tamm's textbook ``Fundamentals of the Theory of Electricity'' is conducted. It is shown that when deriving displacement current, the electrostatic relation is used:
+
+\begin{equation}
+\text{div} \vec{D} = 4\pi\rho, \quad \vec{E} = -\nabla \phi
+\label{eq:coulomb_gauge}
+\end{equation}
+
+which corresponds to \textbf{Coulomb gauge} ($\text{div} \vec{A} = 0$). However, when transitioning to the wave equation, the full expression for the field is used:
+
+\begin{equation}
+\vec{E} = -\nabla \phi - \frac{1}{c}\frac{\partial \vec{A}}{\partial t}
+\label{eq:full_field}
+\end{equation}
+
+and the Lorentz gauge condition:
+
+\begin{equation}
+\text{div} \vec{A} = -\frac{1}{c}\frac{\partial \phi}{\partial t}
+\label{eq:lorentz_gauge}
+\end{equation}
+
+\textbf{Contradiction:} Within a single derivation, there is an implicit transition between different definitions of time and space. As noted in \cite{JugglingCalibrations}:
+
+\begin{quote}
+``\textit{When deriving displacement current, the electrostatic relation is used (Coulomb gauge), and when transitioning to the wave equation --- the full expression for the field is used (Lorentz gauge). Classical electrodynamics `patches' this hole with mathematical manipulations to obtain the correct wave equation, but the physical justification of the transition becomes blurred.}''
+\end{quote}
+
+\subsection{Problem of Retarded Potentials}
+
+In work \cite{LaggingPotentials}, Tamm's proof (§96) that retarded potentials satisfy the Lorentz condition is analyzed. Two mathematical incorrectnesses are identified:
+
+\begin{enumerate}
+    \item \textbf{Incorrect extension of integration} to all infinite space with nullification of the surface integral:
+    \begin{equation}
+    \int \text{div}'_q \frac{\vec{j}(t')}{R} dV' = \oint \frac{j_n(t')}{R} dS' \longrightarrow 0
+    \label{eq:gauss_error}
+    \end{equation}
+    This is physically incorrect because displacement currents occupy all infinite space, but in the classical derivation they are not accounted for during integration.
+    
+    \item \textbf{Incorrect equating} $\frac{\partial t'}{\partial t} = 1$. For a moving charge, the correct expression is:
+    \begin{equation}
+    \frac{\partial t'}{\partial t} = \frac{1}{1 - \frac{\vec{v} \cdot \vec{R}}{Rc}} = \frac{R}{R^*}
+    \label{eq:retarded_time}
+    \end{equation}
+    where $R^* = R - \frac{\vec{v} \cdot \vec{R}}{c}$ --- the Liénard-Wiechert radius.
+\end{enumerate}
+
+\section{Vector Potential of Total Current}
+
+\subsection{Contradiction in Coulomb Gauge}
+
+In work \cite{CoulombCalib}, it is shown that for the classical vector potential created only by conduction current:
+
+\begin{equation}
+\vec{A}_{\text{cond}} = \frac{1}{c} \int \frac{\vec{j}_{\text{cond}}(t')}{R} dV'
+\label{eq:vector_potential_cond}
+\end{equation}
+
+the Coulomb gauge condition ($\text{div} \vec{A} = 0$) is not satisfied:
+
+\begin{equation}
+\text{div} \vec{A}_{\text{cond}} \neq 0
+\label{eq:divergence_error}
+\end{equation}
+
+\textbf{Solution:} The \textbf{total vector potential} created by total current (conduction + displacement) is introduced:
+
+\begin{equation}
+\vec{A}_{\text{total}} = \frac{1}{c} \int \frac{(\vec{j}_{\text{cond}} + \vec{j}_{\text{disp}})}{R} dV'
+\label{eq:vector_potential_total}
+\end{equation}
+
+where displacement current:
+
+\begin{equation}
+\vec{j}_{\text{disp}} = \frac{1}{4\pi} \frac{\partial \vec{E}}{\partial t}
+\label{eq:displacement_current}
+\end{equation}
+
+For total current, $\text{div} \vec{j}_{\text{total}} = 0$ holds, and Coulomb gauge becomes applicable \textbf{only to the total potential}.
+
+\subsection{Connection with Longitudinal Permeability}
+
+In work \cite{NikolaevLorentz}, a modified fourth Maxwell equation with Nikolaev's longitudinal induction is introduced:
+
+\begin{equation}
+\text{div} \vec{D} = 4\pi\rho + \frac{\varepsilon}{c} \frac{\partial B_{\parallel}}{\partial t}
+\label{eq:nikolaev_equation}
+\end{equation}
+
+where $B_{\parallel} = \mu_{\parallel} H_{\parallel}$, and scalar magnetic field $H_{\parallel}$ is related to vector potential divergence:
+
+\begin{equation}
+H_{\parallel} \sim \text{div} \vec{A}
+\label{eq:longitudinal_h}
+\end{equation}
+
+\textbf{Hypothesis:} Parameter $\mu_{\parallel}$ can be interpreted as a coefficient of vacuum ``stiffness'' relative to longitudinal changes of vector potential (i.e., changes of its divergence), unlike ordinary $\mu$, which characterizes reaction to transverse changes (curl).
+
+Taking divergence from the electric field expression:
+
+\begin{equation}
+\vec{E} = -\frac{\mu}{c} \frac{\partial \vec{A}}{\partial t} - \text{grad} \phi
+\label{eq:electric_field_potentials}
+\end{equation}
+
+and substituting into (\ref{eq:nikolaev_equation}), we obtain the wave equation for scalar potential \cite{NikolaevLorentz}:
+
+\begin{equation}
+\nabla^2 \phi - \frac{\varepsilon(\mu - \mu_{\parallel})}{c^2} \frac{\partial^2 \phi}{\partial t^2} = -\frac{4\pi\rho}{\varepsilon}
+\label{eq:wave_equation_modified}
+\end{equation}
+
+\textbf{Key point:} The coefficient at the second time derivative depends on the difference $(\mu - \mu_{\parallel})$. If $\mu_{\parallel} = 0$, we obtain the classical d'Alembert equation. If $\mu_{\parallel} \neq 0$, the wave propagation structure changes.
+
+\section{Fermi's Chronometric Field}
+
+\subsection{Fermi's Variational Principle (1923)}
+
+In work \cite{Fermi1923}, Enrico Fermi showed that for correct calculation of electromagnetic mass of an accelerating charge, it is necessary to use \textbf{type B variation}. This leads to modification of the integration measure in the action.
+
+Standard interaction action:
+
+\begin{equation}
+S_{int} = -\frac{1}{c} \int j^\mu A_\mu \, d^4x
+\label{eq:action_standard}
+\end{equation}
+
+Fermi shows that during accelerated motion of charge element $de$, the proper time element $dt$ is related to laboratory time $dt_0$ through a geometric factor:
+
+\begin{equation}
+dt \longrightarrow dt \left( 1 + \frac{\vec{\Gamma} \cdot \vec{r}}{c^2} \right)
+\label{eq:fermi_correction}
+\end{equation}
+
+where $\vec{\Gamma}$ --- 4-acceleration, $\vec{r}$ --- radius-vector inside the charge from center of mass.
+
+In work \cite{FermiSolution}, it is noted:
+
+\begin{quote}
+``\textit{Fermi showed an additional integral (equal to -1/3), having a negative sign, which needs to be used to solve the 4/3 problem.}''
+\end{quote}
+
+\subsection{Modification of Integration Measure}
+
+In terms of current density $j^\mu = (\rho c, \vec{j})$, this means modification of the volume element in the action:
+
+\begin{equation}
+d^4x \longrightarrow d^4x \cdot \mathcal{K}_F, \quad \text{where } \mathcal{K}_F = \left( 1 + \frac{\vec{a} \cdot \vec{r}}{c^2} \right)
+\label{eq:measure_modification}
+\end{equation}
+
+The effective interaction Lagrangian becomes:
+
+\begin{equation}
+\mathcal{L}_{int}^{eff} = -\frac{1}{c} j^\mu A_\mu \left( 1 + \frac{\vec{a} \cdot \vec{r}}{c^2} \right)
+\label{eq:lagrangian_eff}
+\end{equation}
+
+\subsection{Technical Recipe for Practical Problems}
+
+In work \cite{FermiSolution}, the final technical recipe for calculating force between two accelerating charges when integrating only over time is provided:
+
+\begin{equation}
+\vec{p}_{12} = \int \vec{F}_{12}^{\text{raw}}(t) \left( 1 + \frac{(\vec{\Gamma}_2(t) - \vec{\Gamma}_1(t_{\text{ret}})) \cdot \vec{r}}{c^2} \right) dt
+\label{eq:fermi_technical}
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $\vec{\Gamma}_1, \vec{\Gamma}_2$ --- accelerations of source and observer,
+    \item $\vec{r}$ --- vector between charges,
+    \item $t_{\text{ret}}$ --- retarded time.
+\end{itemize}
+
+\textbf{Important:} Fermi's correction is a \textbf{multiplier in the integration measure}, not a field modification:
+
+\begin{quote}
+``\textit{Fermi's correction does not change the field, but changes how the force contributes to momentum.}'' \cite{FermiSolution}
+\end{quote}
+
+\section{Connection Between $\mu_{\parallel}$ and Fermi's Correction}
+
+\subsection{Formal Derivation}
+
+Consider how the modifier $\mathcal{K}_F$ affects field equations. The vector potential can be represented as a sum of transverse and longitudinal parts:
+
+\begin{equation}
+\vec{A} = \vec{A}_{\perp} + \vec{A}_{\parallel}, \quad \text{where } \text{div} \vec{A}_{\perp} = 0, \quad \text{rot} \vec{A}_{\parallel} = 0
+\label{eq:potential_decomposition}
+\end{equation}
+
+The longitudinal part is related to divergence: $\text{div} \vec{A} = \nabla^2 \Psi$, where $\vec{A}_{\parallel} = \text{grad} \Psi$.
+
+In classical electrodynamics (Lorentz gauge), the connection between $\phi$ and $\text{div} \vec{A}$ is fixed by the condition:
+
+\begin{equation}
+\text{div} \vec{A} + \frac{\varepsilon \mu}{c} \frac{\partial \phi}{\partial t} = 0
+\label{eq:lorentz_condition}
+\end{equation}
+
+This condition ensures cancellation of ``extra'' degrees of freedom and leads to coefficient $\varepsilon \mu / c^2$ in the wave equation.
+
+Fermi's multiplier $\mathcal{K}_F = 1 + \frac{\vec{a} \cdot \vec{r}}{c^2}$ depends on acceleration $\vec{a}$. Charge acceleration is related to field change over time. In linear approximation for a radiating system:
+
+\begin{equation}
+\vec{a} \sim \frac{\partial \vec{v}}{\partial t} \sim \frac{\partial}{\partial t} (\text{potentials})
+\label{eq:acceleration_potentials}
+\end{equation}
+
+In Fermi's variational principle, the additional term in the action has the form:
+
+\begin{equation}
+\delta S_F = -\frac{1}{c} \int j^\mu A_\mu \left( \frac{g_\nu r^\nu}{c^2} \right) d^4x
+\label{eq:fermi_action_term}
+\end{equation}
+
+For the longitudinal component of interaction (which is responsible for $\text{div} \vec{A}$ and $\rho \phi$), this term acts as an effective change of connection between current and field.
+
+\subsection{Derivation of Expression for $\mu_{\parallel}$}
+
+Compare coefficients at $\frac{\partial^2 \phi}{\partial t^2}$ in the wave equation. From work \cite{NikolaevLorentz} (equation \ref{eq:wave_equation_modified}):
+
+\begin{equation}
+\text{Coeff}_{09} = \frac{\varepsilon}{c^2} (\mu - \mu_{\parallel})
+\label{eq:coefficient_09}
+\end{equation}
+
+From Fermi's theory (effective mass $m = U/c^2$ instead of $4/3 U/c^2$):
+
+\begin{quote}
+``\textit{The correction constitutes $-1/3$ of the classical contribution to inertia. The classical contribution is proportional to $\mu$. Consequently, the $\mu_{\parallel}$ contribution should compensate for this share in the longitudinal channel.}''
+\end{quote}
+
+In work \cite{FermiSolution}, calculation for a uniformly charged sphere is provided:
+
+\begin{equation}
+\int E^{(i)} de = -\frac{4}{3} \cdot 2\frac{u}{c^2}\,a_z
+\label{eq:fermi_sphere}
+\end{equation}
+
+where $u = \frac{3}{5}\frac{e^2}{R}$ --- field energy of the sphere.
+
+Relation (4) from Fermi's work in modern notation:
+
+\begin{equation}
+-\frac{4}{3}\cdot 2 \,\frac{u}{c^2} \, a_z + \int \vec{E}^{(i)}\frac{\vec{a} \cdot \vec{R}}{c^2} de + \vec{F} = 0
+\label{eq:fermi_ratio}
+\end{equation}
+
+\textbf{Formal expression for $\mu_{\parallel}$:}
+
+\begin{equation}
+\mu_{\parallel} = \mu \cdot \lim_{V \to 0} \frac{\int_V \frac{\vec{a} \cdot \vec{r}}{c^2} \, dV}{\int_V dV}
+\label{eq:mu_parallel_formal}
+\end{equation}
+
+For a point charge, this limit requires regularization. In the context of work \cite{NikolaevLorentz}, where vacuum properties are introduced, $\mu_{\parallel}$ is a fundamental constant arising from space-time geometry in the presence of accelerations.
+
+Using Fermi's 4-notation ($g_i$ --- 4-acceleration, $r^i$ --- 4-radius):
+
+\begin{equation}
+\mu_{\parallel} = \mu \cdot \kappa \cdot \frac{g_i r^i}{c^2}
+\label{eq:mu_parallel_4vector}
+\end{equation}
+
+where $\kappa$ --- coefficient depending on charge distribution geometry (for a sphere, $\kappa$ leads to elimination of the 4/3 multiplier).
+
+\subsection{Interpretation Through Total Current}
+
+In work \cite{CoulombCalib}, it is shown that Coulomb gauge can be applicable only to the \textbf{total vector potential} created by total current:
+
+\begin{equation}
+\vec{A}_{\text{total}} = \frac{1}{c} \int \frac{(\vec{j}_{\text{cond}} + \vec{j}_{\text{disp}})}{R} dV
+\label{eq:total_potential_again}
+\end{equation}
+
+\textbf{Connection hypothesis:} Parameter $\mu_{\parallel}$ can be interpreted as a coefficient necessary for equations for the \textit{conduction} potential to look as if we are working with the \textit{total} potential.
+
+If $\vec{A}_{\text{total}}$ satisfies $\text{div} \vec{A}_{\text{total}} = 0$ (Coulomb gauge for total current), then $\mu_{\parallel}$ can compensate for the contribution from $\text{div} \vec{A}_{\text{cond}}$.
+
+In the wave equation (\ref{eq:wave_equation_modified}), the multiplier $(\mu - \mu_{\parallel})$ reflects the difference between ``flat'' time (inertial) and ``curved'' time (accelerated).
+
+\section{Applications}
+
+\subsection{Electromagnetic Impulse of Centrally-Symmetric Explosion}
+
+In work \cite{PlasmaExplosion}, a model of centrally-symmetric plasma explosion as a source of electromagnetic impulse is considered. It is shown that classical Liénard-Wiechert potentials give a \textbf{positive} impulse sign, whereas Mende's experiment records a \textbf{negative} one.
+
+With Fermi's correction, the force becomes:
+
+\begin{equation}
+\vec{F}_{\text{eff}} = \int \vec{F}_{\text{LW}}(t) \left( 1 + \frac{\vec{a}(t) \cdot \vec{r}}{c^2} \right) dt
+\label{eq:fermi_force}
+\end{equation}
+
+The additional term $\frac{\vec{a} \cdot \vec{r}}{c^2}$ can change the sign of the resulting impulse. In work \cite{PlasmaExplosion}, it is noted:
+
+\begin{quote}
+``\textit{Fermi's correction (increase of the gradient integral) can correct the impulse sign without violating conservation laws.}''
+\end{quote}
+
+\subsection{Thrust Calculation in MenDrive Resonator}
+
+In work \cite{MenDrive}, calculation of ponderomotive forces in the waveguide structure of Mende's engine is conducted. Problem geometry:
+
+\begin{itemize}
+    \item Left conductor: $x < -a$
+    \item Vacuum gap: $-a \le x \le a$
+    \item Right conductor (ferrite): $x > a$
+\end{itemize}
+
+Maxwell's stress tensor for TE-wave:
+
+\begin{equation}
+T_{xx} = \frac{1}{8\pi} \left( \mu_{xx} H_x^2 - \varepsilon_{yy} E_y^2 - \mu_{zz} H_z^2 \right)
+\label{eq:stress_tensor}
+\end{equation}
+
+Thrust force:
+
+\begin{equation}
+F_x^{\text{thrust}} = T_{xx}\big|_{x=+A^+} - T_{xx}\big|_{x=-A^-}
+\label{eq:thrust_force}
+\end{equation}
+
+In the current calculation \cite{MenDrive}, the following are not accounted for:
+\begin{enumerate}
+    \item Fermi's chronometric field,
+    \item Longitudinal magnetic permeability $\mu_{\parallel}$,
+    \item Displacement currents of all space.
+\end{enumerate}
+
+\textbf{Proposed modification:} Introduce $\mu_{\parallel}$ for the normal field component at boundaries:
+
+\begin{equation}
+T_{xx}^{\text{modified}} = \frac{1}{8\pi} \left( \mu_{\parallel} H_x^2 - \varepsilon_{yy} E_y^2 - \mu_{\perp} H_z^2 \right)
+\label{eq:stress_tensor_modified}
+\end{equation}
+
+This can create a force imbalance on opposite walls, interpretable as thrust.
+
+\section{Unified Scheme}
+
+\begin{table}[h]
+\centering
+\caption{Connection Between Concepts}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Level} & \textbf{Concept} & \textbf{Mathematical Expression} \\
+\hline
+Fundamental & Fermi Variation & $dt \to dt(1 + \frac{\vec{a}\cdot\vec{r}}{c^2})$ \\
+\hline
+Field & Longitudinal Permeability & $\mu_{\parallel}$ in $\text{div}\vec{D} = \dots + \frac{\varepsilon}{c}\frac{\partial B_{\parallel}}{\partial t}$ \\
+\hline
+Potential & Total Current & $\vec{A}_{\text{total}} = \vec{A}_{\text{cond}} + \vec{A}_{\text{disp}}$ \\
+\hline
+Applied & EM Impulse / Thrust & Impulse sign $P \sim \int \vec{E} dt$ \\
+\hline
+\end{tabular}
+\label{tab:unified}
+\end{table}
+
+\section{Conclusion}
+
+This paper has shown that introduction of longitudinal magnetic permeability $\mu_{\parallel}$ into Maxwell's equations is mathematically equivalent to accounting for Fermi's geometric correction to the integration measure in the action. Main results:
+
+\begin{enumerate}
+    \item \textbf{The ``gauge juggling'' problem} is solved through transition to the principle of least action with modified integration measure.
+    
+    \item \textbf{An explicit expression} for $\mu_{\parallel}$ through Fermi's type B variation is derived (equation \ref{eq:mu_parallel_formal}).
+    
+    \item \textbf{Equivalence is shown} between Nikolaev's approach (field modification) and Fermi's (geometric modification).
+    
+    \item \textbf{A modification is proposed} for thrust calculation in MenDrive-type resonators through introduction of $\mu_{\parallel}$ for the normal field component.
+\end{enumerate}
+
+\textbf{Prospects:} Experimental verification of modified theory predictions in experiments with centrally-symmetric plasma explosions and precision measurements of ponderomotive forces in asymmetric resonators.
+
+\begin{thebibliography}{99}
+
+\bibitem{Fermi1923}
+Fermi E. Resolution of the Existing Contradiction Between Electrodynamical and Relativistic Theories of Electromagnetic Mass. Enrico Fermi, vol.1 p. 73, 1923.
+
+\bibitem{FermiSolution}
+Fermi\_solution.ipynb. Calculation of Action Variation According to Fermi and Landau. 2024.
+
+\bibitem{LaggingPotentials}
+03.do\_lagging\_potentials\_equations\_correspond\_to\_Lorentz\_calibration.pdf. Analysis of Proof of Correspondence of Retarded Potentials to Lorentz Calibration. 2023.
+
+\bibitem{CoulombCalib}
+01.on\_contradiction\_arising\_when\_deriving\_vector\_potential\_formula\_in\_Coulomb\_calibration.pdf. Contradiction Arising When Deriving Vector Potential Formula in Coulomb Calibration. 2023.
+
+\bibitem{JugglingCalibrations}
+02.on\_classical\_electrodynamics\_contradiction\_arising\_when\_deriving\_wave\_equation\_Juggling\_calibrations.pdf. Contradiction Arising When Deriving Wave Equation: Gauge Juggling. 2023.
+
+\bibitem{NikolaevLorentz}
+09.on\_Lorentz\_calibration\_applicability\_to\_Nikolaev\_electrodynamics.pdf. On Applicability of Lorentz Calibration to Nikolaev's Electrodynamics. 2024.
+
+\bibitem{MenDrive}
+MenDrive\_real.ipynb. Electrodynamical Calculation of Wave Engine with Internal Energy Consumption. 2025.
+
+\bibitem{MenDrivePondero}
+MenDrive\_ponderomotoric.ipynb. Calculation of Ponderomotive Forces in Anisotropic Media. 2025.
+
+\bibitem{PlasmaExplosion}
+Electric Impulse of Centrally Symmetric Plasma Explosion.docx. 2024.
+
+\bibitem{DisplacementCurrent}
+Calculation of Displacement Current in Model of Centrally Symmetric Explosion.docx. 2024.
+
+\bibitem{LienardWiechert}
+04.do\_Lienard-Wichert\_potentials\_correspond\_to\_Lorentz\_calibration.pdf. Do Liénard-Wiechert Potentials Correspond to Lorentz Calibration. 2023.
+
+\bibitem{GaussTheorem}
+08.is\_everything\_alright\_with\_Gauss\_theorem.pdf. Is Everything Alright with Gauss Theorem. 2024.
+
+\bibitem{ConvectiveDerivative}
+05.on\_convective\_derivative\_of\_electric\_field\_vector.pdf. On Convective Derivative of Electric Field Vector. 2023.
+
+\bibitem{StationaryCharge}
+07.stationary\_point\_charge\_Coulomb\_field\_divergence.pdf. Divergence of Coulomb Field of Stationary Point Charge. 2024.
+
+\bibitem{TammPondero}
+Tamm\_Ponderomotive\_forces.ipynb. Ponderomotive Forces in Dielectrics (I.E. Tamm). 2024.
+
+\bibitem{Fermi1923Notebook}
+Fermi1923.ipynb. Translation and Analysis of Fermi's 1923 Work. 2024.
+
+\end{thebibliography}
+
+\end{document}

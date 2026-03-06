@@ -1,0 +1,472 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[ukrainian]{babel}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+\title{Зв'язок поздовжньої магнітної проникності з векторним потенціалом повного струму та хронометричним полем Фермі: від суперечностей класичної електродинаміки до модифікованої теорії}
+\author{А.Ю. Дроздов}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+У даній роботі проводиться детальне дослідження зв'язку між введеною в електродинаміці Ніколаєва поздовжньою магнітною проникністю $\mu_{\parallel}$ та двома фундаментальними концепціями: (1) векторним потенціалом повного струму (провідності + зміщення) і (2) хронометричною поправкою Фермі до міри інтегрування дії. На основі аналізу серії робіт автора (2023--2025) показано, що проблема ``жонглювання калібровками'' у класичному виводі хвильового рівняння Даламбера може бути вирішена через введення $\mu_{\parallel}$, яка фізично інтерпретується як прояв геометрії світової трубки прискореного заряду в формалізмі Фермі (1923). Виведено явний вираз для $\mu_{\parallel}$ через варіацію типу В за Фермі, продемонстровано еквівалентність підходів Ніколаєва і Фермі, та обговорено застосування до розрахунку пондеромоторних сил у резонаторах типу MenDrive та електромагнітних імпульсів центрально-симетричного вибуху плазми.
+\end{abstract}
+
+\section{Вступ}
+
+Класична електродинаміка, попри свою столітню історію, продовжує містити ряд фундаментальних суперечностей, які стають особливо очевидними при розгляді задач із прискореними зарядами та нестаціонарними полями. Ключові проблеми включають:
+
+\begin{enumerate}
+    \item \textbf{Проблему ``жонглювання калібровками''} при виводі хвильового рівняння Даламбера \cite{JugglingCalibrations};
+    \item \textbf{Проблему 4/3} електромагнітної маси \cite{Fermi1923};
+    \item \textbf{Невідповідність знаку електромагнітного імпульсу} в дослідах з центрально-симетричним вибухом плазми \cite{PlasmaExplosion};
+    \item \textbf{Неможливість отримання тяги} в замкнених резонаторах у рамках стандартної теорії \cite{MenDrive}.
+\end{enumerate}
+
+У серії робіт автора (2023--2025) було показано, що всі ці проблеми можуть бути вирішені через введення \textbf{поздовжньої магнітної проникності} $\mu_{\parallel}$, яка відрізняється від звичайної поперечної проникності $\mu$. Мета даної роботи --- встановити строгий математичний зв'язок між $\mu_{\parallel}$ та двома незалежними концепціями: векторним потенціалом повного струму та хронометричним полем Фермі.
+
+\section{Суперечності в класичному виводі хвильового рівняння}
+
+\subsection{Аналіз виводу за Таммом}
+
+У роботі \cite{JugglingCalibrations} проводиться детальний аналіз виводу хвильового рівняння в підручнику І.Є. Тамма ``Основи теорії електричества''. Показано, що при виводі струму зміщення використовується електростатичне співвідношення:
+
+\begin{equation}
+\text{div} \vec{D} = 4\pi\rho, \quad \vec{E} = -\nabla \phi
+\label{eq:coulomb_gauge}
+\end{equation}
+
+що відповідає \textbf{калібровці Кулона} ($\text{div} \vec{A} = 0$). Однак при переході до хвильового рівняння використовується повний вираз для поля:
+
+\begin{equation}
+\vec{E} = -\nabla \phi - \frac{1}{c}\frac{\partial \vec{A}}{\partial t}
+\label{eq:full_field}
+\end{equation}
+
+та умова калібровки Лоренца:
+
+\begin{equation}
+\text{div} \vec{A} = -\frac{1}{c}\frac{\partial \phi}{\partial t}
+\label{eq:lorentz_gauge}
+\end{equation}
+
+\textbf{Суперечність:} У рамках одного виводу відбувається неявний перехід між різними визначеннями часу та простору. Як зазначається в \cite{JugglingCalibrations}:
+
+\begin{quote}
+``\textit{При виводі струму зміщення використовується електростатичне співвідношення (калібровка Кулона), а при переході до хвильового рівняння --- повний вираз для поля (калібровка Лоренца). Класична електродинаміка `латає' цю діру математичними маніпуляціями, щоб отримати правильне хвильове рівняння, але фізичне обґрунтування переходу розмивається.}''
+\end{quote}
+
+\subsection{Проблема запізнюючих потенціалів}
+
+У роботі \cite{LaggingPotentials} аналізується доказ Тамма (§96) того, що запізнюючі потенціали задовольняють умові Лоренца. Виявлено дві математичні некоректності:
+
+\begin{enumerate}
+    \item \textbf{Некоректне поширення інтегрування} на весь нескінченний простір з обнуленням поверхневого інтеграла:
+    \begin{equation}
+    \int \text{div}'_q \frac{\vec{j}(t')}{R} dV' = \oint \frac{j_n(t')}{R} dS' \longrightarrow 0
+    \label{eq:gauss_error}
+    \end{equation}
+    Це фізично некоректно, тому що струми зміщення займають весь нескінченний простір, але в класичному виводі вони не враховуються при інтегруванні.
+    
+    \item \textbf{Некоректне прирівнювання} $\frac{\partial t'}{\partial t} = 1$. Для рухомого заряду правильний вираз:
+    \begin{equation}
+    \frac{\partial t'}{\partial t} = \frac{1}{1 - \frac{\vec{v} \cdot \vec{R}}{Rc}} = \frac{R}{R^*}
+    \label{eq:retarded_time}
+    \end{equation}
+    де $R^* = R - \frac{\vec{v} \cdot \vec{R}}{c}$ --- радіус Ліенара-Віхерта.
+\end{enumerate}
+
+\section{Векторний потенціал повного струму}
+
+\subsection{Суперечність в калібровці Кулона}
+
+У роботі \cite{CoulombCalib} показано, що для класичного векторного потенціалу, створюваного тільки струмом провідності:
+
+\begin{equation}
+\vec{A}_{\text{cond}} = \frac{1}{c} \int \frac{\vec{j}_{\text{cond}}(t')}{R} dV'
+\label{eq:vector_potential_cond}
+\end{equation}
+
+умова калібровки Кулона ($\text{div} \vec{A} = 0$) не виконується:
+
+\begin{equation}
+\text{div} \vec{A}_{\text{cond}} \neq 0
+\label{eq:divergence_error}
+\end{equation}
+
+\textbf{Рішення:} Вводиться \textbf{повний векторний потенціал}, створюваний повним струмом (провідності + зміщення):
+
+\begin{equation}
+\vec{A}_{\text{total}} = \frac{1}{c} \int \frac{(\vec{j}_{\text{cond}} + \vec{j}_{\text{disp}})}{R} dV'
+\label{eq:vector_potential_total}
+\end{equation}
+
+де струм зміщення:
+
+\begin{equation}
+\vec{j}_{\text{disp}} = \frac{1}{4\pi} \frac{\partial \vec{E}}{\partial t}
+\label{eq:displacement_current}
+\end{equation}
+
+Для повного струму виконується $\text{div} \vec{j}_{\text{total}} = 0$, і калібровка Кулона стає застосовною \textbf{тільки до повного потенціалу}.
+
+\subsection{Зв'язок з поздовжньою проникністю}
+
+У роботі \cite{NikolaevLorentz} вводиться модифіковане четверте рівняння Максвелла з поздовжньою індукцією Ніколаєва:
+
+\begin{equation}
+\text{div} \vec{D} = 4\pi\rho + \frac{\varepsilon}{c} \frac{\partial B_{\parallel}}{\partial t}
+\label{eq:nikolaev_equation}
+\end{equation}
+
+де $B_{\parallel} = \mu_{\parallel} H_{\parallel}$, а скалярне магнітне поле $H_{\parallel}$ пов'язане з дивергенцією векторного потенціалу:
+
+\begin{equation}
+H_{\parallel} \sim \text{div} \vec{A}
+\label{eq:longitudinal_h}
+\end{equation}
+
+\textbf{Гіпотеза:} Параметр $\mu_{\parallel}$ можна інтерпретувати як коефіцієнт ``жорсткості'' вакууму відносно поздовжніх змін векторного потенціалу (тобто змін його дивергенції), на відміну від звичайної $\mu$, яка характеризує реакцію на поперечні зміни (ротор).
+
+Взявши дивергенцію від виразу для електричного поля:
+
+\begin{equation}
+\vec{E} = -\frac{\mu}{c} \frac{\partial \vec{A}}{\partial t} - \text{grad} \phi
+\label{eq:electric_field_potentials}
+\end{equation}
+
+та підставивши у (\ref{eq:nikolaev_equation}), отримуємо хвильове рівняння для скалярного потенціалу \cite{NikolaevLorentz}:
+
+\begin{equation}
+\nabla^2 \phi - \frac{\varepsilon(\mu - \mu_{\parallel})}{c^2} \frac{\partial^2 \phi}{\partial t^2} = -\frac{4\pi\rho}{\varepsilon}
+\label{eq:wave_equation_modified}
+\end{equation}
+
+\textbf{Ключовий момент:} Коефіцієнт при другій похідній за часом залежить від різниці $(\mu - \mu_{\parallel})$. Якщо $\mu_{\parallel} = 0$, отримуємо класичне рівняння Даламбера. Якщо $\mu_{\parallel} \neq 0$, структура поширення хвиль змінюється.
+
+\section{Хронометричне поле Фермі}
+
+\subsection{Варіаційний принцип Фермі (1923)}
+
+У роботі \cite{Fermi1923} Енріко Фермі показав, що для коректного обчислення електромагнітної маси прискореного заряду необхідно використовувати \textbf{варіацію типу В}. Це призводить до модифікації міри інтегрування в дії.
+
+Стандартна дія взаємодії:
+
+\begin{equation}
+S_{int} = -\frac{1}{c} \int j^\mu A_\mu \, d^4x
+\label{eq:action_standard}
+\end{equation}
+
+Фермі показує, що при прискореному русі елемента заряду $de$, елемент власного часу $dt$ пов'язаний з лабораторним часом $dt_0$ через геометричний фактор:
+
+\begin{equation}
+dt \longrightarrow dt \left( 1 + \frac{\vec{\Gamma} \cdot \vec{r}}{c^2} \right)
+\label{eq:fermi_correction}
+\end{equation}
+
+де $\vec{\Gamma}$ --- 4-прискорення, $\vec{r}$ --- радіус-вектор всередині заряду від центру мас.
+
+У роботі \cite{FermiSolution} зазначається:
+
+\begin{quote}
+``\textit{Фермі показав додатковий інтеграл (рівний -1/3), що має від'ємний знак, який потрібно використовувати щоб вирішити проблему 4/3.}''
+\end{quote}
+
+\subsection{Модифікація міри інтегрування}
+
+У термінах густини струму $j^\mu = (\rho c, \vec{j})$, це означає модифікацію об'ємного елемента в дії:
+
+\begin{equation}
+d^4x \longrightarrow d^4x \cdot \mathcal{K}_F, \quad \text{де } \mathcal{K}_F = \left( 1 + \frac{\vec{a} \cdot \vec{r}}{c^2} \right)
+\label{eq:measure_modification}
+\end{equation}
+
+Ефективний лагранжіан взаємодії стає:
+
+\begin{equation}
+\mathcal{L}_{int}^{eff} = -\frac{1}{c} j^\mu A_\mu \left( 1 + \frac{\vec{a} \cdot \vec{r}}{c^2} \right)
+\label{eq:lagrangian_eff}
+\end{equation}
+
+\subsection{Технічний рецепт для практичних задач}
+
+У роботі \cite{FermiSolution} наводиться остаточний технічний рецепт для обчислення сили між двома прискореними зарядами при інтегруванні тільки за часом:
+
+\begin{equation}
+\vec{p}_{12} = \int \vec{F}_{12}^{\text{raw}}(t) \left( 1 + \frac{(\vec{\Gamma}_2(t) - \vec{\Gamma}_1(t_{\text{ret}})) \cdot \vec{r}}{c^2} \right) dt
+\label{eq:fermi_technical}
+\end{equation}
+
+де:
+\begin{itemize}
+    \item $\vec{\Gamma}_1, \vec{\Gamma}_2$ --- прискорення джерела та спостерігача,
+    \item $\vec{r}$ --- вектор між зарядами,
+    \item $t_{\text{ret}}$ --- запізнюючий час.
+\end{itemize}
+
+\textbf{Важливо:} Поправка Фермі --- це \textbf{множник у мірі інтегрування}, а не модифікація поля:
+
+\begin{quote}
+``\textit{Поправка Фермі не змінює поле, а змінює, як сила вкладається в імпульс.}'' \cite{FermiSolution}
+\end{quote}
+
+\section{Зв'язок $\mu_{\parallel}$ з поправкою Фермі}
+
+\subsection{Формальний вивід}
+
+Розглянемо, як модифікатор $\mathcal{K}_F$ впливає на рівняння поля. Векторний потенціал можна представити як суму поперечної та поздовжньої частин:
+
+\begin{equation}
+\vec{A} = \vec{A}_{\perp} + \vec{A}_{\parallel}, \quad \text{де } \text{div} \vec{A}_{\perp} = 0, \quad \text{rot} \vec{A}_{\parallel} = 0
+\label{eq:potential_decomposition}
+\end{equation}
+
+Поздовжня частина пов'язана з дивергенцією: $\text{div} \vec{A} = \nabla^2 \Psi$, де $\vec{A}_{\parallel} = \text{grad} \Psi$.
+
+У класичній електродинаміці (калібровка Лоренца) зв'язок між $\phi$ та $\text{div} \vec{A}$ фіксується умовою:
+
+\begin{equation}
+\text{div} \vec{A} + \frac{\varepsilon \mu}{c} \frac{\partial \phi}{\partial t} = 0
+\label{eq:lorentz_condition}
+\end{equation}
+
+Ця умова забезпечує скорочення ``зайвих'' ступенів вільності та призводить до коефіцієнта $\varepsilon \mu / c^2$ у хвильовому рівнянні.
+
+Множник Фермі $\mathcal{K}_F = 1 + \frac{\vec{a} \cdot \vec{r}}{c^2}$ залежить від прискорення $\vec{a}$. Прискорення заряду пов'язане зі зміною поля в часі. У лінійному наближенні для випромінюючої системи:
+
+\begin{equation}
+\vec{a} \sim \frac{\partial \vec{v}}{\partial t} \sim \frac{\partial}{\partial t} (\text{потенціали})
+\label{eq:acceleration_potentials}
+\end{equation}
+
+У варіаційному принципі Фермі, додатковий член у дії має вигляд:
+
+\begin{equation}
+\delta S_F = -\frac{1}{c} \int j^\mu A_\mu \left( \frac{g_\nu r^\nu}{c^2} \right) d^4x
+\label{eq:fermi_action_term}
+\end{equation}
+
+Для поздовжньої компоненти взаємодії (яка відповідає за $\text{div} \vec{A}$ та $\rho \phi$), цей член діє як ефективна зміна зв'язку між струмом та полем.
+
+\subsection{Вивід виразу для $\mu_{\parallel}$}
+
+Порівняємо коефіцієнти при $\frac{\partial^2 \phi}{\partial t^2}$ у хвильовому рівнянні. З роботи \cite{NikolaevLorentz} (рівняння \ref{eq:wave_equation_modified}):
+
+\begin{equation}
+\text{Коеф}_{09} = \frac{\varepsilon}{c^2} (\mu - \mu_{\parallel})
+\label{eq:coefficient_09}
+\end{equation}
+
+З теорії Фермі (ефективна маса $m = U/c^2$ замість $4/3 U/c^2$):
+
+\begin{quote}
+``\textit{Поправка становить $-1/3$ від класичного внеску в інерцію. Класичний внесок пропорційний $\mu$. Отже, внесок $\mu_{\parallel}$ повинен компенсувати цю частку в поздовжньому каналі.}''
+\end{quote}
+
+У роботі \cite{FermiSolution} наводиться розрахунок для рівномірно зарядженої сфери:
+
+\begin{equation}
+\int E^{(i)} de = -\frac{4}{3} \cdot 2\frac{u}{c^2}\,a_z
+\label{eq:fermi_sphere}
+\end{equation}
+
+де $u = \frac{3}{5}\frac{e^2}{R}$ --- енергія поля сфери.
+
+Співвідношення (4) з роботи Фермі в сучасних позначеннях:
+
+\begin{equation}
+-\frac{4}{3}\cdot 2 \,\frac{u}{c^2} \, a_z + \int \vec{E}^{(i)}\frac{\vec{a} \cdot \vec{R}}{c^2} de + \vec{F} = 0
+\label{eq:fermi_ratio}
+\end{equation}
+
+\textbf{Формальний вираз для $\mu_{\parallel}$:}
+
+\begin{equation}
+\mu_{\parallel} = \mu \cdot \lim_{V \to 0} \frac{\int_V \frac{\vec{a} \cdot \vec{r}}{c^2} \, dV}{\int_V dV}
+\label{eq:mu_parallel_formal}
+\end{equation}
+
+Для точкового заряду ця границя вимагає регуляризації. У контексті роботи \cite{NikolaevLorentz}, де вводяться властивості вакууму, $\mu_{\parallel}$ є фундаментальною константою, що виникає з геометрії простору-часу за наявності прискорень.
+
+Використовуючи 4-позначення Фермі ($g_i$ --- 4-прискорення, $r^i$ --- 4-радіус):
+
+\begin{equation}
+\mu_{\parallel} = \mu \cdot \kappa \cdot \frac{g_i r^i}{c^2}
+\label{eq:mu_parallel_4vector}
+\end{equation}
+
+де $\kappa$ --- коефіцієнт, що залежить від геометрії розподілу заряду (для сфери $\kappa$ призводить до усунення множника 4/3).
+
+\subsection{Інтерпретація через повний струм}
+
+У роботі \cite{CoulombCalib} показано, що калібровка Кулона може бути застосовна тільки до \textbf{повного векторного потенціалу}, створюваного повним струмом:
+
+\begin{equation}
+\vec{A}_{\text{total}} = \frac{1}{c} \int \frac{(\vec{j}_{\text{cond}} + \vec{j}_{\text{disp}})}{R} dV
+\label{eq:total_potential_again}
+\end{equation}
+
+\textbf{Гіпотеза зв'язку:} Параметр $\mu_{\parallel}$ можна інтерпретувати як коефіцієнт, необхідний для того, щоб рівняння для потенціалу \textit{провідності} виглядали так, ніби ми працюємо з потенціалом \textit{повного} струму.
+
+Якщо $\vec{A}_{\text{total}}$ задовольняє $\text{div} \vec{A}_{\text{total}} = 0$ (калібровка Кулона для повного струму), то $\mu_{\parallel}$ може компенсувати внесок від $\text{div} \vec{A}_{\text{cond}}$.
+
+У хвильовому рівнянні (\ref{eq:wave_equation_modified}) множник $(\mu - \mu_{\parallel})$ відображає різницю між ``плоским'' часом (інерціальним) та ``викривленим'' часом (прискореним).
+
+\section{Застосування}
+
+\subsection{Електромагнітний імпульс центрально-симетричного вибуху}
+
+У роботі \cite{PlasmaExplosion} розглядається модель центрально-симетричного вибуху плазми як джерела електромагнітного імпульсу. Показано, що класичні потенціали Ліенара-Віхерта дають \textbf{додатний} знак імпульсу, тоді як експеримент Менде фіксує \textbf{від'ємний}.
+
+З поправкою Фермі сила стає:
+
+\begin{equation}
+\vec{F}_{\text{eff}} = \int \vec{F}_{\text{LW}}(t) \left( 1 + \frac{\vec{a}(t) \cdot \vec{r}}{c^2} \right) dt
+\label{eq:fermi_force}
+\end{equation}
+
+Додатковий член $\frac{\vec{a} \cdot \vec{r}}{c^2}$ може змінити знак результуючого імпульсу. У роботі \cite{PlasmaExplosion} зазначається:
+
+\begin{quote}
+``\textit{Поправка Фермі (збільшення градієнтного інтеграла) може виправити знак імпульсу без порушення законів збереження.}''
+\end{quote}
+
+\subsection{Розрахунок тяги в резонаторі MenDrive}
+
+У роботі \cite{MenDrive} проводиться розрахунок пондеромоторних сил у хвилеводній структурі двигуна Менде. Геометрія задачі:
+
+\begin{itemize}
+    \item Лівий провідник: $x < -a$
+    \item Вакуумний зазор: $-a \le x \le a$
+    \item Правий провідник (ферит): $x > a$
+\end{itemize}
+
+Тензор натяжень Максвелла для TE-хвилі:
+
+\begin{equation}
+T_{xx} = \frac{1}{8\pi} \left( \mu_{xx} H_x^2 - \varepsilon_{yy} E_y^2 - \mu_{zz} H_z^2 \right)
+\label{eq:stress_tensor}
+\end{equation}
+
+Сила тяги:
+
+\begin{equation}
+F_x^{\text{тяга}} = T_{xx}\big|_{x=+A^+} - T_{xx}\big|_{x=-A^-}
+\label{eq:thrust_force}
+\end{equation}
+
+У поточному розрахунку \cite{MenDrive} не враховуються:
+\begin{enumerate}
+    \item Хронометричне поле Фермі,
+    \item Поздовжня магнітна проникність $\mu_{\parallel}$,
+    \item Струми зміщення всього простору.
+\end{enumerate}
+
+\textbf{Запропонована модифікація:} Ввести $\mu_{\parallel}$ для нормальної компоненти поля на границях:
+
+\begin{equation}
+T_{xx}^{\text{modified}} = \frac{1}{8\pi} \left( \mu_{\parallel} H_x^2 - \varepsilon_{yy} E_y^2 - \mu_{\perp} H_z^2 \right)
+\label{eq:stress_tensor_modified}
+\end{equation}
+
+Це може створити дисбаланс сил на протилежних стінках, що інтерпретується як тяга.
+
+\section{Об'єднана схема}
+
+\begin{table}[h]
+\centering
+\caption{Зв'язок між концепціями}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Рівень} & \textbf{Концепція} & \textbf{Математичний вираз} \\
+\hline
+Фундаментальний & Варіація Фермі & $dt \to dt(1 + \frac{\vec{a}\cdot\vec{r}}{c^2})$ \\
+\hline
+Польовий & Поздовжня проникність & $\mu_{\parallel}$ у $\text{div}\vec{D} = \dots + \frac{\varepsilon}{c}\frac{\partial B_{\parallel}}{\partial t}$ \\
+\hline
+Потенціальний & Повний струм & $\vec{A}_{\text{total}} = \vec{A}_{\text{cond}} + \vec{A}_{\text{disp}}$ \\
+\hline
+Прикладний & ЕМІ вибуху / Тяга & Знак імпульсу $P \sim \int \vec{E} dt$ \\
+\hline
+\end{tabular}
+\label{tab:unified}
+\end{table}
+
+\section{Висновки}
+
+У даній роботі показано, що введення поздовжньої магнітної проникності $\mu_{\parallel}$ у рівняння Максвелла математично еквівалентне врахуванню геометричної поправки Фермі до міри інтегрування в дії. Основні результати:
+
+\begin{enumerate}
+    \item \textbf{Проблема ``жонглювання калібровками''} вирішується через перехід до принципу найменшої дії з модифікованою мірою інтегрування.
+    
+    \item \textbf{Виведено явний вираз} для $\mu_{\parallel}$ через варіацію типу В за Фермі (рівняння \ref{eq:mu_parallel_formal}).
+    
+    \item \textbf{Показано еквівалентність} підходів Ніколаєва (польова модифікація) та Фермі (геометрична модифікація).
+    
+    \item \textbf{Запропоновано модифікацію} розрахунку тяги в резонаторах типу MenDrive через введення $\mu_{\parallel}$ для нормальної компоненти поля.
+\end{enumerate}
+
+\textbf{Перспективи:} Експериментальна перевірка передбачень модифікованої теорії в дослідах з центрально-симетричним вибухом плазми та прецизійних вимірюваннях пондеромоторних сил в асиметричних резонаторах.
+
+\begin{thebibliography}{99}
+
+\bibitem{Fermi1923}
+Фермі Е. Розв'язання існуючої суперечності між електродинамічною та релятивістською теоріями електромагнітної маси. Енріко Фермі, т.1 стор. 73, 1923.
+
+\bibitem{FermiSolution}
+Fermi\_solution.ipynb. Розрахунок варіації дії за Фермі та Ландау. 2024.
+
+\bibitem{LaggingPotentials}
+03.do\_lagging\_potentials\_equations\_correspond\_to\_Lorentz\_calibration.pdf. Аналіз доказу відповідності запізнюючих потенціалів калібровці Лоренца. 2023.
+
+\bibitem{CoulombCalib}
+01.on\_contradiction\_arising\_when\_deriving\_vector\_potential\_formula\_in\_Coulomb\_calibration.pdf. Суперечність, що виникає при виводі формули векторного потенціалу в калібровці Кулона. 2023.
+
+\bibitem{JugglingCalibrations}
+02.on\_classical\_electrodynamics\_contradiction\_arising\_when\_deriving\_wave\_equation\_Juggling\_calibrations.pdf. Суперечність, що виникає при виводі хвильового рівняння: жонглювання калібровками. 2023.
+
+\bibitem{NikolaevLorentz}
+09.on\_Lorentz\_calibration\_applicability\_to\_Nikolaev\_electrodynamics.pdf. Про застосовність калібровки Лоренца до електродинаміки Ніколаєва. 2024.
+
+\bibitem{MenDrive}
+MenDrive\_real.ipynb. Електродинамічний розрахунок хвильового двигуна з внутрішнім витрачанням енергії. 2025.
+
+\bibitem{MenDrivePondero}
+MenDrive\_ponderomotoric.ipynb. Розрахунок пондеромоторних сил в анізотропних середовищах. 2025.
+
+\bibitem{PlasmaExplosion}
+Електричний імпульс центрально симетричного вибуху плазми.docx. 2024.
+
+\bibitem{DisplacementCurrent}
+Розрахунок струму зміщення в моделі центрально симетричного вибуху.docx. 2024.
+
+\bibitem{LienardWiechert}
+04.do\_Lienard-Wichert\_potentials\_correspond\_to\_Lorentz\_calibration.pdf. Чи відповідають потенціали Ліенара-Віхерта калібровці Лоренца. 2023.
+
+\bibitem{GaussTheorem}
+08.is\_everything\_alright\_with\_Gauss\_theorem.pdf. Чи все в порядку з теоремою Гаусса. 2024.
+
+\bibitem{ConvectiveDerivative}
+05.on\_convective\_derivative\_of\_electric\_field\_vector.pdf. Про конвективну похідну вектора електричного поля. 2023.
+
+\bibitem{StationaryCharge}
+07.stationary\_point\_charge\_Coulomb\_field\_divergence.pdf. Дивергенція кулонівського поля нерухомого точкового заряду. 2024.
+
+\bibitem{TammPondero}
+Tamm\_Ponderomotive\_forces.ipynb. Пондеромоторні сили в діелектриках (І.Є. Тамм). 2024.
+
+\bibitem{Fermi1923Notebook}
+Fermi1923.ipynb. Переклад та аналіз роботи Фермі 1923 року. 2024.
+
+\end{thebibliography}
+
+\end{document}

@@ -50,8 +50,11 @@ class moldyn():
         self.atom_energy = [0.0] * self.atom_count
 
         self.total_heat_current_y = 0.0
+        self.integrated_heat_flow_y = 0.0  # [J/m^2 в ваших единицах]
+        self.accumulated_heat_flow_y = 0.0
+        self.heat_flow_samples_count = 0
 
-        self.step_counter = 0;
+        self.step_counter = 0
 
         self.sum_of_masses = 0.0;# [kg/mol]
 
@@ -309,9 +312,9 @@ class moldyn():
         return sqrt(self.distance_x(crd1, crd2)**2 + self.distance_y(crd1, crd2)**2)
 
     def calc_atom(self, i):
-        fx = 0.0
-        fy = 0.0
-        w = 0.0
+        #fx = 0.0
+        #fy = 0.0
+        #w = 0.0
 
         # fy_left_boundary = 0.0
         # wy_left_boundary = 0.0
@@ -319,9 +322,12 @@ class moldyn():
         # wy_right_boundary = 0.0
 
         for nbr in self.nbri[i]:
-            # Координаты и скорости
-            #crd_i = self.crd[i]
-            #crd_j = self.crd[nbr]
+
+            if i >= nbr:
+                # Чтобы не дублировать связи, обрабатываем только i < nbr
+                continue
+
+            # скорости
             vel_i = self.vel[i]
             vel_j = self.vel[nbr]
 
@@ -329,8 +335,8 @@ class moldyn():
             dx = self.distance_x(self.crd[i], self.crd[nbr])
             dy = self.distance_y(self.crd[i], self.crd[nbr])
 
-            bx = self.boundary_x(self.crd[i], self.crd[nbr])
-            by = self.boundary_y(self.crd[i], self.crd[nbr])
+            #bx = self.boundary_x(self.crd[i], self.crd[nbr])
+            #by = self.boundary_y(self.crd[i], self.crd[nbr])
 
             cx = dx/d
             cy = dy/d
@@ -347,10 +353,23 @@ class moldyn():
             Fx_ij = f * cx
             Fy_ij = f * cy
 
+
             # Сила (компоненты)
-            fx += Fx_ij
-            fy += Fy_ij
-            w  += dw
+            #fx += Fx_ij
+            #fy += Fy_ij
+            #w  += dw
+
+            # Добавляем силу на атом i
+            self.f[i][0] += Fx_ij
+            self.f[i][1] += Fy_ij
+
+            # Добавляем силу на атом nbr (противоположную)
+            self.f[nbr][0] -= Fx_ij
+            self.f[nbr][1] -= Fy_ij
+
+            # Присваиваем половину потенциальной энергии каждому атому
+            self.w[i] += dw / 2
+            self.w[nbr] += dw / 2
 
             #if by > 0:
             #    fy_left_boundary += Fy_ij
@@ -388,9 +407,9 @@ class moldyn():
             # Добавляем вклад от этой связи
             self.total_heat_current_y += term_pot
 
-        self.f[i][0] = fx
-        self.f[i][1] = fy
-        self.w[i]    = w/2 # assign to atom half of bond's potential energy
+        #self.f[i][0] = fx
+        #self.f[i][1] = fy
+        #self.w[i]    = w/2 # assign to atom half of bond's potential energy
 
         # self.f_left_boundary[i][1]  = fy_left_boundary
         # self.w_left_boundary[i]     = wy_left_boundary
@@ -398,6 +417,12 @@ class moldyn():
         # self.w_right_boundary[i]    = wy_right_boundary
 
     def ComputeForce(self):
+        # Обнуляем все силы
+        for n1 in range(self.atom_count):
+            self.f[n1][0] = 0.0
+            self.f[n1][1] = 0.0
+            self.w[n1] = 0.0
+
         self.total_heat_current_y = 0.0
         for n1 in range(self.atom_count):
             self.calc_atom(n1)
@@ -444,6 +469,20 @@ class moldyn():
 
         # Нормируем на площадь (аналог объёма в 3D)
         self.heat_flow_y = self.total_heat_current_y / area
+
+        # dt = self.tstep1 * 1e-15  # [с], судя по комментарию в коде
+        # Но поскольку ваши единицы масштабированы, можно просто использовать self.tstep1
+        # если все величины согласованы в одних и тех же единицах.
+        self.integrated_heat_flow_y += self.heat_flow_y * self.tstep1
+
+        # self.heat_flow_history.append(self.heat_flow_y)  # если сохраняете всю историю
+        self.accumulated_heat_flow_y += self.heat_flow_y
+        self.heat_flow_samples_count += 1
+
+    def get_average_heat_flow_y(self):
+        if self.heat_flow_samples_count == 0:
+            return 0.0
+        return self.accumulated_heat_flow_y / self.heat_flow_samples_count
 
     def TakeMDStep(self):
         for n1 in range(self.atom_count):

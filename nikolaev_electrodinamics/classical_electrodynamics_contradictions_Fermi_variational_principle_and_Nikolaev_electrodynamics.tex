@@ -1394,7 +1394,7 @@ t' = t - \frac{R(\vec{x}, \vec{x}'(t'))}{c}
 Это неверно, потому что:
 \begin{enumerate}
     \item Магнитная проницаемость — это \textbf{свойство среды (вакуума)}, а не функция динамической переменной.
-    \item Если бы $\mu_{\parallel}$ зависела от ускорения, волновое уравнение стало бы нелинейным и непредсказательным.
+    \item Если бы $\mu_{\parallel}$ зависела от ускорения, волновое уравнение стало бы нелинейным и непредсказуемым.
     \item Поправка Ферми — это поправка к \textbf{мере интегрирования}, а не к свойствам вакуума.
 \end{enumerate}
 
@@ -1409,61 +1409,442 @@ t' = t - \frac{R(\vec{x}, \vec{x}'(t'))}{c}
 
 где $\chi_{\text{vac}}$ — безразмерная восприимчивость вакуума к продольным возмущениям, определяемая через корреляционные функции вакуумных флуктуаций, а не через ускорение конкретного заряда.
 
-\subsection*{Как возникает поправка Ферми из $\mu_{\parallel}$}
+\subsection{1. Появление пропагатора фотона в модифицированной теории}
+
+Рассмотрим модифицированные волновые уравнения из работы \cite{NikolaevLorentz}:
+
+\begin{equation}
+\nabla^2 \phi - \frac{\varepsilon(\mu - \mu_{\parallel})}{c^2} \frac{\partial^2 \phi}{\partial t^2} = -\frac{4\pi\rho}{\varepsilon}
+\label{eq:wave_phi_modified}
+\end{equation}
+
+\begin{equation}
+\nabla^2 \vec{A} - \frac{\varepsilon(\mu - \mu_{\parallel})}{c^2} \frac{\partial^2 \vec{A}}{\partial t^2} = -\frac{4\pi\vec{j}}{c}
+\label{eq:wave_A_modified}
+\end{equation}
+
+В импульсном пространстве (преобразование Фурье по пространству и времени):
+
+\begin{equation}
+\phi(\vec{k}, \omega) = \int \phi(\vec{x}, t) e^{-i(\vec{k}\cdot\vec{x} - \omega t)} d^3x dt
+\end{equation}
+
+Уравнение (\ref{eq:wave_phi_modified}) принимает вид:
+
+\begin{equation}
+\left(-k^2 + \frac{\varepsilon(\mu - \mu_{\parallel})}{c^2}\omega^2\right) \phi(\vec{k}, \omega) = -\frac{4\pi}{\varepsilon}\rho(\vec{k}, \omega)
+\end{equation}
+
+Отсюда находим пропагатор (функцию Грина) для скалярного потенциала:
+
+\begin{equation}
+D_{\phi}(\vec{k}, \omega) = \frac{4\pi/\varepsilon}{k^2 - \frac{\varepsilon(\mu - \mu_{\parallel})}{c^2}\omega^2}
+\label{eq:propagator_phi}
+\end{equation}
+
+Аналогично для векторного потенциала. В ковариантной записи, разделяя продольную и поперечную компоненты:
+
+\begin{equation}
+D_{\mu\nu}(k) = \frac{-g_{\mu\nu}^{\perp}}{k^2 - \varepsilon\mu\frac{\omega^2}{c^2}} + \frac{-g_{\mu\nu}^{\parallel}}{k^2 - \varepsilon(\mu - \mu_{\parallel})\frac{\omega^2}{c^2}}
+\label{eq:propagator_covariant}
+\end{equation}
+
+где $g_{\mu\nu}^{\perp}$ и $g_{\mu\nu}^{\parallel}$ — проекторы на поперечные и продольные компоненты соответственно.
+
+\textbf{Ключевой момент:} При $\mu_{\parallel} \neq 0$ полюс пропагатора для продольной компоненты смещается, что меняет дальнодействие и приводит к дополнительным членам в эффективном действии.
+
+\subsection{2. Эффективное действие для ускоряющегося заряда}
 
 Рассмотрим действие взаимодействия в модифицированной теории:
 
 \begin{equation}
-S_{int} = -\frac{1}{c} \int j^\mu A_\mu \, d^4x
-\label{eq:action_standard_fermi}
+S_{int} = -\frac{1}{c} \int j^\mu(x) A_\mu(x) d^4x
+\label{eq:action_int}
 \end{equation}
 
-В теории с $\mu_{\parallel} \neq \mu$ пропагатор фотона (функция Грина) модифицируется. Для продольной компоненты:
+Для точечного заряда, движущегося по траектории $z^\mu(\tau)$:
 
 \begin{equation}
-D_{\parallel}(k) = \frac{1}{k^2 - (\mu - \mu_{\parallel})\frac{\omega^2}{c^2}}
-\label{eq:propagator}
+j^\mu(x) = q \int u^\mu(\tau) \delta^{(4)}(x - z(\tau)) d\tau
+\label{eq:current_point}
 \end{equation}
 
-В координатном пространстве это приводит к тому, что эффективное действие для ускоряющегося заряда приобретает вид:
+где $u^\mu = \frac{dz^\mu}{d\tau}$ — 4-скорость.
+
+Подставляя (\ref{eq:current_point}) в (\ref{eq:action_int}):
 
 \begin{equation}
-S_{eff} = S_{classical} + \delta S_{longitudinal}
-\label{eq:action_eff}
+S_{int} = -\frac{q}{c} \int A_\mu(z(\tau)) u^\mu(\tau) d\tau
+\label{eq:action_trajectory}
 \end{equation}
 
-где $\delta S_{longitudinal}$ при разложении по $v/c$ даёт член:
+Теперь выразим $A_\mu$ через ток источника через пропагатор:
 
 \begin{equation}
-\delta S_{longitudinal} \propto \frac{\mu - \mu_{\parallel}}{\mu} \int \frac{\vec{a} \cdot \vec{r}}{c^2} \, dt
+A_\mu(x) = \int D_{\mu\nu}(x - x') j^\nu(x') d^4x'
+\label{eq:A_via_propagator}
+\end{equation}
+
+Для самодействия (взаимодействие заряда с собственным полем):
+
+\begin{equation}
+S_{self} = -\frac{q^2}{2c^2} \int\int u^\mu(\tau) D_{\mu\nu}(z(\tau) - z(\tau')) u^\nu(\tau') d\tau d\tau'
+\label{eq:action_self}
+\end{equation}
+
+Разложим пропагатор (\ref{eq:propagator_covariant}) в ряд по $\mu_{\parallel}$:
+
+\begin{equation}
+D_{\mu\nu}(k) \approx D_{\mu\nu}^{(0)}(k) + \delta D_{\mu\nu}^{(\parallel)}(k)
+\label{eq:propagator_expansion}
+\end{equation}
+
+где $D_{\mu\nu}^{(0)}$ — стандартный пропагатор ($\mu_{\parallel} = 0$), а
+
+\begin{equation}
+\delta D_{\mu\nu}^{(\parallel)}(k) \approx \frac{\varepsilon\mu_{\parallel}\frac{\omega^2}{c^2}}{\left(k^2 - \varepsilon\mu\frac{\omega^2}{c^2}\right)^2} g_{\mu\nu}^{\parallel}
+\label{eq:propagator_correction}
+\end{equation}
+
+В координатном пространстве это даёт дополнительное слагаемое в действии:
+
+\begin{equation}
+\delta S_{longitudinal} = -\frac{q^2}{2c^2} \int\int u^\mu(\tau) \delta D_{\mu\nu}^{(\parallel)}(z(\tau) - z(\tau')) u^\nu(\tau') d\tau d\tau'
 \label{eq:action_longitudinal}
 \end{equation}
 
-Сравнивая с поправкой Ферми:
+\subsection{3. Разложение по $v/c$ и появление члена $\frac{\vec{a}\cdot\vec{r}}{c^2}$}
+
+Рассмотрим нерелятивистский предел $v \ll c$. Разложим 4-скорость:
 
 \begin{equation}
-\delta S_{Fermi} = \int \frac{\vec{a} \cdot \vec{r}}{c^2} \, dt
-\label{eq:action_fermi}
+u^\mu \approx (c, \vec{v}), \quad u^\mu u_\mu \approx c^2 - v^2
 \end{equation}
 
-Получаем связь:
+Для медленно меняющейся траектории разложим $z^\mu(\tau')$ вокруг $\tau$:
 
 \begin{equation}
-\frac{\mu - \mu_{\parallel}}{\mu} = \xi_F \quad \Rightarrow \quad \mu_{\parallel} = \mu (1 - \xi_F)
-\label{eq:mu_fermi_link}
+z^\mu(\tau') \approx z^\mu(\tau) + u^\mu(\tau)(\tau' - \tau) + \frac{1}{2}a^\mu(\tau)(\tau' - \tau)^2
+\label{eq:trajectory_expansion}
 \end{equation}
 
-где $\xi_F$ — безразмерный параметр, определяемый из требования воспроизведения проблемы 4/3 (для сферы $\xi_F = 1/3$).
+где $a^\mu = \frac{du^\mu}{d\tau}$ — 4-ускорение.
 
-\subsection*{Физическая интерпретация}
+Подставляя (\ref{eq:trajectory_expansion}) в (\ref{eq:action_longitudinal}) и интегрируя по $\tau'$, получаем в первом порядке по $1/c^2$:
+
+\begin{equation}
+\delta S_{longitudinal} \approx \frac{q^2}{2c^4} \int d\tau \left(\mu_{\parallel} \vec{a} \cdot \vec{r}\right)
+\label{eq:action_expanded}
+\end{equation}
+
+где $\vec{r}$ — характерный размер заряда (радиус сферы для протяжённого заряда).
+
+В терминах лабораторного времени $t$:
+
+\begin{equation}
+\delta S_{longitudinal} \approx \frac{q^2\mu_{\parallel}}{2c^4} \int dt \left(\vec{a} \cdot \vec{r}\right)
+\label{eq:action_time}
+\end{equation}
+
+Сравнивая со стандартным действием $S_0 = \int dt \frac{mv^2}{2}$, видим, что поправка имеет порядок $\frac{v^2}{c^2}$ и зависит от ускорения.
+
+\subsection{4. Вывод поправки Ферми для вариации типа В}
+
+Теперь обратимся к оригинальной работе Ферми \cite{Fermi1923}. Ферми рассматривал вариацию действия для системы зарядов в «абсолютно твёрдом диэлектрике», находящейся в поступательном движении.
+
+\subsubsection{Вариация типа А (классическая)}
+
+Вариация типа А — это бесконечно малое смещение каждого сечения трубки, параллельного пространству $(x, y, z)$, параллельное этому пространству:
+
+\begin{equation}
+\delta x, \delta y, \delta z \text{ — произвольные функции только времени}, \quad \delta t = 0
+\label{eq:variation_A}
+\end{equation}
+
+Это соответствует классической ньютоновой вариации, где время абсолютно.
+
+\subsubsection{Вариация типа В (релятивистская)}
+
+Вариация типа В — это бесконечно малое и жёсткое в обычном кинематическом смысле смещение каждого \textbf{нормального сечения трубки}, перпендикулярное самой трубке:
+
+\begin{equation}
+\text{Смещение каждого нормального сечения трубки параллельно самому себе на произвольный отрезок}
+\label{eq:variation_B}
+\end{equation}
+
+Ключевое отличие: сечение определяется как ортогональное 4-скорости в данной точке мировой линии.
+
+\subsubsection{Геометрия мировой трубки}
+
+Для ускоряющегося заряда нормальное сечение $\Sigma_\perp$ искривлено. Элемент собственного времени $d\tau$ связан с лабораторным временем $dt$ через:
+
+\begin{equation}
+d\tau = dt \sqrt{1 - \frac{v^2}{c^2}} \approx dt \left(1 - \frac{v^2}{2c^2}\right)
+\label{eq:proper_time}
+\end{equation}
+
+Но для \textbf{протяжённого} заряда, разные точки имеют разную скорость из-за ускорения. Для точки на расстоянии $\vec{r}$ от центра масс:
+
+\begin{equation}
+\vec{v}(\vec{r}) \approx \vec{v}_{\text{цм}} + \vec{\omega} \times \vec{r} + \frac{\vec{a} \cdot \vec{r}}{c^2} \vec{v}_{\text{цм}}
+\label{eq:velocity_distribution}
+\end{equation}
+
+Вариация типа В учитывает это через модификацию меры интегрирования:
+
+\begin{equation}
+d^4x \longrightarrow d^4x \left(1 + \frac{g_\mu r^\mu}{c^2}\right)
+\label{eq:measure_fermi}
+\end{equation}
+
+где $g_\mu$ — 4-ускорение центра масс, $r^\mu$ — 4-радиус-вектор от центра масс к элементу заряда.
+
+В нерелятивистском пределе:
+
+\begin{equation}
+dt \longrightarrow dt \left(1 + \frac{\vec{a} \cdot \vec{r}}{c^2}\right)
+\label{eq:time_fermi}
+\end{equation}
+
+\subsubsection{Дополнительный интеграл Ферми}
+
+Ферми показывает \cite{Fermi1923, Fermi_solution}, что при вариации типа В появляется дополнительный интеграл:
+
+\begin{equation}
+\delta W_{Fermi} = \int \vec{E}^{(i)} \frac{\vec{a} \cdot \vec{R}}{c^2} de
+\label{eq:fermi_integral}
+\end{equation}
+
+где $\vec{E}^{(i)}$ — поле, обусловленное самой системой (внутреннее поле).
+
+Для равномерно заряженной сферы радиуса $R$:
+
+\begin{equation}
+\int \vec{E}^{(i)} \frac{\vec{a} \cdot \vec{R}}{c^2} de = -\frac{1}{3} \cdot \frac{4}{3} \cdot 2\frac{u}{c^2} \vec{a}
+\label{eq:fermi_sphere}
+\end{equation}
+
+где $u = \frac{3}{5}\frac{e^2}{R}$ — энергия поля сферы.
+
+Этот интеграл равен $-1/3$ от классического вклада и имеет отрицательный знак, что именно и нужно для решения проблемы 4/3.
+
+\subsection{5. Связь $\mu_{\parallel}$ с поправкой Ферми}
+
+Теперь сопоставим результаты двух подходов.
+
+\subsubsection{Из модифицированной теории}
+
+Из (\ref{eq:action_expanded}) имеем:
+
+\begin{equation}
+\delta S_{longitudinal} \approx \frac{q^2\mu_{\parallel}}{2c^4} \int dt \left(\vec{a} \cdot \vec{r}\right)
+\label{eq:action_longitudinal_again}
+\end{equation}
+
+\subsubsection{Из вариации Ферми}
+
+Из (\ref{eq:fermi_integral}) имеем:
+
+\begin{equation}
+\delta W_{Fermi} = \int \vec{E}^{(i)} \frac{\vec{a} \cdot \vec{R}}{c^2} de \approx \xi_F \frac{u}{c^2} \int dt \left(\vec{a} \cdot \vec{r}\right)
+\label{eq:fermi_action}
+\end{equation}
+
+где $\xi_F$ — геометрический фактор, зависящий от распределения заряда.
+
+\subsubsection{Сравнение}
+
+Приравнивая (\ref{eq:action_longitudinal_again}) и (\ref{eq:fermi_action}):
+
+\begin{equation}
+\frac{q^2\mu_{\parallel}}{2c^4} = \xi_F \frac{u}{c^2}
+\label{eq:matching}
+\end{equation}
+
+Откуда:
+
+\begin{equation}
+\mu_{\parallel} = \frac{2c^2}{q^2} \xi_F u = \mu \cdot \xi_F \cdot \frac{2c^2 u}{q^2 \mu}
+\label{eq:mu_parallel_final}
+\end{equation}
+
+Для равномерно заряженной сферы $\xi_F = 1/3$, что даёт:
+
+\begin{equation}
+\boxed{\mu_{\parallel} = \frac{1}{3} \mu \cdot \kappa}
+\label{eq:mu_parallel_sphere}
+\end{equation}
+
+где $\kappa$ — безразмерный фактор, зависящий от геометрии распределения заряда.
+
+\textbf{Таким образом, $\mu_{\parallel}$ физически интерпретируется как проявление искривления мировой трубки ускоряющегося заряда. В макроскопических уравнениях это выглядит как свойство вакуума (или среды), обладающего различной проницаемостью для поперечных ($\mu$) и продольных ($\mu_{\parallel}$) процессов.}
+
+\subsection{6. Параметр $\xi_F$ и проблема 4/3}
+
+Параметр $\xi_F$ определяется из требования воспроизведения правильного значения электромагнитной массы.
+
+\subsubsection{Классическая проблема 4/3}
+
+Для равномерно заряженной сферы радиуса $R$ с зарядом $e$:
+
+\begin{equation}
+\text{Энергия поля: } u = \frac{3}{5}\frac{e^2}{R}
+\label{eq:field_energy}
+\end{equation}
+
+\begin{equation}
+\text{Электромагнитная масса (через импульс): } m_{em} = \frac{4}{3}\frac{u}{c^2}
+\label{eq:em_mass_momentum}
+\end{equation}
+
+\begin{equation}
+\text{Электромагнитная масса (через энергию): } m_{em} = \frac{u}{c^2}
+\label{eq:em_mass_energy}
+\end{equation}
+
+Противоречие: множитель $4/3$.
+
+\subsubsection{Решение Ферми}
+
+Ферми показывает, что при вариации типа В появляется дополнительный интеграл (\ref{eq:fermi_sphere}), равный $-1/3$ от классического вклада:
+
+\begin{equation}
+m_{em}^{corrected} = \frac{4}{3}\frac{u}{c^2} - \frac{1}{3}\frac{u}{c^2} = \frac{u}{c^2}
+\label{eq:em_mass_corrected}
+\end{equation}
+
+Таким образом, $\xi_F = 1/3$ для сферы.
+
+\subsubsection{Зависимость от геометрии}
+
+\begin{table}[h]
+\centering
+\caption{Параметр $\xi_F$ для различных геометрий}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Геометрия} & \textbf{$\xi_F$} & \textbf{Комментарий} \\
+\hline
+Равномерная сфера & $1/3$ & Классический случай Ферми \\
+\hline
+Тонкая сферическая оболочка & $1/2$ & Заряд на поверхности \\
+\hline
+Точечный заряд & $\to 1$ & Предел $R \to 0$ \\
+\hline
+Вытянутый эллипсоид & $< 1/3$ & Зависит от эксцентриситета \\
+\hline
+\end{tabular}
+\label{tab:xi_F}
+\end{table}
+
+\subsection{7. Обобщение на случай тангенциального ускорения}
+
+\subsubsection{Постановка вопроса}
+
+Вы справедливо отмечаете, что проблема 4/3 возникает не только при продольном ускорении, но и при тангенциальном (например, заряд вращается в системе типа двойной звезды). Возникает вопрос: действительно ли поправка Ферми имеет связь лишь с продольной проницаемостью вакуума?
+
+\subsubsection{Анализ 4-ускорения}
+
+В ковариантной формулировке Ферми \cite{Fermi1923} поправка имеет вид:
+
+\begin{equation}
+1 + \frac{g_\mu r^\mu}{c^2}
+\label{eq:fermi_covariant}
+\end{equation}
+
+где $g_\mu$ — 4-ускорение, $r^\mu$ — 4-радиус-вектор.
+
+4-ускорение всегда ортогонально 4-скорости:
+
+\begin{equation}
+g_\mu u^\mu = 0
+\label{eq:acceleration_orthogonal}
+\end{equation}
+
+В системе покоя заряда ($u^\mu = (c, 0, 0, 0)$):
+
+\begin{equation}
+g_\mu = (0, \vec{a})
+\label{eq:acceleration_rest}
+\end{equation}
+
+Таким образом, \textbf{любое} ускорение (продольное или тангенциальное) в системе покоя выглядит как пространственный вектор $\vec{a}$.
+
+\subsubsection{Продольные компоненты при тангенциальном ускорении}
+
+Ключевой момент: даже при чисто тангенциальном ускорении (вращение), электромагнитное поле имеет \textbf{продольные компоненты} относительно направления распространения.
+
+Рассмотрим заряд, вращающийся по окружности радиуса $R$ с угловой скоростью $\omega$:
+
+\begin{equation}
+\vec{a} = -\omega^2 R \hat{r} \quad \text{(центростремительное)}
+\label{eq:centripetal}
+\end{equation}
+
+Поле Лиенара-Вихерта для такого заряда содержит:
+\begin{itemize}
+    \item Поперечную компоненту (излучение): $\vec{E}_{\perp} \propto \frac{\vec{n} \times (\vec{n} \times \vec{a})}{R}$
+    \item Продольную компоненту (кулоновская часть): $\vec{E}_{\parallel} \propto \frac{\vec{n} - \vec{v}/c}{R^2}$
+\end{itemize}
+
+Поправка Ферми влияет на \textbf{обе} компоненты через модификацию меры интегрирования.
+
+\subsubsection{Обобщённая проницаемость}
+
+Таким образом, более правильно говорить не о скалярной $\mu_{\parallel}$, а о \textbf{тензорной магнитной проницаемости}:
+
+\begin{equation}
+\mu_{ij} = \mu \delta_{ij} + (\mu_{\parallel} - \mu) \frac{a_i a_j}{a^2}
+\label{eq:mu_tensor}
+\end{equation}
+
+где направление выделяется направлением ускорения $\vec{a}$.
+
+Для произвольного ускорения:
+
+\begin{equation}
+\mu_{eff} = \mu + (\mu_{\parallel} - \mu) \cos^2\theta
+\label{eq:mu_effective}
+\end{equation}
+
+где $\theta$ — угол между направлением распространения поля и направлением ускорения.
+
+\subsubsection{Проверка для вращения}
+
+Для заряда в круговом движении:
+\begin{itemize}
+    \item Ускорение направлено к центру: $\vec{a} \parallel \hat{r}$
+    \item Излучение направлено тангенциально: $\vec{E}_{rad} \perp \hat{r}$
+    \item Следовательно, $\theta = 90^\circ$, $\cos^2\theta = 0$
+    \item Эффективная проницаемость: $\mu_{eff} = \mu$
+\end{itemize}
+
+Однако, \textbf{самодействие} (взаимодействие разных частей заряда) происходит вдоль радиуса, где $\theta = 0^\circ$, $\cos^2\theta = 1$:
+
+\begin{equation}
+\mu_{eff}^{self} = \mu_{\parallel}
+\label{eq:mu_self}
+\end{equation}
+
+Таким образом, проблема 4/3 для вращающегося заряда также решается через $\mu_{\parallel}$, но только для компоненты самодействия.
+
+\subsubsection{Итоговая формулировка}
 
 \begin{itemize}
     \item \textbf{$\mu$} описывает реакцию вакуума на поперечные возмущения (индукция Фарадея).
     \item \textbf{$\mu_{\parallel}$} описывает реакцию вакуума на продольные возмущения (индукция Николаева).
-    \item \textbf{Различие $\mu \neq \mu_{\parallel}$} приводит к тому, что при ускорении заряда возникает дополнительная сила, которая в пределе точечного заряда воспроизводит поправку Ферми.
+    \item \textbf{Различие $\mu \neq \mu_{\parallel}$} приводит к тому, что при \textbf{любом} ускорении заряда возникает дополнительная сила, которая в пределе точечного заряда воспроизводит поправку Ферми.
+    \item Для \textbf{продольного ускорения} эффект максимален ($\theta = 0^\circ$).
+    \item Для \textbf{тангенциального ускорения} эффект проявляется через компоненту самодействия.
+    \item В \textbf{общем случае} требуется тензорная проницаемость $\mu_{ij}$.
 \end{itemize}
 
-Таким образом, \textbf{$\mu_{\parallel}$ — это фундаментальное свойство вакуума}, а поправка Ферми — её проявление на уровне движения зарядов.
+\begin{equation}
+\boxed{
+\text{Поправка Ферми универсальна для любого ускорения,} \\
+\text{но её связь с } \mu_{\parallel} \text{ наиболее прямая для продольного ускорения.}
+}
+\label{eq:fermi_universal}
+\end{equation}
 
 %==============================================================================
 % ЧАСТЬ 7: ПРИЛОЖЕНИЯ

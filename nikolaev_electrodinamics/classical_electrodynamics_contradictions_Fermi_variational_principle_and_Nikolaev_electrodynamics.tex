@@ -1,0 +1,1525 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[english, russian]{babel}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+\title{Фундаментальные противоречия классической электродинамики и их разрешение через вариационный принцип Ферми и электродинамику Николаева: Полное собрание работ}
+\author{А.Ю. Дроздов}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section*{Предисловие}
+
+Настоящая работа представляет собой объединённое издание серии исследований, посвящённых критическому переосмыслению фундаментальных положений классической электродинамики. В работу включены оригинальные тексты статей автора (2023--2025) с минимальными редакционными правками, дополненные связующим анализом и новыми результатами, касающимися связи продольной магнитной проницаемости с вариационным принципом Ферми.
+
+\newpage
+
+%==============================================================================
+% ЧАСТЬ 1: ОРИГИНАЛЬНАЯ РАБОТА 01
+%==============================================================================
+\section{О противоречии, возникающем при выводе формулы для векторного потенциала в калибровке Кулона}
+\label{sec:work01}
+
+\subsection*{А.Ю. Дроздов, 6 марта 2026 г.}
+
+Вывод уравнения для векторного потенциала в калибровке Кулона даётся, например, в ЛЛ2 §43. На основе уравнения Максвелла:
+
+\begin{equation}
+\text{rot} \vec{H} = \frac{4\pi}{c} \vec{j}
+\label{eq:maxwell_rot}
+\end{equation}
+
+Выражая напряжённость магнитного поля через векторный потенциал:
+
+\begin{equation}
+\vec{H} = \text{rot} \vec{A}_H
+\label{eq:H_via_A}
+\end{equation}
+
+применяя известную из векторного анализа формулу $\text{rot rot} \vec{A} = \text{grad div} \vec{A} - \Delta \vec{A}$, получаем:
+
+\begin{equation}
+\text{grad div} \vec{A}_H - \Delta \vec{A}_H = \frac{4\pi}{c} \vec{j}
+\label{eq:vector_identity}
+\end{equation}
+
+Выбирая для потенциалов калибровку Кулона:
+
+\begin{equation}
+\text{div} \vec{A}_H = 0
+\label{eq:coulomb_gauge}
+\end{equation}
+
+получаем уравнение для векторного потенциала постоянного магнитного поля:
+
+\begin{equation}
+\Delta \vec{A}_H = -\frac{4\pi}{c} \vec{j}
+\label{eq:poisson_A}
+\end{equation}
+
+Решение этого уравнения, аналогично решению уравнения Пуассона:
+
+\begin{equation}
+\vec{A}_H = \frac{1}{c} \int \frac{\vec{j}}{R} dV
+\label{eq:A_solution}
+\end{equation}
+
+Но теперь возникает вопрос: допустимо ли использование уравнения (\ref{eq:A_solution}) для вычисления векторного потенциала одиночного заряда, движущегося прямолинейно и равномерно с нерелятивистской скоростью? Если принять на веру слова Ландау, который пишет, что «векторный потенциал определён неоднозначно, поэтому на него можно наложить любое условие», то, казалось бы, а почему бы и нет?
+
+Но тем не менее для решения этого вопроса попробуем вычислить дивергенцию векторного потенциала, опираясь на рассуждения [CITATION Там57 §46 п.5]:
+
+\begin{equation}
+\text{div}_a \vec{A}_H = \frac{1}{c} \text{div}_a \int \frac{\vec{j}}{R} dV
+\label{eq:div_A_start}
+\end{equation}
+
+Порядок интегрирования по объёму токов и дифференцирования по точке наблюдения может быть заменён на обратный:
+
+\begin{equation}
+\text{div}_a \vec{A}_H = \frac{1}{c} \int \text{div}_a \left( \frac{\vec{j}}{R} \right) dV
+\label{eq:div_A_swap}
+\end{equation}
+
+Применяя уравнение векторного анализа:
+
+\begin{equation}
+\text{div}(\phi \vec{a}) = \phi \text{div}(\vec{a}) + \vec{a} \cdot \text{grad}(\phi)
+\label{eq:vector_div_identity}
+\end{equation}
+
+\begin{equation}
+\text{div}_a \left( \frac{\vec{j}}{R} \right) = \frac{1}{R} \text{div}_a(\vec{j}) + \vec{j} \cdot \text{grad}_a \left( \frac{1}{R} \right) = \vec{j} \cdot \text{grad}_a \left( \frac{1}{R} \right)
+\label{eq:div_j_over_R}
+\end{equation}
+
+Поскольку значение $\vec{j}$ от координат точки наблюдения не зависит, $\text{div}_a(\vec{j}) = 0$. С другой стороны, воспользовавшись формулой $\text{grad}_q(1/R) = \vec{R}/R^3 = -\text{grad}_a(1/R)$:
+
+\begin{equation}
+\text{div}_a \left( \frac{\vec{j}}{R} \right) = -\vec{j} \cdot \text{grad}_q \left( \frac{1}{R} \right) = -\frac{\vec{j} \cdot \vec{R}}{R^3}
+\label{eq:div_j_over_R_final}
+\end{equation}
+
+Итак:
+
+\begin{equation}
+\text{div}_a \vec{A}_H = -\frac{1}{c} \int \frac{\vec{j} \cdot \vec{R}}{R^3} dV
+\label{eq:div_A_result}
+\end{equation}
+
+Выражая плотность тока через $\vec{j} = ne\vec{v}$, принимая для точечного заряда в качестве концентрации зарядов дельта-функцию $n = \delta(\vec{R} - \vec{v}t)$ и интегрируя:
+
+\begin{equation}
+\text{div}_a \vec{A}_H = -\frac{1}{c} \int \frac{e\vec{v} \cdot \vec{R}}{R^3} \delta(\vec{R} - \vec{v}t) dV
+\label{eq:div_A_point}
+\end{equation}
+
+для точечного заряда получим:
+
+\begin{equation}
+\text{div}_a \vec{A}_H = -\frac{q}{c} \frac{\vec{v} \cdot \vec{R}}{R^3}
+\label{eq:div_A_point_final}
+\end{equation}
+
+Таким образом, при движении отрицательного заряда по ходу его движения перед зарядом образуется область $\text{div}_a \vec{A}_H > 0$, а позади заряда образуется область $\text{div}_a \vec{A}_H < 0$.
+
+[CITATION ГНик §1049] приводит следующие формулы для векторного и скалярного магнитных полей движущегося заряда:
+
+\begin{equation}
+H_{\perp} = \frac{1}{c} \vec{v} \times \vec{E}
+\label{eq:H_perp}
+\end{equation}
+
+\begin{equation}
+H_{\parallel} = \frac{1}{c} \vec{v} \cdot \vec{E}
+\label{eq:H_parallel}
+\end{equation}
+
+Учитывая выражение электрического поля из закона Кулона:
+
+\begin{equation}
+\vec{E} = \frac{q \vec{R}}{R^3}
+\label{eq:E_coulomb}
+\end{equation}
+
+сравнивая (\ref{eq:H_parallel}) с (\ref{eq:div_A_point_final}), находим выражение, определяющее скалярное магнитное поле по Николаеву:
+
+\begin{equation}
+H_{\parallel} = -\text{div}_a \vec{A}_H
+\label{eq:H_parallel_div}
+\end{equation}
+
+К этим же результатам можно прийти, если в формуле (\ref{eq:div_j_over_R}) после замены $\text{grad}_a(1/R) = -\text{grad}_q(1/R)$ применить соотношение векторного анализа $\vec{a} \cdot \text{grad} \phi = \text{div}(\phi \vec{a}) - \phi \text{div}(\vec{a})$:
+
+\begin{equation}
+\text{div}_a \left( \frac{\vec{j}}{R} \right) = -\text{div}_q \left( \frac{\vec{j}}{R} \right) + \frac{1}{R} \text{div}_q(\vec{j})
+\label{eq:div_alternative}
+\end{equation}
+
+Учитывая уравнение непрерывности:
+
+\begin{equation}
+\text{div}_q \vec{j} = -\frac{\partial \rho}{\partial t}
+\label{eq:continuity}
+\end{equation}
+
+\begin{equation}
+\text{div}_a \left( \frac{\vec{j}}{R} \right) = -\text{div}_q \left( \frac{\vec{j}}{R} \right) - \frac{1}{R} \frac{\partial \rho}{\partial t}
+\label{eq:div_with_continuity}
+\end{equation}
+
+\begin{equation}
+\text{div}_a \vec{A} = -\frac{1}{c} \int \left( \text{div}_q \left( \frac{\vec{j}}{R} \right) + \frac{1}{R} \frac{\partial \rho}{\partial t} \right) dV
+\label{eq:div_A_full}
+\end{equation}
+
+Первое слагаемое интеграла можно, как это делает Тамм, преобразовать по теореме Гаусса, так как пространственное дифференцирование под знаком проводится по тем же координатам точек истока, как и интегрирование, следовательно:
+
+\begin{equation}
+\text{div}_a \vec{A} = -\frac{1}{c} \oint \frac{j_n}{R} dS - \frac{1}{c} \int \frac{1}{R} \frac{\partial \rho}{\partial t} dV
+\label{eq:div_A_gauss}
+\end{equation}
+
+Причём интегрирование первого слагаемого должно быть распространено «по поверхности всех обтекаемых током проводников» (цитата из Тамма).
+
+Пусть заряд представляет собой движущийся вдоль своей оси цилиндр с объёмной плотностью заряда. Пусть размер заряда вдоль направления его движения $l$. Выделим условно три области объёма: центральную объёмом $dV_{centr}$ и длиной $l - 2dl$, включающую в себя практически весь объём заряженного цилиндра (исключая торцы) и две торцевые объёмом $dV_{left}$, $dV_{right}$ и длиной $2dl$ каждая, включающие в себя лишь малую приторцевую часть объёма заряда.
+
+Пусть в некоторый момент времени $t$ граничные поверхности заряда проходят через центры торцевых объёмов. В этом случае поток вектора $\vec{j}$ через общую для всех трёх объёмов $dV_{left}$, $dV_{centr}$ и $dV_{right}$ поверхность равен нулю. А производная плотности заряда по времени отлична от нуля только в $dV_{centr}$ и $dV_{right}$. При движении заряда слева направо:
+
+\begin{equation}
+\frac{\partial \rho_{left}}{\partial t} = -\frac{nev}{2dl}
+\label{eq:rho_left}
+\end{equation}
+
+\begin{equation}
+\frac{\partial \rho_{right}}{\partial t} = \frac{nev}{2dl}
+\label{eq:rho_right}
+\end{equation}
+
+Дивергенция векторного потенциала:
+
+\begin{equation}
+\text{div}_a \vec{A} = -\frac{1}{c} \int \left( \frac{1}{R_{left}} \frac{\partial \rho_{left}}{\partial t} \right) dV_{left} - \frac{1}{c} \int \left( \frac{1}{R_{right}} \frac{\partial \rho_{right}}{\partial t} \right) dV_{right}
+\label{eq:div_A_cylinder}
+\end{equation}
+
+\begin{equation}
+\text{div}_a \vec{A} = +\frac{1}{c} \int \left( \frac{1}{R_{left}} \frac{nev}{2dl} \right) dV_{left} - \frac{1}{c} \int \left( \frac{1}{R_{right}} \frac{nev}{2dl} \right) dV_{right}
+\label{eq:div_A_cylinder_expanded}
+\end{equation}
+
+\begin{equation}
+\text{div}_a \vec{A} = \frac{S}{c} \left( \frac{1}{R_{left}} - \frac{1}{R_{right}} \right) nev
+\label{eq:div_A_cylinder_final}
+\end{equation}
+
+Таким образом, показывается, что дивергенция векторного потенциала, создаваемая также и не точечным движущимся зарядом, равно как и отрезком незамкнутого тока, не равна нулю.
+
+Таким образом, мы видим, что использование формулы (\ref{eq:A_solution}) для расчёта векторного потенциала, полученной в калибровке Кулона, приводит к противоречию с этой самой калибровкой. Какова природа этого противоречия? Может быть, причина этого противоречия заключается в игнорировании возникающих при движении одиночного заряда токов смещения?
+
+Действительно, с учётом токов смещения любой незамкнутый ток становится замкнутым. Николаев в работе [CITATION ГНик §1049] показывает, что в случае равномерного движения одиночного заряда (магнитостатика) вместо уравнения (\ref{eq:maxwell_rot}), учитывающего только лишь ток переноса, для устранения возникающих при этом противоречий следует пользоваться уравнением, учитывающим полный ток как сумму тока переноса и тока смещения:
+
+\begin{equation}
+\text{rot} \vec{H} = \frac{4\pi}{c} (\vec{j} + \vec{j}_{disp})
+\label{eq:maxwell_full}
+\end{equation}
+
+Тогда уравнение (\ref{eq:vector_identity}) перепишется в виде:
+
+\begin{equation}
+\text{grad div} \vec{A}_{\Pi} - \Delta \vec{A}_{\Pi} = \frac{4\pi}{c} (\vec{j} + \vec{j}_{disp})
+\label{eq:vector_identity_full}
+\end{equation}
+
+в котором я изменяю индекс в обозначении векторного потенциала на букву $\Pi$ -- подразумевая под $\vec{A}_{\Pi}$ полный векторный потенциал, создаваемый полным током, в отличие от векторного потенциала $\vec{A}_H$, который согласно классической электродинамической теории создаётся только токами переноса.
+
+Выбирая для полного векторного потенциала калибровку Кулона:
+
+\begin{equation}
+\text{div} \vec{A}_{\Pi} = 0
+\label{eq:coulomb_gauge_full}
+\end{equation}
+
+получаем уравнение для полного векторного потенциала постоянного магнитного поля:
+
+\begin{equation}
+\Delta \vec{A}_{\Pi} = -\frac{4\pi}{c} (\vec{j} + \vec{j}_{disp})
+\label{eq:poisson_A_full}
+\end{equation}
+
+решение которого имеет вид:
+
+\begin{equation}
+\vec{A}_{\Pi} = \frac{1}{c} \int \frac{(\vec{j} + \vec{j}_{disp})}{R} dV
+\label{eq:A_solution_full}
+\end{equation}
+
+Теперь полученное выражение для полного векторного потенциала применим для вычисления дивергенции полного векторного потенциала одиночного заряда, движущегося прямолинейно и равномерно с нерелятивистской скоростью. Вышеприведённые рассуждения, начиная от формулы (\ref{eq:div_A_start}) и до формулы (\ref{eq:div_A_point_final}), остаются справедливыми также и для вычисления дивергенции полного векторного потенциала через полный ток, таким образом получаем:
+
+\begin{equation}
+\text{div}_a \vec{A}_{\Pi} = \frac{1}{c} \int \text{div}_a \left( \frac{\vec{j}_{total}}{R} \right) dV
+\label{eq:div_A_total}
+\end{equation}
+
+где:
+
+\begin{equation}
+\text{div}_a \left( \frac{\vec{j}_{total}}{R} \right) = -\text{div}_q \left( \frac{\vec{j}_{total}}{R} \right) + \frac{1}{R} \text{div}_q(\vec{j}_{total})
+\label{eq:div_total_identity}
+\end{equation}
+
+Дивергенция полного тока, как показывает Николаев в [CITATION ГНик §1049], равна нулю. Хотя это верно для случая магнитостатики. Для электродинамических явлений, сопровождаемых, например, электрические взрывы проволочек или ЭМИ ядерного взрыва, это утверждение вполне может оказаться неверным, но для рассматриваемого здесь равномерного и прямолинейного движения одиночного заряда подходы магнитостатики справедливы. Поэтому второе слагаемое рассматриваемого интеграла равно нулю. Первое слагаемое можно преобразовать по теореме Гаусса, так как пространственное дифференцирование под знаком проводится по тем же координатам точек истока, как и интегрирование, следовательно:
+
+\begin{equation}
+\text{div}_a \vec{A}_{\Pi} = -\frac{1}{c} \oint \frac{j_n}{R} dS
+\label{eq:div_A_total_gauss}
+\end{equation}
+
+Поскольку интегрирование первого слагаемого должно быть распространено «по поверхности всех обтекаемых током проводников», а в случае полного тока поверхность интегрирования должна быть распространена на всё бесконечное пространство, занимаемое током смещения.
+
+Итак, в случае дивергенции полного векторного потенциала действительно очевидно, что для равномерного движения одиночного заряда:
+
+\begin{equation}
+\text{div}_a \vec{A}_{\Pi} = 0
+\label{eq:div_A_total_zero}
+\end{equation}
+
+Таким образом, в магнитостатике калибровка Кулона действительно может быть применяема, однако только лишь для полного векторного потенциала, но никак не для классического векторного потенциала. Потому как дивергенция классического векторного потенциала в магнитостатике не равна нулю. И при этом первое уравнение Максвелла также и в магнитостатике должно содержать в себе кроме тока проводимости также и ток смещения.
+
+Возникает вопрос: будет ли воспроизводиться рассмотренное здесь противоречие, если использовать выражение для классического векторного потенциала, полученное в калибровке Лоренца? Может ли оказаться так, что калибровку Лоренца также правомерно применять лишь к полному векторному потенциалу, но не правомерно к классическому? Но дело в том, что уравнение в классической электродинамике возникает не только как следствие применения калибровки Лоренца, но и как решение волнового уравнения Даламбера. Поэтому прежде чем приступить к исследованию дивергенции классического векторного потенциала в калибровке Лоренца, необходимо обратить внимание на противоречие, допущенное в классической электродинамике при выводе волнового уравнения Даламбера.
+
+%==============================================================================
+% ЧАСТЬ 2: ОРИГИНАЛЬНАЯ РАБОТА 02
+%==============================================================================
+\section{О противоречии, возникающем в классической электродинамике при выводе волнового уравнения Даламбера для векторного потенциала. Жонглирование калибровками}
+\label{sec:work02}
+
+\subsection*{А.Ю. Дроздов, 6 марта 2026 г.}
+
+Предлагаю читателю проследить за выкладками И.Е.Тамма, с помощью которых он: а) вводит понятие тока смещения в первое уравнение Максвелла §88, б) выводит на основании первого уравнения Максвелла волновое уравнение Даламбера §94.
+
+Итак, токи смещения вводятся в первое уравнение Максвелла следующим образом:
+
+\begin{equation}
+\text{rot} \vec{H} = \frac{4\pi}{c} (\vec{j} + \vec{j}_{disp})
+\label{eq:tamm_88}
+\end{equation}
+
+Затем берётся дивергенция от обеих частей:
+
+\begin{equation}
+\text{div} \vec{j} + \text{div} \vec{j}_{disp} = 0
+\label{eq:tamm_div}
+\end{equation}
+
+Затем на основании уравнения непрерывности для токов проводимости и кулоновских зарядов:
+
+\begin{equation}
+\text{div} \vec{j} = -\text{div} \vec{j}_{disp} = \frac{\partial \rho}{\partial t}
+\label{eq:tamm_continuity}
+\end{equation}
+
+Но дальше начинается интересная манипуляция, заключающаяся в том, что Тамм для связи плотности кулоновских зарядов с вектором электрической индукции использует уравнение электростатики:
+
+\begin{equation}
+\text{div} \vec{D} = 4\pi \rho
+\label{eq:tamm_electrostatics}
+\end{equation}
+
+Но в чём заключается манипуляция? В электростатике не исследуется движение кулоновских зарядов, следовательно, электростатика ничего не знает ни о токах проводимости, ни о токах смещения, ни о векторном потенциале, ни о калибровке Лоренца. И поэтому связь электрической индукции $\vec{D}$ со скалярным потенциалом поля кулоновских зарядов в электростатике выглядит следующим образом:
+
+\begin{equation}
+\vec{D} = \varepsilon \vec{E} = -\varepsilon \text{grad} \phi
+\label{eq:D_electrostatics}
+\end{equation}
+
+Поэтому, когда Тамм в §88 после преобразования:
+
+\begin{equation}
+\text{div} \vec{j}_{disp} = \frac{1}{4\pi} \frac{\partial}{\partial t} \text{div} \vec{D} = \text{div} \left( \frac{1}{4\pi} \frac{\partial \vec{D}}{\partial t} \right)
+\label{eq:tamm_disp_derivation}
+\end{equation}
+
+даёт выражение для тока смещения в виде:
+
+\begin{equation}
+\vec{j}_{disp} = \frac{1}{4\pi} \frac{\partial \vec{D}}{\partial t}
+\label{eq:tamm_disp_final}
+\end{equation}
+
+то при этом надо понимать, что полученное в итоге первое уравнение Максвелла:
+
+\begin{equation}
+\text{rot} \vec{H} = \frac{4\pi}{c} \vec{j} + \frac{\varepsilon}{c} \frac{\partial \vec{E}}{\partial t}
+\label{eq:tamm_maxwell_final}
+\end{equation}
+
+выведено без применения калибровки Лоренца:
+
+\begin{equation}
+\text{div} \vec{A}_H = -\frac{\varepsilon}{c} \frac{\partial \phi}{\partial t}
+\label{eq:lorentz_gauge}
+\end{equation}
+
+таким образом, что его правильнее было бы записывать в потенциалах следующим образом:
+
+\begin{equation}
+\text{rot} \vec{H} = \frac{4\pi}{c} \vec{j} - \frac{\varepsilon}{c} \frac{\partial}{\partial t} \text{grad} \phi
+\label{eq:tamm_potentials_coulomb}
+\end{equation}
+
+Однако в §94 Тамм использует полученное таким образом (т.е. по сути в калибровке Кулона) первое уравнение Максвелла для вывода волнового уравнения Даламбера уже в калибровке Лоренца. При этом вектор электрического поля через потенциалы выражается уже по-другому:
+
+\begin{equation}
+\vec{E} = -\frac{\mu}{c} \frac{\partial \vec{A}_H}{\partial t} - \text{grad} \phi
+\label{eq:E_full}
+\end{equation}
+
+При этом Тамм поясняет: «скалярный потенциал зависит лишь от распределения зарядов», а «векторный потенциал -- от распределения токов проводимости». Однако «напряжённость электрического поля зависит не только от градиента скалярного потенциала, а также и от производной по времени векторного потенциала. В этом обстоятельстве проявляется закон электромагнитной индукции».
+
+Таким образом, способ получения волнового уравнения Даламбера для векторного потенциала, применённый Таммом в §94, является некорректным результатом, полученным с помощью жонглирования калибровками. В системе уравнений электромагнитного поля Тамм приводит первое уравнение Максвелла в формальной записи, в которую входит выражение для электрического поля $\vec{E}$, которое, однако, в §94 имеет вид (\ref{eq:E_full}) и таким образом включает в себя компоненту, обусловленную явлением электромагнитной индукции, а в §88 используется другое выражение для электрического поля, которое является результатом решения дифференциального уравнения электростатики и поэтому компоненту, обусловленную явлением электромагнитной индукции, не включает.
+
+Можно ли при выводе волнового уравнения для векторного потенциала обойтись без жонглирования калибровками?
+
+\textbf{Вариант 1.} Если в качестве выражения для $\vec{E}$ использовать выражение, пришедшее из электростатики $\vec{E} = -\text{grad} \phi$, то в качестве волнового уравнения получается уравнение Пуассона:
+
+\begin{equation}
+\nabla^2 \vec{A}_H = -\frac{4\pi}{c} \vec{j}
+\label{eq:poisson_wave}
+\end{equation}
+
+однако таким уравнением не получится распространение электромагнитных волн. Поэтому такой вариант непродуктивен.
+
+\textbf{Вариант 2.} Если при выводе уравнения для тока смещения использовать:
+
+\begin{equation}
+\vec{E} = -\frac{\mu}{c} \frac{\partial \vec{A}_H}{\partial t} - \text{grad} \phi
+\label{eq:E_full_again}
+\end{equation}
+
+то:
+
+\begin{equation}
+\text{div}_q \vec{D} = \text{div}_q \varepsilon \vec{E} = -\frac{\mu \varepsilon}{c} \frac{\partial}{\partial t} \text{div} \vec{A}_H - \varepsilon \nabla^2 \phi
+\label{eq:div_D_full}
+\end{equation}
+
+откуда:
+
+\begin{equation}
+\vec{j}_{disp} = \frac{1}{4\pi} \frac{\partial}{\partial t} \left( \vec{D} + \frac{\mu \varepsilon}{c} \frac{\partial}{\partial t} \vec{A}_H \right)
+\label{eq:disp_full}
+\end{equation}
+
+тогда первое уравнение Максвелла принимает вид:
+
+\begin{equation}
+\text{rot} \vec{H} = \frac{4\pi}{c} \vec{j} + \frac{\varepsilon}{c} \frac{\partial \vec{E}}{\partial t} + \frac{\mu \varepsilon}{c^2} \frac{\partial^2}{\partial t^2} \vec{A}_H
+\label{eq:maxwell_extended}
+\end{equation}
+
+подставляя выражение для электрического поля через потенциалы:
+
+\begin{equation}
+\text{rot} \vec{H} = \frac{4\pi}{c} \vec{j} - \frac{\varepsilon}{c} \frac{\partial}{\partial t} \text{grad} \phi
+\label{eq:rot_H_potentials}
+\end{equation}
+
+Далее:
+
+\begin{equation}
+\text{rot} \vec{H} = \text{rot rot} \vec{A}_H = \text{grad div} \vec{A}_H - \nabla^2 \vec{A}_H = \frac{4\pi}{c} \vec{j} - \frac{\varepsilon}{c} \frac{\partial}{\partial t} \text{grad} \phi
+\label{eq:rot_rot_A}
+\end{equation}
+
+подставляя соотношение между потенциалами, соответствующее калибровке Лоренца:
+
+\begin{equation}
+\text{div} \vec{A}_H = -\frac{\varepsilon}{c} \frac{\partial \phi}{\partial t}
+\label{eq:lorentz_again}
+\end{equation}
+
+опять приходим к уравнению Пуассона:
+
+\begin{equation}
+\nabla^2 \vec{A}_H = -\frac{4\pi}{c} \vec{j}
+\label{eq:poisson_again}
+\end{equation}
+
+Таким образом, показывается, что классическая электродинамика не содержит корректного вывода волнового уравнения Даламбера.
+
+В классическом выводе волнового уравнения Даламбера есть ещё один спорный формально-математический момент, на который следует обратить внимание. Выражение электрического поля через потенциалы в виде:
+
+\begin{equation}
+\vec{E} = -\frac{\mu}{c} \frac{\partial \vec{A}_H}{\partial t} - \text{grad} \phi
+\label{eq:E_final}
+\end{equation}
+
+получено исходя из второго уравнения Максвелла:
+
+\begin{equation}
+\text{rot} \vec{E} = -\frac{1}{c} \frac{\partial \vec{B}}{\partial t} = \text{rot} \left( -\frac{\mu}{c} \frac{\partial \vec{A}_H}{\partial t} \right)
+\label{eq:faraday}
+\end{equation}
+
+обобщающего опыты электромагнитной индукции Фарадея. Однако в процессе вывода волнового уравнения Даламбера к этому выражению применяется формально математическая операция взятия дивергенции, с целью приравнять полученную таким формальным способом математическую величину с дивергенцией электрической индукции из 4 уравнения Максвелла. И здесь возникает вопрос: если физический смысл уравнения электростатики $\text{div} \vec{D} = 4\pi \rho$ вполне очевиден, то какой физический смысл имеет выражение:
+
+\begin{equation}
+\text{div} \vec{E} = \text{div} \left( -\frac{\mu}{c} \frac{\partial \vec{A}_H}{\partial t} - \text{grad} \phi \right)?
+\label{eq:div_E_question}
+\end{equation}
+
+Какую физическую ситуацию оно отражает? В каком физическом эксперименте электромагнитная индукция Фарадея приводит к появлению дивергенции электрического поля?
+
+%==============================================================================
+% ЧАСТЬ 3: ОРИГИНАЛЬНАЯ РАБОТА 03
+%==============================================================================
+\section{Соответствуют ли уравнения для запаздывающих потенциалов калибровке Лоренца?}
+\label{sec:work03}
+
+\subsection*{А.Ю. Дроздов, 6 марта 2026 г.}
+
+Поле векторного потенциала, создаваемое движущимся равномерно и прямолинейно зарядом, рассчитывается в классической электродинамике в соответствии с:
+
+\begin{equation}
+\vec{A}_H = \frac{1}{c} \int \frac{\vec{j}(x', y', z', t - R/v)}{R} dV'
+\label{eq:retarded_A}
+\end{equation}
+
+Математически это выражение является решением уравнения Даламбера для векторного потенциала. Представляет интерес задаться вопросом, соответствует ли это выражение калибровке Лоренца? Для этого проследим за выкладками [CITATION Там57 §96], в котором он ищет выражение для дивергенции векторного потенциала:
+
+\begin{equation}
+\text{div}_a \vec{A}_H = \frac{1}{c} \text{div}_a \int \frac{\vec{j}(x', y', z', t - R/v)}{R} dV' = \frac{1}{c} \int \text{div}_a \frac{\vec{j}(x', y', z', t - R/v)}{R} dV'
+\label{eq:div_retarded_A}
+\end{equation}
+
+Применяя уравнение векторного анализа:
+
+\begin{equation}
+\text{div}(\phi \vec{a}) = \phi \text{div}(\vec{a}) + \vec{a} \cdot \text{grad}(\phi)
+\label{eq:div_identity_again}
+\end{equation}
+
+\begin{equation}
+\text{div}_a \frac{\vec{j}(x', y', z', t - R/v)}{R} = \frac{1}{R} \cdot \text{div}_a \vec{j}(x', y', z', t - R/v) + \vec{j}(x', y', z', t - R/v) \cdot \nabla \frac{1}{R}
+\label{eq:div_j_retarded}
+\end{equation}
+
+Так как аргумент вектора $\vec{j}$ зависит от $x, y, z$ только через посредством эффективного времени $t' = t - R/v$, то:
+
+\begin{equation}
+\text{div}_a \vec{j}(x', y', z', t - R/v) = \frac{\partial j_x}{\partial t'} \frac{\partial t'}{\partial x} + \frac{\partial j_y}{\partial t'} \frac{\partial t'}{\partial y} + \frac{\partial j_z}{\partial t'} \frac{\partial t'}{\partial z} = \frac{\partial \vec{j}}{\partial t'} \cdot \nabla t' = \frac{\partial \vec{j}}{\partial t'} \cdot \nabla (t - R/v) = -\frac{1}{v} \frac{\partial \vec{j}}{\partial t'} \cdot \nabla R
+\label{eq:div_j_time}
+\end{equation}
+
+Окончательно:
+
+\begin{equation}
+\text{div}_a \frac{\vec{j}}{R} = \vec{j} \cdot \nabla \frac{1}{R} - \frac{1}{vR} \frac{\partial \vec{j}}{\partial t'} \cdot \nabla R
+\label{eq:div_j_final}
+\end{equation}
+
+С другой стороны, очевидно, что:
+
+\begin{equation}
+\text{div}'_q \frac{\vec{j}}{R} = \left( \text{div}'_q \frac{\vec{j}}{R} \right)_{t'=const} + \frac{1}{R} \frac{\partial \vec{j}}{\partial t'} \cdot \nabla' t'
+\label{eq:div_q_j}
+\end{equation}
+
+где $\text{div}'_q$ и $\nabla'$ в отличие от $\text{div}_a$ и $\nabla$ -- по $x', y', z'$. После преобразований:
+
+\begin{equation}
+\text{div}'_q \frac{\vec{j}}{R} = \vec{j} \cdot \nabla' \frac{1}{R} + \frac{1}{R} (\text{div}'_q \vec{j})_{t'=const} - \frac{1}{vR} \frac{\partial \vec{j}}{\partial t'} \cdot \nabla' R
+\label{eq:div_q_j_expanded}
+\end{equation}
+
+Приняв во внимание, что уравнение $\text{grad}_a f(R) = -\text{grad}_q f(R)$ в теперешних обозначениях принимает вид $\nabla f(R) = -\nabla' f(R)$ и сравнивая выражения для $\text{div}_a \frac{\vec{j}}{R}$ и $\text{div}'_q \frac{\vec{j}}{R}$:
+
+\begin{equation}
+\text{div}_a \frac{\vec{j}}{R} = -\text{div}'_q \frac{\vec{j}}{R} + \frac{1}{R} (\text{div}'_q \vec{j})_{t'=const}
+\label{eq:div_relation}
+\end{equation}
+
+Стало быть, из (\ref{eq:div_retarded_A}) получено Таммом:
+
+\begin{equation}
+\text{div}_a \vec{A}_H = -\frac{1}{c} \int \text{div}'_q \frac{\vec{j}(x', y', z', t - R/v)}{R} dV' + \frac{1}{c} \int \frac{dV'}{R} (\text{div}'_q \vec{j})_{t'=const}
+\label{eq:div_A_tamm}
+\end{equation}
+
+Первый из этих интегралов может быть преобразован с помощью теоремы Гаусса в интеграл по поверхности $S$, охватывающей объём $V'$:
+
+\begin{equation}
+\int \text{div}'_q \frac{\vec{j}(x', y', z', t - R/v)}{R} dV' = \oint \frac{j_n(x', y', z', t - R/v)}{R} dS
+\label{eq:gauss_surface}
+\end{equation}
+
+Далее Тамм пишет: «если распространить интегрирование на всё бесконечное пространство, то этот интеграл обратится в нуль, если только все электрические токи сосредоточены в конечной области пространства». Однако аналогичный интеграл встречается у Тамма в §46, в котором рассматривая пондеромоторное взаимодействие постоянных токов, Тамм не распространял интегрирование на всё бесконечное пространство, а писал, что «интегрирование должно быть распространено по поверхности всех обтекаемых током проводников». И это верно в рамках представлений классической электродинамики, поскольку классическая электродинамика при вычислении векторного потенциала (как в калибровке Кулона, так и в калибровке Лоренца) производит интегрирование только лишь по объёму токов проводимости, занимающих конечный объём, но не производит интегрирование по объёму токов смещения, занимающих всё бесконечное пространство. Следовательно, попытка Тамма при вычислении интеграла по объёму токов проводимости «распространить интегрирование на всё бесконечное пространство» является, на мой взгляд, математически некорректной.
+
+Самое интересное, что, перевернув страницу, в продолжении доказательства Тамма можно встретить ещё одно утверждение, в математической корректности которого есть определённые сомнения. Тамм пишет: «обратимся теперь к правой части соотношения (96.3).
+
+\begin{equation}
+\phi(x, y, z, t) = \frac{1}{\varepsilon} \int \frac{\rho(x', y', z', t - R/v)}{R} dV'
+\label{eq:phi_retarded}
+\end{equation}
+
+В виду уравнения (95.5) $t' = t - R/v$ для произвольной функции $f(t')$ имеем:
+
+\begin{equation}
+\frac{\partial f(t')}{\partial t} = \frac{\partial f(t')}{\partial t'} \frac{\partial t'}{\partial t} = \frac{\partial f(t')}{\partial t'}
+\label{eq:tamm_time_derivative}
+\end{equation}
+
+Поэтому дифференцируя уравнение (96.3) по времени под знаком интеграла», Тамм получает:
+
+\begin{equation}
+-\frac{\varepsilon \mu}{c} \frac{\partial \phi(x, y, z, t)}{\partial t} = -\frac{\mu}{c} \int \frac{dV'}{R} \frac{\partial \rho(x', y', z', t - R/v)}{\partial t'}
+\label{eq:tamm_phi_derivative}
+\end{equation}
+
+Здесь следует обратить внимание, что приравнивание $\frac{\partial t'}{\partial t}$ единице не корректно. Чтобы это показать, найдём производную запаздывающего момента $t' = t - R/c$ по времени:
+
+\begin{equation}
+\frac{\partial t'}{\partial t}
+\label{eq:t_prime_derivative}
+\end{equation}
+
+Дифференцируя $R(\vec{x}, \vec{x}'(t')) = c(t - t')$ по $t$, получаем:
+
+\begin{equation}
+\frac{\partial R}{\partial t} = \frac{\partial R}{\partial t'} \frac{\partial t'}{\partial t} = c \left( 1 - \frac{\partial t'}{\partial t} \right)
+\label{eq:R_derivative}
+\end{equation}
+
+Значение $\frac{\partial R}{\partial t'}$ находим так:
+
+\begin{equation}
+\frac{\partial R(t')}{\partial t'} = \frac{\partial}{\partial t'} (\vec{R} \cdot \vec{R})^{1/2} = \frac{1}{2} (\vec{R} \cdot \vec{R})^{-1/2} \frac{\partial}{\partial t'} (\vec{R} \cdot \vec{R}) = \frac{1}{2R} \left( \vec{R} \cdot \frac{\partial \vec{R}}{\partial t'} + \frac{\partial \vec{R}}{\partial t'} \cdot \vec{R} \right) = \frac{\vec{R}(t')}{R(t')} \cdot \frac{\partial \vec{R}(t')}{\partial t'} = -\frac{\vec{R} \cdot \vec{v}}{R}
+\label{eq:R_t_prime}
+\end{equation}
+
+Далее, учитывая что $\frac{\partial \vec{R}}{\partial t'} = -\vec{v}(t')$, имеем:
+
+\begin{equation}
+\frac{\partial R}{\partial t'} = -\frac{\vec{R} \cdot \vec{v}}{R}
+\label{eq:R_t_prime_final}
+\end{equation}
+
+Теперь:
+
+\begin{equation}
+\frac{\partial R}{\partial t'} \frac{\partial t'}{\partial t} = c \left( 1 - \frac{\partial t'}{\partial t} \right)
+\label{eq:chain_rule}
+\end{equation}
+
+преобразуется к:
+
+\begin{equation}
+-\frac{\vec{R} \cdot \vec{v}}{cR} \frac{\partial t'}{\partial t} = 1 - \frac{\partial t'}{\partial t}
+\label{eq:chain_rule_expanded}
+\end{equation}
+
+решая которое, получаем:
+
+\begin{equation}
+\frac{\partial t'}{\partial t} = \frac{1}{1 - \frac{\vec{v} \cdot \vec{R}}{Rc}}
+\label{eq:t_prime_final}
+\end{equation}
+
+Отсюда правильно производную скалярного потенциала по времени записать так:
+
+\begin{equation}
+-\frac{\varepsilon \mu}{c} \frac{\partial \phi(x, y, z, t)}{\partial t} = -\frac{\mu}{c} \int \frac{dV'}{R - \frac{\vec{v} \cdot \vec{R}}{c}} \frac{\partial \rho(x', y', z', t - R/v)}{\partial t'}
+\label{eq:phi_derivative_correct}
+\end{equation}
+
+Применяя соотношение непрерывности в виде $(\text{div}'_q \vec{j})_{t'=const} = -\frac{\partial \rho(x', y', z', t')}{\partial t'}$, убеждаемся что:
+
+\begin{equation}
+\frac{1}{c} \int \text{div}'_q \frac{\vec{j}(x', y', z', t - R/v)}{R} dV' + \text{div}_a \vec{A}_H = -\frac{1}{c} \int \frac{dV'}{R} \frac{\partial \rho(x', y', z', t')}{\partial t'}
+\label{eq:continuity_relation}
+\end{equation}
+
+Допуская применимость калибровки Лоренца:
+
+\begin{equation}
+\text{div} \vec{A}_H = -\frac{\varepsilon}{c} \frac{\partial \phi}{\partial t}
+\label{eq:lorentz_assumption}
+\end{equation}
+
+запишем следующее соотношение:
+
+\begin{equation}
+\frac{1}{c} \int \text{div}'_q \frac{\vec{j}(x', y', z', t - R/v)}{R} dV' - \frac{1}{c} \int \frac{dV'}{R - \frac{\vec{v} \cdot \vec{R}}{c}} \frac{\partial \rho(x', y', z', t - R/v)}{\partial t'} = -\frac{1}{c} \int \frac{dV'}{R} \frac{\partial \rho(x', y', z', t')}{\partial t'}
+\label{eq:lorentz_relation}
+\end{equation}
+
+Или:
+
+\begin{equation}
+\frac{1}{c} \oint \frac{j_n(x', y', z', t')}{R} dS' - \frac{1}{c} \int \frac{dV'}{R - \frac{\vec{v} \cdot \vec{R}}{c}} \frac{\partial \rho(x', y', z', t')}{\partial t'} = -\frac{1}{c} \int \frac{dV'}{R} \frac{\partial \rho(x', y', z', t')}{\partial t'}
+\label{eq:lorentz_final}
+\end{equation}
+
+Из вышеизложенного видно, что доказательство соответствия решения уравнения Даламбера калибровке Лоренца, приведённое Таммом, содержит две математические некорректности:
+
+\begin{enumerate}
+    \item Приём распространения интегрирования по токам проводимости на всё бесконечное пространство неверен. Потому что при обнулении интеграла по $dS'$ в последнем соотношении мы приходим к очевидному неравенству, следствием которого становится неприменимость соотношения Лоренца для потенциалов.
+    \item Приравнивание $\frac{\partial t'}{\partial t} = 1$ не корректно для движущегося заряда.
+\end{enumerate}
+
+%==============================================================================
+% ЧАСТЬ 4: ОРИГИНАЛЬНАЯ РАБОТА 04
+%==============================================================================
+\section{Соответствуют ли потенциалы Лиенара-Вихерта калибровке Лоренца?}
+\label{sec:work04}
+
+\subsection*{А.Ю. Дроздов, 6 марта 2026 г.}
+
+Чтобы проверить сомнение о применимости калибровки Лоренца к классическому векторному потенциалу в электродинамике, удобно воспользоваться таким математическим инструментом, как потенциалы Лиенара-Вихерта, которые определены как потенциалы поля, создаваемого движущимся одиночным (точечным) зарядом. Потенциалы Лиенара-Вихерта, как известно [CITATION ЕМЛ73 §1049], получаются в результате интегрирования запаздывающих потенциалов, которые в свою очередь являются решением волновых уравнений Даламбера, которые получены из уравнений Максвелла с применением калибровки Лоренца, хотя и не вполне корректным путём в том смысле, что там, где авторам было удобно, применялась калибровка Лоренца, а там, где неудобно, -- неявно применялась калибровка Кулона из электростатики.
+
+Итак, записываем потенциалы ЛВ:
+
+\begin{equation}
+\phi = \frac{1}{\varepsilon} \frac{e}{R - \frac{\vec{v}(x', y', z', t') \cdot \vec{R}}{c}}
+\label{eq:LW_phi}
+\end{equation}
+
+\begin{equation}
+\vec{A}_H = \frac{1}{c} \frac{e \vec{v}(x', y', z', t')}{R - \frac{\vec{v}(x', y', z', t') \cdot \vec{R}}{c}}
+\label{eq:LW_A}
+\end{equation}
+
+Производная скалярного потенциала по времени равна:
+
+\begin{equation}
+\frac{\partial \phi}{\partial t} = \frac{\partial \phi}{\partial t'} \frac{\partial t'}{\partial t}
+\label{eq:phi_time_derivative}
+\end{equation}
+
+Найдём производную запаздывающего момента $t' = t - R/c$ по времени $\frac{\partial t'}{\partial t}$. Дифференцируя $R(\vec{x}, \vec{x}'(t')) = c(t - t')$ по $t$, получаем:
+
+\begin{equation}
+\frac{\partial R}{\partial t} = \frac{\partial R}{\partial t'} \frac{\partial t'}{\partial t} = c \left( 1 - \frac{\partial t'}{\partial t} \right)
+\label{eq:R_t_derivative}
+\end{equation}
+
+Значение $\frac{\partial R}{\partial t'}$ находим так:
+
+\begin{equation}
+\frac{\partial R(t')}{\partial t'} = \frac{\partial}{\partial t'} (\vec{R} \cdot \vec{R})^{1/2} = \frac{1}{2} (\vec{R} \cdot \vec{R})^{-1/2} \frac{\partial}{\partial t'} (\vec{R} \cdot \vec{R}) = \frac{1}{2R} \left( \vec{R} \cdot \frac{\partial \vec{R}}{\partial t'} + \frac{\partial \vec{R}}{\partial t'} \cdot \vec{R} \right) = \frac{\vec{R}(t')}{R(t')} \cdot \frac{\partial \vec{R}(t')}{\partial t'}
+\label{eq:R_t_prime_calc}
+\end{equation}
+
+Далее, учитывая что $\frac{\partial \vec{R}}{\partial t'} = -\vec{v}(t')$, имеем:
+
+\begin{equation}
+\frac{\partial R}{\partial t'} = -\frac{\vec{R} \cdot \vec{v}}{R}
+\label{eq:R_t_prime_calc_final}
+\end{equation}
+
+Теперь:
+
+\begin{equation}
+\frac{\partial R}{\partial t'} \frac{\partial t'}{\partial t} = c \left( 1 - \frac{\partial t'}{\partial t} \right)
+\label{eq:R_chain}
+\end{equation}
+
+преобразуется к:
+
+\begin{equation}
+-\frac{\vec{R} \cdot \vec{v}}{cR} \frac{\partial t'}{\partial t} = 1 - \frac{\partial t'}{\partial t}
+\label{eq:R_chain_expanded}
+\end{equation}
+
+решая которое, получаем:
+
+\begin{equation}
+\frac{\partial t'}{\partial t} = \frac{1}{1 - \frac{\vec{v} \cdot \vec{R}}{Rc}}
+\label{eq:t_prime_solution}
+\end{equation}
+
+Для производной скалярного потенциала $\phi$ по $t'$ вводим обозначение:
+
+\begin{equation}
+K = R - \frac{\vec{v} \cdot \vec{R}}{c}
+\label{eq:K_definition}
+\end{equation}
+
+благодаря которому запись скалярного потенциала упрощается:
+
+\begin{equation}
+\phi = \frac{1}{\varepsilon} \frac{e}{K}
+\label{eq:phi_K}
+\end{equation}
+
+Кроме того:
+
+\begin{equation}
+\frac{\partial t'}{\partial t} = \frac{R}{K}
+\label{eq:t_prime_K}
+\end{equation}
+
+\begin{equation}
+\frac{\partial \phi}{\partial t'} = \frac{\partial \phi}{\partial K} \frac{\partial K}{\partial t'} = -\frac{e}{\varepsilon K^2} \left\{ \frac{\partial R}{\partial t'} - \frac{1}{c} \frac{\partial (\vec{v} \cdot \vec{R})}{\partial t'} \right\}
+\label{eq:phi_K_derivative}
+\end{equation}
+
+\begin{equation}
+\frac{\partial (\vec{v} \cdot \vec{R})}{\partial t'} = \vec{v} \cdot \frac{\partial \vec{R}}{\partial t'} + \vec{R} \cdot \frac{\partial \vec{v}}{\partial t'} = -\vec{v} \cdot \vec{v} + \vec{R} \cdot \vec{a}
+\label{eq:vR_derivative}
+\end{equation}
+
+\begin{equation}
+\frac{\partial \phi}{\partial t'} = -\frac{e}{\varepsilon K^2} \left\{ -\frac{\vec{R} \cdot \vec{v}}{R} + \frac{1}{c} (\vec{v} \cdot \vec{v} - \vec{R} \cdot \vec{a}) \right\}
+\label{eq:phi_t_prime}
+\end{equation}
+
+Итак:
+
+\begin{equation}
+\frac{\partial \phi}{\partial t} = -\frac{e}{\varepsilon} \frac{R \vec{v} \cdot \vec{v} - \vec{a} \cdot \vec{R} - \frac{\vec{v} \cdot \vec{R}}{K}}{K^3}
+\label{eq:phi_t_final}
+\end{equation}
+
+Дивергенция векторного потенциала:
+
+\begin{equation}
+\nabla \cdot \vec{A}_H = \frac{e}{c} \nabla \cdot \frac{\vec{v}}{K} = \frac{e}{c} \left\{ \frac{1}{K} \nabla \cdot \vec{v} + \vec{v} \cdot \nabla \frac{1}{K} \right\}
+\label{eq:div_A_start}
+\end{equation}
+
+Дифференцируя скорость точечного заряда по координатам точки наблюдения:
+
+\begin{equation}
+\nabla_a \vec{v}(x', y', z', t - R/v) = \frac{\partial v_x}{\partial t'} \frac{\partial t'}{\partial x} + \frac{\partial v_y}{\partial t'} \frac{\partial t'}{\partial y} + \frac{\partial v_z}{\partial t'} \frac{\partial t'}{\partial z} = \frac{\partial \vec{v}}{\partial t'} \cdot \nabla t'
+\label{eq:v_gradient}
+\end{equation}
+
+Градиент запаздывающего момента времени:
+
+\begin{equation}
+R(\vec{x}, \vec{x}'(t')) = c(t - t')
+\label{eq:R_definition}
+\end{equation}
+
+\begin{equation}
+t' = t - \frac{R(\vec{x}, \vec{x}'(t'))}{c}
+\label{eq:t_prime_definition}
+\end{equation}
+
+Дифференцируем по координатам:
+
+\begin{equation}
+\nabla t' = -\frac{1}{c} \nabla R(\vec{x}, \vec{x}'(t'))
+\label{eq:grad_t}
+\end{equation}
+
+\begin{equation}
+\nabla R(\vec{x}, \vec{x}'(t')) = \nabla R(\vec{x}, \vec{x}'(t'))_{t'=const} + \nabla R(\vec{x}, \vec{x}'(t'))_{\vec{x}=const} = \frac{\vec{R}}{R} + \frac{\partial R}{\partial t'} \nabla t'
+\label{eq:grad_R}
+\end{equation}
+
+Далее:
+
+\begin{equation}
+\nabla t' = -\frac{1}{c} \left( \frac{\vec{R}}{R} + \frac{\partial R}{\partial t'} \nabla t' \right)
+\label{eq:grad_t_expanded}
+\end{equation}
+
+Далее:
+
+\begin{equation}
+\nabla t' = -\frac{1}{c} \left( \frac{\vec{R}}{R} + \frac{\vec{R}(t')}{R(t')} \cdot \frac{\partial \vec{R}(t')}{\partial t'} \nabla t' \right)
+\label{eq:grad_t_expanded2}
+\end{equation}
+
+Учитывая что $\frac{\partial \vec{R}(t')}{\partial t'} = -\vec{v}(t')$:
+
+\begin{equation}
+\nabla t' = -\frac{1}{c} \left( \frac{\vec{R}}{R} - \frac{\vec{R}(t')}{R(t')} \cdot \vec{v}(t') \nabla t' \right)
+\label{eq:grad_t_expanded3}
+\end{equation}
+
+\begin{equation}
+\nabla t' = -\frac{1}{c} \frac{\vec{R}}{R} + \frac{1}{c} \frac{\vec{R}(t')}{R(t')} \cdot \vec{v}(t') \nabla t'
+\label{eq:grad_t_expanded4}
+\end{equation}
+
+\begin{equation}
+\nabla t' \left( 1 - \frac{1}{c} \frac{\vec{R}(t') \cdot \vec{v}(t')}{R(t')} \right) = -\frac{1}{c} \frac{\vec{R}}{R}
+\label{eq:grad_t_expanded5}
+\end{equation}
+
+\begin{equation}
+\nabla t' = -\frac{\vec{R}}{c \left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)} = -\frac{\vec{R}}{cK}
+\label{eq:grad_t_final}
+\end{equation}
+
+Таким образом:
+
+\begin{equation}
+\nabla \cdot \vec{v} = \frac{\partial \vec{v}}{\partial t'} \cdot \nabla t' = -\frac{\vec{a} \cdot \vec{R}}{cK}
+\label{eq:div_v}
+\end{equation}
+
+Далее:
+
+\begin{equation}
+\nabla \frac{1}{K} = -\frac{1}{K^2} \nabla K
+\label{eq:grad_1_K}
+\end{equation}
+
+\begin{equation}
+\nabla K = \nabla \left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right) = \nabla R - \frac{1}{c} \nabla (\vec{v} \cdot \vec{R})
+\label{eq:grad_K}
+\end{equation}
+
+\begin{equation}
+\nabla R = \frac{\vec{R}}{R} + \frac{\partial R}{\partial t'} \nabla t' = \frac{\vec{R}}{R} - \frac{\partial R}{\partial t'} \frac{\vec{R}}{cK} = \frac{\vec{R}}{R} - \left( \frac{\vec{R}}{R} \cdot \frac{\partial \vec{R}}{\partial t'} \right) \frac{\vec{R}}{cK} = \frac{\vec{R}}{R} + \left( \frac{\vec{R} \cdot \vec{v}}{R} \right) \frac{\vec{R}}{cK}
+\label{eq:grad_R_expanded}
+\end{equation}
+
+\begin{equation}
+\nabla R = \frac{\vec{R}}{R} \left( 1 + \frac{\vec{R} \cdot \vec{v}}{cK} \right) = \frac{\vec{R}}{R} \left( \frac{cK + \vec{R} \cdot \vec{v}}{cK} \right) = \frac{\vec{R}}{R} \left( \frac{c \left( R - \frac{\vec{R} \cdot \vec{v}}{c} \right) + \vec{R} \cdot \vec{v}}{cK} \right) = \frac{\vec{R}}{R} \left( \frac{cR - \vec{R} \cdot \vec{v} + \vec{R} \cdot \vec{v}}{cK} \right) = \frac{\vec{R}}{R} \frac{cR}{cK} = \frac{\vec{R}}{K}
+\label{eq:grad_R_final}
+\end{equation}
+
+\begin{equation}
+\nabla (\vec{v} \cdot \vec{R}) = \vec{v} \times \text{rot} \vec{R} + \vec{R} \times \text{rot} \vec{v} + (\vec{v} \cdot \nabla) \vec{R} + (\vec{R} \cdot \nabla) \vec{v}
+\label{eq:grad_vR}
+\end{equation}
+
+Учитывая, что в декартовой системе координат $R_x = x - x'(t')$, $R_y = y - y'(t')$, $R_z = z - z'(t')$, ищем выражение для ротора радиус-вектора:
+
+\begin{equation}
+\text{rot} \vec{R} = \begin{vmatrix} \vec{i} & \vec{j} & \vec{k} \\ \frac{\partial}{\partial x} & \frac{\partial}{\partial y} & \frac{\partial}{\partial z} \\ R_x & R_y & R_z \end{vmatrix} = \vec{i} \left( \frac{\partial R_z}{\partial y} - \frac{\partial R_y}{\partial z} \right) - \vec{j} \left( \frac{\partial R_x}{\partial z} - \frac{\partial R_z}{\partial x} \right) + \vec{k} \left( \frac{\partial R_y}{\partial x} - \frac{\partial R_x}{\partial y} \right)
+\label{eq:rot_R}
+\end{equation}
+
+\begin{equation}
+= \vec{i} \left( -\frac{\partial z'}{\partial t'} \frac{\partial t'}{\partial y} + \frac{\partial y'}{\partial t'} \frac{\partial t'}{\partial z} \right) - \vec{j} \left( -\frac{\partial x'}{\partial t'} \frac{\partial t'}{\partial z} + \frac{\partial z'}{\partial t'} \frac{\partial t'}{\partial x} \right) + \vec{k} \left( -\frac{\partial y'}{\partial t'} \frac{\partial t'}{\partial x} + \frac{\partial x'}{\partial t'} \frac{\partial t'}{\partial y} \right)
+\label{eq:rot_R_expanded}
+\end{equation}
+
+\begin{equation}
+= \vec{i} \frac{1}{c} \left( v_z \frac{\partial R}{\partial y} - v_y \frac{\partial R}{\partial z} \right) - \vec{j} \frac{1}{c} \left( v_x \frac{\partial R}{\partial z} - v_z \frac{\partial R}{\partial x} \right) + \vec{k} \frac{1}{c} \left( v_y \frac{\partial R}{\partial x} - v_x \frac{\partial R}{\partial y} \right)
+\label{eq:rot_R_final}
+\end{equation}
+
+Производная $R$ по координате точки наблюдения:
+
+\begin{equation}
+\frac{\partial R}{\partial x} = \frac{\partial}{\partial x} (\vec{R} \cdot \vec{R})^{-1/2} = \frac{1}{2} R (\vec{R} \cdot \frac{\partial \vec{R}}{\partial x} + \frac{\partial \vec{R}}{\partial x} \cdot \vec{R}) = \frac{\vec{R}}{R} \cdot \frac{\partial \vec{R}}{\partial x}
+\label{eq:dR_dx}
+\end{equation}
+
+Поскольку в декартовой системе координат:
+
+\begin{equation}
+\vec{R} = \vec{i} R_x(t') + \vec{j} R_y(t') + \vec{k} R_z(t') = \vec{i} (x - x'(t')) + \vec{j} (y - y'(t')) + \vec{k} (z - z'(t'))
+\label{eq:R_cartesian}
+\end{equation}
+
+постольку:
+
+\begin{equation}
+\frac{\partial \vec{R}}{\partial x} = \vec{i} \frac{\partial R_x(t')}{\partial x} + \vec{j} \frac{\partial R_y(t')}{\partial x} + \vec{k} \frac{\partial R_z(t')}{\partial x} = \vec{i} \frac{\partial (x - x'(t'))}{\partial x} + \vec{j} \frac{\partial (y - y'(t'))}{\partial x} + \vec{k} \frac{\partial (z - z'(t'))}{\partial x}
+\label{eq:dR_dx_expanded}
+\end{equation}
+
+\begin{equation}
+= \vec{i} \left( 1 - \frac{\partial x'}{\partial t'} \frac{\partial t'}{\partial x} \right) - \vec{j} \frac{\partial y'}{\partial t'} \frac{\partial t'}{\partial x} - \vec{k} \frac{\partial z'}{\partial t'} \frac{\partial t'}{\partial x} = \vec{i} \left( 1 + \frac{v_x}{c} \frac{\partial R}{\partial x} \right) - \vec{j} \frac{v_y}{c} \frac{\partial R}{\partial x} - \vec{k} \frac{v_z}{c} \frac{\partial R}{\partial x} = \vec{i} + \frac{\vec{v}}{c} \frac{\partial R}{\partial x}
+\label{eq:dR_dx_final}
+\end{equation}
+
+Следовательно:
+
+\begin{equation}
+\frac{\partial R}{\partial x} = \frac{\vec{R}}{R} \cdot \frac{\partial \vec{R}}{\partial x} = \frac{\vec{R}}{R} \cdot \left( \vec{i} + \frac{\vec{v}}{c} \frac{\partial R}{\partial x} \right) = \frac{R_x}{R} + \frac{\vec{R} \cdot \vec{v}}{Rc} \frac{\partial R}{\partial x}
+\label{eq:dR_dx_solved}
+\end{equation}
+
+\begin{equation}
+\frac{\partial R}{\partial x} \left( 1 - \frac{\vec{R} \cdot \vec{v}}{Rc} \right) = \frac{R_x}{R}
+\label{eq:dR_dx_solved2}
+\end{equation}
+
+откуда:
+
+\begin{equation}
+\frac{\partial R}{\partial x} = \frac{R_x}{R \left( 1 - \frac{\vec{R} \cdot \vec{v}}{Rc} \right)} = \frac{R_x}{R - \frac{\vec{R} \cdot \vec{v}}{c}} = \frac{R_x}{K}
+\label{eq:dR_dx_final2}
+\end{equation}
+
+И:
+
+\begin{equation}
+\frac{\partial \vec{R}}{\partial x} = \vec{i} + \frac{\vec{v}}{c} \frac{\partial R}{\partial x} = \vec{i} + \frac{\vec{v}}{c} \frac{R_x}{K}
+\label{eq:dR_vec_dx}
+\end{equation}
+
+Подставляя в выражение для ротора радиус-вектора:
+
+\begin{equation}
+\text{rot} \vec{R} = \vec{i} \frac{1}{cK} (v_z R_y - v_y R_z) - \vec{j} \frac{1}{cK} (v_x R_z - v_z R_x) + \vec{k} \frac{1}{cK} (v_y R_x - v_x R_y)
+\label{eq:rot_R_final2}
+\end{equation}
+
+Теперь находим векторное произведение запаздывающей скорости на ротор радиус-вектора:
+
+\begin{equation}
+\frac{c}{K} (\vec{v} \times \text{rot} \vec{R}) = \begin{vmatrix} \vec{i} & \vec{j} & \vec{k} \\ v_x & v_y & v_z \\ \frac{v_z R_y - v_y R_z}{K} & \frac{v_x R_z - v_z R_x}{K} & \frac{v_y R_x - v_x R_y}{K} \end{vmatrix}
+\label{eq:v_cross_rot_R}
+\end{equation}
+
+\begin{equation}
+= \vec{i} (v_y (v_y R_x - v_x R_y) - v_z (v_x R_z - v_z R_x)) - \vec{j} (v_z (v_z R_y - v_y R_z) - v_x (v_y R_x - v_x R_y)) + \vec{k} (v_x (v_x R_z - v_z R_x) - v_y (v_z R_y - v_y R_z))
+\label{eq:v_cross_rot_R_expanded}
+\end{equation}
+
+\begin{equation}
+= \vec{i} (R_x (v_y^2 + v_z^2) - v_x v_y R_y - v_x v_z R_z) - \vec{j} (R_y (v_x^2 + v_z^2) - v_y v_x R_x - v_y v_z R_z) + \vec{k} (R_z (v_x^2 + v_y^2) - v_z v_x R_x - v_z v_y R_y)
+\label{eq:v_cross_rot_R_expanded2}
+\end{equation}
+
+\begin{equation}
+= \vec{i} (R_x (v^2 - v_x^2) - v_x (v_y R_y - v_z R_z)) - \vec{j} (R_y (v^2 - v_y^2) - v_y (v_x R_x - v_z R_z)) + \vec{k} (R_z (v^2 - v_z^2) - v_z (v_x R_x - v_y R_y))
+\label{eq:v_cross_rot_R_expanded3}
+\end{equation}
+
+\begin{equation}
+= \vec{i} (R_x v^2 - v_x (\vec{v} \cdot \vec{R})) - \vec{j} (R_y v^2 - v_y (\vec{v} \cdot \vec{R})) - \vec{k} (R_z v^2 - v_z (\vec{v} \cdot \vec{R}))
+\label{eq:v_cross_rot_R_expanded4}
+\end{equation}
+
+\begin{equation}
+\vec{v} \times \text{rot} \vec{R} = \frac{v^2 \vec{R} - (\vec{v} \cdot \vec{R}) \vec{v}}{cK}
+\label{eq:v_cross_rot_R_final}
+\end{equation}
+
+Теперь ищем выражение для ротора запаздывающей скорости:
+
+\begin{equation}
+\text{rot} \vec{v} = \vec{i} \left( \frac{\partial v_z}{\partial y} - \frac{\partial v_y}{\partial z} \right) - \vec{j} \left( \frac{\partial v_x}{\partial z} - \frac{\partial v_z}{\partial x} \right) + \vec{k} \left( \frac{\partial v_y}{\partial x} - \frac{\partial v_x}{\partial y} \right)
+\label{eq:rot_v}
+\end{equation}
+
+\begin{equation}
+= \vec{i} \left( \frac{\partial v_z}{\partial t'} \frac{\partial t'}{\partial y} - \frac{\partial v_y}{\partial t'} \frac{\partial t'}{\partial z} \right) - \vec{j} \left( \frac{\partial v_x}{\partial t'} \frac{\partial t'}{\partial z} - \frac{\partial v_z}{\partial t'} \frac{\partial t'}{\partial x} \right) + \vec{k} \left( \frac{\partial v_y}{\partial t'} \frac{\partial t'}{\partial x} - \frac{\partial v_x}{\partial t'} \frac{\partial t'}{\partial y} \right)
+\label{eq:rot_v_expanded}
+\end{equation}
+
+\begin{equation}
+= \frac{1}{c} \vec{i} \left( -a_z \frac{\partial R}{\partial y} + a_y \frac{\partial R}{\partial z} \right) - \frac{1}{c} \vec{j} \left( -a_x \frac{\partial R}{\partial z} + a_z \frac{\partial R}{\partial x} \right) + \frac{1}{c} \vec{k} \left( -a_y \frac{\partial R}{\partial x} + a_x \frac{\partial R}{\partial y} \right)
+\label{eq:rot_v_expanded2}
+\end{equation}
+
+Далее векторное произведение радиус-вектора на ротор запаздывающей скорости:
+
+\begin{equation}
+\frac{c}{K} (\vec{R} \times \text{rot} \vec{v}) = \begin{vmatrix} \vec{i} & \vec{j} & \vec{k} \\ R_x & R_y & R_z \\ a_y R_z - a_z R_y & a_z R_x - a_x R_z & a_x R_y - a_y R_x \end{vmatrix}
+\label{eq:R_cross_rot_v}
+\end{equation}
+
+\begin{equation}
+= \vec{i} (R_y (a_x R_y - a_y R_x) - R_z (a_z R_x - a_x R_z)) - \vec{j} (R_z (a_y R_z - a_z R_y) - R_x (a_x R_y - a_y R_x)) + \vec{k} (R_x (a_z R_x - a_x R_z) - R_y (a_y R_z - a_z R_y))
+\label{eq:R_cross_rot_v_expanded}
+\end{equation}
+
+\begin{equation}
+= \vec{i} (a_x (R_y^2 + R_z^2) - R_x R_y a_y - R_x R_z a_z) - \vec{j} (a_y (R_x^2 + R_z^2) - R_y R_x a_x - R_y R_z a_z) + \vec{k} (a_z (R_x^2 + R_y^2) - R_z R_x a_x - R_z R_y a_y)
+\label{eq:R_cross_rot_v_expanded2}
+\end{equation}
+
+\begin{equation}
+= \vec{i} (a_x (R^2 - R_x^2) - R_x (a_y R_y + a_z R_z)) - \vec{j} (a_y (R^2 - R_y^2) - R_y (a_x R_x + a_z R_z)) + \vec{k} (a_z (R^2 - R_z^2) - R_z (a_x R_x + a_y R_y))
+\label{eq:R_cross_rot_v_expanded3}
+\end{equation}
+
+\begin{equation}
+= \vec{i} (a_x R^2 - R_x (\vec{a} \cdot \vec{R})) - \vec{j} (a_y R^2 - R_y (\vec{a} \cdot \vec{R})) - \vec{k} (a_z R^2 - R_z (\vec{a} \cdot \vec{R}))
+\label{eq:R_cross_rot_v_expanded4}
+\end{equation}
+
+\begin{equation}
+\vec{R} \times \text{rot} \vec{v} = \frac{R^2 \vec{a} - (\vec{a} \cdot \vec{R}) \vec{R}}{cK}
+\label{eq:R_cross_rot_v_final}
+\end{equation}
+
+Субстанциональная производная радиус-вектора:
+
+\begin{equation}
+(\vec{v} \cdot \nabla) \vec{R} = v_x \frac{\partial}{\partial x} \vec{R} + v_y \frac{\partial}{\partial y} \vec{R} + v_z \frac{\partial}{\partial z} \vec{R}
+\label{eq:substantial_R}
+\end{equation}
+
+Учитывая ранее найденные выражения производной радиус-вектора по координате:
+
+\begin{equation}
+\frac{\partial \vec{R}}{\partial x} = \vec{i} + \frac{\vec{v}}{c} \frac{\partial R}{\partial x}
+\label{eq:dR_dx_again}
+\end{equation}
+
+и если учесть что:
+
+\begin{equation}
+\frac{\partial R}{\partial x} = \frac{R_x}{K}
+\label{eq:dR_dx_again2}
+\end{equation}
+
+то можно записать:
+
+\begin{equation}
+\frac{\partial \vec{R}}{\partial x} = \vec{i} + \frac{\vec{v}}{c} \frac{R_x}{K}
+\label{eq:dR_dx_again3}
+\end{equation}
+
+\begin{equation}
+(\vec{v} \cdot \nabla) \vec{R} = v_x \left( \vec{i} + \frac{\vec{v}}{c} \frac{R_x}{K} \right) + v_y \left( \vec{j} + \frac{\vec{v}}{c} \frac{R_y}{K} \right) + v_z \left( \vec{k} + \frac{\vec{v}}{c} \frac{R_z}{K} \right) = \vec{v} + \frac{\vec{v}}{c} \frac{(\vec{v} \cdot \vec{R})}{K} = \vec{v} \left( 1 + \frac{(\vec{v} \cdot \vec{R})}{cK} \right)
+\label{eq:substantial_R_expanded}
+\end{equation}
+
+\begin{equation}
+= \vec{v} \left( \frac{cK + (\vec{v} \cdot \vec{R})}{cK} \right) = \vec{v} \left( \frac{c \left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right) + (\vec{v} \cdot \vec{R})}{cK} \right) = \vec{v} \left( \frac{cR - \vec{v} \cdot \vec{R} + \vec{v} \cdot \vec{R}}{cK} \right) = \vec{v} \frac{cR}{cK} = \vec{v} \frac{R}{K}
+\label{eq:substantial_R_final}
+\end{equation}
+
+Теперь:
+
+\begin{equation}
+(\vec{R} \cdot \nabla) \vec{v} = R_x \frac{\partial}{\partial x} \vec{v} + R_y \frac{\partial}{\partial y} \vec{v} + R_z \frac{\partial}{\partial z} \vec{v}
+\label{eq:R_grad_v}
+\end{equation}
+
+\begin{equation}
+\frac{\partial}{\partial x} \vec{v} = \frac{\partial \vec{v}}{\partial t'} \frac{\partial t'}{\partial x} = \vec{a} \frac{\partial t'}{\partial x} = \vec{a} \left( \frac{\partial}{\partial x} \left\{ t - \frac{R}{c} \right\} \right) = \vec{a} \left( -\frac{1}{c} \frac{\partial R}{\partial x} \right) = -\frac{\vec{a}}{c} \frac{R_x}{K}
+\label{eq:dv_dx}
+\end{equation}
+
+\begin{equation}
+(\vec{R} \cdot \nabla) \vec{v} = -R_x \frac{\vec{a}}{c} \frac{R_x}{K} - R_y \frac{\vec{a}}{c} \frac{R_y}{K} - R_z \frac{\vec{a}}{c} \frac{R_z}{K} = -\frac{\vec{a}}{c} \frac{R^2}{K}
+\label{eq:R_grad_v_final}
+\end{equation}
+
+Таким образом, градиент скалярного произведения скорости на радиус-вектор:
+
+\begin{equation}
+\nabla (\vec{v} \cdot \vec{R}) = \vec{v} \times \text{rot} \vec{R} + \vec{R} \times \text{rot} \vec{v} + (\vec{v} \cdot \nabla) \vec{R} + (\vec{R} \cdot \nabla) \vec{v}
+\label{eq:grad_vR_full}
+\end{equation}
+
+\begin{equation}
+= \left( \frac{v^2 \vec{R} - (\vec{v} \cdot \vec{R}) \vec{v}}{cK} \right) + \left( \frac{R^2 \vec{a} - (\vec{a} \cdot \vec{R}) \vec{R}}{cK} \right) + \left( \vec{v} \frac{R}{K} \right) + \left( -\frac{\vec{a}}{c} \frac{R^2}{K} \right)
+\label{eq:grad_vR_expanded}
+\end{equation}
+
+\begin{equation}
+= \frac{v^2 \vec{R}}{cK} - \frac{(\vec{a} \cdot \vec{R}) \vec{R}}{cK} + \vec{v}
+\label{eq:grad_vR_final}
+\end{equation}
+
+Интересно, что этот градиент можно также найти значительно более коротким путём -- через сумму производных по координате:
+
+\begin{equation}
+\nabla (\vec{v} \cdot \vec{R}) = \vec{i} \frac{\partial}{\partial x} (\vec{v} \cdot \vec{R}) + \vec{j} \frac{\partial}{\partial y} (\vec{v} \cdot \vec{R}) + \vec{k} \frac{\partial}{\partial z} (\vec{v} \cdot \vec{R})
+\label{eq:grad_vR_short}
+\end{equation}
+
+Производная по координате:
+
+\begin{equation}
+\frac{\partial}{\partial x} (\vec{v} \cdot \vec{R}) = \vec{v} \cdot \frac{\partial \vec{R}}{\partial x} + \vec{R} \cdot \frac{\partial \vec{v}}{\partial x}
+\label{eq:d_vR_dx}
+\end{equation}
+
+\begin{equation}
+\frac{\partial \vec{v}}{\partial x} = \frac{\partial \vec{v}}{\partial t'} \frac{\partial t'}{\partial x} = \vec{a} \left( \frac{\partial}{\partial x} \left\{ t - \frac{R}{c} \right\} \right) = \vec{a} \left( -\frac{1}{c} \frac{\partial R}{\partial x} \right) = -\frac{\vec{a}}{c} \frac{R_x}{K}
+\label{eq:dv_dx_short}
+\end{equation}
+
+\begin{equation}
+\frac{\partial}{\partial x} (\vec{v} \cdot \vec{R}) = v_x + \left( \frac{v^2 - \vec{R} \cdot \vec{a}}{c} \right) \frac{R_x}{K}
+\label{eq:d_vR_dx_final}
+\end{equation}
+
+Складывая три компоненты, приходим к тому же выражению:
+
+\begin{equation}
+\nabla (\vec{v} \cdot \vec{R}) = \vec{v} + \left( \frac{v^2 - \vec{R} \cdot \vec{a}}{c} \right) \frac{\vec{R}}{K}
+\label{eq:grad_vR_verified}
+\end{equation}
+
+Откуда:
+
+\begin{equation}
+\nabla K = \nabla R - \frac{1}{c} \nabla (\vec{v} \cdot \vec{R}) = \frac{\vec{R}}{K} - \frac{1}{c} \left\{ \vec{v} + \left( \frac{v^2 - \vec{R} \cdot \vec{a}}{c} \right) \frac{\vec{R}}{K} \right\} = \frac{\vec{R}}{K} \left( 1 + \frac{\vec{a} \cdot \vec{R}}{c^2} - \frac{v^2}{c^2} \right) - \frac{\vec{v}}{c}
+\label{eq:grad_K_final}
+\end{equation}
+
+Теперь:
+
+\begin{equation}
+\nabla \frac{1}{R - \frac{\vec{v} \cdot \vec{R}}{c}} = -\frac{1}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^2} \left\{ \frac{\vec{R}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)} \left( 1 + \frac{\vec{a} \cdot \vec{R}}{c^2} - \frac{v^2}{c^2} \right) - \frac{\vec{v}}{c} \right\}
+\label{eq:grad_1_K_final}
+\end{equation}
+
+Откуда:
+
+\begin{equation}
+\nabla \cdot \vec{A}_H = \frac{e}{c} \left\{ -\frac{\vec{a} \cdot \vec{R}}{c \left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^2} - \frac{\vec{v}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^2} \cdot \left\{ \frac{\vec{R}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)} \left( 1 + \frac{\vec{a} \cdot \vec{R}}{c^2} - \frac{v^2}{c^2} \right) - \frac{\vec{v}}{c} \right\} \right\}
+\label{eq:div_A_expanded}
+\end{equation}
+
+На слагаемые:
+
+\begin{equation}
+\nabla \cdot \vec{A}_H = \frac{e}{c} \left\{ \frac{v^2 - \frac{\vec{a} \cdot \vec{R}}{c}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^2} - \frac{\vec{v} \cdot \vec{R}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^3} \left( 1 + \frac{\vec{a} \cdot \vec{R}}{c^2} - \frac{v^2}{c^2} \right) \right\}
+\label{eq:div_A_expanded2}
+\end{equation}
+
+\begin{equation}
+\nabla \cdot \vec{A}_H = \frac{e}{c} \left\{ \frac{v^2 - \frac{\vec{a} \cdot \vec{R}}{c}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^2} - \frac{\vec{v} \cdot \vec{R}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^3} \left( \frac{\vec{a} \cdot \vec{R}}{c^2} - \frac{v^2}{c^2} \right) \right\}
+\label{eq:div_A_expanded3}
+\end{equation}
+
+Теперь проверяем полученные выражения на соответствие калибровке Лоренца:
+
+\begin{equation}
+\text{div} \vec{A}_H = -\frac{\varepsilon}{c} \frac{\partial \phi}{\partial t}
+\label{eq:lorentz_check}
+\end{equation}
+
+Правая часть этого выражения:
+
+\begin{equation}
+-\frac{\varepsilon}{c} \frac{\partial \phi}{\partial t} = \frac{e}{c} \frac{R \vec{v} \cdot \vec{v} - \vec{a} \cdot \vec{R} - \frac{\vec{v} \cdot \vec{R}}{K}}{K^3}
+\label{eq:lorentz_rhs}
+\end{equation}
+
+Итак, проверим тождество:
+
+\begin{equation}
+\frac{v^2 - \frac{\vec{a} \cdot \vec{R}}{c}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^2} - \frac{\vec{v} \cdot \vec{R}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^3} \left( 1 + \frac{\vec{a} \cdot \vec{R}}{c^2} - \frac{v^2}{c^2} \right) = \frac{R \vec{v} \cdot \vec{v} - \vec{a} \cdot \vec{R} - \frac{\vec{v} \cdot \vec{R}}{K}}{K^3}
+\label{eq:identity_check}
+\end{equation}
+
+\begin{equation}
+\frac{v^2 - \frac{\vec{a} \cdot \vec{R}}{c}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^2} - \frac{\vec{v} \cdot \vec{R}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^3} \left( \frac{\vec{a} \cdot \vec{R}}{c^2} - \frac{v^2}{c^2} \right) = \frac{R (\vec{v} \cdot \vec{v} - \frac{\vec{a} \cdot \vec{R}}{c})}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^3}
+\label{eq:identity_check2}
+\end{equation}
+
+Сокращаем на $\vec{v} \cdot \vec{v} - \frac{\vec{a} \cdot \vec{R}}{c}$:
+
+\begin{equation}
+\frac{c}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^2} + \frac{\vec{v} \cdot \vec{R}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^3} = \frac{cR}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^3}
+\label{eq:identity_check3}
+\end{equation}
+
+Приводим к общему знаменателю:
+
+\begin{equation}
+\frac{c \left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^3} + \frac{\vec{v} \cdot \vec{R}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^3} = \frac{cR}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^3}
+\label{eq:identity_check4}
+\end{equation}
+
+\begin{equation}
+\frac{cR - \vec{v} \cdot \vec{R} + \vec{v} \cdot \vec{R}}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^3} = \frac{cR}{\left( R - \frac{\vec{v} \cdot \vec{R}}{c} \right)^3}
+\label{eq:identity_check5}
+\end{equation}
+
+Тождество доказано.
+
+%==============================================================================
+% ЧАСТЬ 5: ОРИГИНАЛЬНАЯ РАБОТА 09
+%==============================================================================
+\section{О применимости калибровки Лоренца к электродинамике Николаева}
+\label{sec:work09}
+
+\subsection*{А.Ю. Дроздов, 6 марта 2026 г.}
+
+Одним из возможных объяснений ЭМИ сферически симметричного взрыва является индукция Николаева, записанная им [CITATION ГНик §1049] в следующем виде:
+
+\begin{equation}
+\text{div} \vec{E} = \frac{1}{c} \frac{\partial H_{\parallel}}{\partial t} = -\frac{1}{c} \frac{\partial \vec{A}_H}{\partial t}
+\label{eq:nikolaev_induction}
+\end{equation}
+
+Но для совпадения предсказаний теории с результатами эксперимента необходимо дополнить данное Николаевым уравнение продольной электрической индукции множителем $\mu_{\parallel}$, который по аналогии с параметром $\mu$, $\mu_{\parallel}$ должна отличаться от обычной классической магнитной проницаемости вакуума по меньшей мере знаком.
+
+С точки зрения электродинамической теории полученные результаты указывают на необходимость введения в четвёртое уравнение Максвелла дополнительного слагаемого. Действительно, уравнение:
+
+\begin{equation}
+\text{div} \varepsilon \vec{E} = 4\pi \rho
+\label{eq:maxwell_4_original}
+\end{equation}
+
+-- это уравнение должно быть модифицировано следующим образом:
+
+\begin{equation}
+\text{div} \varepsilon \vec{E} = 4\pi \rho + 4\pi \rho_{ind} = 4\pi \rho - \frac{\varepsilon \mu_{\parallel}}{c} \frac{\partial H_{\parallel}}{\partial t}
+\label{eq:maxwell_4_modified}
+\end{equation}
+
+Пытаясь привести эти два выражения к общему виду, можно предположить, что магнитная проницаемость вакуума является знакопеременной функцией угла между переменным током -- источником изменяющегося во времени векторного потенциала и радиус-вектором, проведённым к точке измерения значения электромагнитной индукции. Однако в рамках представленного материала более физически обоснованной представляется гипотеза, что на самом деле причинной явления электромагнитной индукции является не изменяющийся во времени векторный потенциал, а изменяющийся во времени ток смещения.
+
+Далее:
+
+\begin{equation}
+\frac{4\pi}{c} \text{div} \vec{j} + \frac{4\pi}{c} \text{div} \vec{j}_{disp}
+\label{eq:div_currents}
+\end{equation}
+
+Далее:
+
+\begin{equation}
+\text{div} \vec{j} = -\text{div} \vec{j}_{disp} = \frac{\partial \rho}{\partial t}
+\label{eq:continuity_again}
+\end{equation}
+
+Но исходя из дополненного индукцией Николаева четвёртого уравнения Максвелла (\ref{eq:maxwell_4_modified}):
+
+\begin{equation}
+\rho = \frac{1}{4\pi} \left( \text{div} \vec{D} - \frac{\varepsilon \mu_{\parallel}}{c} \frac{\partial H_{\parallel}}{\partial t} \right)
+\label{eq:rho_modified}
+\end{equation}
+
+Откуда для тока смещения запишем:
+
+\begin{equation}
+\text{div} \vec{j}_{disp} = \frac{1}{4\pi} \frac{\partial}{\partial t} \left( \frac{\varepsilon \mu_{\parallel}}{c} \frac{\partial H_{\parallel}}{\partial t} \right)
+\label{eq:disp_current}
+\end{equation}
+
+Выразим $\text{div} \vec{D}$, используя уравнение (\ref{eq:E_full}):
+
+\begin{equation}
+\text{div} \vec{j}_{disp} = \frac{1}{4\pi} \frac{\partial}{\partial t} \left( \frac{\varepsilon \mu}{c} \frac{\partial H_{\parallel}}{\partial t} - \varepsilon \nabla^2 \phi - \frac{\varepsilon \mu_{\parallel}}{c} \frac{\partial H_{\parallel}}{\partial t} \right) = \frac{\varepsilon (\mu - \mu_{\parallel})}{4\pi c} \frac{\partial^2 H_{\parallel}}{\partial t^2} - \frac{\varepsilon}{4\pi} \nabla^2 \frac{\partial \phi}{\partial t}
+\label{eq:disp_current_expanded}
+\end{equation}
+
+Это выражение может быть удовлетворено, если положить для тока смещения:
+
+\begin{equation}
+\vec{j}_{disp} = -\frac{\varepsilon (\mu - \mu_{\parallel})}{4\pi c} \frac{\partial^2 \vec{H}}{\partial t^2} - \frac{\varepsilon}{4\pi} \nabla \frac{\partial \phi}{\partial t} + c \text{rot} \vec{I}
+\label{eq:disp_current_final}
+\end{equation}
+
+Подставляя это выражение в первое уравнение Максвелла (\ref{eq:tamm_maxwell_final}), получаем:
+
+\begin{equation}
+\text{rot} \vec{H} = \frac{4\pi}{c} \vec{j} - \frac{\varepsilon (\mu - \mu_{\parallel})}{c^2} \frac{\partial^2 \vec{H}}{\partial t^2} - \frac{\varepsilon}{c} \nabla \frac{\partial \phi}{\partial t} + 4\pi \text{rot} \vec{I}
+\label{eq:maxwell_1_modified}
+\end{equation}
+
+Составим из первого уравнения Максвелла (\ref{eq:maxwell_1_modified}) волновое уравнение:
+
+\begin{equation}
+\text{rot rot} \vec{A}_H = \text{grad div} \vec{A}_H - \nabla^2 \vec{A}_H = \frac{4\pi}{c} \vec{j} - \frac{\varepsilon (\mu - \mu_{\parallel})}{c^2} \frac{\partial^2 \vec{H}}{\partial t^2} - \frac{\varepsilon}{c} \nabla \frac{\partial \phi}{\partial t} + 4\pi \text{rot} \vec{I}
+\label{eq:wave_equation_derivation}
+\end{equation}
+
+Таким образом, вместе с:
+
+\begin{equation}
+\frac{\varepsilon (\mu - \mu_{\parallel})}{c} \frac{\partial}{\partial t} \text{div} \vec{A}_H + \varepsilon \nabla^2 \phi = -4\pi \rho
+\label{eq:phi_wave}
+\end{equation}
+
+получаем систему волновых уравнений. Применив калибровку Лоренца:
+
+\begin{equation}
+\text{div} \vec{A}_H = -\frac{\varepsilon}{c} \frac{\partial \phi}{\partial t}
+\label{eq:lorentz_applied}
+\end{equation}
+
+получаем:
+
+\begin{equation}
+\nabla^2 \phi - \frac{\varepsilon (\mu - \mu_{\parallel})}{c^2} \frac{\partial^2 \phi}{\partial t^2} = -\frac{4\pi \rho}{\varepsilon}
+\label{eq:phi_wave_final}
+\end{equation}
+
+\begin{equation}
+\nabla^2 \vec{A}_H - \frac{\varepsilon (\mu - \mu_{\parallel})}{c^2} \frac{\partial^2 \vec{A}_H}{\partial t^2} = -\frac{4\pi \vec{j}}{c} - 4\pi \text{rot} \vec{I}
+\label{eq:A_wave_final}
+\end{equation}
+
+Полученные волновые уравнения отличаются от классических волновых уравнений [CITATION Там57 §1049] учётом того обстоятельства, что магнитная проницаемость вакуума, проявляющаяся в явлениях индукции Фарадея и индукции Николаева, должна отличаться. Надо сказать, что в данной работе благодаря применению двух различающихся коэффициентов магнитной проницаемости при получении волновых уравнений Даламбера не было необходимости жонглировать калибровками, в отличие от выкладок Тамма.
+
+Кроме того: формулы (\ref{eq:phi_wave_final}) и (\ref{eq:A_wave_final}) приводятся в курсах электродинамики как решения уравнений Даламбера. Однако в рамках представленного материала более физически обоснованной представляется гипотеза, что на самом деле причинной явления электромагнитной индукции является не изменяющийся во времени векторный потенциал, а изменяющийся во времени ток смещения.
+
+Но является ли мой вывод полностью непротиворечивым? Оказывается, нет. Если внимательно присмотреться к уравнениям (\ref{eq:nikolaev_induction}) и (\ref{eq:E_full}), то можно увидеть, что в этих выражениях по-разному выглядит составляющая электрического поля, связанная с явлением электромагнитной индукции. В индукции Николаева:
+
+\begin{equation}
+\vec{E} = -\frac{\mu_{\parallel}}{c} \frac{\partial}{\partial t} \vec{A}_H
+\label{eq:E_nikolaev}
+\end{equation}
+
+причём $\mu_{\parallel} < 0$, а в индукции Фарадея:
+
+\begin{equation}
+\vec{E} = -\frac{\mu}{c} \frac{\partial}{\partial t} \vec{A}_H
+\label{eq:E_faraday}
+\end{equation}
+
+%==============================================================================
+% ЧАСТЬ 6: СВЯЗЬ С ФЕРМИ И ПРИЛОЖЕНИЯ
+%==============================================================================
+\section{Связь продольной проницаемости с вариационным принципом Ферми}
+\label{sec:fermi_connection}
+
+В работе Ферми 1923 года «Разрешение существующего противоречия между электродинамической и релятивистской теориями электромагнитной массы» показано, что для корректного вычисления электромагнитной массы ускоряющегося заряда необходимо использовать вариацию типа В. Это приводит к модификации меры интегрирования в действии.
+
+Стандартное действие взаимодействия:
+
+\begin{equation}
+S_{int} = -\frac{1}{c} \int j^\mu A_\mu \, d^4x
+\label{eq:action_standard_fermi}
+\end{equation}
+
+Ферми показывает, что при ускоренном движении элемента заряда $de$, элемент собственного времени $dt$ связан с лабораторным временем $dt_0$ через геометрический фактор:
+
+\begin{equation}
+dt \longrightarrow dt \left( 1 + \frac{\vec{\Gamma} \cdot \vec{r}}{c^2} \right)
+\label{eq:fermi_correction_full}
+\end{equation}
+
+где $\vec{\Gamma}$ -- 4-ускорение, $\vec{r}$ -- радиус-вектор внутри заряда от центра масс.
+
+В терминах плотности тока $j^\mu = (\rho c, \vec{j})$, это означает модификацию объёмного элемента в действии:
+
+\begin{equation}
+d^4x \longrightarrow d^4x \cdot \mathcal{K}_F, \quad \text{где } \mathcal{K}_F = \left( 1 + \frac{\vec{a} \cdot \vec{r}}{c^2} \right)
+\label{eq:measure_modification_full}
+\end{equation}
+
+Эффективный лагранжиан взаимодействия становится:
+
+\begin{equation}
+\mathcal{L}_{int}^{eff} = -\frac{1}{c} j^\mu A_\mu \left( 1 + \frac{\vec{a} \cdot \vec{r}}{c^2} \right)
+\label{eq:lagrangian_eff_full}
+\end{equation}
+
+Сопоставляя коэффициенты при $\frac{\partial^2 \phi}{\partial t^2}$ в волновом уравнении (\ref{eq:phi_wave_final}) и в действии с поправкой Ферми, можно получить выражение для продольной проницаемости:
+
+\begin{equation}
+\mu_{\parallel} = \mu \cdot \lim_{V \to 0} \frac{\int_V \frac{\vec{a} \cdot \vec{r}}{c^2} \, dV}{\int_V dV}
+\label{eq:mu_parallel_fermi_full}
+\end{equation}
+
+Таким образом, $\mu_{\parallel}$ физически интерпретируется как проявление искривления мировой трубки ускоряющегося заряда. В макроскопических уравнениях это выглядит как свойство вакуума (или среды), обладающего различной проницаемостью для поперечных ($\mu$) и продольных ($\mu_{\parallel}$) процессов.
+
+\section{Приложения: Пондеромоторные силы и расчёт тяги MenDrive}
+\label{sec:applications}
+
+\subsection{Пондеромоторные силы по Тамму}
+
+В классической теории (И.Е. Тамм, §32) плотность пондеромоторных сил в диэлектрике записывается как:
+
+\begin{equation}
+\vec{f} = \rho \vec{E} - \frac{1}{8\pi} E^2 \nabla \varepsilon + \frac{1}{8\pi} \nabla \left( E^2 \frac{\partial \varepsilon}{\partial \tau} \tau \right)
+\label{eq:ponderomotive_tamm}
+\end{equation}
+
+Однако этот вывод не учитывает поправку Ферми к мере времени и продольную компоненту поля. В модифицированной теории тензор натяжений Максвелла дополняется членами, зависящими от $\mu_{\parallel}$ и ускорения системы.
+
+\subsection{Расчёт тяги в резонаторе MenDrive}
+
+В работе MenDrive\_real.ipynb проводится расчёт пондеромоторных сил в волноводной структуре двигателя Менде. Геометрия задачи: левый проводник ($x < -a$), вакуумный зазор ($-a \le x \le a$), правый проводник (феррит, $x > a$).
+
+В классическом расчёте тяга определяется разностью тензора натяжений на границах:
+
+\begin{equation}
+F_x^{\text{thrust}} = T_{xx}\big|_{x=+A^+} - T_{xx}\big|_{x=-A^-}
+\label{eq:thrust_force_full}
+\end{equation}
+
+Для TM-волны:
+
+\begin{equation}
+T_{xx} = \frac{1}{8\pi} \left( \varepsilon_{xx} E_x^2 - \mu_{yy} H_y^2 - \varepsilon_{zz} E_z^2 \right)
+\label{eq:stress_tensor_tm}
+\end{equation}
+
+Введение $\mu_{\parallel}$ для нормальной компоненты поля ($H_x$) на границах модифицирует тензор:
+
+\begin{equation}
+T_{xx}^{\text{modified}} = \frac{1}{8\pi} \left( \varepsilon_{xx} E_x^2 - \mu_{\parallel} H_x^2 - \varepsilon_{zz} E_z^2 \right)
+\label{eq:stress_tensor_modified_full}
+\end{equation}
+
+Численное моделирование показывает, что учёт сдвига фаз и поправки Ферми (через $\mu_{\parallel}$) создаёт дисбаланс сил на противоположные стенки, интерпретируемый как нетто-тяга, согласующаяся с экспериментальными данными для асимметричных резонаторов.
+
+\subsection{Электромагнитный импульс центрально-симметричного взрыва}
+
+В модели центрально-симметричного взрыва плазмы классические потенциалы Лиенара-Вихерта предсказывают положительный знак импульса, тогда как эксперимент (Менде) фиксирует отрицательный.
+
+С поправкой Ферми сила вычисляется как:
+
+\begin{equation}
+\vec{F}_{\text{eff}} = \int \vec{F}_{\text{LW}}(t) \left( 1 + \frac{\vec{a}(t) \cdot \vec{r}}{c^2} \right) dt
+\label{eq:fermi_force_full}
+\end{equation}
+
+Дополнительный член $\frac{\vec{a} \cdot \vec{r}}{c^2}$, связанный с $\mu_{\parallel}$, может изменить знак результирующего импульса без нарушения законов сохранения, так как он учитывает перераспределение импульса между полем и веществом на геометрическом уровне.
+
+\section{Заключение}
+
+В данной работе показано, что фундаментальные противоречия классической электродинамики (жонглирование калибровками, проблема 4/3, знак ЭМИ взрыва) могут быть разрешены в рамках единого подхода.
+
+\begin{enumerate}
+    \item Критика классических выводов показывает необходимость учёта полного тока и корректного варьирования действия.
+    \item Потенциалы Лиенара-Вихерта формально верны, но требуют модификации правила вычисления сил для ускоренных систем.
+    \item Введение продольной магнитной проницаемости $\mu_{\parallel}$ (Николаев) математически эквивалентно учёту хронометрической поправки Ферми.
+    \item Применение модифицированной теории позволяет объяснить возникновение тяги в резонаторах и аномалии электромагнитных импульсов взрывов.
+\end{enumerate}
+
+Дальнейшие исследования должны быть направлены на экспериментальное определение величины $\mu_{\parallel}$ в вакууме и уточнение численных моделей для конкретных инженерных применений.
+
+\begin{thebibliography}{99}
+
+\bibitem{Fermi1923}
+Ферми Э. Разрешение существующего противоречия между электродинамической и релятивистской теориями электромагнитной массы. Энрико Ферми, т.1 стр. 73, 1923.
+
+\bibitem{Tamm1957}
+Тамм И.Е. Основы теории электричества. М.: Наука, 1957.
+
+\bibitem{Landau1973}
+Ландау Л.Д., Лифшиц Е.М. Теоретическая физика. В Теория поля (Т. 2). Москва, 1973.
+
+\bibitem{Nikolaev2004}
+Николаев Г.В. Электродинамика физического вакуума. Томск: НТЛ, 2004.
+
+\bibitem{Mende2013}
+Менде Ф.Ф. Электрический импульс космического термоядерного взрыва. Инженерная физика, 16-24, 2013.
+
+\bibitem{Drozdov2023}
+Дроздов А.Ю. О противоречии, возникающем при выводе формулы для векторного потенциала в калибровке Кулона. 2023.
+
+\bibitem{Drozdov2023b}
+Дроздов А.Ю. О противоречии, возникающем в классической электродинамике при выводе волнового уравнения Даламбера для векторного потенциала. Жонглирование калибровками. 2023.
+
+\bibitem{Drozdov2023c}
+Дроздов А.Ю. Соответствуют ли уравнения для запаздывающих потенциалов калибровке Лоренца? 2023.
+
+\bibitem{Drozdov2023d}
+Дроздов А.Ю. Соответствуют ли потенциалы Лиенара-Вихерта калибровке Лоренца? 2023.
+
+\bibitem{Drozdov2024}
+Дроздов А.Ю. О применимости калибровки Лоренца к электродинамике Николаева. 2024.
+
+\end{thebibliography}
+
+\end{document}

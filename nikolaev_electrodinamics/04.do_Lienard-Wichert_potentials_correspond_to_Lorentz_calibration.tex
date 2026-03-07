@@ -425,7 +425,7 @@
 \(-\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{cR}\frac{\partial t'}{\partial t}=1-\frac{\partial t'}{\partial t}\)
 решая которое получаем
 \[\frac{\partial t'}{\partial t}=\frac{1}{1-\frac{\overrightarrow{v}\cdot \overrightarrow{R}}{Rc}}\]
-Для производной скалярного потенциала \$\varphi \$ по \(t'\) вводим
+Для производной скалярного потенциала $\varphi$ по \(t'\) вводим
 обозначение \(K=R-\frac{\overrightarrow{v}\cdot \overrightarrow{R}}{c}\)
 благодаря которому запись скалярного потенциала упрощается
 \[\varphi =\frac{1}{\varepsilon }\frac{e}{K}\] кроме того
@@ -456,13 +456,19 @@
 \[\nabla t'=-\frac{\ \overrightarrow{R}}{c\ \left( R-\frac{\overrightarrow{v}\cdot \overrightarrow{R}}{c} \right)}=-\frac{\ \overrightarrow{R}}{c\ K}\]
 Таким образом
 \[\nabla \overrightarrow{v}=\frac{\partial \overrightarrow{v}}{\partial t'}\cdot \nabla t'=-\frac{\ \overrightarrow{a}\cdot \overrightarrow{R}}{c\ K}\]
-Далее \[\nabla \frac{1}{K}=-\frac{1}{{{K}^{2}}}\nabla K\]
+Далее
+
+\[\nabla \frac{1}{K}=-\frac{1}{{{K}^{2}}}\nabla K\]
+
 \[\nabla K=\nabla \left( R-\frac{\overrightarrow{v}\cdot \overrightarrow{R}}{c} \right)=\nabla R-\frac{1}{c}\nabla \left( \overrightarrow{v}\cdot \overrightarrow{R} \right)\]
+
 \[\begin{align}
-  & \nabla R=\frac{\overrightarrow{R}}{R}+\frac{\partial R}{\partial t'}\nabla t'=\frac{\overrightarrow{R}}{R}-\frac{\partial R}{\partial t'}\frac{\ \overrightarrow{R}}{c\ K}=\frac{\overrightarrow{R}}{R}-\left( \frac{\overrightarrow{R}}{R}\cdot \frac{\partial \overrightarrow{R}}{\partial t'} \right)\frac{\ \overrightarrow{R}}{c\ K}=\frac{\overrightarrow{R}}{R}+\left( \frac{\overrightarrow{R}\cdot \overrightarrow{v}}{R} \right)\frac{\ \overrightarrow{R}}{c\ K}=\frac{\overrightarrow{R}}{R}\left( 1+\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{c\ K} \right) \\ 
- & =\frac{\overrightarrow{R}}{R}\left( \frac{c\ K+\overrightarrow{R}\cdot \overrightarrow{v}}{c\ K} \right)=\frac{\overrightarrow{R}}{R}\left( \frac{c\ \left( R-\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{c} \right)+\overrightarrow{R}\cdot \overrightarrow{v}}{c\ K} \right)=\frac{\overrightarrow{R}}{R}\left( \frac{c\ R-\overrightarrow{R}\cdot \overrightarrow{v}+\overrightarrow{R}\cdot \overrightarrow{v}}{c\ K} \right)=\frac{\overrightarrow{R}}{R}\frac{c\,R}{c\,K}=\frac{\overrightarrow{R}\ }{K} \\ 
+& \nabla R=\frac{\overrightarrow{R}}{R}+\frac{\partial R}{\partial t'}\nabla t'=\frac{\overrightarrow{R}}{R}-\frac{\partial R}{\partial t'}\frac{\ \overrightarrow{R}}{c\ K}=\frac{\overrightarrow{R}}{R}-\left( \frac{\overrightarrow{R}}{R}\cdot \frac{\partial \overrightarrow{R}}{\partial t'} \right)\frac{\ \overrightarrow{R}}{c\ K}=\frac{\overrightarrow{R}}{R}+\left( \frac{\overrightarrow{R}\cdot \overrightarrow{v}}{R} \right)\frac{\ \overrightarrow{R}}{c\ K}=\frac{\overrightarrow{R}}{R}\left( 1+\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{c\ K} \right) \\ 
+& =\frac{\overrightarrow{R}}{R}\left( \frac{c\ K+\overrightarrow{R}\cdot \overrightarrow{v}}{c\ K} \right)=\frac{\overrightarrow{R}}{R}\left( \frac{c\ \left( R-\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{c} \right)+\overrightarrow{R}\cdot \overrightarrow{v}}{c\ K} \right)=\frac{\overrightarrow{R}}{R}\left( \frac{c\ R-\overrightarrow{R}\cdot \overrightarrow{v}+\overrightarrow{R}\cdot \overrightarrow{v}}{c\ K} \right)=\frac{\overrightarrow{R}}{R}\frac{c\,R}{c\,K}=\frac{\overrightarrow{R}\ }{K}
 \end{align}\]
+
 \[\nabla \left( \overrightarrow{v}\cdot \overrightarrow{R} \right)=\overrightarrow{v}\times rot\overrightarrow{R}+\overrightarrow{R}\times rot\overrightarrow{v}+\left( \overrightarrow{v},\nabla  \right)\overrightarrow{R}+\left( \overrightarrow{R},\nabla  \right)\overrightarrow{v}\]
+
 Учитывая, что в декартовой системе координат
 \({{R}_{x}}=x-x'\left( t' \right)\) \({{R}_{y}}=y-y'\left( t' \right)\)
 \({{R}_{x}}=z-z'\left( t' \right)\) Ищем выражение для ротора радиус
@@ -543,8 +549,11 @@
    \overrightarrow{j}\left( {{R}_{y}}{{v}^{2}}-{{v}_{y}}\left( \overrightarrow{v}\cdot \overrightarrow{R} \right) \right)  \\
    \overrightarrow{k}\left( {{R}_{z}}{{v}^{2}}-{{v}_{z}}\left( \overrightarrow{v}\cdot \overrightarrow{R} \right) \right)  \\
 \end{matrix}\]
+
 \[\overrightarrow{v}\times rot\overrightarrow{R}=\frac{{{v}^{2}}\ \overrightarrow{R}-\left( \overrightarrow{v}\cdot \overrightarrow{R} \right)\ \overrightarrow{v}}{cK}\]
+
 Теперь ищем выражение для ротора запаздывающей скорости
+
 \[rot\ \overrightarrow{v}=\begin{matrix}
    \overrightarrow{i}\left( \frac{\partial {{v}_{z}}}{\partial y}-\frac{\partial {{v}_{y}}}{\partial z} \right)  \\
    \overrightarrow{j}\left( \frac{\partial {{v}_{x}}}{\partial z}-\frac{\partial {{v}_{z}}}{\partial x} \right)  \\
@@ -561,8 +570,11 @@
    \frac{\overrightarrow{i}}{cK}\left( -{{a}_{z}}{{R}_{y}}+{{a}_{y}}{{R}_{z}} \right)  \\
    \frac{\overrightarrow{j}}{cK}\left( -{{a}_{x}}{{R}_{z}}+{{a}_{z}}{{R}_{x}} \right)  \\
    \frac{\overrightarrow{k}}{cK}\left( -{{a}_{y}}{{R}_{x}}+{{a}_{x}}{{R}_{y}} \right)  \\
-\end{matrix}\] Далее векторное произведение радиус-вектора на ротор
+\end{matrix}\]
+
+ Далее векторное произведение радиус-вектора на ротор
 запаздывающей скорости
+
 \[cK\left( \overrightarrow{R}\times rot\ \overrightarrow{v} \right)=\left| \begin{matrix}
    \overrightarrow{i} & \overrightarrow{j} & \overrightarrow{k}  \\
    {{R}_{x}} & {{R}_{y}} & {{R}_{z}}  \\
@@ -589,24 +601,40 @@
 \[\left( \overrightarrow{v},\nabla  \right)\overrightarrow{R}={{v}_{x}}\frac{\partial }{\partial x}\overrightarrow{R}+{{v}_{y}}\frac{\partial }{\partial y}\overrightarrow{R}+{{v}_{z}}\frac{\partial }{\partial z}\overrightarrow{R}\]
 Учитывая ранее найденные выражения производной радиус вектора по
 координате
+
 \[\frac{\partial \overrightarrow{R}}{\partial x}=\overrightarrow{i}+\frac{\overrightarrow{v}}{c}\frac{\partial R}{\partial x}\]
-и если учесть что \[\frac{\partial R}{\partial x}=\frac{{{R}_{x}}}{K}\]
+
+и если учесть что
+
+\[\frac{\partial R}{\partial x}=\frac{{{R}_{x}}}{K}\]
+
 то можно записать
+
 \[\frac{\partial \overrightarrow{R}}{\partial x}=\overrightarrow{i}+\frac{\overrightarrow{v}}{c}\frac{{{R}_{x}}}{K}\]
+
 \[\begin{align}
   & \left( \overrightarrow{v},\nabla  \right)\overrightarrow{R}={{v}_{x}}\left( \overrightarrow{i}+\frac{\overrightarrow{v}}{c}\frac{{{R}_{x}}}{K} \right)+{{v}_{y}}\left( \overrightarrow{j}+\frac{\overrightarrow{v}}{c}\frac{{{R}_{y}}}{K} \right)+{{v}_{z}}\left( \overrightarrow{k}+\frac{\overrightarrow{v}}{c}\frac{{{R}_{z}}}{K} \right)=\overrightarrow{v}+\frac{\overrightarrow{v}}{c}\frac{\left( \overrightarrow{v}\cdot \overrightarrow{R} \right)}{K}=\overrightarrow{v}\left( 1+\frac{\left( \overrightarrow{v}\cdot \overrightarrow{R} \right)}{cK} \right) \\ 
- & =\overrightarrow{v}\left( \frac{c\left( R-\frac{\overrightarrow{v}\cdot \overrightarrow{R}}{c} \right)}{cK}+\frac{\left( \overrightarrow{v}\cdot \overrightarrow{R} \right)}{cK} \right)=\overrightarrow{v}\left( \frac{cR-\overrightarrow{v}\cdot \overrightarrow{R}}{cK}+\frac{\left( \overrightarrow{v}\cdot \overrightarrow{R} \right)}{cK} \right)=\overrightarrow{v}\left( \frac{cR}{cK} \right)=\overrightarrow{v}\frac{R}{K} \\ 
-\end{align}\] Теперь
+ & =\overrightarrow{v}\left( \frac{c\left( R-\frac{\overrightarrow{v}\cdot \overrightarrow{R}}{c} \right)}{cK}+\frac{\left( \overrightarrow{v}\cdot \overrightarrow{R} \right)}{cK} \right)=\overrightarrow{v}\left( \frac{cR-\overrightarrow{v}\cdot \overrightarrow{R}}{cK}+\frac{\left( \overrightarrow{v}\cdot \overrightarrow{R} \right)}{cK} \right)=\overrightarrow{v}\left( \frac{cR}{cK} \right)=\overrightarrow{v}\frac{R}{K}
+\end{align}\]
+
+Теперь
+
 \[\left( \overrightarrow{R},\nabla  \right)\overrightarrow{v}={{R}_{x}}\frac{\partial }{\partial x}\overrightarrow{v}+{{R}_{y}}\frac{\partial }{\partial y}\overrightarrow{v}+{{R}_{z}}\frac{\partial }{\partial z}\overrightarrow{v}\]
 \[\frac{\partial }{\partial x}\overrightarrow{v}=\frac{\partial \overrightarrow{v}}{\partial t'}\frac{\partial t'}{\partial x}=\overrightarrow{a}\frac{\partial t'}{\partial x}=-\frac{\overrightarrow{a}}{c}\frac{\partial R}{\partial x}=-\frac{\overrightarrow{a}}{c}\frac{{{R}_{x}}}{K}\]
 \[\left( \overrightarrow{R},\nabla  \right)\overrightarrow{v}=-{{R}_{x}}\frac{\overrightarrow{a}}{c}\frac{{{R}_{x}}}{K}-{{R}_{y}}\frac{\overrightarrow{a}}{c}\frac{{{R}_{y}}}{K}-{{R}_{z}}\frac{\overrightarrow{a}}{c}\frac{{{R}_{z}}}{K}=-\frac{\overrightarrow{a}}{c}\frac{{{R}^{2}}}{K}\]
+
 Таким образом, градиент скалярного произведения скорости на радиус
-вектор \[\begin{align}
+вектор
+
+\[\begin{align}
   & \nabla \left( \overrightarrow{v}\cdot \overrightarrow{R} \right)=\overrightarrow{v}\times rot\overrightarrow{R}+\overrightarrow{R}\times rot\overrightarrow{v}+\left( \overrightarrow{v},\nabla  \right)\overrightarrow{R}+\left( \overrightarrow{R},\nabla  \right)\overrightarrow{v}= \\ 
  & =\left( \frac{{{v}^{2}}\ \overrightarrow{R}-\left( \overrightarrow{v}\cdot \overrightarrow{R} \right)\ \overrightarrow{v}}{cK} \right)+\left( \frac{{{R}^{2}}\overrightarrow{a}-\left( \overrightarrow{a}\cdot \overrightarrow{R} \right)\overrightarrow{R}}{cK} \right)+\left( \overrightarrow{v}+\frac{\overrightarrow{v}}{c}\frac{\left( \overrightarrow{v}\cdot \overrightarrow{R} \right)}{K} \right)+\left( -\frac{\overrightarrow{a}}{c}\frac{{{R}^{2}}}{K} \right) \\ 
  & =\left( \frac{{{v}^{2}}\ \overrightarrow{R}}{cK} \right)-\left( \frac{\left( \overrightarrow{a}\cdot \overrightarrow{R} \right)\overrightarrow{R}}{cK} \right)+\overrightarrow{v} \\ 
-\end{align}\] Интересно, что этот градиент можно также найти значительно
+\end{align}\]
+
+ Интересно, что этот градиент можно также найти значительно
 более коротким путём - через сумму производных по координате
+
 \[\nabla \left( \overrightarrow{v}\cdot \overrightarrow{R} \right)=\overrightarrow{i}\frac{\partial }{\partial x}\left( \overrightarrow{v}\cdot \overrightarrow{R} \right)+\overrightarrow{j}\frac{\partial }{\partial y}\left( \overrightarrow{v}\cdot \overrightarrow{R} \right)+\overrightarrow{k}\frac{\partial }{\partial z}\left( \overrightarrow{v}\cdot \overrightarrow{R} \right)\]
 производная по координате
 \[\frac{\partial }{\partial x}\left( \overrightarrow{v}\cdot \overrightarrow{R} \right)=\overrightarrow{v}\frac{\partial \overrightarrow{R}}{\partial x}+\overrightarrow{R}\frac{\partial \overrightarrow{v}}{\partial x}\]

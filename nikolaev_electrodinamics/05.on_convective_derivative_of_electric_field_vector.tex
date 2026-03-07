@@ -404,6 +404,7 @@
 градиент скалярного потенциала ЛВ
 \[\overrightarrow{{{E}_{1}}}=-\nabla \varphi =-\nabla \frac{e}{K}=\frac{e}{{{K}^{2}}}\left\{ \frac{\overrightarrow{R}}{K}\left( 1+\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-\frac{\overrightarrow{v}\cdot \overrightarrow{v}}{{{c}^{2}}} \right)-\frac{\overrightarrow{v}}{c} \right\}\]
 \[\overrightarrow{{{E}_{1}}}=e\frac{\overrightarrow{R}}{{{K}^{3}}}\left( 1+\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-\frac{\overrightarrow{v}\cdot \overrightarrow{v}}{{{c}^{2}}} \right)-\frac{e}{{{K}^{2}}}\frac{\overrightarrow{v}}{c}\]
+
 \[\begin{align}
   & \frac{1}{e}\frac{\partial \overrightarrow{{{E}_{1}}}}{\partial t}=\frac{\partial }{\partial t}\left[ \frac{\overrightarrow{R}}{{{K}^{3}}}\left( 1+\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-\frac{\overrightarrow{v}\cdot \overrightarrow{v}}{{{c}^{2}}} \right)-\frac{1}{{{K}^{2}}}\frac{\overrightarrow{v}}{c} \right]= \\ 
  & =\frac{\overrightarrow{R}}{{{K}^{3}}}\frac{\partial }{\partial t}\left( 1+\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-\frac{\overrightarrow{v}\cdot \overrightarrow{v}}{{{c}^{2}}} \right)+\left( 1+\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-\frac{\overrightarrow{v}\cdot \overrightarrow{v}}{{{c}^{2}}} \right)\cdot \frac{\partial }{\partial t}\left( \frac{\overrightarrow{R}}{{{K}^{3}}} \right)-\frac{\partial }{\partial t}\left( \frac{1}{{{K}^{2}}}\frac{\overrightarrow{v}}{c} \right) \\ 
@@ -412,7 +413,10 @@
 \[\frac{\partial }{\partial t}\left( \frac{\overrightarrow{R}}{{{K}^{3}}} \right)=\frac{1}{{{K}^{3}}}\frac{\partial \overrightarrow{R}}{\partial t}+\overrightarrow{R}\frac{\partial }{\partial t}\left( \frac{1}{{{K}^{3}}} \right)=\frac{1}{{{K}^{3}}}\frac{\partial \overrightarrow{R}}{\partial t'}\frac{\partial t'}{\partial t}-\frac{3\overrightarrow{R}}{{{K}^{4}}}\frac{\partial K}{\partial t}=-\frac{\overrightarrow{v}}{{{K}^{3}}}\frac{R}{K}-\frac{3\overrightarrow{R}}{{{K}^{4}}}\frac{\partial K}{\partial t'}\frac{\partial t'}{\partial t}=-\frac{\overrightarrow{v}R}{{{K}^{4}}}-\frac{3\overrightarrow{R}R}{{{K}^{5}}}\frac{\partial K}{\partial t'}\]
 \[\frac{\partial K}{\partial t'}=\frac{\partial }{\partial t'}\left( R-\frac{\overrightarrow{v}\cdot \overrightarrow{R}}{c} \right)=\frac{\overrightarrow{v}\cdot \overrightarrow{v}-\overrightarrow{R}\cdot \overrightarrow{a}}{c}-\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{R}\]
 \[\frac{\partial }{\partial t}\left( \frac{\overrightarrow{R}}{{{K}^{3}}} \right)=-\frac{\overrightarrow{v}R}{{{K}^{4}}}-\frac{3\overrightarrow{R}R}{{{K}^{5}}}\left( \frac{\overrightarrow{v}\cdot \overrightarrow{v}-\overrightarrow{R}\cdot \overrightarrow{a}}{c}-\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{R} \right)\]
-Тут исправлена ошибка!!!!! \[\begin{align}
+
+Тут исправлена ошибка!!!!!
+
+\[\begin{align}
   & \frac{\partial }{\partial t}\left( \frac{1}{{{K}^{2}}}\frac{\overrightarrow{v}}{c} \right)=\frac{\overrightarrow{v}}{c}\frac{\partial }{\partial t}\left( \frac{1}{{{K}^{2}}} \right)+\frac{1}{{{K}^{2}}}\frac{\partial }{\partial t}\left( \frac{\overrightarrow{v}}{c} \right)=-\frac{2}{{{K}^{3}}}\frac{\overrightarrow{v}}{c}\frac{\partial K}{\partial t'}\frac{\partial t'}{\partial t}+\frac{\overrightarrow{a}}{c{{K}^{2}}}\frac{\partial t'}{\partial t}=-\frac{2R}{{{K}^{4}}}\frac{\overrightarrow{v}}{c}\left( \frac{\overrightarrow{v}\cdot \overrightarrow{v}-\overrightarrow{R}\cdot \overrightarrow{a}}{c}-\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{R} \right)+\frac{R\overrightarrow{a}}{c{{K}^{3}}} \\ 
  &  \\ 
 \end{align}\] Третья промежуточная производная
@@ -420,11 +424,16 @@
 \[\begin{align}
   & \frac{\partial }{\partial t}\left( 1+\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-\frac{\overrightarrow{v}\cdot \overrightarrow{v}}{{{c}^{2}}} \right)=\frac{1}{{{c}^{2}}}\frac{\partial }{\partial t}\left( \overrightarrow{a}\cdot \overrightarrow{R}-\overrightarrow{v}\cdot \overrightarrow{v} \right)=\frac{1}{{{c}^{2}}}\left( \overrightarrow{a}\frac{\partial \overrightarrow{R}}{\partial t}+\overrightarrow{R}\frac{\partial \overrightarrow{a}}{\partial t}-2\overrightarrow{v}\frac{\partial \overrightarrow{v}}{\partial t} \right)=\frac{1}{{{c}^{2}}}\left( \overrightarrow{a}\frac{\partial \overrightarrow{R}}{\partial t'}+\overrightarrow{R}\frac{\partial \overrightarrow{a}}{\partial t'}-2\overrightarrow{v}\frac{\partial \overrightarrow{v}}{\partial t'} \right)\frac{\partial t'}{\partial t} \\ 
  & =\frac{1}{{{c}^{2}}}\frac{R}{K}\left( -\,\overrightarrow{a}\cdot \overrightarrow{v}+\overrightarrow{R}\frac{\partial \overrightarrow{a}}{\partial t'}-2\overrightarrow{v}\cdot \overrightarrow{a} \right)=\frac{1}{{{c}^{2}}}\frac{R}{K}\left( \overrightarrow{R}\frac{\partial \overrightarrow{a}}{\partial t'}-3\ \overrightarrow{v}\cdot \overrightarrow{a} \right) \\ 
-\end{align}\] И, следовательно, тут тоже исправлена ошибка!!!!!
+\end{align}\]
+
+И, следовательно, тут тоже исправлена ошибка!!!!!
+
 \[\begin{align}
   & \frac{1}{e}\frac{\partial \overrightarrow{{{E}_{1}}}}{\partial t}=\frac{\overrightarrow{R}}{{{K}^{4}}}\frac{R}{{{c}^{2}}}\left( \overrightarrow{R}\frac{\partial \overrightarrow{a}}{\partial t'}-3\ \overrightarrow{v}\cdot \overrightarrow{a} \right)+ \\ 
  & +\left( 1+\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-\frac{\overrightarrow{v}\cdot \overrightarrow{v}}{{{c}^{2}}} \right)\cdot \left\{ -\frac{\overrightarrow{v}R}{{{K}^{4}}}-\frac{3\overrightarrow{R}R}{{{K}^{5}}}\left( \frac{\overrightarrow{v}\cdot \overrightarrow{v}-\overrightarrow{R}\cdot \overrightarrow{a}}{c}-\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{R} \right) \right\}+\frac{2R}{{{K}^{4}}}\frac{\overrightarrow{v}}{c}\left( \frac{\overrightarrow{v}\cdot \overrightarrow{v}-\overrightarrow{R}\cdot \overrightarrow{a}}{c}-\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{R} \right)-\frac{R\overrightarrow{a}}{c{{K}^{3}}} \\ 
-\end{align}\] \[\begin{align}
+\end{align}\]
+
+\[\begin{align}
   & \frac{1}{e}\frac{\partial \overrightarrow{{{E}_{1}}}}{\partial t}=\frac{\overrightarrow{R}}{{{R}^{*}}^{3}}\frac{1}{{{c}^{2}}}\frac{R}{{{R}^{*}}}\left( \overrightarrow{R}\frac{\partial \overrightarrow{a}}{\partial t'}-3\ \overrightarrow{v}\cdot \overrightarrow{a} \right)-\left( 1+\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-\frac{\overrightarrow{v}\cdot \overrightarrow{v}}{{{c}^{2}}} \right)\cdot \left\{ \frac{\overrightarrow{v}R}{{{R}^{*}}^{4}}+\frac{3\overrightarrow{R}R}{{{R}^{*}}^{5}}\left( \frac{\overrightarrow{v}\cdot \overrightarrow{v}-\overrightarrow{R}\cdot \overrightarrow{a}}{c}-\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{R} \right) \right\}+ \\ 
  & +\left\{ \frac{2}{{{R}^{*}}^{3}}\frac{\overrightarrow{v}}{c}\left( \frac{\overrightarrow{v}\cdot \overrightarrow{v}-\overrightarrow{R}\cdot \overrightarrow{a}}{c}-\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{R} \right)-\frac{\overrightarrow{a}}{c{{R}^{*}}^{2}} \right\}\frac{R}{{{R}^{*}}} \\ 
 \end{align}\] Далее выразим конвективную производную. При этом искомую
@@ -472,7 +481,9 @@
  & =-\frac{\overrightarrow{R}}{{{K}^{4}}}\frac{{{R}_{x}}}{{{c}^{2}}}\left( \frac{\overrightarrow{R}}{c}\frac{\partial \overrightarrow{a}}{\partial t'} \right)+\frac{\overrightarrow{R}}{{{K}^{4}}}\frac{{{R}_{x}}}{{{c}^{2}}}\left( \frac{3\ \overrightarrow{v}\cdot \overrightarrow{a}}{c} \right)+\frac{\overrightarrow{R}}{{{K}^{3}}}\frac{{{a}_{x}}}{{{c}^{2}}}+\frac{{{R}_{x}}}{{{K}^{3}}}\frac{\overrightarrow{a}}{{{c}^{2}}}-\frac{2}{{{K}^{3}}}\frac{\overrightarrow{v}}{c}\frac{{{v}_{x}}}{c}+ \\ 
  & +\left( 1+\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-\frac{\overrightarrow{v}\cdot \overrightarrow{v}}{{{c}^{2}}} \right)\cdot \left\{ \frac{\overrightarrow{i}}{{{K}^{3}}}+\frac{3{{R}_{x}}}{{{K}^{4}}}\frac{\overrightarrow{v}}{c}-\frac{3\overrightarrow{R}}{K}\frac{{{R}_{x}}}{{{K}^{4}}}\left( 1+\frac{\overrightarrow{R}\cdot \overrightarrow{a}-{{v}^{2}}}{{{c}^{2}}} \right)+\frac{3\overrightarrow{R}}{{{K}^{4}}}\frac{{{v}_{x}}}{c} \right\} \\ 
  &  \\ 
-\end{align}\] \[\begin{align}
+\end{align}\]
+
+\[\begin{align}
   & \frac{1}{e}\frac{\partial \overrightarrow{{{E}_{1}}}}{\partial t}=\frac{\overrightarrow{R}}{{{K}^{4}}}\frac{R}{{{c}^{2}}}\left( \overrightarrow{R}\frac{\partial \overrightarrow{a}}{\partial t'}-3\ \overrightarrow{v}\cdot \overrightarrow{a} \right)+ \\ 
  & +\left( 1+\frac{\overrightarrow{a}\cdot \overrightarrow{R}}{{{c}^{2}}}-\frac{\overrightarrow{v}\cdot \overrightarrow{v}}{{{c}^{2}}} \right)\cdot \left\{ -\frac{\overrightarrow{v}R}{{{K}^{4}}}-\frac{3\overrightarrow{R}R}{{{K}^{5}}}\left( \frac{\overrightarrow{v}\cdot \overrightarrow{v}-\overrightarrow{R}\cdot \overrightarrow{a}}{c}-\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{R} \right) \right\}+\frac{2R}{{{K}^{4}}}\frac{\overrightarrow{v}}{c}\left( \frac{\overrightarrow{v}\cdot \overrightarrow{v}-\overrightarrow{R}\cdot \overrightarrow{a}}{c}-\frac{\overrightarrow{R}\cdot \overrightarrow{v}}{R} \right)-\frac{\overrightarrow{a}}{c{{K}^{2}}} \\ 
 \end{align}\]

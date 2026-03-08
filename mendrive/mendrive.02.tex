@@ -7,6 +7,8 @@
 \usepackage{geometry}
 \usepackage{hyperref}
 \usepackage{cite}
+\usepackage{booktabs}
+\usepackage{float}
 
 \geometry{left=2cm, right=2cm, top=2cm, bottom=2cm}
 
@@ -81,10 +83,9 @@
 Рассматривается трёхслойная структура в декартовых координатах $(x, y, z)$:
 
 \begin{itemize}
-    \item \textbf{Область 1} ($x \leq -A$): металл с параметрами 
-    $\varepsilon_m \approx 1$, $\mu_m = 1$, 
-    $\sigma_m = 5.8 \times 10^{17}$ с$^{-1}$ (СГС);
-    \item \textbf{Область 2} ($-A \leq x \leq +A$): вакуум 
+    \item \textbf{Область 1} ($x \leq -A$): феррит (левый проводник) с параметрами
+    $\varepsilon_f = 10$, $\mu_f = 1000$, $\sigma_f = 0$;
+    \item \textbf{Область 2} ($-A \leq x \leq +A$): вакуум
     ($\varepsilon_0 = \mu_0 = 1$);
     \item \textbf{Область 3} ($x \geq +A$): металл (правый проводник) с параметрами
     $\varepsilon_m \approx 1$, $\mu_m = 1$, $\sigma_m = 5.8 \times 10^{17}$ с$^{-1}$ (СГС).
@@ -363,13 +364,14 @@ Z_{\text{eff}} = \frac{|\Delta E_y|}{|H_z(x_1) - H_z(x_2)|}
 
 \subsection{Branch 5 (высокочастотная ветвь, $\omega = 10^5$--$10^6$ рад/с)}
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \caption{Параметры Branch 5}
-\begin{tabular}{|l|l|}
-\hline
+\label{tab:branch5}
+\begin{tabular}{@{}ll@{}}
+\toprule
 \textbf{Параметр} & \textbf{Значение} \\
-\hline
+\midrule
 Удельная тяга $\mathcal{T}$ & $-2006.47$ Н/кВт \\
 Тяга на вещество $F_x$ & $-1.34 \times 10^{-5}$ Н/см$^2$ \\
 Противосила $F_x^{\text{wire}}$ & $-7.16 \times 10^{-11}$ Н/см$^2$ \\
@@ -378,7 +380,7 @@ Z_{\text{eff}} = \frac{|\Delta E_y|}{|H_z(x_1) - H_z(x_2)|}
 Нетто-тяга $\mathcal{T}_{\text{net}}$ & $-2006.45$ Н/кВт \\
 $Z_{\text{eff}}$ & $\sim 2 \times 10^{-6}$ \\
 Длина затухания $L_z$ & $0.013$ см \\
-\hline
+\bottomrule
 \end{tabular}
 \end{table}
 
@@ -386,18 +388,19 @@ $Z_{\text{eff}}$ & $\sim 2 \times 10^{-6}$ \\
 
 \subsection{Branch 4 (низкочастотная ветвь)}
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \caption{Параметры Branch 4}
-\begin{tabular}{|l|l|}
-\hline
+\label{tab:branch4}
+\begin{tabular}{@{}ll@{}}
+\toprule
 \textbf{Параметр} & \textbf{Значение} \\
-\hline
+\midrule
 Удельная тяга $\mathcal{T}$ & $-313.02$ Н/кВт \\
 \textbf{Степень компенсации $\eta$} & $\mathbf{0.0319}$ (3.2\%) \\
 Нетто-тяга $\mathcal{T}_{\text{net}}$ & $-303.05$ Н/кВт \\
 Длина затухания $L_z$ & $0.33$ см \\
-\hline
+\bottomrule
 \end{tabular}
 \end{table}
 
@@ -492,43 +495,6 @@ F_x^{\text{wire}} \propto I_y \cdot \Delta H_z
 Режим Branch 5 соответствует \textbf{низкому напряжению / высокому току} 
 ($Z_{\text{eff}} \ll 1$). При той же мощности ток велик, но сила определяется
 произведением тока на магнитное поле, которое в этом режиме мало.
-
-\section{Обсуждение закона сохранения импульса}
-
-\subsection{Импульсный баланс}
-
-Полный закон сохранения импульса для системы (металл + вакуум + феррит + виток):
-
-\begin{equation}
-F_x^{\text{мет}} + F_x^{\text{фер}} + F_x^{\text{вак}} + F_x^{\text{wire}} = 0
-\end{equation}
-
-В модели $k_y = 0$ слагаемое $F_x^{\text{вак}}$ включает поток электромагнитного 
-импульса через боковые стенки $y = \pm \infty$.
-
-\subsection{Нарушение баланса в расчёте на единицу длины}
-
-Численно получено:
-\begin{itemize}
-    \item $F_x^{\text{мет}} + F_x^{\text{фер}} = -1.34 \times 10^{-5}$ Н/см$^2$
-    \item $F_x^{\text{wire}} = -7.16 \times 10^{-11}$ Н/см$^2$
-    \item \textbf{Сумма:} $-1.34 \times 10^{-5}$ Н/см$^2 \neq 0$
-\end{itemize}
-
-\textbf{Вывод:} виток \textbf{не компенсирует} тягу. Компенсирующий импульс 
-уходит через боковые границы $z \to \infty$ (затухание волны).
-
-\subsection{Условие Тамма \S 105}
-
-Тамм \cite[\S 105]{Tamm} требует быстрого убывания полей на бесконечности для 
-обращения поверхностных интегралов в ноль. В нашей модели:
-\begin{itemize}
-    \item Поля затухают как $e^{-k_z'' z}$ с $k_z'' \approx 1.53$ см$^{-1}$
-    \item Длина затухания $L_z = 1/(2k_z'') \approx 0.33$ см
-\end{itemize}
-
-Это \textbf{быстрое затухание}, но интеграл от потока импульса по конечной 
-длине всё равно ненулевой.
 
 \section{Связь с парадоксом 4/3 и работами Ф. Рорлиха}
 
@@ -625,9 +591,9 @@ $\vec{g} = \vec{S}/c^2$, но не включает вклад от внутре
 где суммирование ведётся по всем \textbf{внутренним границам} раздела сред
 ($x = \pm A$ в нашей геометрии).
 
-\subsubsection{Почему Тамм не учитывал внутренние границы}
+\subsubsection{Почему Тамм не учитывал внутренние границы
 
-В $\S 105$ Тамм делает следующее \textbf{неявное предположение}:
+В \S 105 Тамм делает следующее \textbf{неявное предположение}:
 
 \begin{quote}
 \textit{«Если поле достаточно быстро убывает на бесконечности, то
@@ -702,20 +668,20 @@ $\vec{g} = \vec{S}/c^2$, но не включает вклад от внутре
 
 \subsection{Ключевое отличие MenDrive}
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \caption{Сравнение EmDrive и MenDrive}
 \label{tab:emdrive_vs_mendrive}
-\begin{tabular}{lll}
-% \toprule
+\begin{tabular}{@{}lll@{}}
+\toprule
 \textbf{Параметр} & \textbf{EmDrive} & \textbf{MenDrive} \\
-% \midrule
+\midrule
 Волновое сопротивление & Низкое ($Z \sim 1$) & Высокое ($Z_{\text{eff}} \ll 1$) \\
 Степень компенсации $\eta$ & $\eta \approx 1$ (100\%) & $\eta \approx 10^{-5}$--$10^{-2}$ \\
 Механизм тяги & Давление на стенки резонатора & Асимметрия пондеромоторных сил \\
 Материалы & Однородный металл & Металл + Феррит \\
 Компенсация противосилой & Полная & Пренебрежимо малая \\
-% \bottomrule
+\bottomrule
 \end{tabular}
 \end{table}
 
@@ -803,7 +769,6 @@ F_{\text{wire}})
     \item Этот поток должен быть равен и противоположен механической тяге
 \end{itemize}
 
-
 \section{Ограничения модели и границы применимости}
 
 \subsection{Проблема доказательства Тамма}
@@ -852,18 +817,59 @@ T_{xx}|_{x=+A^-} \neq T_{xx}|_{x=+A^+}
 сохранения, а следствие \textbf{неприменимости теоремы Гаусса ко всему 
 пространству сразу} в среде с разрывами $\varepsilon$ и $\mu$.
 
+\subsection{Ограничение $k_y = 0$}
+
+Все приведённые результаты получены в предположении $\partial/\partial y = 0$,
+что эквивалентно бесконечному резонатору в направлении $y$. Это упрощение позволяет:
+\begin{itemize}
+    \item Разделить TE/TM моды
+    \item Свести задачу к одномерной по $x$
+    \item Получить аналитические выражения для граничных условий
+\end{itemize}
+
+Однако для перехода к реалистичной геометрии необходимо учитывать конечные
+размеры и, соответственно, $k_y \neq 0$. Это приведёт к:
+\begin{itemize}
+    \item Связи TE и TM мод
+    \item Усложнению характеристического уравнения
+    \item Необходимости трёхмерного численного моделирования
+\end{itemize}
+
+\subsection{Ограничения и открытые вопросы}
+
+\begin{itemize}
+    \item \textbf{Расчёт Рорлиха} выполнен для движущихся зарядов, а MenDrive ---
+    стационарная система ($v=0$). Прямое применение формул требует обоснования.
+
+    \item \textbf{Ковариантность:} формула (\ref{eq:rohrlich_momentum})
+    ковариантна по Лоренцу, но в нашей модели $k_y = 0$ нарушает полную
+    симметрию.
+
+    \item \textbf{Интерпретация «вакуумного импульса»}: это гипотеза,
+    требующая дальнейшей теоретической проработки и экспериментальной проверки.
+
+    \item \textbf{Роль источника питания}: система не замкнута без учёта
+    источника. Компенсирующая сила может передаваться через провода и
+    крепления источника.
+\end{itemize}
+
+\textbf{Честное признание:} большие значения тяги ($\sim 10^3$ Н/кВт)
+получены численно, но их полное объяснение в рамках закона сохранения
+импульса остаётся \textbf{открытым вопросом}, требующим дальнейшего
+исследования.
+
 \section{Заключение}
 
 \begin{enumerate}
-    \item \textbf{Построена самосогласованная модель} MenDrive с учётом всех 
+    \item \textbf{Построена самосогласованная модель} MenDrive с учётом всех
     компонент пондеромоторной силы (формула 18.9 Тамма).
     
-    \item \textbf{Обнаружена высокая удельная тяга} до 2000 Н/кВт на 
+    \item \textbf{Обнаружена высокая удельная тяга} до 2000 Н/кВт на
     дисперсионной ветви 5.
     
     \item \textbf{Выявлен механизм слабой компенсации:}
     \begin{itemize}
-        \item В режимах с большой тягой эффективное волновое сопротивление 
+        \item В режимах с большой тягой эффективное волновое сопротивление
         $Z_{\text{eff}} \ll 1$
         \item Это приводит к малой разности $\Delta H_z$ в вакуумном зазоре
         \item Сила Ампера на виток $F_x^{\text{wire}} \propto \Delta H_z$ 
@@ -871,15 +877,14 @@ T_{xx}|_{x=+A^-} \neq T_{xx}|_{x=+A^+}
         \item Степень компенсации $\eta \approx 10^{-5}$--$10^{-2}$
     \end{itemize}
     
-    \item \textbf{Закон сохранения импульса} не нарушается: нескомпенсированная 
-    тяга уравновешивается потоком импульса электромагнитного поля через границы 
-    системы.
+    \item \textbf{Предложен обобщённый закон сохранения импульса} для
+    неоднородных сред с учётом внутренних поверхностных интегралов тензора
+    натяжений на границах раздела.
     
     \item \textbf{Направления дальнейших исследований:}
     \begin{itemize}
-        \item Переход к модели с поверхностным током на металле (вместо витка 
-        в вакууме)
-        \item Учёт конечных размеров по $y$ ($k_y \neq 0$)
+        \item Учёт гиротропии феррита (недиагональный тензор $\mu$)
+        \item Переход к подходу квазинормальных мод (комплексная частота)
         \item Переход к цилиндрической геометрии
         \item Экспериментальная проверка
     \end{itemize}
@@ -888,11 +893,11 @@ T_{xx}|_{x=+A^-} \neq T_{xx}|_{x=+A^+}
 \begin{thebibliography}{9}
 
 \bibitem{Mende} 
-Менде Ф.Ф. Волновой двигатель с внутренним расходом энергии электромагнитных 
+Менде Ф.Ф. Волновой двигатель с внутренним расходом энергии электромагнитных
 колебаний. --- http://fmnauka.narod.ru/dvigatel\_emdrive.pdf
 
 \bibitem{Karavashkin} 
-Каравашкин С.Б. The Reality of EmDrive in Terms of Discoveries in 
+Каравашкин С.Б. The Reality of EmDrive in Terms of Discoveries in
 Electromagnetism. --- 2025. --- 
 https://karavashkin3.blogspot.com/2025/06/the-reality-of-emdrive-in-terms-of.html
 
@@ -902,59 +907,35 @@ https://karavashkin3.blogspot.com/2025/06/the-reality-of-emdrive-in-terms-of.htm
 \bibitem{Tamm} 
 Тамм И.Е. Основы теории электричества. --- 10-е изд. --- М.: Наука, 1989. --- 504 с.
 
+\bibitem{Rohrlich1960}
+Rohrlich F. The Definition of the Radiative Center in Electrodynamics. ---
+American Journal of Physics. --- 1960. --- Vol. 28. --- P. 639.
+
+\bibitem{Rohrlich1966}
+Rohrlich F. The Electromagnetic Mass and the 4/3 Problem. ---
+American Journal of Physics. --- 1966. --- Vol. 34. --- P. 107.
+
+\bibitem{Rohrlich1970}
+Rohrlich F. Self-Energy and Stability of the Classical Electron. ---
+American Journal of Physics. --- 1970. --- Vol. 38. --- P. 1214.
+
+\bibitem{Rohrlich1982}
+Rohrlich F. The 4/3 Problem in Classical Electrodynamics. ---
+American Journal of Physics. --- 1982. --- Vol. 50. --- P. 693.
+
+\bibitem{Rohrlich1997}
+Rohrlich F. The 4/3 Problem and the Electromagnetic Mass. ---
+American Journal of Physics. --- 1997. --- Vol. 65. --- P. 1051.
+
+\bibitem{Tajmar2016}
+Tajmar M., Weikert S. Severe Interference of Experimental Results of the
+EmDrive. --- Journal of Propulsion and Power. --- 2016. --- Vol. 32. --- P. 1.
+
 \bibitem{Landau} 
-Landau L.D., Lifshitz E.M. Electrodynamics of Continuous Media. --- 2nd ed. --- 
+Landau L.D., Lifshitz E.M. Electrodynamics of Continuous Media. --- 2nd ed. ---
 Pergamon Press, 1984.
 
 \end{thebibliography}
-
-% \section*{Приложение: Алгоритм численной проверки}
-
-% \begin{verbatim}
-% # ============================================================
-% # Оценка противосилы на виток возбуждения
-% # ============================================================
-
-% c_cgs = 3e10  # скорость света [см/с]
-
-% # Шаг 1. Эффективная длина по z
-% k_z_Im_val = float(sz.subs(k_z_sol_cur))  # [1/см]
-% L_z_eff = 1.0 / (2.0 * k_z_Im_val)  # [см]
-
-% # Шаг 2. Положение проводов витка
-% x1 = -A_val * 0.8  # левый провод, ближе к металлу
-% x2 = +A_val * 0.8  # правый провод, ближе к ферриту
-
-% # Шаг 3. Поля в вакуумном зазоре
-% Hz_x1 = complex(Hz_v_d(x=x1).subs(dv).n())
-% Hz_x2 = complex(Hz_v_d(x=x2).subs(dv).n())
-% Ey_x1 = complex(Ey_v_d(x=x1).subs(dv).n())
-% Ey_x2 = complex(Ey_v_d(x=x2).subs(dv).n())
-
-% delta_Hz = Hz_x1 - Hz_x2  # [Гс]
-% delta_Ey = Ey_x1 - Ey_x2  # [статВ/см]
-
-% # Шаг 4. Амплитуда тока возбуждения (из баланса мощности)
-% I_y_cgs = 2.0 * W_total_ergs / abs(delta_Ey)  # [статА/см]
-
-% # Шаг 5. Сила на виток [дин/см²] -> [Н/см²]
-% F_wire_dyn = I_y_cgs / c_cgs * np.real(delta_Hz) / L_z_eff
-% F_wire_N = F_wire_dyn * 1e-5  # [Н/см²]
-
-% # Шаг 6. Степень компенсации
-% T_specific_NW = T_specific / 1e3  # [Н/Вт]
-% counter_specific = F_wire_N / W_total_W  # [Н/Вт]
-% eta = counter_specific / T_specific_NW
-
-% # Эффективное волновое сопротивление
-% Z_eff = abs(delta_Ey) / abs(np.real(delta_Hz))
-
-% print(f"Удельная тяга T = {T_specific:.2f} Н/кВт")
-% print(f"Удельная противосила F/W = {counter_specific*1e3:.4f} Н/кВт")
-% print(f"Степень компенсации η = {eta:.6e}")
-% print(f"Нетто-тяга T_net = {T_specific*(1-eta):.2f} Н/кВт")
-% print(f"Z_eff = {Z_eff:.4e}")
-% \end{verbatim}
 
 \vspace{1cm}
 \noindent\textbf{Примечание:} Код расчётов доступен в открытом репозитории: \\

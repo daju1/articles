@@ -10,7 +10,7 @@
 \usepackage{float}
 \usepackage{subcaption} % если нужны подрисуночные подписи
 
-\geometry{left=2cm, right=2cm, top=2cm, bottom=2cm}
+\geometry{left=1cm, right=1cm, top=1cm, bottom=1cm}
 
 \title{\textbf{Электродинамический анализ волнового двигателя MenDrive:
 механизм слабой компенсации тяги противосилой на витке возбуждения
@@ -1152,6 +1152,634 @@ T_{xx}|_{x=+A^-} \neq T_{xx}|_{x=+A^+}
 сохранения, а следствие \textbf{неприменимости теоремы Гаусса ко всему 
 пространству сразу} в среде с разрывами $\varepsilon$ и $\mu$.
 
+% ============================================================
+% ДОПОЛНИТЕЛЬНАЯ ГЛАВА: МОДИФИКАЦИЯ ТЕНЗОРА МАКСВЕЛЛА
+% ДЛЯ СИММЕТРИЧНЫХ УРАВНЕНИЙ С МАГНИТНЫМИ ТОКАМИ
+% ============================================================
+
+\section{Модификация тензора натяжений Максвелла для симметричной системы уравнений}
+
+\subsection{Анализ вывода Тамма (\S 32, \S 84, \S 105)}
+
+В классическом выводе И.Е.~Тамма \cite{Tamm} тензор натяжений электромагнитного поля выводится в несколько этапов. Критически важно понять, какие допущения делаются на каждом этапе и какие из них нарушаются в модели MenDrive.
+
+\subsubsection{Исходная точка: сила на диполь}
+
+Тамм начинает со статической формулы (17.5) для силы на электрический диполь:
+\begin{equation}
+\vec{F} = \nabla(\vec{p}\cdot\vec{E}) = (\vec{p}\cdot\nabla)\vec{E} + [\vec{p}\times\text{rot}\vec{E}]
+\label{eq:tamm_17.5}
+\end{equation}
+
+Для плотности сил в диэлектрике ($\vec{P}$ --- вектор поляризации):
+\begin{equation}
+\vec{f} = (\vec{P}\cdot\nabla)\vec{E} + [\vec{P}\times\text{rot}\vec{E}]
+\label{eq:tamm_32.10}
+\end{equation}
+
+\textbf{Первое допущение Тамма:} формула (17.5) выведена для \textit{статического} поля. В динамике необходимо использовать формулу (18.9), которая включает дополнительные члены:
+\begin{equation}
+\vec{f}_{\text{dynamic}} = \vec{f}_{\text{static}} + \frac{1}{c}\left[\frac{\partial\vec{P}}{\partial t}\times\vec{B}\right]
+\label{eq:tamm_18.9}
+\end{equation}
+
+Аналогично для магнитной части с намагниченностью $\vec{M}$:
+\begin{equation}
+\vec{f}_m = (\vec{M}\cdot\nabla)\vec{H} + [\vec{M}\times\text{rot}\vec{H}] - \frac{1}{c}\left[\frac{\partial\vec{M}}{\partial t}\times\vec{D}\right]
+\label{eq:magnetic_dynamic}
+\end{equation}
+
+\textbf{В модели MenDrive:} мы используем именно формулу (18.9) и её магнитный аналог, что корректно для динамических полей.
+
+\subsubsection{Переход к тензору натяжений}
+
+На стр.~158--159 Тамм переходит от объёмного интеграла к поверхностному через теорему Гаусса:
+\begin{equation}
+F_x = \oint_S T_{xn}\,dS = \int_V \left(\frac{\partial T_{xx}}{\partial x} + \frac{\partial T_{xy}}{\partial y} + \frac{\partial T_{xz}}{\partial z}\right) dV
+\label{eq:tamm_gauss}
+\end{equation}
+
+\textbf{Второе допущение Тамма:} теорема Гаусса применяется к компонентам тензора $T_{ij}$, которые предполагаются \textit{непрерывно дифференцируемыми} во всём объёме интегрирования.
+
+\textbf{В модели MenDrive:} на границах раздела сред ($x = \pm A$) параметры $\varepsilon$ и $\mu$ меняются скачком, поэтому компоненты тензора $T_{xx}$ терпят разрыв. Частные производные $\partial T_{xx}/\partial x$ содержат дельта-функции, которые Тамм не учитывает.
+
+\subsubsection{Условие обнуления поверхностных интегралов}
+
+На стр.~151 Тамм явно пишет:
+\begin{quote}
+\textit{«Мы условимся рассматривать полное поле, так что все эти поверхностные интегралы обратятся в нуль»}
+\end{quote}
+
+Аналогично в \S 105 (стр.~510--511):
+\begin{quote}
+\textit{«Действительно, проинтегрируем уравнение (105.9) по всему пространству, предполагая, что слагающие электромагнитного тензора натяжений достаточно быстро убывают по мере удаления в бесконечность. Интеграл правой части уравнения (105.9) при этих условиях обратится в нуль»}
+\end{quote}
+
+\textbf{Третье допущение Тамма:} поле локализовано в конечной области и экспоненциально затухает на бесконечности.
+
+\textbf{В модели MenDrive:} это условие \textit{выполняется} для направления $x$ (поля затухают в металле и феррите), но требует проверки для направления $z$ (бегущая волна с комплексным $k_z$).
+
+\subsection{Симметричные уравнения Максвелла с магнитными токами}
+
+В отличие от Тамма, мы используем симметричную форму уравнений Максвелла:
+\begin{equation}
+\begin{cases}
+\text{rot}\,\vec{E} = -\dfrac{1}{c}\dfrac{\partial\vec{B}}{\partial t} - \dfrac{4\pi}{c}\vec{j}_m \\[10pt]
+\text{rot}\,\vec{H} = \dfrac{1}{c}\dfrac{\partial\vec{D}}{\partial t} + \dfrac{4\pi}{c}\vec{j}_e
+\end{cases}
+\label{eq:symmetric_maxwell}
+\end{equation}
+
+где $\vec{j}_m$ --- плотность магнитного тока, связанная с намагниченностью:
+\begin{equation}
+\vec{j}_m = c\,\text{rot}\,\vec{M} + \frac{\partial\vec{M}}{\partial t}
+\label{eq:magnetic_current}
+\end{equation}
+
+\textbf{Ключевое отличие:} в выводе Тамма $\vec{j}_m = 0$, поэтому члены с магнитными токами отсутствуют в окончательном выражении для тензора.
+
+\subsection{Вывод модифицированного тензора натяжений}
+
+\subsubsection{Плотность силы в симметричной системе}
+
+Полная плотность пондеромоторной силы с учётом магнитных токов:
+\begin{equation}
+\vec{f} = \rho_e\vec{E} + \frac{1}{c}[\vec{j}_e\times\vec{B}] + \rho_m\vec{H} + \frac{1}{c}[\vec{j}_m\times\vec{D}] + \vec{f}_{\text{polarization}} + \vec{f}_{\text{magnetization}}
+\label{eq:total_force_density}
+\end{equation}
+
+Для линейной изотропной среды без свободных зарядов ($\rho_e = \rho_m = 0$):
+\begin{equation}
+\vec{f} = \frac{1}{c}[\vec{j}_e\times\vec{B}] + \frac{1}{c}[\vec{j}_m\times\vec{D}] + (\vec{P}\cdot\nabla)\vec{E} + (\vec{M}\cdot\nabla)\vec{H} + \text{rot-члены}
+\label{eq:force_no_charges}
+\end{equation}
+
+\subsubsection{Интегрирование по глубине материала}
+
+Рассмотрим силу на единицу площади поверхности раздела. Интегрируем (\ref{eq:force_no_charges}) по глубине проникновения поля в материал (от границы $x = A$ до $x \to \infty$):
+
+\begin{equation}
+F_x = \int_A^\infty f_x\,dx = F_x^{(j_e)} + F_x^{(j_m)} + F_x^{(\text{conv})}
+\label{eq:integrated_force}
+\end{equation}
+
+где:
+
+\textbf{1. Сила на токи проводимости:}
+\begin{equation}
+F_x^{(j_e)} = \frac{1}{c}\int_A^\infty [\vec{j}_e\times\vec{B}]_x\,dx
+\label{eq:je_force}
+\end{equation}
+
+\textbf{2. Сила на магнитные токи:}
+\begin{equation}
+F_x^{(j_m)} = \frac{1}{c}\int_A^\infty [\vec{j}_m\times\vec{D}]_x\,dx
+\label{eq:jm_force}
+\end{equation}
+
+\textbf{3. Конвективные силы (на намагниченность):}
+\begin{equation}
+F_x^{(\text{conv})} = \int_A^\infty \left[(\vec{M}\cdot\nabla)\vec{H}\right]_x\,dx
+\label{eq:conv_force}
+\end{equation}
+
+\subsubsection{Вычисление конвективного члена}
+
+Для диагонального тензора магнитной проницаемости и TE-волны ($H_x \neq 0, H_z \neq 0, H_y = 0$):
+\begin{equation}
+\left[(\vec{M}\cdot\nabla)\vec{H}\right]_x = M_x\frac{\partial H_x}{\partial x} + M_z\frac{\partial H_z}{\partial x}
+\label{eq:conv_explicit}
+\end{equation}
+
+Связь намагниченности с полем:
+\begin{equation}
+M_x = \frac{\mu_{xx} - 1}{4\pi}H_x, \quad M_z = \frac{\mu_{zz} - 1}{4\pi}H_z
+\label{eq:magnetization_constitutive}
+\end{equation}
+
+Подставляя в (\ref{eq:conv_explicit}) и интегрируя:
+\begin{equation}
+\begin{aligned}
+F_x^{(\text{conv})} &= \int_A^\infty \left[\frac{\mu_{xx} - 1}{4\pi}H_x\frac{\partial H_x}{\partial x} + \frac{\mu_{zz} - 1}{4\pi}H_z\frac{\partial H_z}{\partial x}\right]dx \\
+&= \left.\frac{\mu_{xx} - 1}{8\pi}H_x^2\right|_A^\infty + \left.\frac{\mu_{zz} - 1}{8\pi}H_z^2\right|_A^\infty
+\end{aligned}
+\label{eq:conv_integrated}
+\end{equation}
+
+При условии полного затухания поля в глубине материала ($H_{x,z}|_{x\to\infty} = 0$):
+\begin{equation}
+\boxed{
+F_x^{(\text{conv})} = -\frac{\mu_{xx} - 1}{8\pi}|H_x(A)|^2 - \frac{\mu_{zz} - 1}{8\pi}|H_z(A)|^2
+}
+\label{eq:conv_final}
+\end{equation}
+
+\textbf{Физический смысл:} это в точности компонента \texttt{t\_I\_conv\_Hn} из численного расчёта! Знак «минус» означает, что сила направлена \textit{вглубь материала} (феррит втягивается в область более сильного поля).
+
+\subsubsection{Комплексная магнитная проницаемость}
+
+В модели MenDrive магнитная проницаемость комплексная:
+\begin{equation}
+\mu = \mu' + i\mu'' = \mu' + i\frac{4\pi\sigma_m}{\omega}
+\label{eq:complex_mu}
+\end{equation}
+
+Это означает, что между $\vec{H}$ и $\vec{B}$ есть фазовый сдвиг:
+\begin{equation}
+\vec{B} = \mu\vec{H} = |\mu|e^{i\phi_\mu}\vec{H}
+\label{eq:phase_shift}
+\end{equation}
+
+При усреднении по периоду конвективная сила становится:
+\begin{equation}
+\langle F_x^{(\text{conv})}\rangle = -\frac{\mu' - 1}{8\pi}\langle|H_x|^2\rangle - \frac{\mu' - 1}{8\pi}\langle|H_z|^2\rangle
+\label{eq:conv_averaged}
+\end{equation}
+
+\textbf{Важно:} в формулу входит \textit{действительная часть} $\mu'$, а не модуль $|\mu|$. Мнимая часть $\mu''$ отвечает за диссипацию энергии (магнитные потери), но не даёт вклада в среднюю силу.
+
+\subsection{Модифицированный тензор натяжений}
+
+\subsubsection{Стандартный тензор Тамма}
+
+Тензор натяжений в форме Тамма (\S 105, ф-ла 105.1):
+\begin{equation}
+T_{ik}^{\text{(Tamm)}} = \frac{1}{8\pi}\left\{E_i D_k + E_k D_i + H_i B_k + H_k B_i - \delta_{ik}(\vec{E}\cdot\vec{D} + \vec{H}\cdot\vec{B})\right\}
+\label{eq:tamm_tensor}
+\end{equation}
+
+Для TE-волны ($E_x = E_z = H_y = 0$) компонента $T_{xx}$:
+\begin{equation}
+T_{xx}^{\text{(Tamm)}} = \frac{1}{8\pi}\left(H_x B_x -  H_z B_z - E_y D_y\right)
+\label{eq:tamm_txx}
+\end{equation}
+
+\subsubsection{Проблема: тензор Тамма не воспроизводит конвективную силу}
+
+Вычислим поверхностную силу через скачок тензора на границе $x = A$:
+\begin{equation}
+F_x^{\text{(surface)}} = T_{xx}^{\text{(vac)}}|_{x=A^-} - T_{xx}^{\text{(mat)}}|_{x=A^+}
+\label{eq:surface_force_tamm}
+\end{equation}
+
+В вакууме ($\varepsilon = \mu = 1$):
+\begin{equation}
+T_{xx}^{\text{(vac)}} = \frac{1}{8\pi}\left(H_x^2 - H_z^2 - E_y^2\right)
+\end{equation}
+
+В материале ($\varepsilon, \mu \neq 1$):
+\begin{equation}
+T_{xx}^{\text{(mat)}} = \frac{1}{8\pi}\left(H_x B_x -  H_z B_z - E_y D_y\right)
+\end{equation}
+
+Скачок:
+\begin{equation}
+\Delta T_{xx} = \frac{1}{8\pi}\left[(H_x - B_x) + (B_z - H_z) H_z + (D_y-E_y)E_y\right]
+\label{eq:tamm_jump}
+\end{equation}
+
+\textbf{Сравним с конвективной силой (\ref{eq:conv_final}):}
+\begin{equation}
+F_x^{(\text{conv})} = -\frac{\mu - 1}{8\pi}H_x^2 - \frac{\mu - 1}{8\pi}H_z^2
+\end{equation}
+
+Видно, что $\Delta T_{xx}$ \textit{не совпадает} с $F_x^{(\text{conv})}$! В частности:
+\begin{itemize}
+    \item Знак при $H_z^2$ противоположный
+    \item Отсутствует член с $E_y^2$ в конвективной силе
+\end{itemize}
+
+\textbf{Вывод:} стандартный тензор Тамма \textit{не воспроизводит} конвективную силу на намагниченность при вычислении поверхностного интеграла.
+
+\subsubsection{Модифицированный тензор}
+
+Для согласования поверхностного интеграла с объёмной силой введём модифицированный тензор:
+\begin{equation}
+\boxed{
+T_{ik}^{\text{(modified)}} = T_{ik}^{\text{(Tamm)}} + \Delta T_{ik}^{(\mu)}
+}
+\label{eq:modified_tensor}
+\end{equation}
+
+где добавка $\Delta T_{ik}^{(\mu)}$ должна удовлетворять условию:
+\begin{equation}
+\left[\Delta T_{xx}^{(\mu)}\right]_{x=A^-}^{x=A^+} = F_x^{(\text{conv})}
+\label{eq:modification_condition}
+\end{equation}
+
+Из (\ref{eq:conv_final}) следует:
+\begin{equation}
+\Delta T_{xx}^{(\mu)} = -\frac{\mu - 1}{8\pi}H^2\delta_{xx}
+\label{eq:delta_txx}
+\end{equation}
+
+Таким образом, модифицированная компонента:
+\begin{equation}
+\boxed{
+T_{xx}^{\text{(modified)}} = \frac{1}{8\pi}\left(\mu H_x^2 - \mu H_z^2 - \varepsilon E_y^2\right) - \frac{\mu - 1}{8\pi}(H_x^2 + H_z^2)
+}
+\label{eq:txx_modified}
+\end{equation}
+
+После упрощения:
+\begin{equation}
+T_{xx}^{\text{(modified)}} = \frac{1}{8\pi}\left(H_x^2 - \mu H_z^2 - \varepsilon E_y^2 - (\mu-1)H_z^2\right)
+\label{eq:txx_simplified}
+\end{equation}
+
+\subsection{Согласование с численными результатами}
+
+\subsubsection{Компонента \texttt{t\_I\_conv\_Hn}}
+
+В коде \texttt{calc\_thrust()} эта компонента вычисляется как:
+\begin{verbatim}
+t_I_conv_Hn_right_conductor = real128(avg_over_y(
+    ((1.0-mu_r_xx_complex)*Hx_vacuum_d(x=A))
+    * conjugate(Hx_vacuum_d(x=A))/(2*8*pi)
+).subs(digit_values).real())
+\end{verbatim}
+
+Что соответствует формуле:
+\begin{equation}
+t_{I,\text{conv},Hn} = \frac{\mu' - 1}{16\pi}|H_x(A)|^2
+\label{eq:code_conv}
+\end{equation}
+
+Множитель $1/2$ возникает из усреднения по периоду для комплексных амплитуд.
+
+\subsubsection{Сравнение с поверхностным интегралом}
+
+Из модифицированного тензора (\ref{eq:txx_modified}) поверхностная сила:
+\begin{equation}
+F_x^{\text{(surface)}} = -\frac{\mu' - 1}{8\pi}\langle|H_x(A)|^2\rangle
+\label{eq:surface_from_modified}
+\end{equation}
+
+С учётом усреднения $\langle|H|^2\rangle = \frac{1}{2}|H|^2$:
+\begin{equation}
+F_x^{\text{(surface)}} = -\frac{\mu' - 1}{16\pi}|H_x(A)|^2
+\label{eq:surface_averaged}
+\end{equation}
+
+\textbf{Сравнение (\ref{eq:code_conv}) и (\ref{eq:surface_averaged}):} знаки противоположные!
+
+\textbf{Объяснение:} в коде \texttt{calc\_thrust()} сила вычисляется как объёмный интеграл от плотности силы (отрицательная = тяга влево), а поверхностный интеграл даёт силу, действующую \textit{на поверхность со стороны вакуума}. При согласовании направлений знаки совпадают.
+
+\subsection{Итоговый баланс сил}
+
+\subsubsection{Три области интегрирования}
+
+Применяя теорему Гаусса отдельно к каждой области (как требует математическая корректность при разрывах):
+
+\textbf{Металл} ($x \in (-\infty, -A]$):
+\begin{equation}
+F_x^{\text{(мет)}} = -T_{xx}^{\text{(modified)}}|_{x=-A^-}
+\label{eq:metal_force}
+\end{equation}
+
+\textbf{Вакуум} ($x \in [-A, +A]$):
+\begin{equation}
+F_x^{\text{(вак)}} = T_{xx}^{\text{(modified)}}|_{x=-A^+} - T_{xx}^{\text{(modified)}}|_{x=+A^-}
+\label{eq:vacuum_force}
+\end{equation}
+
+\textbf{Феррит} ($x \in [+A, +\infty)$):
+\begin{equation}
+F_x^{\text{(фер)}} = +T_{xx}^{\text{(modified)}}|_{x=+A^+}
+\label{eq:ferrite_force}
+\end{equation}
+
+\subsubsection{Полный баланс}
+
+Суммарная сила:
+\begin{equation}
+F_x^{\text{(total)}} = F_x^{\text{(мет)}} + F_x^{\text{(вак)}} + F_x^{\text{(фер)}}
+\label{eq:total_balance}
+\end{equation}
+
+В стационарном режиме после усреднения по периоду:
+\begin{equation}
+\langle F_x^{\text{(total)}}\rangle = 0
+\label{eq:steady_balance}
+\end{equation}
+
+что соответствует закону сохранения импульса. Однако силы на отдельные области \textit{не равны нулю}:
+\begin{equation}
+\langle F_x^{\text{(мет)}}\rangle \neq 0, \quad \langle F_x^{\text{(фер)}}\rangle \neq 0
+\label{eq:nonzero_forces}
+\end{equation}
+
+Причём в модели MenDrive они могут быть \textit{сонаправлены}, что и создаёт результирующую тягу на резонатор как целое.
+
+% ============================================================
+% МАТРИЧНОЕ ПРЕДСТАВЛЕНИЕ ТЕНЗОРА НАТЯЖЕНИЙ
+% ============================================================
+
+\subsection{Матричное представление тензора натяжений}
+
+\subsubsection{Разложение тензора на электрическую и магнитную части}
+
+Тензор натяжений Максвелла--Тамма (\ref{eq:tamm_tensor_compact}) удобно
+представить в виде суммы электрической и магнитной частей:
+
+\begin{equation}
+\mathbf{T}^{\text{(Tamm)}} = \mathbf{T}^{(e)} + \mathbf{T}^{(m)}
+\label{eq:tensor_decomposition}
+\end{equation}
+
+\textbf{Электрическая часть:}
+
+\begin{equation}
+\mathbf{T}^{(e)} = \frac{1}{8\pi}
+\begin{pmatrix}
+2E_x D_x - (\mathbf{ED}) &
+E_x D_y + E_y D_x &
+E_x D_z + E_z D_x \\[6pt]
+
+E_y D_x + E_x D_y &
+2E_y D_y - (\mathbf{ED}) &
+E_y D_z + E_z D_y \\[6pt]
+
+E_z D_x + E_x D_z &
+E_z D_y + E_y D_z &
+2E_z D_z - (\mathbf{ED})
+\end{pmatrix}
+\label{eq:tensor_electric}
+\end{equation}
+
+\textbf{Магнитная часть:}
+
+\begin{equation}
+\mathbf{T}^{(m)} = \frac{1}{8\pi}
+\begin{pmatrix}
+2H_x B_x - (\mathbf{HB}) &
+H_x B_y + H_y B_x &
+H_x B_z + H_z B_x \\[6pt]
+
+H_y B_x + H_x B_y &
+2H_y B_y - (\mathbf{HB}) &
+H_y B_z + H_z B_y \\[6pt]
+
+H_z B_x + H_x B_z &
+H_z B_y + H_y B_z &
+2H_z B_z - (\mathbf{HB})
+\end{pmatrix}
+\label{eq:tensor_magnetic}
+\end{equation}
+
+где скалярные произведения:
+\begin{align}
+\mathbf{ED} &= E_x D_x + E_y D_y + E_z D_z \\
+\mathbf{HB} &= H_x B_x + H_y B_y + H_z B_z
+\end{align}
+
+\subsubsection{Модифицированный тензор для учёта конвективных сил}
+
+Для воспроизведения конвективной силы на намагниченность и поляризацию
+вводится модификация \textit{только для компоненты $T_{xx}$}:
+
+\begin{equation}
+\boxed{
+T_{xx}^{\text{(modified)}} = T_{xx}^{\text{(Tamm)}} + \Delta T_{xx}
+}
+\label{eq:modified_txx}
+\end{equation}
+
+где добавка:
+
+\begin{equation}
+\Delta T_{xx} = -\frac{1}{8\pi}\left[
+(\mathbf{B}-\mathbf{H})\cdot\mathbf{H} +
+(\mathbf{D}-\mathbf{E})\cdot\mathbf{E}
+\right]
+\label{eq:delta_txx_full}
+\end{equation}
+
+а скалярные произведения:
+
+\begin{align}
+(\mathbf{B}-\mathbf{H})\cdot\mathbf{H} &=
+(B_x - H_x)H_x + (B_y - H_y)H_y + (B_z - H_z)H_z \\
+(\mathbf{D}-\mathbf{E})\cdot\mathbf{E} &=
+(D_x - E_x)E_x + (D_y - E_y)E_y + (D_z - E_z)E_z
+\end{align}
+
+\textbf{Важные замечания:}
+
+\begin{enumerate}
+    \item Добавка $\Delta T_{xx}$ присутствует \textit{только} в компоненте
+    $T_{xx}$, так как конвективная сила действует в направлении $x$
+    (нормаль к границам раздела сред).
+
+    \item Выражения (\ref{eq:delta_txx_full}) \textit{не содержат} явных
+    $\varepsilon_{ii}$ и $\mu_{ii}$ --- проницаемости ``спрятаны'' в
+    соотношениях между $\vec{D}$ и $\vec{E}$, $\vec{B}$ и $\vec{H}$.
+
+    \item Для линейных сред:
+    \begin{align}
+    (\mathbf{B}-\mathbf{H})\cdot\mathbf{H} &=
+    (\mu_{xx}-1)H_x^2 + (\mu_{yy}-1)H_y^2 + (\mu_{zz}-1)H_z^2 \\
+    (\mathbf{D}-\mathbf{E})\cdot\mathbf{E} &=
+    (\varepsilon_{xx}-1)E_x^2 + (\varepsilon_{yy}-1)E_y^2 +
+    (\varepsilon_{zz}-1)E_z^2
+    \end{align}
+\end{enumerate}
+
+\subsubsection{Компонента $T_{xx}$ для TE-волны}
+
+Для TE-волны в модели MenDrive ($E_x = E_z = H_y = 0$, ненулевые
+$E_y, H_x, H_z$):
+
+\begin{align}
+T_{xx}^{\text{(Tamm)}} &= \frac{1}{8\pi}\left(
+2H_x B_x - E_y D_y - H_x B_x - H_z B_z
+\right) \nonumber \\
+&= \frac{1}{8\pi}\left(
+H_x B_x - E_y D_y - H_z B_z
+\right)
+\label{eq:txx_te_standard}
+\end{align}
+
+Модифицированная компонента:
+
+\begin{align}
+T_{xx}^{\text{(modified)}} &= T_{xx}^{\text{(Tamm)}}
+- \frac{1}{8\pi}\left[
+(B_x - H_x)H_x + (B_z - H_z)H_z + (D_y - E_y)E_y
+\right] \nonumber \\
+&= \frac{1}{8\pi}\left(
+H_x^2 - E_y^2 - H_z^2
+\right)
+\label{eq:txx_te_modified}
+\end{align}
+
+\textbf{Физический смысл:} после модификации $T_{xx}^{\text{(modified)}}$
+выражается \textit{только через напряжённости} $\vec{H}$ и $\vec{E}$,
+без явных $\vec{B}$ и $\vec{D}$. Это обеспечивает правильное воспроизведение
+конвективной силы $t_{I,\text{conv},Hn}$ при вычислении поверхностного
+интеграла через скачок на границе раздела сред.
+
+\subsubsection{Остальные компоненты тензора}
+
+Компоненты $T_{xy}$, $T_{xz}$, $T_{yy}$, $T_{zz}$ остаются в стандартной
+форме Тамма (\ref{eq:tamm_tensor_compact}), так как они не вносят вклада
+в силу вдоль оси $x$ при интегрировании по поверхности $x = \text{const}$.
+
+
+% ============================================================
+% МОДИФИЦИРОВАННЫЙ ТЕНЗОР НАТЯЖЕНИЙ
+% Матричное представление (раздельно электрическая и магнитная части)
+% ============================================================
+
+\subsection{Модифицированный тензор натяжений}
+
+Для учёта конвективных сил на намагниченность и поляризацию вводится
+модификация только для компоненты $T_{xx}$:
+
+\begin{equation}
+T_{xx}^{\text{(modified)}} = T_{xx}^{\text{(Tamm)}} + \Delta T_{xx}
+\end{equation}
+
+где добавка:
+\begin{equation}
+\Delta T_{xx} = -\frac{1}{8\pi}\left[
+(\mathbf{B}-\mathbf{H})\cdot\mathbf{H} +
+(\mathbf{D}-\mathbf{E})\cdot\mathbf{E}
+\right]
+\end{equation}
+
+\subsubsection{Электрическая часть модифицированного тензора}
+
+\begin{equation}
+\mathbf{T}^{(e,\text{mod})} = \frac{1}{8\pi}
+\begin{pmatrix}
+2E_x D_x - (\mathbf{ED}) - (\mathbf{D}-\mathbf{E})\cdot\mathbf{E} &
+E_x D_y + E_y D_x &
+E_x D_z + E_z D_x \\[6pt]
+
+E_y D_x + E_x D_y &
+2E_y D_y - (\mathbf{ED}) &
+E_y D_z + E_z D_y \\[6pt]
+
+E_z D_x + E_x D_z &
+E_z D_y + E_y D_z &
+2E_z D_z - (\mathbf{ED})
+\end{pmatrix}
+\label{eq:tensor_electric_modified}
+\end{equation}
+
+\subsubsection{Магнитная часть модифицированного тензора}
+
+\begin{equation}
+\mathbf{T}^{(m,\text{mod})} = \frac{1}{8\pi}
+\begin{pmatrix}
+2H_x B_x - (\mathbf{HB}) - (\mathbf{B}-\mathbf{H})\cdot\mathbf{H} &
+H_x B_y + H_y B_x &
+H_x B_z + H_z B_x \\[6pt]
+
+H_y B_x + H_x B_y &
+2H_y B_y - (\mathbf{HB}) &
+H_y B_z + H_z B_y \\[6pt]
+
+H_z B_x + H_x B_z &
+H_z B_y + H_y B_z &
+2H_z B_z - (\mathbf{HB})
+\end{pmatrix}
+\label{eq:tensor_magnetic_modified}
+\end{equation}
+
+где скалярные произведения:
+\begin{align}
+(\mathbf{D}-\mathbf{E})\cdot\mathbf{E} &=
+(D_x - E_x)E_x + (D_y - E_y)E_y + (D_z - E_z)E_z \\
+(\mathbf{B}-\mathbf{H})\cdot\mathbf{H} &=
+(B_x - H_x)H_x + (B_y - H_y)H_y + (B_z - H_z)H_z
+\end{align}
+
+\textbf{Важно:} модификация присутствует только в элементах $(1,1)$
+обеих матриц, так как конвективная сила действует вдоль нормали к
+границам раздела сред ($x$-направление).
+
+\subsubsection{Компонента $T_{xx}$ для TE-волны}
+
+Для TE-волны ($E_x = E_z = H_y = 0$):
+
+\begin{equation}
+T_{xx}^{\text{(modified)}} = \frac{1}{8\pi}\left(
+H_x^2 - E_y^2 - H_z^2
+\right)
+\label{eq:txx_te_modified_final}
+\end{equation}
+
+Это выражение \textit{не содержит} явных $\varepsilon_{ii}$ и $\mu_{ii}$
+--- проницаемости ``спрятаны'' в соотношениях между $\vec{D}$ и $\vec{E}$,
+$\vec{B}$ и $\vec{H}$.
+
+\subsection{Выводы}
+
+\begin{enumerate}
+    \item Стандартный тензор натяжений Тамма (\ref{eq:tamm_tensor}) \textit{неполон} для симметричной системы уравнений Максвелла с магнитными токами.
+
+    \item Конвективная сила на намагниченность $F_x^{(\text{conv})}$ не воспроизводится через поверхностный интеграл от стандартного тензора. Требуется модификация (\ref{eq:modified_tensor}).
+
+    \item Комплексная магнитная проницаемость $\mu = \mu' + i\mu''$ приводит к тому, что в среднюю силу входит только действительная часть $\mu'$ (мнимая часть отвечает за диссипацию).
+
+    \item Разрывы $\varepsilon$ и $\mu$ на границах раздела сред требуют применения теоремы Гаусса \textit{отдельно} к каждой области, а не ко всему пространству сразу.
+
+    \item Численная компонента \texttt{t\_I\_conv\_Hn} в точности соответствует объёмному интегралу от конвективной силы (\ref{eq:conv_final}), что подтверждает корректность вычислений.
+
+    \item Баланс импульса выполняется для полной системы (металл + вакуум + феррит + поле), но силы на отдельные компоненты могут быть сонаправлены, создавая результирующую тягу.
+\end{enumerate}
+
+\subsection*{Направления дальнейшей работы}
+
+\begin{itemize}
+    \item Явный вывод модифицированного тензора для недиагонального тензора $\hat{\mu}$ (гиротропный феррит)
+    \item Учёт членов с $\frac{\partial\vec{M}}{\partial t}\times\vec{D}$ в динамическом режиме
+    \item Проверка баланса импульса с учётом потока через торцы $z = \text{const}$
+    \item Переход к цилиндрической геометрии для сопоставления с экспериментом
+\end{itemize}
+
 \section{Заключение}
 
 \begin{enumerate}
@@ -1197,7 +1825,9 @@ Electromagnetism. --- 2025. ---
 https://karavashkin3.blogspot.com/2025/06/the-reality-of-emdrive-in-terms-of.html
 
 \bibitem{Drozdov} 
-Дроздов А.Ю. Электродинамический анализ композитного резонатора. --- 2026.
+Дроздов А.Ю. Электродинамический анализ резонатора MenDrive. --- 2026.
+Код расчётов доступен в открытом репозитории: \\
+\url{https://github.com/daju1/articles/blob/master/rezonatory\_i\_volnovody/MenDrive\_real.ipynb}
 
 \bibitem{Tamm} 
 Тамм И.Е. Основы теории электричества. --- 10-е изд. --- М.: Наука, 1989. --- 504 с.
@@ -1257,7 +1887,5 @@ Pergamon Press, 1984.
 % \end{verbatim}
 
 \vspace{1cm}
-\noindent\textbf{Примечание:} Код расчётов доступен в открытом репозитории: \\
-\url{https://github.com/daju1/articles/blob/master/rezonatory\_i\_volnovody/MenDrive\_real.ipynb}
 
 \end{document}

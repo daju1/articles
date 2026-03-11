@@ -1,0 +1,1880 @@
+\documentclass[11pt]{article}
+
+    \usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english, russian]{babel}
+
+\usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+    \usepackage{iftex}
+    \ifPDFTeX
+    	\usepackage[T1]{fontenc}
+    	\usepackage{mathpazo}
+    \else
+    	\usepackage{fontspec}
+    \fi
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+\usepackage{wrapfig}
+\usepackage[rightcaption]{sidecap}
+\providecommand{\keywords}[1]{\textbf{\textit{Keywords:}} #1}
+
+\author{A. Yu. Drozdov}
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{MenDrive\_ponderomotive}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb. 
+    \makeatletter
+        \newbox\Wrappedcontinuationbox 
+        \newbox\Wrappedvisiblespacebox 
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}} 
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}} 
+        \newcommand*\Wrappedcontinuationindent {3ex } 
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox} 
+        % Take advantage of the already applied Pygments mark-up to insert 
+        % potential linebreaks for TeX processing. 
+        %        {, <, #, %, $, ' and ": go to next line. 
+        %        _, }, ^, &, >, - and ~: stay at end of broken line. 
+        % Use of \textquotesingle for straight quote. 
+        \newcommand*\Wrappedbreaksatspecials {% 
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}% 
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}% 
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}% 
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}% 
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}% 
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}% 
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}% 
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}% 
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}% 
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}% 
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}% 
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}% 
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}% 
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}% 
+        } 
+        % Some characters . , ; ? ! / are not pygmentized. 
+        % This macro makes them "active" and they will insert potential linebreaks 
+        \newcommand*\Wrappedbreaksatpunct {% 
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}% 
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}% 
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}% 
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}% 
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}% 
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}% 
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}% 
+            \catcode`\.\active
+            \catcode`\,\active 
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active 
+            \lccode`\~`\~ 	
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+        
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active 	
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+    
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \section{Электродинамический расчёт волнового двигателя с внутренним
+расходом энергии Ф.Ф.Менде
+(MenDrive)}\label{ux44dux43bux435ux43aux442ux440ux43eux434ux438ux43dux430ux43cux438ux447ux435ux441ux43aux438ux439-ux440ux430ux441ux447ux451ux442-ux432ux43eux43bux43dux43eux432ux43eux433ux43e-ux434ux432ux438ux433ux430ux442ux435ux43bux44f-ux441-ux432ux43dux443ux442ux440ux435ux43dux43dux438ux43c-ux440ux430ux441ux445ux43eux434ux43eux43c-ux44dux43dux435ux440ux433ux438ux438-ux444.ux444.ux43cux435ux43dux434ux435-mendrive}
+
+А.Ю.Дроздов
+
+    рассчитаем тягу в
+
+http://fmnauka.narod.ru/dvigatel\_emdrive.pdf
+
+Ф.Ф. МЕНДЕ, ВОЛНОВОЙ ДВИГАТЕЛЬ С ВНУТРЕННИМ РАСХОДОМ ЭНЕРГИИ
+ЭЛЕКТРОМАГНИТНЫХ КОЛЕБАНИЙ
+
+    геометрия задачи следующая:
+
+поверхность хорошего проводника \(x<=-a\)
+
+вакуум внутри резонатора заполняет область \(-a<=x<=a\)
+
+В области \(x>a\) - плохой проводник
+
+    Итак начинаем расчёт с записи первой пары уравнений Максвелла
+
+    \[\begin{array}{c|c} \\
+rot\,\vec{E} = -\frac{1}{c}\frac{\partial \vec B}{\partial t} - \frac{4\pi}{c}\vec j_m&
+rot\,\vec{E} = -\frac{\partial \vec B}{\partial t} - \vec j_m \\
+rot\,\vec{H} = \frac{1}{c}\frac{\partial \vec D}{\partial t} + \vec j_e &
+rot\,\vec{H} = \frac{\partial \vec D}{\partial t} + \vec j_e \\
+\\ \hline
+\hline \\
+\vec{D} = \epsilon \vec{E}&
+\vec{D} = \epsilon \epsilon_0 \vec{E} \\
+\vec {B} = \mu \vec{H} &
+\vec {B} = \mu \mu_0 \vec{H} \\
+\end{array}\]
+
+    ищем решение в виде позволяющем разделить переменные
+
+\[\vec{E}(t) = \vec{E}(x, y)\,e^{i\,K_z\,z}\,e^{-i\,\omega\,t}\]
+
+\[\vec{E} = \vec{E}(x, y)\,e^{i\,K_z\,z}\]
+
+    \[\vec{H}(t) = \vec{H}(x, y)\,e^{i\,K_z\,z}\,e^{-i\,\omega\,t}\]
+
+\[\vec{H} = \vec{H}(x, y)\,e^{i\,K_z\,z}\]
+
+    \[\begin{array}{c|c} \\
+rot\,\vec{E} = -\frac{1}{c}\frac{\partial \mu \vec H}{\partial t} - \frac{4\pi}{c}\vec j_m = \frac{i\,\omega}{c}\,\mu\,\vec{H} - \frac{4\pi}{c}\sigma_m \vec H &
+rot\,\vec{E} = -\frac{\partial \mu  \mu_0 \vec H}{\partial t} - \vec j_m = i\,\omega\,\mu\,\mu_0\,\vec{H} - \sigma_m \vec H \\
+rot\,\vec{H} = \frac{1}{c}\frac{\partial \epsilon \vec E}{\partial t} + \frac{4\pi}{c} \vec j_e = - \frac{i\,\omega}{c} \epsilon \vec{E} + \frac{4\pi}{c}\sigma_e \vec E &
+rot\,\vec{H} = \frac{\partial \epsilon \epsilon_0 \vec E}{\partial t} + \vec j_e = - i\,\omega \epsilon \epsilon_0 \vec{E} + \sigma_e \vec E \\
+\end{array}\]
+
+    \subsection{Аналитический вывод формул пондеромоторных
+сил}\label{ux430ux43dux430ux43bux438ux442ux438ux447ux435ux441ux43aux438ux439-ux432ux44bux432ux43eux434-ux444ux43eux440ux43cux443ux43b-ux43fux43eux43dux434ux435ux440ux43eux43cux43eux442ux43eux440ux43dux44bux445-ux441ux438ux43b}
+
+    посчитаем:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\item
+  пондеромоторную силу, приложенную к хорошему проводнику
+\item
+  пондеромоторную силу, приложенную к магнетику типа феррита
+\end{enumerate}
+
+    И.Е.Тамм, Основы теории электричества, М. 1957, стр. 94
+
+Пример. Определить силы, действующие на твердый диполь исходя из его
+энергии во внешнем поле. Энергия диполя во внешнем поле, согласно
+(15.8), равна
+
+\[W = -\left(\vec {p} \vec{E} \right) = -p E cos \theta\]
+
+Равнодействующая, приложенная к диполю сил
+
+\[F = - \nabla W = \nabla \left(\vec {p} \vec{E} \right)\]
+
+\[F_x = -\frac{\partial W}{\partial x}\]
+
+для всякого не зависящего от координат вектора \(\vec{p}\)
+
+\[\nabla \left(\vec {p} \vec{E} \right) = \left(\vec {p} \nabla \right) \cdot \vec {E} + \left[\vec{p} \times rot \vec{E}\right]\]
+
+чтобы доказать это соотношение достаточно рассмотреть слагающую вектора
+\(\nabla \left(\vec {p} \vec{E} \right) - \left(\vec {p} \nabla \right) \cdot \vec {E}\)
+хотя быпо оси \(x\).
+
+\[\begin{array}{c} \\
+\frac{\partial}{\partial x} \left(\vec {p} \vec{E} \right) - \left(\vec {p} \nabla \right) \cdot E_x = \\
+= p_x \frac{\partial E_x}{\partial x} + p_y \frac{\partial E_y}{\partial x} + p_z \frac{\partial E_z}{\partial x} - \left(p_x \frac{\partial E_x}{\partial x} + p_y \frac{\partial E_x}{\partial y} + p_z \frac{\partial E_x}{\partial z}\right) = \\
+= p_y \left( \frac{\partial E_y}{\partial x} - \frac{\partial E_x}{\partial y} \right) 
++ p_z \left( \frac{\partial E_z}{\partial x} - \frac{\partial E_x}{\partial z} \right) =\\
+= p_y rot_z E - p_z rot_y E = \left[\vec {p} \times rot \vec {E}\right]_x
+\end{array}\]
+
+    Плотность сил, приложенных к диэлектрику
+
+\[
+f = \left(\vec {P} \nabla \right) \cdot \vec {E} + \left[\vec{P} \times rot \vec{E}\right]
+\]
+
+    \[
+f_x
+= P_x \frac{\partial E_x}{\partial x}
++ P_y \frac{\partial E_y}{\partial x}
++ P_z \frac{\partial E_z}{\partial x}
++\left[\vec{P} \times rot \vec{E}\right]_x
+\]
+
+    где поляризация диэлектрика равна
+
+\[ \vec{P} = \frac{\epsilon - 1}{4 \pi}\vec{E} \]
+
+поэтому
+
+\[
+f = \left(\frac{\epsilon - 1}{4 \pi}\vec{E} \nabla \right) \cdot \vec {E} + \left[\frac{\epsilon - 1}{4 \pi}\vec{E} \times rot \vec{E}\right]
+\]
+
+    \[
+f_x
+= \left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right)_x \frac{\partial E_x}{\partial x} \\
++ \left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right)_y \frac{\partial E_y}{\partial x} \\
++ \left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right)_z \frac{\partial E_z}{\partial x} \\
++ \left[\left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right) \times rot \vec{E}\right]_x
+\]
+
+    В случае диагональности тензора диэлектрической проницаемости
+
+\[
+f_x
+= \left(\frac{\epsilon_{xx} - 1}{4 \pi}E_x\right) \frac{\partial E_x}{\partial x}
++ \left(\frac{\epsilon_{yy} - 1}{4 \pi}E_y\right) \frac{\partial E_y}{\partial x}
++ \left(\frac{\epsilon_{zz} - 1}{4 \pi}E_z\right) \frac{\partial E_z}{\partial x}
++ \left[\left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right) \times rot \vec{E}\right]_x
+\]
+
+при интегрировании по глубине материала \(x\)
+
+    \[
+\int f_x dx
+= \left(\frac{\epsilon_{xx} - 1}{4 \pi}E_x\right) \frac{ E_x}{2} \Bigg|_{a}^{\infty} \\
++ \left(\frac{\epsilon_{yy} - 1}{4 \pi}E_y\right) \frac{ E_y}{2} \Bigg|_{a}^{\infty} \\
++ \left(\frac{\epsilon_{zz} - 1}{4 \pi}E_z\right) \frac{ E_z}{2} \Bigg|_{a}^{\infty} \\
++ \int \left[\left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right) \times rot \vec{E}\right]_x dx
+\]
+
+при условии полного угасания поля в скин слое первые три слагаемые
+приводят к формулам давления создаваемым электрическим полем из курса
+электростатики Смайта
+
+    \[\begin{array}{c} \\
+\int f_x dx =
+- \left(\frac{\epsilon_{xx} - 1}{4 \pi}E_x(x=a)\right) \frac{ E_x(x=a)}{2}
+- \left(\frac{\epsilon_{yy} - 1}{4 \pi}E_y(x=a)\right) \frac{ E_y(x=a)}{2} \\
+- \left(\frac{\epsilon_{zz} - 1}{4 \pi}E_z(x=a)\right) \frac{ E_z(x=a)}{2}
++ \int \left[\left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right) \times rot \vec{E}\right]_x dx
+\end{array}\]
+
+    \[\begin{array}{c} \\
+\int f_x dx
+= \left(\frac{1 - \epsilon_{xx}}{4 \pi}E_x(x=a)\right) \frac{ E_x(x=a)}{2}
++ \left(\frac{1 - \epsilon_{yy}}{4 \pi}E_y(x=a)\right) \frac{ E_y(x=a)}{2} \\
++ \left(\frac{1 - \epsilon_{zz}}{4 \pi}E_z(x=a)\right) \frac{ E_z(x=a)}{2}
++ \int \left[\left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right) \times rot \vec{E}\right]_x dx
+\end{array}\]
+
+    \[rot\,\vec{E} = -\frac{1}{c}\frac{\partial \vec B}{\partial t} - \frac{4\pi}{c}\vec j_m = \mu\,\frac{i\,\omega}{c}\,\vec{H} - \frac{4\pi}{c}\sigma_m \vec H \]
+
+    \[rot\,\vec{E} = -\frac{1}{c}\frac{\partial \vec B}{\partial t} - \frac{4\pi}{c}\vec j_m = \frac{i\,\omega}{c}\mu'\,\vec{H}\]
+
+\[rot\,\vec{H} = \frac{1}{c}\frac{\partial \vec D}{\partial t} + \frac{4\pi}{c} \vec j_e = - \frac{i\,\omega}{c} \epsilon' \vec{E}\]
+
+    \[\begin{array}{c} \\
+f_x
+= \left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right)_x \frac{\partial E_x}{\partial x}
++ \left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right)_y \frac{\partial E_y}{\partial x} \\
++ \left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right)_z \frac{\partial E_z}{\partial x}
++ \left[\left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right) \times \left(\frac{i\,\omega}{c}\mu'\,\vec{H}\right)\right]_x
+\end{array}\]
+
+    И.Е.Тамм, Основы теории электричества, М. 1957, стр. 259
+
+Потенциальная энергия магнитного диполя во внешнем поле \(H\), по
+аналогии с (15.8), равна
+
+\[U = -\left(\vec {M} \vec{H} \right) = -M H cos \theta\,\,\,\,\,(56.5)\]
+
+Равнодействующая, приложенная к диполю, сил
+
+\[F = - \nabla U = \nabla \left(\vec {M} \vec{H} \right)\,\,\,\,\,(56.6)\]
+
+\[F_x = -\frac{\partial U}{\partial x}\]
+
+И.Е.Тамм, стр. 301
+
+Сила, действующая на систему замкнутых токов, характеризуемую магнитным
+моментом \(\vec M\)
+
+\[F = \nabla \left(\vec {M} \vec{H} \right) = \left(\vec {M} \nabla \right) \cdot \vec {H} + \left[\vec{M} \times rot \vec{H}\right] \,\,\,\,\,(66.1)\]
+
+здесь \(\vec M\) - магнитный момент молекулы
+
+Средняя величина силы, испытываемая отдельной молекулой магнетика
+
+\[F = \nabla \left(\vec {M} \vec{B} \right) = \left(\vec {M} \nabla \right) \cdot \vec {B} + \left[\vec{M} \times rot \vec{B}\right] \,\,\,\,\,(66.2)\]
+
+Плотность пондеромоторных сил, испытываемых магнетиком
+
+\[f = \nabla \left(\vec {I} \vec{B} \right) = \left(\vec {I} \nabla \right) \cdot \vec {B} + \left[\vec{I} \times rot \vec{B}\right] \,\,\,\,\,(66.3)\]
+
+здесь \(\vec I\) - вектор наманичения, равный магнитному моменту
+молекулярных токов, рассчитанному на единицу рбъёма магнетика
+
+\[\vec I = \sum \vec M \,\,\,\,\,(60.3)\]
+
+\[\vec I = \kappa \vec H \,\,\,\,\,(63.1)\]
+
+Здесь \(\kappa\) - объёмная магнитная восприимчивость
+
+\[\mu = 1+4\pi\kappa \,\,\,\,\,(63.2)\]
+
+\[\kappa  = \frac{\mu - 1}{4\pi}\]
+
+если по рассматриваемому объёму протекут помимо токов молекулярных ещё и
+токи проводимости, то
+
+\[f = \frac{1}{c} \left[\vec {j_e} \times \vec{B} \right] + \left(\vec {I} \nabla \right) \cdot \vec {B} + \left[\vec{I} \times rot \vec{B}\right] \,\,\,\,\,(66.4)\]
+
+Выражая \(\vec I = \frac{\mu - 1}{4\pi} \vec H\)
+
+\[f = \frac{1}{c} \left[\vec {j_e} \times \vec{B} \right] + \left(\frac{\mu - 1}{4\pi} \vec H \nabla \right) \cdot \vec {B} + \left[\left(\frac{\mu - 1}{4\pi} \vec H \right) \times rot \vec{B}\right] \,\,\,\,\,(66.4)\]
+
+    \[
+f_x
+= \frac{1}{c} \left[\vec {j_e} \times \vec{B} \right]_x
++ \left(\frac{\mu - 1}{4 \pi}\vec{H}\right)_x \frac{\partial B_x}{\partial x}
++ \left(\frac{\mu - 1}{4 \pi}\vec{H}\right)_y \frac{\partial B_y}{\partial x}
++ \left(\frac{\mu - 1}{4 \pi}\vec{H}\right)_z \frac{\partial B_z}{\partial x}
++ \left[\left(\frac{\mu - 1}{4 \pi}\vec{H}\right) \times rot \vec{B}\right]_x
+\]
+
+    \[\begin{array}{c} \\
+f_x
+= \frac{1}{c} \left[\vec {j_e} \times \vec{B} \right]_x
++ \left(\frac{\mu - 1}{4 \pi}\vec{H}\right)_x \frac{\partial \left(\mu \vec{H}\right)_x}{\partial x}
++ \left(\frac{\mu - 1}{4 \pi}\vec{H}\right)_y \frac{\partial \left(\mu \vec{H}\right)_y}{\partial x} \\
++ \left(\frac{\mu - 1}{4 \pi}\vec{H}\right)_z \frac{\partial \left(\mu \vec{H}\right)_z}{\partial x}
++ \left[\left(\frac{\mu - 1}{4 \pi}\vec{H}\right) \times rot \vec{B}\right]_x
+\end{array}\]
+
+    \[
+f_x
+= \left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right)_x \frac{\partial E_x}{\partial x}
++ \left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right)_y \frac{\partial E_y}{\partial x}
++ \left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right)_z \frac{\partial E_z}{\partial x}
++ \left[\left(\frac{\epsilon - 1}{4 \pi}\vec{E}\right) \times \left(\frac{i\,\omega}{c}\mu'\,\vec{H}\right)\right]_x
+\]
+
+    \[\begin{array}{c} \\
+f_x
+= \frac{1}{c} \left[\vec {j_e} \times \vec{B} \right]_x
++ \left(\frac{\mu - 1}{4 \pi}\vec{H}\right)_x \frac{\partial \left(\mu \vec{H}\right)_x}{\partial x}
++ \left(\frac{\mu - 1}{4 \pi}\vec{H}\right)_y \frac{\partial \left(\mu \vec{H}\right)_y}{\partial x} \\
++ \left(\frac{\mu - 1}{4 \pi}\vec{H}\right)_z \frac{\partial \left(\mu \vec{H}\right)_z}{\partial x}
++ \left[\left(\frac{\mu - 1}{4 \pi}\vec{H}\right) \times rot \vec{B}\right]_x
+\end{array}\]
+
+    В случае диагональности тензора магнитной проницаемости
+
+\[
+f_x
+= \frac{1}{c} \left[\vec {j_e} \times \vec{B} \right]_x
++ \left(\frac{\mu_{xx} - 1}{4 \pi}H_x\right) \frac{\partial H_x}{\partial x}
++ \left(\frac{\mu_{yy} - 1}{4 \pi}H_y\right) \frac{\partial H_y}{\partial x}
++ \left(\frac{\mu_{zz} - 1}{4 \pi}H_z\right) \frac{\partial H_z}{\partial x}
++ \left[\left(\frac{\mu - 1}{4 \pi}\vec{H}\right) \times rot \vec{B}\right]_x
+\]
+
+при интегрировании по глубине материала \(x\)
+
+    \[\begin{array}{c} \\
+\int f_x \, dx
+= \int \frac{1}{c} \left[\vec {j_e} \times \vec{B} \right]_x \, dx
++ \left(\frac{\mu_{xx} - 1}{4 \pi}H_x\right) \frac{H_x}{2} \Bigg|_{0}^{\infty}
++ \left(\frac{\mu_{yy} - 1}{4 \pi}H_y\right) \frac{H_y}{2} \Bigg|_{0}^{\infty} \\
++ \left(\frac{\mu_{zz} - 1}{4 \pi}H_z\right) \frac{H_z}{2} \Bigg|_{0}^{\infty}
++ \int \left[\left(\frac{\mu - 1}{4 \pi}\vec{H}\right) \times rot \vec{B}\right]_x dx
+\end{array}\]
+
+при условии полного угасания поля в скин слое первые три слагаемые
+приводят к магнитостатическим формулам аналогичным формулам Смайта
+
+    Для диагонального тензора магнитной проницаемости ориентации
+намагниченности \(xx\)
+
+выражение ротора индукции магнитного поля
+
+\[rot \vec B = \mu_{perp} rot \vec H + \left(0,\left(\frac{\mu_{par}}{\mu_{perp}}-1\right)\frac{\partial H_x}{\partial z}, 0\right)\]
+
+\[rot \vec B = \mu_{perp} rot \vec H + \left(0,\left(\frac{\mu_{par}}{\mu_{perp}}-1\right)i\,K_z {H_x}, 0\right)\]
+
+\[rot\,\vec{H} = - \frac{i\,\omega}{c} \, \epsilon' \vec{E}\]
+
+\[rot \vec B = - \mu_{perp} \, \frac{i\,\omega}{c} \, \epsilon' \vec{E} + \left(0,\left(\frac{\mu_{par}}{\mu_{perp}}-1\right)i\,K_z {H_x}, 0\right)\]
+
+%     \[\begin{array}{c} \\
+% \int f_x \, dx
+% = \int \frac{1}{c} \left[\vec {j_e} \times \vec{B} \right]_x \, dx
+% + \left(\frac{\mu_{xx} - 1}{4 \pi}H_x\right) \frac{H_x}{2} \Bigg|_{0}^{\infty}
+% + \left(\frac{\mu_{yy} - 1}{4 \pi}H_y\right) \frac{H_y}{2} \Bigg|_{0}^{\infty} \\
+% + \left(\frac{\mu_{zz} - 1}{4 \pi}H_z\right) \frac{H_z}{2} \Bigg|_{0}^{\infty}
+% + \int \left[\left(\frac{\mu - 1}{4 \pi}\vec{H}\right) \times rot \vec{B}\right]_x dx
+% \end{array}\]
+
+% при условии полного угасания поля в скин слое первые три слагаемые
+% приводят к магнитостатическим формулам аналогичным формулам Смайта
+
+%     \[
+% \int f_x \, dx
+% = \int \frac{1}{c} \left[\vec {j_e} \times \vec{B} \right]_x \, dx
+% + \left(\frac{\mu_{xx} - 1}{4 \pi}H_x\right) \frac{H_x}{2} \Bigg|_{0}^{\infty}
+% + \left(\frac{\mu_{yy} - 1}{4 \pi}H_y\right) \frac{H_y}{2} \Bigg|_{0}^{\infty}
+% + \left(\frac{\mu_{zz} - 1}{4 \pi}H_z\right) \frac{H_z}{2} \Bigg|_{0}^{\infty}
+% + \int \left[\left(\frac{\mu - 1}{4 \pi}\vec{H}\right) \times \left(-\mu_{perp} \, \frac{i\,\omega}{c} \, \epsilon' \vec{E} + \left(0,\left(\frac{\mu_{par}}{\mu_{perp}}-1\right)i\,K_z {H_x}, 0\right)\right)\right]_x dx
+% \]
+
+    Для TM волны
+
+\[H_z = \mathit{B1}_{\mathit{zr}} e^{\left(-i \, K_{\mathit{right}_{\mathit{conductor}}} {\left(a - x\right)}\right)}\]
+
+    \[E_y = -\mathit{B1}_{\mathit{zr}} \cdot \frac{ K_{\mathit{right}_{\mathit{conductor}}} c \mu_{r_{\mathit{xx}}} \omega e^{\left(-i \, K_{\mathit{right}_{\mathit{conductor}}} a + i \, K_{\mathit{right}_{\mathit{conductor}}} x\right)}}{c^{2} k_{z}^{2} - \epsilon_{r_{\mathit{yy}}} \mu_{r_{\mathit{xx}}} \omega^{2}}\]
+
+    \[E_y = -\mathit{B1}_{\mathit{zr}} \cdot \frac{ K c \mu_{r_{\mathit{xx}}} \omega }{c^{2} k_{z}^{2} - \epsilon_{r_{\mathit{yy}}} \mu_{r_{\mathit{xx}}} \omega^{2}} \cdot e^{\left(-i \, K {\left(a - x\right)}\right)}\]
+
+    Для TM волны
+
+\[E_z = \mathit{B1}_{\mathit{zr}} e^{\left(-i \, K_{\mathit{right}_{\mathit{conductor}}} {\left(a - x\right)}\right)}\]
+
+    \[H_y = \frac{\mathit{B1}_{\mathit{zr}} K_{\mathit{right}_{\mathit{conductor}}} c \epsilon_{r_{\mathit{xx}}} \omega e^{\left(-i \, K_{\mathit{right}_{\mathit{conductor}}} a + i \, K_{\mathit{right}_{\mathit{conductor}}} x\right)}}{c^{2} k_{z}^{2} - \epsilon_{r_{\mathit{xx}}} \mu_{r_{\mathit{yy}}} \omega^{2}}\]
+
+    \[H_y = \frac{\mathit{B1}_{\mathit{zr}} K c \epsilon_{r_{\mathit{xx}}} \omega e^{\left(-i \, K a + i \, K x\right)}}{c^{2} k_{z}^{2} - \epsilon_{r_{\mathit{xx}}} \mu_{r_{\mathit{yy}}} \omega^{2}}\]
+
+    \[H_y = \frac{\mathit{B1}_{\mathit{zr}} K c \epsilon_{r_{\mathit{xx}}} \omega e^{\left(-i \, K {\left(a - x\right)}\right)}}{c^{2} k_{z}^{2} - \epsilon_{r_{\mathit{xx}}} \mu_{r_{\mathit{yy}}} \omega^{2}}\]
+
+    \[H_y = \mathit{B1}_{\mathit{zr}} \cdot \frac{ K c \epsilon_{r_{\mathit{xx}}} \omega }{c^{2} k_{z}^{2} - \epsilon_{r_{\mathit{xx}}} \mu_{r_{\mathit{yy}}} \omega^{2}} \cdot e^{\left(-i \, K {\left(a - x\right)}\right)}\]
+
+    \[C1_{zr} = \frac{ K c \epsilon_{r_{\mathit{xx}}} \omega }{c^{2} k_{z}^{2} - \epsilon_{r_{\mathit{xx}}} \mu_{r_{\mathit{yy}}} \omega^{2}}\]
+
+    \[E_z = \mathit{B1}_{\mathit{zr}} \cdot  e^{\left(-i \, K {\left(a - x\right)}\right)}\]
+
+    \[H_y = \mathit{B1}_{\mathit{zr}} \cdot C1_{zr} \cdot e^{\left(-i \, K {\left(a - x\right)}\right)}\]
+
+    Определим магнитное и электрическое поля в скин слое в упрощённом
+аналитическом виде
+
+    Здесь для сравнения не упрощённый вид этих полей полученный в ходе
+решения задачи о резонаторе
+
+    \[F_{conj} = \frac{\mathit{B1}_{\mathit{zr}} \sigma_{e_{r_{\mathit{zz}}}} \overline{\mathit{B1}_{\mathit{zr}}} \overline{\mathit{C1}_{\mathit{zr}}} e^{\left(-i \, K a + i \, a \overline{K}\right)} \int_{a}^{+\infty} e^{\left(i \, K x - i \, x \overline{K}\right)}\,{d x}}{2 \, c}\]
+
+    \[F_{conj_l} = \frac{\mathit{B1}_{\mathit{zl}} \sigma_{e_{l_{\mathit{zz}}}} \overline{\mathit{B1}_{\mathit{zl}}} \overline{\mathit{C1}_{\mathit{zl}}} e^{\left(-i \, K_{l} a + i \, a \overline{K_{l}}\right)} \int_{-\infty}^{-a} e^{\left(-i \, K_{l} x + i \, x \overline{K_{l}}\right)}\,{d x}}{2 \, c}\]
+
+%     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+% \prompt{In}{incolor}{ }{\boxspacing}
+% \begin{Verbatim}[commandchars=\\\{\}]
+
+% \end{Verbatim}
+% \end{tcolorbox}
+
+%     \[F_{conj} = \frac{\mathit{B1}_{\mathit{zr}} \sigma_{e_{r_{\mathit{zz}}}} \overline{\mathit{B1}_{\mathit{zr}}} \overline{\mathit{C1}_{\mathit{zr}}} e^{\left(-i \, K a + i \, a \overline{K}\right)} }{2 \, c} \cdot \int_{a}^{+\infty} e^{\left(i \, K x - i \, x \overline{K}\right)}\,{d x}\]
+
+%     \[F_{conj_l} = \frac{\mathit{B1}_{\mathit{zl}} \sigma_{e_{l_{\mathit{zz}}}} \overline{\mathit{B1}_{\mathit{zl}}} \overline{\mathit{C1}_{\mathit{zl}}} e^{\left(-i \, K_{l} a + i \, a \overline{K_{l}}\right)} }{2 \, c} \cdot \int_{-\infty}^{-a} e^{\left(-i \, K_{l} x + i \, x \overline{K_{l}}\right)}\,{d x}\]
+
+    формула давления магнитного поля на материалл в которой сдвиг фаз должен
+быть учтён неявно через \(\phi_{zr} = - arg(C1_{zr})\)
+\[F_{conj} = \frac{\mathit{B1}_{\mathit{zr}} \sigma_{e_{r_{\mathit{zz}}}} \overline{\mathit{B1}_{\mathit{zr}}} \overline{\mathit{C1}_{\mathit{zr}}}  }{2 \, c} \cdot e^{\left(-i \, K a + i \, a \overline{K}\right)} \cdot \int_{a}^{+\infty} e^{\left(i \, K x - i \, x \overline{K}\right)}\,{d x}\]
+
+    \[F_{conj_l} = \frac{\mathit{B1}_{\mathit{zl}} \sigma_{e_{l_{\mathit{zz}}}} \overline{\mathit{B1}_{\mathit{zl}}} \overline{\mathit{C1}_{\mathit{zl}}}  }{2 \, c} \cdot e^{\left(-i \, K_{l} a + i \, a \overline{K_{l}}\right)} \cdot \int_{-\infty}^{-a} e^{\left(-i \, K_{l} x + i \, x \overline{K_{l}}\right)}\,{d x}\]
+
+    Вопрос могу ли я здесь использовать формулу
+\(\frac{H_{0}^{2} \cos\left(\phi\right)}{16 \, \pi} + \frac{H_{0}^{2} \sin\left(\phi\right)}{16 \, \pi}\)
+пролученную в работе skin\_force\_phi если в качестве сдвига фаз
+использовать \(\phi_{zr} = - arg(C1_{zr})\)
+
+    \[F_{book} = \frac{\mathit{B1}_{\mathit{zr}}^{2} \mathit{C1}_{\mathit{zr}}^{2} }{16 \, \pi}\]
+
+    Будет ли
+\[\frac{F_{conj}}{F_{book}} = cos\left(\phi_{zr}\right) + sin\left(\phi_{zr}\right) \,\, ???\]
+
+    Итак мы имеем определённый интеграл в выражении отношения нашей формулы
+силы к книжной формуле силы
+
+    И чтобы взять этот интеграл нужно произвести замену комплексной
+переменной \(K\) на ее выражение через сумму ее действительной и мнимой
+частей
+
+    Поскольку в полученных при решении задачи о резонаторе значениях
+переменных \(K\) как мнимые так и действительные части положительны
+
+При этом нужно вспомнить что по поводу знака мнимой части переменной
+\(K\) писал Зоммерфельд
+
+\begin{verbatim}
+знак перед корнем будем всегда выбирать так, чтобы корень имел положительнею мнимую часть (Зоммерфельд, Электродинамика, параграф 20, Б. Волновое поле и скин-эффект в полупространстве)
+\end{verbatim}
+
+Это как раз соответствует нашему выбору решения
+$K_left_conductor_subs_d.rhs().n(), K_right_conductor_subs_d.rhs().n()$
+    И поэтому мы делаем следующие assumes необходимые при дальнейшем взятии
+интеграла по глубине скин слоя
+
+    Делая подстановки и упрощая мы видим, что интеграл
+\(G_{conj} = e^{\left(-i \, K a + i \, a \overline{K}\right)} \int_{a}^{+\infty} e^{\left(i \, K x - i \, x \overline{K}\right)}\,{d x}\)
+взят
+
+    С помощью такой же подстановки мы можем упростить выражение для силы
+\(F_{conj} = \frac{\mathit{B1}_{\mathit{zr}} \sigma_{e_{r_{\mathit{zz}}}} \overline{\mathit{B1}_{\mathit{zr}}} \overline{\mathit{C1}_{\mathit{zr}}} e^{\left(-i \, K a + i \, a \overline{K}\right)} \int_{a}^{+\infty} e^{\left(i \, K x - i \, x \overline{K}\right)}\,{d x}}{2 \, c}\)
+
+    Таким образом получив упрощённое аналитическое выражение для силы
+давления магнитного поля на стенку нашего резонатора
+\(F_{{conj}_{subs2}} = \frac{\mathit{B1}_{\mathit{zr}}^{2} \sigma_{e_{r_{\mathit{zz}}}} \overline{\mathit{C1}_{\mathit{zr}}}}{4 \, \mathit{ImK} c}\)
+найдём отношение найденного только что выражения к выражению книжной
+формулы \(F_{book} = \frac{H^2}{16 \pi}\)
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{252}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{show}\PY{p}{(}\PY{n}{F\PYZus{}book\PYZus{}r}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    $\displaystyle \frac{B_{H_{\mathit{zr}}} \overline{B_{H_{\mathit{zr}}}}}{16 \, \pi}$
+
+    
+    можем ли мы аналитически подобрать такие параметры резонатора для
+которых влияние сдвига фаз на дисбалланс пондеромоторных сил был
+максимальным
+
+    Абрагам-подобные компоненты
+
+    \[\begin{array}{c} \\
+\int f_x \, dx
+= \int \frac{1}{c} \left[\vec {j_e} \times \vec{B} \right]_x \, dx
++ \left(\frac{\mu_{xx} - 1}{4 \pi}H_x\right) \frac{H_x}{2} \Bigg|_{0}^{\infty}
++ \left(\frac{\mu_{yy} - 1}{4 \pi}H_y\right) \frac{H_y}{2} \Bigg|_{0}^{\infty} \\
++ \left(\frac{\mu_{zz} - 1}{4 \pi}H_z\right) \frac{H_z}{2} \Bigg|_{0}^{\infty}
++ \int \left[\left(\frac{\mu - 1}{4 \pi}\vec{H}\right) \times rot \vec{B}\right]_x dx
+\end{array}\]
+
+при условии полного угасания поля в скин слое первые три слагаемые
+приводят к магнитостатическим формулам аналогичным формулам Смайта
+
+Упрощая эти формулы за счёт преобразования первого интеграла, получаем
+\[
+\int f_x \, dx
+= \int \frac{1}{c} \left[\vec {j_e} \times \vec{H} \right]_x \, dx
++ \left(\frac{\mu_{xx} - 1}{4 \pi}H_x\right) \frac{H_x}{2} \Bigg|_{0}^{\infty}
++ \int \left[\left(\frac{\mu - 1}{4 \pi}\vec{H}\right) \times rot \vec{B}\right]_x dx
+\]
+
+    моё мнение, что для устройства типа Мендрайв уравнение (105.9) Тамма не
+следует распространять по всему прстранству, потому что интегральные
+теоремы, типа теоремы Гаусса, как это следует из стр. 175 справочника
+Корна по Математике, работают для ограниченных и пространственно
+односвязных областей, причём все частные производные встречающиеся в
+интегралах должны быть непрерывными. Для устройства типа Мендрайв
+частная производная тензора натяжения по координате, входящая в объёмный
+интеграл, терпит разрыв на границе внутреннего вакуумного промежутка со
+стенками резонатора, поэтому мы вправе применить теорему Гаусса к
+уравнению (105.9) не для всего пространства, а отдельно ограничившись
+лишь объёмом левой стенки и отдельно ограничивший объёмом правой стенки.
+
+Таким образом доказательство Таммом гипотезы о сохранении полного
+импульса в электродинамике оказывается несостоятельным
+
+    анализируя полученный результат на соответствие гипотезе о сохнанении
+полного импульса нужно не отбрасывать как это сделал Тамм в \(\S 105\)
+все дивергентные интегралы, и дело не в том что у меня в направлении
+\(y\) поле не изменяется (\(k_y = 0\)), т.е. резонатор условно
+бесконечен по оси \(y\), а допуская справедливость теоремы Гаусса,
+преобразовавать все дивергентные интегралы в поверхностные интегралы на
+внутренних поверхностях раздела металла и феррита с внутренним вакуумным
+промежутком внутри стенок резонатора x=-A и x = A, учитывая, что вглубь
+металла и вглубь феррита, мы считаем, что поле полностью затухает за
+счёт омических или магнитных потерь
+
+    \subsection{ГЕОМЕТРИЯ И АНАЛИЗ T\_\{xx\} ДЛЯ
+TE-ВОЛНЫ}\label{ux433ux435ux43eux43cux435ux442ux440ux438ux44f-ux438-ux430ux43dux430ux43bux438ux437-t_xx-ux434ux43bux44f-te-ux432ux43eux43bux43dux44b}
+
+\subsubsection{\texorpdfstring{\emph{Геометрия
+резонатора}}{Геометрия резонатора}}\label{ux433ux435ux43eux43cux435ux442ux440ux438ux44f-ux440ux435ux437ux43eux43dux430ux442ux43eux440ux430}
+
+\begin{equation*}
+\underbrace{\text{металл}}_{x\in(-\infty,-A]}
+\quad\Big|\quad
+\underbrace{\text{вакуум}}_{x\in[-A,+A]}
+\quad\Big|\quad
+\underbrace{\text{феррит}}_{x\in[+A,+\infty)}
+\end{equation*}
+
+Поверхность \(x=-A\): граница металл/вакуум (внутренняя стенка
+металла).\textbackslash{} Поверхность \(x=+A\): граница вакуум/феррит
+(внутренняя стенка феррита).\textbackslash{} При \(x\to\pm\infty\): поле
+затухает за счёт потерь \(\Rightarrow T_{xx}\to 0\).
+
+    \subsubsection{\texorpdfstring{\emph{Сила на металл и феррит из потока
+тензора}}{Сила на металл и феррит из потока тензора}}\label{ux441ux438ux43bux430-ux43dux430-ux43cux435ux442ux430ux43bux43b-ux438-ux444ux435ux440ux440ux438ux442-ux438ux437-ux43fux43eux442ux43eux43aux430-ux442ux435ux43dux437ux43eux440ux430}
+
+Применяем теорему Гаусса к каждой области отдельно.
+
+\paragraph{\texorpdfstring{Сила на металл (объём
+\(x\in(-\infty,-A]\)):}{Сила на металл (объём x\textbackslash{}in(-\textbackslash{}infty,-A{]}):}}\label{ux441ux438ux43bux430-ux43dux430-ux43cux435ux442ux430ux43bux43b-ux43eux431ux44aux451ux43c-xin-infty-a}
+
+\begin{equation*}
+    F_x^{\text{мет}} = \underbrace{T_{xx}\big|_{x\to-\infty}}_{=\,0}
+                     - T_{xx}\big|_{x=-A^-}
+    = -T_{xx}\big|_{x=-A^-}.
+\end{equation*}
+
+\paragraph{\texorpdfstring{Сила на феррит (объём
+\(x\in[+A,+\infty)\)):}{Сила на феррит (объём x\textbackslash{}in{[}+A,+\textbackslash{}infty)):}}\label{ux441ux438ux43bux430-ux43dux430-ux444ux435ux440ux440ux438ux442-ux43eux431ux44aux451ux43c-xinainfty}
+
+\begin{equation*}
+    F_x^{\text{фер}} = T_{xx}\big|_{x=+A^+}
+                     - \underbrace{T_{xx}\big|_{x\to+\infty}}_{=\,0}
+    = +T_{xx}\big|_{x=+A^+}.
+\end{equation*}
+
+\subsubsection{Полная тяга на
+вещество:}\label{ux43fux43eux43bux43dux430ux44f-ux442ux44fux433ux430-ux43dux430-ux432ux435ux449ux435ux441ux442ux432ux43e}
+
+\begin{equation*}
+    F_x^{\text{тяга}} = F_x^{\text{мет}} + F_x^{\text{фер}}
+    = T_{xx}\big|_{x=+A^+} - T_{xx}\big|_{x=-A^-}.
+\end{equation*}
+
+\subsubsection{\texorpdfstring{\emph{\(T_{xx}\) для TE-волны
+(\(E_x=E_z=H_y=0\))}}{T\_\{xx\} для TE-волны (E\_x=E\_z=H\_y=0)}}\label{t_xx-ux434ux43bux44f-te-ux432ux43eux43bux43dux44b-e_xe_zh_y0}
+
+\begin{equation*}
+    T_{xx} = \frac{1}{8\pi}\bigl\{
+        \mu H_x^2 - \varepsilon E_y^2 - \mu H_z^2
+    \bigr\}.
+\end{equation*}
+
+\paragraph{\texorpdfstring{\emph{Граничные условия на поверхностях
+раздела}}{Граничные условия на поверхностях раздела}}\label{ux433ux440ux430ux43dux438ux447ux43dux44bux435-ux443ux441ux43bux43eux432ux438ux44f-ux43dux430-ux43fux43eux432ux435ux440ux445ux43dux43eux441ux442ux44fux445-ux440ux430ux437ux434ux435ux43bux430}
+
+На любой границе \(x = \mathrm{const}\): - \(E_y\) -\/-\/-
+тангенциальная: \textbf{непрерывна} - \(H_z\) -\/-\/- тангенциальная:
+\textbf{непрерывна} - \(H_x\) -\/-\/- нормальная: скачок через \(\mu\):
+\(\mu_1 H_x^{(1)} = \mu_2 H_x^{(2)}\) (из непрерывности
+\(B_x = \mu H_x\))
+
+Обозначим значения поля в вакуумном зазоре у границ:
+
+\begin{equation*}
+    H_x^v \equiv H_x\big|_{\text{вак}},\quad
+    H_z^v \equiv H_z\big|_{\text{вак}},\quad
+    E_y^v \equiv E_y\big|_{\text{вак}}.
+\end{equation*}
+
+Тогда на стороне металла у \(x=-A\):
+
+\begin{equation*}
+    H_x^{(m)} = \frac{H_x^v}{\mu_m},\quad
+    H_z^{(m)} = H_z^v,\quad
+    E_y^{(m)} = E_y^v.
+\end{equation*}
+
+На стороне феррита у \(x=+A\):
+
+\begin{equation*}
+    H_x^{(f)} = \frac{H_x^v}{\mu_f},\quad
+    H_z^{(f)} = H_z^v,\quad
+    E_y^{(f)} = E_y^v.
+\end{equation*}
+
+\subsubsection{\texorpdfstring{\emph{Подстановка в формулу
+тяги}}{Подстановка в формулу тяги}}\label{ux43fux43eux434ux441ux442ux430ux43dux43eux432ux43aux430-ux432-ux444ux43eux440ux43cux443ux43bux443-ux442ux44fux433ux438}
+
+\begin{equation*}
+    T_{xx}\big|_{x=-A^-}
+    = \frac{1}{8\pi}\left\{
+        \mu_m \left(\frac{H_x^v}{\mu_m}\right)^2
+        - \varepsilon_m (E_y^v)^2
+        - \mu_m (H_z^v)^2
+    \right\}
+    = \frac{1}{8\pi}\left\{
+        \frac{(H_x^v)^2}{\mu_m}
+        - \varepsilon_m (E_y^v)^2
+        - \mu_m (H_z^v)^2
+    \right\}.
+\end{equation*}
+
+\begin{equation*}
+    T_{xx}\big|_{x=+A^+}
+    = \frac{1}{8\pi}\left\{
+        \mu_f \left(\frac{H_x^v}{\mu_f}\right)^2
+        - \varepsilon_f (E_y^v)^2
+        - \mu_f (H_z^v)^2
+    \right\}
+    = \frac{1}{8\pi}\left\{
+        \frac{(H_x^v)^2}{\mu_f}
+        - \varepsilon_f (E_y^v)^2
+        - \mu_f (H_z^v)^2
+    \right\}.
+\end{equation*}
+
+\subsection{Итоговая
+тяга:}\label{ux438ux442ux43eux433ux43eux432ux430ux44f-ux442ux44fux433ux430}
+
+\begin{equation*}
+\boxed{
+    F_x^{\text{тяга}} = \frac{1}{8\pi}\left[
+        \left(\frac{1}{\mu_f} - \frac{1}{\mu_m}\right)(H_x^v)^2
+        + (\varepsilon_m - \varepsilon_f)(E_y^v)^2
+        + (\mu_m - \mu_f)(H_z^v)^2
+    \right]
+}
+\end{equation*}
+
+При \(\mu_f \gg 1\), \(\mu_m \approx 1\),
+\(\varepsilon_m \gg \varepsilon_f\):
+
+\begin{equation*}
+    \frac{1}{\mu_f} - \frac{1}{\mu_m} \approx -1 \quad (\text{отриц., т.е. }
+    \text{сила направлена в сторону металла}),
+\end{equation*}\begin{equation*}
+    \mu_m - \mu_f \approx -\mu_f \quad (\text{большой отрицательный вклад от }H_z).
+\end{equation*}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    У меня в резонаторе моделируется ТE волна. Это означает ненулевой вектор
+Н вдоль оси волновода, то есть вдоль оси зет, перпендикулярной рисунку.
+Чтобы возбуждать такую волну можно внутрь вакуумного промежутка
+поместить прямоугольный виток переменного тока.
+
+У меня слева металл. Справа феррит.
+
+Результат моделирования показывает, что сила действующая на металл
+направлена влево, а сила действующая на феррит направлена тоже влево.
+
+Однако природа этих сил согласно моим расчётам разная. На металл
+действуют компоненты пондеромоторных сил под названием
+
+p\_Bt\_jeB - это интеграл силы Ампера/Лоренца действующей на
+тангенциальный электрический je ток Фуко возбуждаемый в скин слое
+металла тангенциальным полем В, проникающим в проводник
+
+И почему-то равная ей компонента под названием
+
+F\_P - это интеграл сил связанных с действием градиента тангенциальной
+компоненты электрического поля проникшей в скин слой проводника на
+вектор электрической поляризации, который получается ненулевым за счет
+того что диэлектрическая проницаемость epsilon становится комплексной за
+счет слагаемого связанного с проводимостью и частотой.
+
+Однако основная компонента сил действующих на феррит носит название
+
+t\_I\_conv\_Hn - это натяжение за счет интеграла действия нормальной
+компоненты поля H, проникшей в феррит на нормальную компоненту
+намагниченности I феррита.
+
+Если я с помощью прямоугольного витка с переменным током начну в моем
+прямоугольном вакуумном промежутке резонатора возбуждать ТМ волну, то
+судя по полученным мною графикам полей в вакуумном промежутке мне нужно
+понять, будет ли на этот виток возбуждения действовать сила Ампера
+Лоренца в магнитном поле вакуумного промежутка.
+
+Итак, у витка 4 части.
+
+Левая часть, параллельная оси игрек находится в области максимальной
+напряжённости поля Hz недалеко от левого проводника. Исходя из общих
+соображений о том, что ток возбуждения и ток Фуко обычно отталкиваются
+друг от друга, то на этот участок витка будет действовать противоположно
+направленная сила то есть вправо. И это наверное самая большая
+компонента противосилы, которую я в своих расчётах не учитывал.
+
+Правая часть витка, параллельная оси игрек находится в области
+минимальной напряжённости поля Hz. На неё будет действовать сила
+направленная влево, но уже меньшая по амплитуде.
+
+То есть действительно аргумент о том, что противосила может быть
+приложена к виткам возбуждения имеет место быть. И действительно
+насколько я помню в экспериментах по Emdrive произведённой группой
+немецких товарищей указывалось на то, что именно это фактор был ранее
+плохо учтён в экспериментах NASA.
+
+Но опять же хочу обратить внимание на то что основная компонента силы,
+действующей на феррит в моем расчёте имеет природу, отличную от природы
+силы, действующей на металл. Поэтому тут нужен особый метод расчёта,
+сможет ли противосила приложенная к витку возбуждения полностью
+скомпенсировать силу приложенную к ферриту.
+
+Основная неизвестная мне величина, от которой зависит противосила, это
+амплитуда переменной силы тока в витке возбуждения.
+
+Чтобы найти эту силу тока возбуждения нужно задать следующий вопрос: а
+какова формула мощности излучения прямоугольного витка возбуждения?
+
+Приравнять эту мощность излучения мощности теплопотерь в металле и в
+феррите, которая у меня уже вычисляется, найти силу тока в витке и таким
+образом оценить противосилу, приложенную к витку.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    размер витка должен быть меньше чем 2a потому что 2a это ширина
+вакуумного промежутка. а виток должен вместиться внутри вакуумного
+промежутка. И у меня есть свобода выбора размежения витка внутри
+промежутка. в том числе я могу разместить его несимметрично. и я могу
+виток сделать более узким чем ширина зазора
+
+Далее L - это не длина витка вдоль зет, потому зет - это ось волновода,
+и для возбуждения ТМ волны плоскость витка должна быть перпендикулярна
+оси зет, поэтому L - это длина витка вдоль игрек а вот с этой самой осью
+игрек у меня сейчас следующая проблема. Предоставленный мною расчёт
+выполнен в приближении k\_y = 0 то есть длина волновода вдоль игрек
+неограничена
+
+поэтому если оставаться в приближении k\_y = 0 то наверное у нас будет
+не виток возбуждения, а длинная линия возбуждения
+
+при этом L\_resonator - неограничен и предложенный тобой алгоритм не
+работоспособен в приближении k\_y = 0
+
+Далее
+
+при расчёте витка возбуждения это важно
+
+виток возбуждения имеет координату z = 0
+
+и следовательно z = 0 - это координата максимальной амплитуды полей
+
+при изменении координаты z поля затухают. и по хорошему нужно было бы
+при расчёте сил и при расчёте мощности потерь учесть затухание полей от
+z
+
+я до сих пор неявно предполагал, что это затухание имеет однаковый
+характер для силовых компонент и для мощности тепловых потерь. Так ли
+это? Нужно обратить внимание на этот момент
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \subsubsection{СИЛА НА ВИТОК ВОЗБУЖДЕНИЯ В
+TE-ВОЛНЕ}\label{ux441ux438ux43bux430-ux43dux430-ux432ux438ux442ux43eux43a-ux432ux43eux437ux431ux443ux436ux434ux435ux43dux438ux44f-ux432-te-ux432ux43eux43bux43dux435}
+
+\subsubsection{И ЕЁ СВЯЗЬ С ТЕПЛОВЫМИ ПОТЕРЯМИ
+РЕЗОНАТОРА}\label{ux438-ux435ux451-ux441ux432ux44fux437ux44c-ux441-ux442ux435ux43fux43bux43eux432ux44bux43cux438-ux43fux43eux442ux435ux440ux44fux43cux438-ux440ux435ux437ux43eux43dux430ux442ux43eux440ux430}
+
+\section{1. Геометрия и поля
+TE-волны}\label{ux433ux435ux43eux43cux435ux442ux440ux438ux44f-ux438-ux43fux43eux43bux44f-te-ux432ux43eux43bux43dux44b}
+
+Ненулевые компоненты TE-волны в плоском резонаторе (металл \(|\) вакуум
+\(|\) феррит, ось \(x\) -\/-\/- нормаль к пластинам):
+
+\begin{equation*}
+    H_x \neq 0,\quad H_z \neq 0,\quad E_y \neq 0,
+    \qquad
+    E_x = E_z = H_y = 0.
+\end{equation*}
+
+Поле имеет вид бегущей волны вдоль \(z\) с затуханием:
+
+\begin{equation*}
+    \mathbf{F}(x,z) = \mathbf{F}(x)\,e^{ik_z z},
+    \qquad
+    k_z = k_z^{\mathrm{Re}} + i k_z^{\mathrm{Im}},\quad k_z^{\mathrm{Im}} > 0.
+\end{equation*}
+
+    \subsection{2. Виток возбуждения как длинная линия
+тока}\label{ux432ux438ux442ux43eux43a-ux432ux43eux437ux431ux443ux436ux434ux435ux43dux438ux44f-ux43aux430ux43a-ux434ux43bux438ux43dux43dux430ux44f-ux43bux438ux43dux438ux44f-ux442ux43eux43aux430}
+
+Виток -\/-\/- прямоугольный контур с проводниками вдоль \(y\):
+
+\begin{itemize}
+\tightlist
+\item
+  левый провод: \(x = x_1\) (ближе к металлу), ток \(+I_y\,\hat{y}\)
+\item
+  правый провод: \(x = x_2\) (ближе к ферриту), ток \(-I_y\,\hat{y}\)
+\end{itemize}
+
+Оба провода находятся в вакуумном зазоре: \(x_1, x_2 \in (-A, +A)\).
+
+    \subsection{3. Сила Ампера на каждый
+провод}\label{ux441ux438ux43bux430-ux430ux43cux43fux435ux440ux430-ux43dux430-ux43aux430ux436ux434ux44bux439-ux43fux440ux43eux432ux43eux434}
+
+Сила на элемент тока \(I_y\,dy\,\hat{y}\) в поле
+\(\mathbf{B} = \mu_0 \mathbf{H}\) (в вакуумном зазоре \(\mu = 1\), в
+системе СГС \(c\) вместо \(\mu_0\)):
+
+\begin{equation*}
+    d\mathbf{F} = \frac{1}{c}\,I_y\,dy\;(\hat{y} \times \mathbf{B}).
+\end{equation*}
+
+Для TE-волны \(B_z = H_z\), \(B_x = H_x\), \(B_y = 0\), поэтому:
+
+\begin{equation*}
+    \hat{y} \times \mathbf{B}
+    = \hat{y} \times (H_x\,\hat{x} + H_z\,\hat{z})
+    = H_x\,(\hat{y}\times\hat{x}) + H_z\,(\hat{y}\times\hat{z})
+    = -H_x\,\hat{z} + H_z\,\hat{x}.
+\end{equation*}
+
+Сила на единицу длины по \(y\) вдоль оси \(x\):
+
+\subsubsection{\texorpdfstring{Левый провод (\(x = x_1\), ток
+\(+I_y\)):}{Левый провод (x = x\_1, ток +I\_y):}}\label{ux43bux435ux432ux44bux439-ux43fux440ux43eux432ux43eux434-x-x_1-ux442ux43eux43a-i_y}
+
+\begin{equation*}
+    \frac{F_x^{\mathrm{left}}}{L_y}
+    = +\frac{I_y}{c}\,H_z(x_1).
+\end{equation*}
+
+\subsubsection{\texorpdfstring{Правый провод (\(x = x_2\), ток
+\(-I_y\)):}{Правый провод (x = x\_2, ток -I\_y):}}\label{ux43fux440ux430ux432ux44bux439-ux43fux440ux43eux432ux43eux434-x-x_2-ux442ux43eux43a--i_y}
+
+\begin{equation*}
+    \frac{F_x^{\mathrm{right}}}{L_y}
+    = -\frac{I_y}{c}\,H_z(x_2).
+\end{equation*}
+
+\subsubsection{\texorpdfstring{Суммарная противосила на виток вдоль
+\(x\):}{Суммарная противосила на виток вдоль x:}}\label{ux441ux443ux43cux43cux430ux440ux43dux430ux44f-ux43fux440ux43eux442ux438ux432ux43eux441ux438ux43bux430-ux43dux430-ux432ux438ux442ux43eux43a-ux432ux434ux43eux43bux44c-x}
+
+\begin{equation}
+    \boxed{
+        \frac{F_x^{\mathrm{wire}}}{L_y}
+        = \frac{I_y}{c}\bigl[H_z(x_1) - H_z(x_2)\bigr].
+    }
+    \label{eq:F_wire}
+\end{equation}
+
+Знак: если \(H_z(x_1) > H_z(x_2)\) (поле больше у металла, что типично
+для ветви 5), то \(F_x^{\mathrm{wire}} > 0\) -\/-\/- направлена вправо,
+то есть \emph{против тяги} (тяга направлена влево, к металлу).
+
+\subsubsection{\texorpdfstring{Замечание о силе вдоль
+\(z\):}{Замечание о силе вдоль z:}}\label{ux437ux430ux43cux435ux447ux430ux43dux438ux435-ux43e-ux441ux438ux43bux435-ux432ux434ux43eux43bux44c-z}
+
+\begin{equation*}
+    \frac{F_z^{\mathrm{wire}}}{L_y}
+    = -\frac{I_y}{c}\bigl[H_x(x_1) - H_x(x_2)\bigr].
+\end{equation*}
+
+Эта компонента направлена вдоль оси волновода и не связана с тягой
+поперёк пластин.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \subsection{4. Мощность возбуждения и связь с тепловыми
+потерями}\label{ux43cux43eux449ux43dux43eux441ux442ux44c-ux432ux43eux437ux431ux443ux436ux434ux435ux43dux438ux44f-ux438-ux441ux432ux44fux437ux44c-ux441-ux442ux435ux43fux43bux43eux432ux44bux43cux438-ux43fux43eux442ux435ux440ux44fux43cux438}
+
+\subsubsection{4.1. Мощность излучения одного
+провода}\label{ux43cux43eux449ux43dux43eux441ux442ux44c-ux438ux437ux43bux443ux447ux435ux43dux438ux44f-ux43eux434ux43dux43eux433ux43e-ux43fux440ux43eux432ux43eux434ux430}
+
+Рассмотрим один бесконечный прямолинейный провод вдоль \(y\) в точке
+\(x = x_0\) с линейной плотностью тока \(I_y\) (А/см в СГС).
+
+Работа электрического поля на токе за единицу времени на единицу длины
+по \(y\) -\/-\/- это мощность, отдаваемая проводом полю:
+
+\begin{equation*}
+    \frac{P(x_0)}{L_y}
+    = \frac{1}{2}\,\mathrm{Re}\bigl[E_y(x_0)\cdot I_y^*\bigr].
+\end{equation*}
+
+\emph{Обоснование:} сила, действующая на заряд \(dq\) в поле \(E_y\),
+совершает работу \(dA = E_y\,dq\). Для тока \(I_y = dq/dt\) на длине
+\(dy\) мощность \(dP = E_y\,I_y\,dy\). После усреднения по времени для
+комплексных амплитуд получаем стандартное выражение через
+\(\frac{1}{2}\mathrm{Re}[E_y I_y^*]\).
+
+Здесь \(E_y(x_0)\) -\/-\/- это \emph{полное} поле в точке \(x_0\),
+включающее как поле самого провода, так и поле резонатора. Однако поле
+самого провода -\/-\/- чисто реактивное (ближнее поле бесконечного
+провода), и его вклад в \(\mathrm{Re}[E_y I_y^*]\) равен нулю. Поэтому в
+формуле мощности участвует только поле резонаторной моды:
+
+\begin{equation*}
+    \frac{P(x_0)}{L_y}
+    = \frac{1}{2}\,\mathrm{Re}\bigl[E_y^{\mathrm{mode}}(x_0)\cdot I_y^*\bigr].
+\end{equation*}
+
+\subsubsection{4.2. Два провода витка излучают разную
+мощность}\label{ux434ux432ux430-ux43fux440ux43eux432ux43eux434ux430-ux432ux438ux442ux43aux430-ux438ux437ux43bux443ux447ux430ux44eux442-ux440ux430ux437ux43dux443ux44e-ux43cux43eux449ux43dux43eux441ux442ux44c}
+
+Виток состоит из двух проводов:
+
+\begin{itemize}
+\tightlist
+\item
+  левый провод в точке \(x_1\), ток \(+I_y\)
+\item
+  правый провод в точке \(x_2\), ток \(-I_y\)
+\end{itemize}
+
+Поскольку \(E_y^{\mathrm{mode}}(x_1) \neq E_y^{\mathrm{mode}}(x_2)\)
+(поле моды неоднородно по \(x\)), мощности двух проводов различны:
+
+\begin{equation*}
+    \frac{P_1}{L_y}
+    = \frac{1}{2}\,\mathrm{Re}\bigl[E_y(x_1)\cdot I_y^*\bigr],
+\end{equation*}\begin{equation*}
+    \frac{P_2}{L_y}
+    = \frac{1}{2}\,\mathrm{Re}\bigl[E_y(x_2)\cdot(-I_y^*)\bigr]
+    = -\frac{1}{2}\,\mathrm{Re}\bigl[E_y(x_2)\cdot I_y^*\bigr].
+\end{equation*}
+
+\paragraph{Знак минус у правого провода -\/-\/- потому что
+ток}\label{ux437ux43dux430ux43a-ux43cux438ux43dux443ux441-ux443-ux43fux440ux430ux432ux43eux433ux43e-ux43fux440ux43eux432ux43eux434ux430-----ux43fux43eux442ux43eux43cux443-ux447ux442ux43e-ux442ux43eux43a}
+
+в нём направлен противоположно: \(-I_y\).
+
+Суммарная мощность, излучаемая витком:
+
+\begin{equation}
+    \boxed{
+        \frac{P_{\mathrm{total}}}{L_y}
+        = \frac{P_1 + P_2}{L_y}
+        = \frac{1}{2}\,\mathrm{Re}\bigl[
+            \bigl(E_y(x_1) - E_y(x_2)\bigr)\cdot I_y^*
+          \bigr].
+    }
+    \label{eq:P_total}
+\end{equation}
+
+Это физически осмысленный результат: виток возбуждает поле
+пропорционально \emph{разности} \(E_y\) в двух точках, то есть
+пропорционально циркуляции электрического поля вдоль контура витка. Если
+\(E_y(x_1) = E_y(x_2)\) (однородное поле), то суммарная мощность равна
+нулю -\/-\/- виток не взаимодействует с однородной модой, что физически
+очевидно.
+
+\subsubsection{4.3. Связь с ЭДС
+индукции\}}\label{ux441ux432ux44fux437ux44c-ux441-ux44dux434ux441-ux438ux43dux434ux443ux43aux446ux438ux438}
+
+Выражение \eqref{eq:P_total} можно переписать через ЭДС, наводимую модой
+в контуре витка:
+
+\begin{equation*}
+    \mathcal{E}_{\mathrm{ind}}
+    = \oint_L E_s\,ds
+    = E_y(x_1)\cdot L_y + E_y(x_2)\cdot(-L_y)
+    = \bigl(E_y(x_1) - E_y(x_2)\bigr)\cdot L_y,
+\end{equation*}
+
+откуда:
+
+\begin{equation*}
+    \frac{P_{\mathrm{total}}}{L_y}
+    = \frac{1}{2}\,\mathrm{Re}\!\left[
+        \frac{\mathcal{E}_{\mathrm{ind}}}{L_y}\cdot I_y^*
+      \right].
+\end{equation*}
+
+Это стандартная формула мощности источника ЭДС -\/-\/- всё
+самосогласованно.
+
+\subsubsection{4.4. Баланс мощности в стационарном
+режиме}\label{ux431ux430ux43bux430ux43dux441-ux43cux43eux449ux43dux43eux441ux442ux438-ux432-ux441ux442ux430ux446ux438ux43eux43dux430ux440ux43dux43eux43c-ux440ux435ux436ux438ux43cux435}
+
+В стационарном режиме мощность, излучаемая витком, равна суммарным
+тепловым потерям в стенках резонатора:
+
+\begin{equation}
+    \frac{1}{2}\,\mathrm{Re}\bigl[
+        \bigl(E_y(x_1) - E_y(x_2)\bigr)\cdot I_y^*
+    \bigr]
+    = w_{\mathrm{total}},
+    \label{eq:balance}
+\end{equation}
+
+где \(w_{\mathrm{total}}\) -\/-\/- суммарные потери в металле и феррите
+на единицу длины по \(y\) (в нормировке \texttt{calc\_thrust()}).
+
+Записывая \(I_y = |I_y|\,e^{i\varphi}\) и вводя разность полей:
+
+\begin{equation*}
+    \Delta E_y \equiv E_y(x_1) - E_y(x_2),
+\end{equation*}
+
+уравнение баланса принимает вид:
+
+\begin{equation*}
+    \frac{1}{2}\,|I_y|\,\mathrm{Re}\bigl[\Delta E_y\,e^{-i\varphi}\bigr]
+    = w_{\mathrm{total}}.
+\end{equation*}
+
+\emph{Оптимальная фаза тока} (максимальная передача мощности при
+заданном \(|I_y|\)):
+
+\begin{equation*}
+    \varphi_{\mathrm{opt}} = \arg(\Delta E_y),
+\end{equation*}
+
+при которой \(\mathrm{Re}[\Delta E_y\,e^{-i\varphi}] = |\Delta E_y|\).
+
+\emph{Амплитуда тока возбуждения:}
+
+\begin{equation}
+    \boxed{
+        |I_y| = \frac{2\,w_{\mathrm{total}}}{|\Delta E_y|}
+              = \frac{2\,w_{\mathrm{total}}}{|E_y(x_1) - E_y(x_2)|}.
+    }
+    \label{eq:I_y_correct}
+\end{equation}
+
+\subsubsection{4.5. Физический смысл: почему провода излучают
+по-разному\}}\label{ux444ux438ux437ux438ux447ux435ux441ux43aux438ux439-ux441ux43cux44bux441ux43b-ux43fux43eux447ux435ux43cux443-ux43fux440ux43eux432ux43eux434ux430-ux438ux437ux43bux443ux447ux430ux44eux442-ux43fux43e-ux440ux430ux437ux43dux43eux43cux443}
+
+Поле моды \(E_y(x)\) в вакуумном зазоре -\/-\/- это суперпозиция
+экспоненциальных функций \(e^{\pm k_x x}\), убывающих от каждой стенки.
+Поэтому \(|E_y(x_1)| \neq |E_y(x_2)|\) в общем случае.
+
+Физически: левый провод (у металла) находится в более сильном
+электрическом поле, если мода сосредоточена у металлической стенки, и
+излучает больше мощности. Правый провод (у феррита) -\/-\/- в более
+слабом поле, излучает меньше. Их вклады частично компенсируются, и
+суммарная мощность определяется разностью \(\Delta E_y\).
+
+Это аналогично тому, как сила на виток определяется разностью
+\(H_z(x_1) - H_z(x_2)\): оба эффекта (сила и мощность) определяются
+\emph{неоднородностью} поля по \(x\) в вакуумном зазоре.
+
+\subsubsection{4.6. Исправленная формула удельной
+противосилы}\label{ux438ux441ux43fux440ux430ux432ux43bux435ux43dux43dux430ux44f-ux444ux43eux440ux43cux443ux43bux430-ux443ux434ux435ux43bux44cux43dux43eux439-ux43fux440ux43eux442ux438ux432ux43eux441ux438ux43bux44b}
+
+Подставляя \eqref{eq:I_y_correct} в формулу силы на виток:
+
+\begin{equation*}
+    \frac{F_x^{\mathrm{wire}}}{L_y}
+    = \frac{|I_y|}{c}\bigl[H_z(x_1) - H_z(x_2)\bigr]
+    = \frac{2\,w_{\mathrm{total}}}{c}\cdot
+      \frac{H_z(x_1) - H_z(x_2)}{|E_y(x_1) - E_y(x_2)|}.
+\end{equation*}
+
+Удельная противосила (на единицу рассеиваемой мощности):
+
+\begin{equation}
+    \boxed{
+        \frac{F_x^{\mathrm{wire}}/L_y}{w_{\mathrm{total}}}
+        = \frac{2}{c}\cdot
+          \frac{H_z(x_1) - H_z(x_2)}{|E_y(x_1) - E_y(x_2)|}.
+    }
+    \label{eq:specific_counter_correct}
+\end{equation}
+
+Отношение \(\dfrac{H_z(x_1) - H_z(x_2)}{|E_y(x_1) - E_y(x_2)|}\) имеет
+размерность \(1/Z_{\mathrm{eff}}\), где \(Z_{\mathrm{eff}}\) -\/-\/-
+эффективное волновое сопротивление моды, ``видимое'' витком возбуждения.
+
+При \(Z_{\mathrm{eff}} \gg 1\) (высокое волновое сопротивление):
+противосила \(\ll\) тяга, нетто-тяга велика.
+
+При \(Z_{\mathrm{eff}} \sim 1\) (нормальное волновое сопротивление):
+противосила \(\sim\) тяга, нетто-тяга мала.
+
+    \subsection{5. Удельная противосила на
+виток}\label{ux443ux434ux435ux43bux44cux43dux430ux44f-ux43fux440ux43eux442ux438ux432ux43eux441ux438ux43bux430-ux43dux430-ux432ux438ux442ux43eux43a}
+
+Подставляя исправленную амплитуду тока I\_y\_correct в формулу суммарной
+силы на виток F\_wire:
+
+\begin{equation*}
+    \frac{F_x^{\mathrm{wire}}}{L_y}
+    = \frac{|I_y|}{c}\bigl[H_z(x_1) - H_z(x_2)\bigr]
+    = \frac{2\,w_{\mathrm{total}}}{c}\cdot
+      \frac{H_z(x_1) - H_z(x_2)}{|E_y(x_1) - E_y(x_2)|}.
+\end{equation*}
+
+Удельная противосила (на единицу рассеиваемой мощности):
+
+\begin{equation}
+    \boxed{
+        \frac{F_x^{\mathrm{wire}}/L_y}{w_{\mathrm{total}}}
+        = \frac{2}{c}\cdot
+          \frac{H_z(x_1) - H_z(x_2)}{|E_y(x_1) - E_y(x_2)|}
+        \equiv \frac{2}{c\,Z_{\mathrm{eff}}},
+    }
+    \label{eq:specific_counter}
+\end{equation}
+
+где введено эффективное волновое сопротивление моды, "видимое" витком
+возбуждения:
+
+\begin{equation}
+    Z_{\mathrm{eff}}
+    \equiv \frac{|E_y(x_1) - E_y(x_2)|}{H_z(x_1) - H_z(x_2)}.
+    \label{eq:Z_eff}
+\end{equation}
+
+\emph{Замечание о знаках:} формула записана для случая
+\(H_z(x_1) > H_z(x_2)\) (поле \(H_z\) больше у металлической стенки, что
+типично для ветви 5). В общем случае нужно брать \(\mathrm{Re}[\ldots]\)
+аналогично формуле мощности.
+
+    \subsection{6. Степень компенсации
+тяги}\label{ux441ux442ux435ux43fux435ux43dux44c-ux43aux43eux43cux43fux435ux43dux441ux430ux446ux438ux438-ux442ux44fux433ux438}
+
+Пусть \(\mathcal{T}\) {[}Н/Вт{]} -\/-\/- удельная тяга на вещество
+(металл + феррит), вычисленная в \texttt{calc\_thrust()}. Степень
+компенсации тяги противосилой витка:
+
+\begin{equation}
+    \boxed{
+        \eta \equiv
+        \frac{F_x^{\mathrm{wire}}/L_y}{w_{\mathrm{total}}\cdot\mathcal{T}}
+        = \frac{2}{c\,Z_{\mathrm{eff}}\cdot\mathcal{T}}.
+    }
+    \label{eq:eta}
+\end{equation}
+
+Нетто-тяга резонатора на единицу мощности:
+
+\begin{equation}
+    \mathcal{T}_{\mathrm{net}}
+    = \mathcal{T} - \frac{F_x^{\mathrm{wire}}/L_y}{w_{\mathrm{total}}}
+    = \mathcal{T}\,(1 - \eta)
+    = \mathcal{T}\!\left(1 - \frac{2}{c\,Z_{\mathrm{eff}}\cdot\mathcal{T}}\right).
+    \label{eq:T_net}
+\end{equation}
+
+Предельные случаи: - \(Z_{\mathrm{eff}} \gg \dfrac{2}{c\,\mathcal{T}}\):
+\(\eta \ll 1\), нетто-тяга \(\approx \mathcal{T}\) виток слабо
+компенсирует тягу. - \(Z_{\mathrm{eff}} = \dfrac{2}{c\,\mathcal{T}}\):
+\(\eta = 1\), нетто-тяга \(= 0\) полная компенсация. -
+\(Z_{\mathrm{eff}} \ll \dfrac{2}{c\,\mathcal{T}}\): \(\eta \gg 1\) виток
+"перекомпенсирует" тягу, что физически означает неправильный выбор
+положения \(x_1\), \(x_2\) или фазы тока.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \subsection{7. Физический смысл
+результата}\label{ux444ux438ux437ux438ux447ux435ux441ux43aux438ux439-ux441ux43cux44bux441ux43b-ux440ux435ux437ux443ux43bux44cux442ux430ux442ux430}
+
+\subsubsection{7.1. Импульсный баланс
+системы}\label{ux438ux43cux43fux443ux43bux44cux441ux43dux44bux439-ux431ux430ux43bux430ux43dux441-ux441ux438ux441ux442ux435ux43cux44b}
+
+Полный закон сохранения импульса для системы (металл + вакуум + феррит +
+виток) при \(k_y \neq 0\):
+
+\begin{equation*}
+    F_x^{\mathrm{мет}} + F_x^{\mathrm{фер}}
+    + F_x^{\mathrm{вак}}
+    + F_x^{\mathrm{wire}} = 0.
+\end{equation*}
+
+При \(k_y = 0\) слагаемое \(F_x^{\mathrm{вак}}\) включает поток
+электромагнитного импульса через боковые стенки \(y = \pm\infty\), и
+баланс в расчёте на единицу длины по \(y\) нарушается:
+
+\begin{equation*}
+    F_x^{\mathrm{мет}} + F_x^{\mathrm{фер}} + F_x^{\mathrm{wire}}
+    = -F_x^{\mathrm{вак}}
+    \neq 0.
+\end{equation*}
+
+\subsubsection{7.2. Почему большая тяга совместима с малой
+противосилой}\label{ux43fux43eux447ux435ux43cux443-ux431ux43eux43bux44cux448ux430ux44f-ux442ux44fux433ux430-ux441ux43eux432ux43cux435ux441ux442ux438ux43cux430-ux441-ux43cux430ux43bux43eux439-ux43fux440ux43eux442ux438ux432ux43eux441ux438ux43bux43eux439}
+
+Из формулы \eqref{eq:specific_counter} противосила определяется
+отношением \(\Delta H_z / \Delta E_y\). Большая тяга \(\mathcal{T}\)
+возникает в режимах с аномально большим \(H_x\) у феррита (концентрация
+магнитного потока). В этих же режимах:
+
+\begin{itemize}
+\tightlist
+\item
+  \(H_z\) в вакуумном зазоре может быть \emph{мало} (энергия
+  сосредоточена в \(H_x\), а не в \(H_z\)), поэтому
+  \(\Delta H_z = H_z(x_1) - H_z(x_2)\) мало;
+\item
+  \(E_y\) в вакуумном зазоре при этом конечно (из уравнения Максвелла
+  \(\partial H_z/\partial x -  \partial H_x/\partial z = \frac{i\omega\varepsilon}{c}E_y\)),
+  поэтому \(\Delta E_y\) не мало.
+\end{itemize}
+
+Следовательно, \(Z_{\mathrm{eff}} \gg 1\), \(\eta \ll 1\), и нетто-тяга
+\(\approx \mathcal{T}\) -\/-\/- большая тяга \emph{не компенсируется}
+противосилой витка.
+
+\subsubsection{7.3. Аналогия с
+трансформатором}\label{ux430ux43dux430ux43bux43eux433ux438ux44f-ux441-ux442ux440ux430ux43dux441ux444ux43eux440ux43cux430ux442ux43eux440ux43eux43c}
+
+Виток возбуждения в резонаторе аналогичен первичной обмотке
+трансформатора. Мощность передаётся через \(E_y\) (аналог напряжения), а
+сила -\/-\/- через \(H_z\) (аналог тока). Если трансформатор работает в
+режиме высокого напряжения / малого тока (высокое \(Z_{\mathrm{eff}}\)),
+то при той же передаваемой мощности сила на обмотку мала. Именно в этом
+режиме и работает ветвь 5.
+
+    \subsection{8. Алгоритм численной
+проверки}\label{ux430ux43bux433ux43eux440ux438ux442ux43c-ux447ux438ux441ux43bux435ux43dux43dux43eux439-ux43fux440ux43eux432ux435ux440ux43aux438}
+
+\subsubsection{АНАЛИЗ ЕДИНИЦ ИЗМЕРЕНИЯ И АЛГОРИТМ ЧИСЛЕННОЙ
+ПРОВЕРКИ}\label{ux430ux43dux430ux43bux438ux437-ux435ux434ux438ux43dux438ux446-ux438ux437ux43cux435ux440ux435ux43dux438ux44f-ux438-ux430ux43bux433ux43eux440ux438ux442ux43c-ux447ux438ux441ux43bux435ux43dux43dux43eux439-ux43fux440ux43eux432ux435ux440ux43aux438}
+
+\subsection{\texorpdfstring{\emph{Анализ единиц
+измерения}}{Анализ единиц измерения}}\label{ux430ux43dux430ux43bux438ux437-ux435ux434ux438ux43dux438ux446-ux438ux437ux43cux435ux440ux435ux43dux438ux44f}
+
+\subsubsection{\texorpdfstring{Что вычисляет функция
+\(\texttt{wr}/\texttt{wl}\)}{Что вычисляет функция \textbackslash{}texttt\{wr\}/\textbackslash{}texttt\{wl\}}}\label{ux447ux442ux43e-ux432ux44bux447ux438ux441ux43bux44fux435ux442-ux444ux443ux43dux43aux446ux438ux44f-textttwrtextttwl}
+
+Функция вычисляет объёмную плотность тепловых потерь, интегрированную по
+\(x\) и усреднённую по \(y\):
+
+\begin{equation*}
+    w(x) = \frac{1}{2}\Bigl(
+        \sigma_e^{zz}|E_z|^2 + \sigma_e^{yy}|E_y|^2 + \sigma_e^{xx}|E_x|^2
+        + \sigma_m^{zz}|H_z|^2 + \sigma_m^{yy}|H_y|^2 + \sigma_m^{xx}|H_x|^2
+    \Bigr)
+    \quad \left[\frac{\text{эрг}}{\text{с}\cdot\text{см}^3}\right].
+\end{equation*}
+
+После интегрирования по \(x\) (от стенки до глубины проводника) и
+перевода в ватты:
+
+\begin{equation*}
+    W_{\text{total}} = \left(\int_{-A-h_l}^{-A} w_l\,dx
+                      + \int_{A}^{A+h_r} w_r\,dx\right) \cdot 10^{-7}
+    \quad \left[\frac{\text{Вт}}{\text{см}^2}\right].
+\end{equation*}
+
+Функция \(avg_over_y\) делит на \(L_y\), поэтому нормировка по
+\(y\) уже выполнена. Интегрирование по \(z\) не делается -\/-\/- поле
+берётся при \(z = 0\) с нормировкой \(e^{ik_z z}\).
+
+\emph{Итого:} \(W_{\text{total}}\) имеет размерность
+\(\left[\dfrac{\text{Вт}}{\text{см}^2}\right]\) -\/-\/- мощность потерь
+на единицу площади в плоскости \((y, z)\).
+
+    \subsection{Размерность силы и удельной
+тяги}\label{ux440ux430ux437ux43cux435ux440ux43dux43eux441ux442ux44c-ux441ux438ux43bux44b-ux438-ux443ux434ux435ux43bux44cux43dux43eux439-ux442ux44fux433ux438}
+
+Аналогично, \(\texttt{force\_N}\) -\/-\/- сила, интегрированная по \(x\)
+и усреднённая по \(y\):
+
+\begin{equation*}
+    F \quad \left[\frac{\text{Н}}{\text{см}^2}\right].
+\end{equation*}
+
+Отношение:
+
+\begin{equation*}
+    \mathcal{T} = \frac{F\;[\text{Н/см}^2]}{W_{\text{total}}\;[\text{Вт/см}^2]}
+    \quad \left[\frac{\text{Н}}{\text{Вт}}\right].
+\end{equation*}
+
+Единицы \(\text{см}^2\) сокращаются -\/-\/- удельная тяга в
+\([\text{Н/Вт}]\) вычисляется корректно.
+
+    \subsection{\texorpdfstring{\emph{Нормировка по \(z\) через эффективную
+длину}}{Нормировка по z через эффективную длину}}\label{ux43dux43eux440ux43cux438ux440ux43eux432ux43aux430-ux43fux43e-z-ux447ux435ux440ux435ux437-ux44dux444ux444ux435ux43aux442ux438ux432ux43dux443ux44e-ux434ux43bux438ux43dux443}
+
+Поле имеет вид \(\sim e^{ik_z z}\) с
+\(k_z = k_z^{\text{Re}} + ik_z^{\text{Im}}\), поэтому интенсивность
+\(\sim e^{-2k_z^{\text{Im}}|z|}\). Эффективная длина по \(z\):
+
+\begin{equation*}
+    L_z^{\text{eff}} = \int_0^{\infty} e^{-2k_z^{\text{Im}} z}\,dz
+    = \frac{1}{2k_z^{\text{Im}}}
+    \quad [\text{см}].
+\end{equation*}
+
+Для перехода от значения при \(z = 0\) к интегралу по \(z\) нужно
+умножить на \(L_z^{\text{eff}}\). Для перехода обратно -\/-\/- разделить
+на \(L_z^{\text{eff}}\).
+
+    \subsection{\texorpdfstring{\emph{Алгоритм вычисления противосилы на
+виток}}{Алгоритм вычисления противосилы на виток}}\label{ux430ux43bux433ux43eux440ux438ux442ux43c-ux432ux44bux447ux438ux441ux43bux435ux43dux438ux44f-ux43fux440ux43eux442ux438ux432ux43eux441ux438ux43bux44b-ux43dux430-ux432ux438ux442ux43eux43a}
+
+\subsubsection{\texorpdfstring{*Шаг 1. Исходные данные из
+\(\texttt{calc\_thrust()}\)}{*Шаг 1. Исходные данные из \textbackslash{}texttt\{calc\textbackslash{}\_thrust()\}}}\label{ux448ux430ux433-1.-ux438ux441ux445ux43eux434ux43dux44bux435-ux434ux430ux43dux43dux44bux435-ux438ux437-textttcalc_thrust}
+
+\begin{align*}
+    W_{\text{total}} &\quad [\text{Вт/см}^2]
+        \quad\text{--- суммарные потери (металл + феррит)}, \\
+    F &\quad [\text{Н/см}^2]
+        \quad\text{--- суммарная тяга на вещество}, \\
+    \mathcal{T} &= F / W_{\text{total}} \cdot 10^3
+        \quad [\text{Н/кВт}].
+\end{align*}
+
+    \subsection{\texorpdfstring{\emph{Шаг 2. Поля в точках расположения
+проводов
+витка}}{Шаг 2. Поля в точках расположения проводов витка}}\label{ux448ux430ux433-2.-ux43fux43eux43bux44f-ux432-ux442ux43eux447ux43aux430ux445-ux440ux430ux441ux43fux43eux43bux43eux436ux435ux43dux438ux44f-ux43fux440ux43eux432ux43eux434ux43eux432-ux432ux438ux442ux43aux430}
+
+Провода витка расположены в вакуумном зазоре \(x \in (-A, +A)\):
+
+\begin{equation*}
+    x_1 = -\alpha A \quad (\text{левый, ближе к металлу}),
+    \qquad
+    x_2 = +\alpha A \quad (\text{правый, ближе к ферриту}),
+\end{equation*}
+
+где \(\alpha \in (0, 1)\) -\/-\/- параметр положения витка.
+
+Комплексные амплитуды полей при \(z = 0\):
+
+\begin{equation*}
+    H_z(x_1),\; H_z(x_2) \quad [\text{Гс}],
+    \qquad
+    E_y(x_1),\; E_y(x_2) \quad [\text{статВ/см}].
+\end{equation*}
+
+    \subsection{\texorpdfstring{\emph{Шаг 3. Разности
+полей}}{Шаг 3. Разности полей}}\label{ux448ux430ux433-3.-ux440ux430ux437ux43dux43eux441ux442ux438-ux43fux43eux43bux435ux439}
+
+\begin{equation*}
+    \Delta H_z = \mathrm{Re}\bigl[H_z(x_1) - H_z(x_2)\bigr]
+    \quad [\text{Гс}],
+\end{equation*}
+
+\begin{equation*}
+    \Delta E_y = E_y(x_1) - E_y(x_2)
+    \quad [\text{статВ/см}],
+\end{equation*}
+
+\begin{equation*}
+    |\Delta E_y| = |E_y(x_1) - E_y(x_2)|.
+\end{equation*}
+
+    \subsection{\texorpdfstring{\emph{Шаг 4. Амплитуда тока
+возбуждения}}{Шаг 4. Амплитуда тока возбуждения}}\label{ux448ux430ux433-4.-ux430ux43cux43fux43bux438ux442ux443ux434ux430-ux442ux43eux43aux430-ux432ux43eux437ux431ux443ux436ux434ux435ux43dux438ux44f}
+
+Баланс мощности в согласованных единицах:
+
+\begin{equation*}
+    \underbrace{\frac{1}{2}\,\mathrm{Re}[\Delta E_y \cdot I_y^*]}_{\text{эрг/(с·см)}}
+    \cdot \frac{1}{L_z^{\text{eff}}} \cdot 10^{-7}
+    = W_{\text{total}} \quad [\text{Вт/см}^2].
+\end{equation*}
+
+Откуда амплитуда тока в СГС:
+
+\begin{equation}
+    \boxed{
+        |I_y| = \frac{2\,W_{\text{total}}\,L_z^{\text{eff}} \cdot 10^7}{|\Delta E_y|}
+        \quad [\text{статА}].
+    }
+    \label{eq:I_y_units}
+\end{equation}
+
+В единицах СИ (\(1\,\text{А} = 3\cdot10^9\,\text{статА}\)):
+
+\begin{equation*}
+    |I_y^{\text{SI}}| = \frac{|I_y|}{3 \cdot 10^9} \quad [\text{А}].
+\end{equation*}
+
+    \subsection{\texorpdfstring{\emph{Шаг 5. Мощности отдельных
+проводов}}{Шаг 5. Мощности отдельных проводов}}\label{ux448ux430ux433-5.-ux43cux43eux449ux43dux43eux441ux442ux438-ux43eux442ux434ux435ux43bux44cux43dux44bux445-ux43fux440ux43eux432ux43eux434ux43eux432}
+
+Мощность левого провода (ток \(+I_y\)):
+
+\begin{equation*}
+    P_1 = \frac{1}{2}\,\mathrm{Re}[E_y(x_1)\cdot I_y^*]
+    \cdot \frac{10^{-7}}{L_z^{\text{eff}}}
+    \quad [\text{Вт/см}^2].
+\end{equation*}
+
+Мощность правого провода (ток \(-I_y\)):
+
+\begin{equation*}
+    P_2 = -\frac{1}{2}\,\mathrm{Re}[E_y(x_2)\cdot I_y^*]
+    \cdot \frac{10^{-7}}{L_z^{\text{eff}}}
+    \quad [\text{Вт/см}^2].
+\end{equation*}
+
+Проверка:
+
+\begin{equation*}
+    P_1 + P_2
+    = \frac{1}{2}\,\mathrm{Re}[\Delta E_y \cdot I_y^*]
+    \cdot \frac{10^{-7}}{L_z^{\text{eff}}}
+    = W_{\text{total}}. \quad \checkmark
+\end{equation*}
+
+    \subsubsection{\texorpdfstring{\emph{Шаг 6. Сила на
+виток}}{Шаг 6. Сила на виток}}\label{ux448ux430ux433-6.-ux441ux438ux43bux430-ux43dux430-ux432ux438ux442ux43eux43a}
+
+Сила на виток в СГС:
+
+\begin{equation*}
+    \frac{F_{\text{wire}}}{L_y \cdot L_z}
+    = \frac{|I_y|}{c}\,\Delta H_z
+    \quad [\text{дин/см}^2].
+\end{equation*}
+
+Нормировка на \(L_z^{\text{eff}}\) и перевод в \([\text{Н/см}^2]\)
+(\(1\,\text{Н} = 10^5\,\text{дин}\)):
+
+\begin{equation}
+    \boxed{
+        F_{\text{wire}}
+        = \frac{|I_y|}{c}\,\frac{\Delta H_z}{L_z^{\text{eff}}} \cdot 10^{-5}
+        \quad [\text{Н/см}^2].
+    }
+    \label{eq:F_wire_units}
+\end{equation}
+
+\subsubsection{\texorpdfstring{\emph{Шаг 7. Степень
+компенсации}}{Шаг 7. Степень компенсации}}\label{ux448ux430ux433-7.-ux441ux442ux435ux43fux435ux43dux44c-ux43aux43eux43cux43fux435ux43dux441ux430ux446ux438ux438}
+
+Удельная противосила:
+
+\begin{equation*}
+    \frac{F_{\text{wire}}}{W_{\text{total}}}
+    \quad [\text{Н/Вт}].
+\end{equation*}
+
+Степень компенсации:
+
+\begin{equation}
+    \boxed{
+        \eta = \frac{F_{\text{wire}} / W_{\text{total}}}{\mathcal{T} / 10^3}
+             = \frac{F_{\text{wire}} \cdot 10^3}{W_{\text{total}} \cdot \mathcal{T}}.
+    }
+    \label{eq:eta_units}
+\end{equation}
+
+Нетто-тяга:
+
+\begin{equation*}
+    \mathcal{T}_{\text{net}} = \mathcal{T}\,(1 - \eta)
+    \quad [\text{Н/кВт}].
+\end{equation*}
+
+\subsubsection{\texorpdfstring{\emph{Шаг 8. Эффективное волновое
+сопротивление}}{Шаг 8. Эффективное волновое сопротивление}}\label{ux448ux430ux433-8.-ux44dux444ux444ux435ux43aux442ux438ux432ux43dux43eux435-ux432ux43eux43bux43dux43eux432ux43eux435-ux441ux43eux43fux440ux43eux442ux438ux432ux43bux435ux43dux438ux435}
+
+\begin{equation*}
+    Z_{\text{eff}} = \frac{|\Delta E_y|}{|\Delta H_z|}
+    \quad \left[\frac{\text{статВ/см}}{\text{Гс}}\right]
+    = \left[\frac{\text{статВ}}{\text{Гс}\cdot\text{см}}\right].
+\end{equation*}
+
+В СГС это безразмерная величина (так как \([E] = [H]\) в СГС). При
+\(Z_{\text{eff}} \gg 1\): \(\eta \ll 1\), нетто-тяга велика. При
+\(Z_{\text{eff}} \sim 1\): \(\eta \sim 1\), компенсация полная.
+
+%     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+% \prompt{In}{incolor}{ }{\boxspacing}
+% \begin{Verbatim}[commandchars=\\\{\}]
+
+% \end{Verbatim}
+% \end{tcolorbox}
+
+%     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+% \prompt{In}{incolor}{ }{\boxspacing}
+% \begin{Verbatim}[commandchars=\\\{\}]
+
+% \end{Verbatim}
+% \end{tcolorbox}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}

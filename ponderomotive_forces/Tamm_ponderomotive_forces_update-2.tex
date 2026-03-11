@@ -1,0 +1,1115 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\geometry{left=2cm, right=2cm, top=2cm, bottom=2cm}
+
+% ============================================================
+% ЦВЕТОВОЕ ВЫДЕЛЕНИЕ МОДИФИКАЦИЙ
+% Измените цвет здесь для всех модификаций сразу
+% ============================================================
+\definecolor{modcolor}{rgb}{0.0, 0.55, 0.0}  % зелёный (измените по желанию)
+% \definecolor{modcolor}{rgb}{0.0, 0.0, 0.7}  % синий (альтернатива)
+% \definecolor{modcolor}{rgb}{0.7, 0.0, 0.0}  % красный (альтернатива)
+
+\newcommand{\modtext}[1]{\textcolor{modcolor}{#1}}
+\newcommand{\modmath}[1]{\textcolor{modcolor}{#1}}
+\newcommand{\modblock}[1]{\colorbox{modcolor!10}{\parbox{\dimexpr\linewidth-2\fboxsep}{#1}}}
+
+\title{Пондеромоторные силы в диэлектриках и магнетиках:\\
+Модифицированный вывод И.Е.~Тамма для полной системы уравнений Максвелла\\
+с учётом динамики, магнитных токов и разрывов на границах сред}
+\author{И.Е.~Тамм (\S 17, 18, 32--34, 84, 105)\\
+с модификациями для модели MenDrive (А.Ю.~Дроздов)}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Настоящий документ представляет собой подробное воспроизведение вывода пондеромоторных 
+сил и тензора натяжений электромагнитного поля из книги И.Е.~Тамма «Основы теории 
+электричества» с критическими модификациями, необходимыми для применения к модели 
+волнового двигателя MenDrive. 
+
+\modtext{
+    \textbf{Модификации вносятся только в тех местах, где оригинальный вывод Тамма 
+    содержит предположения, не выполняющиеся для MenDrive:}
+    \begin{enumerate}
+        \item Динамические поля (формула 18.9 вместо 17.5)
+        \item Магнитные заряды и токи ($\rho_m \neq 0$, $\vec{j}_m \neq 0$)
+        \item Разрывы $\varepsilon$, $\mu$ на границах сред (теорема Гаусса применяется 
+        отдельно к каждой области)
+        \item Поверхностные интегралы на внутренних границах не обращаются в ноль
+    \end{enumerate}
+}
+
+Все модификации выделены \textcolor{modcolor}{зелёным цветом}. Оригинальный текст 
+Тамма приведён чёрным цветом.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+% ============================================================
+% §17. ПОНДЕРОМОТОРНЫЕ СИЛЫ (стр. 88–91)
+% ============================================================
+
+\section*{\S\,17. Пондеромоторные силы.}
+
+\subsection*{1. Сила на электрический диполь}
+
+\noindent
+ников расположены на их поверхностях, так что $\rho = 0$, и что 
+потенциал каждого проводника постоянен на всём его протяжении, 
+получим из
+
+\begin{equation}
+F = fS = \frac{2\pi e^2}{S} = 2\pi\sigma^2\cdot S,
+\end{equation}
+где $\sigma = \dfrac{e}{S}$ — плотность заряда на поверхности пластин, 
+что вполне согласуется с (17.2).
+
+К тому же результату можно прийти и непосредственно из (18.3), 
+полагая в этой формуле $q = d$ и $\Theta = F$.
+
+\textbf{3.} В предыдущем мы неявным образом предполагали, что при 
+смещении пластин конденсатора \textit{заряд} их $e$ остаётся 
+постоянным. Мы получили бы совершенно иное
+
+\modtext{
+    \textbf{МОДИФИКАЦИЯ 17.1:} Для динамических полей необходимо использовать 
+    полную формулу силы на диполь, которая включает члены с производными по времени. 
+    В оригинальном выводе Тамма используется статическая формула (17.5), но для 
+    MenDrive с гармоническими полями $e^{-i\omega t}$ это недопустимо.
+}
+
+\modblock{
+\modtext{
+    Для \textbf{динамических полей} сила на электрический диполь определяется 
+    формулой (18.9) вместо (17.5):
+    \begin{equation}
+    \modmath{
+        \vec{F} = (\vec{p}\cdot\nabla)\vec{E} + 
+        \left[\vec{p} \times \text{rot}\,\vec{E}\right] +
+        \frac{1}{c}\left[\frac{\partial\vec{p}}{\partial t} \times \vec{B}\right]
+    }
+    \tag{17.5$^*$}
+    \end{equation}
+    Последний член отсутствует в статической формуле (17.5) Тамма, но для 
+    гармонических полей $\vec{p}(t) = \vec{p}_0 e^{-i\omega t}$ он даёт вклад:
+    \begin{equation}
+    \modmath{
+        \frac{1}{c}\left[\frac{\partial\vec{p}}{\partial t} \times \vec{B}\right] = 
+        -\frac{i\omega}{c}\left[\vec{p} \times \vec{B}\right]
+    }
+    \end{equation}
+    Этот член ответственен за \textbf{Абрагам-подобную силу} $\vec{F}_P$ в расчёте 
+    MenDrive.
+}
+}
+
+\subsection*{2. Плотность сил в диэлектрике}
+
+\noindent
+Плотность сил, приложенных к диэлектрику
+
+\begin{equation}
+\vec{f} = \left(\vec{P}\nabla\right)\cdot\vec{E} + \left[\vec{P} \times \text{rot}\,\vec{E}\right]
+\tag{17.6}
+\end{equation}
+
+\modtext{
+    \textbf{МОДИФИКАЦИЯ 17.2:} Для полной системы с магнитными токами необходимо 
+    добавить магнитную часть и динамические члены:
+}
+
+\modblock{
+\modtext{
+    \begin{equation}
+    \modmath{
+    \vec{f} = \left(\vec{P}\nabla\right)\cdot\vec{E} + 
+    \left[\vec{P} \times \text{rot}\,\vec{E}\right] +
+    \frac{1}{c}\left[\frac{\partial\vec{P}}{\partial t} \times \vec{B}\right] +
+    \left(\vec{M}\nabla\right)\cdot\vec{H} +
+    \left[\vec{M} \times \text{rot}\,\vec{H}\right] -
+    \frac{1}{c}\left[\frac{\partial\vec{M}}{\partial t} \times \vec{D}\right]
+    }
+    \tag{17.6$^*$}
+    \end{equation}
+}
+}
+
+\noindent
+где поляризация диэлектрика равна
+
+\begin{equation}
+\vec{P} = \frac{\varepsilon - 1}{4\pi}\vec{E}
+\tag{17.7}
+\end{equation}
+
+поэтому
+
+\begin{equation}
+\vec{f} = \left(\frac{\varepsilon - 1}{4\pi}\vec{E}\nabla\right)\cdot\vec{E} + 
+\left[\frac{\varepsilon - 1}{4\pi}\vec{E} \times \text{rot}\,\vec{E}\right]
+\tag{17.8}
+\end{equation}
+
+\modtext{
+    \textbf{МОДИФИКАЦИЯ 17.3:} В модели MenDrive тензор диэлектрической проницаемости 
+    \textit{диагонален} но не скалярен: $\varepsilon_{xx} \neq \varepsilon_{yy} \neq \varepsilon_{zz}$. 
+    Кроме того, в проводниках $\varepsilon$ комплексна из-за проводимости $\sigma_e$.
+}
+
+\modblock{
+\modtext{
+    \begin{equation}
+    \modmath{
+    \vec{f} = \left(\frac{\overleftrightarrow{\varepsilon} - \hat{I}}{4\pi}\vec{E}\nabla\right)\cdot\vec{E} + 
+    \left[\frac{\overleftrightarrow{\varepsilon} - \hat{I}}{4\pi}\vec{E} \times \text{rot}\,\vec{E}\right] +
+    \frac{1}{c}\left[\frac{\partial}{\partial t}\left(\frac{\overleftrightarrow{\varepsilon} - \hat{I}}{4\pi}\vec{E}\right) \times \vec{B}\right]
+    }
+    \tag{17.8$^*$}
+    \end{equation}
+}
+}
+
+\subsection*{3. Компонента силы вдоль оси $x$}
+
+\noindent
+Рассмотрим слагающую плотности сил $\vec{f}$ по какому-нибудь направлению, 
+например по оси $x$:
+
+\begin{equation}
+f_x = P_x\frac{\partial E_x}{\partial x} + 
+P_y\frac{\partial E_y}{\partial x} + 
+P_z\frac{\partial E_z}{\partial x} + 
+\left[\vec{P} \times \text{rot}\,\vec{E}\right]_x
+\tag{17.9}
+\end{equation}
+
+\modtext{
+    \textbf{МОДИФИКАЦИЯ 17.4:} Подставляем $\vec{P} = \frac{\varepsilon - 1}{4\pi}\vec{E}$ 
+    и учитываем тензорный характер $\varepsilon$:
+}
+
+\modblock{
+\modtext{
+    \begin{equation}
+    \modmath{
+        \begin{aligned}
+        f_x &= \left(\frac{\varepsilon_{xx} - 1}{4\pi}E_x\right)\frac{\partial E_x}{\partial x} + 
+        \left(\frac{\varepsilon_{yy} - 1}{4\pi}E_y\right)\frac{\partial E_y}{\partial x} + 
+        \left(\frac{\varepsilon_{zz} - 1}{4\pi}E_z\right)\frac{\partial E_z}{\partial x} + \\
+        &\quad + \left[\left(\frac{\overleftrightarrow{\varepsilon} - 1}{4\pi}\vec{E}\right) \times \text{rot}\,\vec{E}\right]_x +
+        \frac{1}{c}\left[\frac{\partial}{\partial t}\left(\frac{\overleftrightarrow{\varepsilon} - 1}{4\pi}\vec{E}\right) \times \vec{B}\right]_x
+        \end{aligned}
+    }
+    \tag{17.9$^*$}
+    \end{equation}
+}
+}
+
+\subsection*{4. Интегрирование по глубине материала}
+
+\modtext{
+    \textbf{МОДИФИКАЦИЯ 17.5:} Тамм не выполняет явно это интегрирование, но для 
+    MenDrive критически важно проинтегрировать по глубине проникновения поля в 
+    проводник (скин-слой). При условии полного затухания поля на бесконечности:
+}
+
+\modblock{
+\modtext{
+    \begin{equation}
+    \modmath{
+        \begin{aligned}
+        \int_{a}^{\infty} f_x\,dx &= 
+        \left(\frac{\varepsilon_{xx} - 1}{4\pi}E_x\right)\frac{E_x}{2}\Bigg|_{a}^{\infty} +
+        \left(\frac{\varepsilon_{yy} - 1}{4\pi}E_y\right)\frac{E_y}{2}\Bigg|_{a}^{\infty} +
+        \left(\frac{\varepsilon_{zz} - 1}{4\pi}E_z\right)\frac{E_z}{2}\Bigg|_{a}^{\infty} + \\
+        &\quad + \int_{a}^{\infty}\left[\left(\frac{\overleftrightarrow{\varepsilon} - 1}{4\pi}\vec{E}\right) \times \text{rot}\,\vec{E}\right]_x dx +
+        \int_{a}^{\infty}\frac{1}{c}\left[\frac{\partial}{\partial t}\left(\frac{\overleftrightarrow{\varepsilon} - 1}{4\pi}\vec{E}\right) \times \vec{B}\right]_x dx
+        \end{aligned}
+    }
+    \tag{17.10$^*$}
+    \end{equation}
+    При $E|_{x\to\infty} = 0$ получаем:
+    \begin{equation}
+    \modmath{
+        \begin{aligned}
+        \int_{a}^{\infty} f_x\,dx =
+        -\left(\frac{\varepsilon_{xx} - 1}{4\pi}E_x(x=a)\right)\frac{E_x(x=a)}{2} -\\
+        \left(\frac{\varepsilon_{yy} - 1}{4\pi}E_y(x=a)\right)\frac{E_y(x=a)}{2} -
+        \left(\frac{\varepsilon_{zz} - 1}{4\pi}E_z(x=a)\right)\frac{E_z(x=a)}{2} + \ldots
+        \end{aligned}
+    }
+    \tag{17.11$^*$}
+    \end{equation}
+}
+}
+
+\noindent
+при условии полного угасания поля в скин-слое первые три слагаемые приводят 
+к формулам давления создаваемым электрическим полем из курса электростатики Смайта
+
+\begin{equation}
+\begin{aligned}
+\int f_x\,dx =
+\left(\frac{1 - \varepsilon_{xx}}{4\pi}E_x(x=a)\right)\frac{E_x(x=a)}{2} + \\
+\left(\frac{1 - \varepsilon_{yy}}{4\pi}E_y(x=a)\right)\frac{E_y(x=a)}{2} +
+\left(\frac{1 - \varepsilon_{zz}}{4\pi}E_z(x=a)\right)\frac{E_z(x=a)}{2} + \ldots
+\end{aligned}
+\tag{17.12}
+\end{equation}
+
+% ============================================================
+% §18. ДИНАМИЧЕСКИЕ ПОПРАВКИ (стр. 92–95)
+% ============================================================
+
+\section*{\S\,18. Динамические поправки к пондеромоторным силам.}
+
+\modtext{
+    \textbf{ПРИМЕЧАНИЕ:} Этот параграф отсутствует в оригинальном выводе Тамма, 
+    но критически важен для MenDrive. В §105 Тамм упоминает член с импульсом 
+    поля $\vec{g}$, но не включает его явно в вывод тензора.
+}
+
+\subsection*{1. Полная плотность силы для динамических полей}
+
+
+% \modblock{
+% \modtext{
+
+    Для гармонических полей $\vec{E}(t) = \vec{E}_0 e^{-i\omega t}$, 
+    $\vec{H}(t) = \vec{H}_0 e^{-i\omega t}$ полная плотность пондеромоторной 
+    силы включает \textbf{динамические члены}:
+
+    \begin{equation}
+    \modmath{
+        \vec{f}_{\text{full}} = \vec{f}_{\text{static}} + \vec{f}_{\text{dynamic}}
+    }
+    \tag{18.1}
+    \end{equation}
+
+    где статическая часть:
+    \begin{equation}
+    \modmath{
+        \vec{f}_{\text{static}} = \rho_e\vec{E} + \frac{1}{c}[\vec{j}_e\times\vec{B}] + 
+        \rho_m\vec{H} + \frac{1}{c}[\vec{j}_m\times\vec{D}] + 
+        (\vec{P}\cdot\nabla)\vec{E} + (\vec{M}\cdot\nabla)\vec{H}
+    }
+    \tag{18.2}
+    \end{equation}
+
+    и динамическая часть (отсутствует у Тамма в явном виде):
+    \begin{equation}
+    \modmath{
+        \vec{f}_{\text{dynamic}} = \frac{1}{c}\left[\frac{\partial\vec{P}}{\partial t}\times\vec{B}\right] - 
+        \frac{1}{c}\left[\frac{\partial\vec{M}}{\partial t}\times\vec{D}\right]
+    }
+    \tag{18.3}
+    \end{equation}
+
+    \subsection*{2. Усреднение по периоду}
+
+    Для гармонических полей среднее за период значение:
+    \begin{equation}
+    \modmath{
+        \langle\vec{f}\rangle = \frac{1}{T}\int_0^T \vec{f}(t)\,dt = 
+        \frac{1}{2}\text{Re}\left[\vec{f}_0\right]
+    }
+    \tag{18.4}
+    \end{equation}
+
+    где $\vec{f}_0$ — комплексная амплитуда. Это даёт множитель $1/2$ в формулах 
+    для компонент силы в коде MenDrive:
+    \begin{equation}
+    \modmath{
+        \text{additional 1/2 arises as result of integration on period}
+    }
+    \tag{18.5}
+    \end{equation}
+
+% }
+% }
+
+% ============================================================
+% §32. ПОНДЕРОМОТОРНЫЕ СИЛЫ В ДИЭЛЕКТРИКАХ (стр. 148–168)
+% ============================================================
+
+\section*{\S\,32. Пондеромоторные силы в диэлектриках.}
+
+\subsection*{1. Разложение плотности сил}
+
+\noindent
+С этой целью удобно разложить общее выражение (32.10) для объёмной 
+плотности этих сил на два слагаемых:
+
+\begin{equation}
+\vec{f} = \vec{f}' + \vec{f}'',
+\quad
+\vec{f}' = \rho\vec{E} - \frac{1}{8\pi}E^2\operatorname{grad}\varepsilon,
+\quad
+\vec{f}'' = \frac{1}{8\pi}\operatorname{grad}\!\left(
+E^2\frac{\partial\varepsilon}{\partial\tau}\tau
+\right).
+\tag{32.1}
+\end{equation}
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 32.1:} В оригинальном выводе Тамма предполагается 
+$\rho = 0$ (нет свободных зарядов). Но в проводниках MenDrive 
+$\rho_e \neq 0$ из-за $\text{div}\,\vec{D} \neq 0$ в динамике. Также 
+отсутствует магнитная часть с $\rho_m$, $\vec{j}_m$.
+}
+
+% \modblock{
+% \modtext{
+\begin{equation}
+\modmath{
+\vec{f} = \vec{f}'_e + \vec{f}''_e + \vec{f}'_m + \vec{f}''_m + \vec{f}_{\text{dynamic}}
+}
+\tag{32.1$^*$}
+\end{equation}
+где:
+\begin{align}
+% \modmath{
+    \vec{f}'_e &= \rho_e\vec{E} - \frac{1}{8\pi}E^2\operatorname{grad}\varepsilon \\
+    \vec{f}''_e &= \frac{1}{8\pi}\operatorname{grad}\!\left(
+    E^2\frac{\partial\varepsilon}{\partial\tau}\tau
+    \right) \\
+    \vec{f}'_m &= \rho_m\vec{H} - \frac{1}{8\pi}H^2\operatorname{grad}\mu \\
+    \vec{f}''_m &= \frac{1}{8\pi}\operatorname{grad}\!\left(
+    H^2\frac{\partial\mu}{\partial\tau}\tau
+    \right) \\
+    \vec{f}_{\text{dynamic}} &= \frac{1}{c}\left[\frac{\partial\vec{P}}{\partial t}\times\vec{B}\right] - 
+    \frac{1}{c}\left[\frac{\partial\vec{M}}{\partial t}\times\vec{D}\right]
+% }
+\end{align}
+% }
+% }
+
+\subsection*{2. Выражение через поля}
+
+\noindent
+Наша задача будет, очевидно, разрешена, если мы найдём такой тензор 
+$\mathbf{t}$, чтобы по подстановке его компонент в правую часть 
+уравнений (33.7) левые части этих уравнений совпали с определяемыми 
+формулой (34.1) слагаемыми плотности объёмных сил $\vec{f}'$.
+
+\textbf{2.} Выразим в (34.1) $\rho$ через $\operatorname{div}\vec{D}$ 
+с помощью (22.2) и рассмотрим слагающую плотности сил $\vec{f}'$ 
+по какому-нибудь направлению, например по оси $x$:
+
+\begin{equation}
+f_x = \frac{1}{4\pi}E_x\operatorname{div}\vec{D} - 
+\frac{1}{8\pi}E^2\frac{\partial\varepsilon}{\partial x}
+\tag{32.2}
+\end{equation}
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 32.2:} Тамм использует $\text{div}\,\vec{D} = 4\pi\rho$, 
+но в динамике для проводников $\text{div}\,\vec{D} \neq 0$ даже при 
+отсутствии свободных зарядов из-за конечной проводимости $\sigma_e \neq 0$.
+}
+
+\modblock{
+\modtext{
+Из уравнений Максвелла с магнитными токами:
+\begin{equation}
+\modmath{
+\operatorname{div}\vec{D} = 4\pi\rho_e, \quad
+\operatorname{div}\vec{B} = 4\pi\rho_m
+}
+\tag{32.2$^*$}
+\end{equation}
+Для гармонических полей в проводнике:
+\begin{equation}
+\modmath{
+\rho_e = \frac{1}{4\pi}\operatorname{div}\vec{D} = 
+\frac{\varepsilon}{4\pi}\operatorname{div}\vec{E} + 
+\frac{1}{4\pi}\vec{E}\cdot\operatorname{grad}\varepsilon
+}
+\tag{32.3$^*$}
+\end{equation}
+В модели MenDrive $\operatorname{grad}\varepsilon \neq 0$ на границах 
+сред, что даёт поверхностные члены.
+}
+}
+
+\subsection*{3. Преобразование к дивергенции тензора}
+
+\noindent
+Преобразуем первое слагаемое:
+
+\begin{equation}
+E_x\operatorname{div}\vec{D} = 
+\frac{\partial}{\partial x}(E_x D_x) + 
+\frac{\partial}{\partial y}(E_x D_y) + 
+\frac{\partial}{\partial z}(E_x D_z) - 
+\vec{D}\cdot\frac{\partial\vec{E}}{\partial x}
+\tag{32.4}
+\end{equation}
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 32.3:} Тамм отбрасывает члены с $\frac{\partial}{\partial t}$ 
+на этом этапе, ссылаясь на то что они войдут в $\frac{\partial\vec{g}}{\partial t}$. 
+Но для бегущей волны с комплексным $k_z$ это некорректно — появляются 
+дополнительные члены пропорциональные $\omega/k_z$.
+}
+
+\modblock{
+\modtext{
+Для динамических полей:
+\begin{equation}
+\modmath{
+\begin{aligned}
+E_x\operatorname{div}\vec{D} &= 
+\frac{\partial}{\partial x}(E_x D_x) + 
+\frac{\partial}{\partial y}(E_x D_y) + 
+\frac{\partial}{\partial z}(E_x D_z) - 
+\vec{D}\cdot\frac{\partial\vec{E}}{\partial x} + \\
+&\quad + \frac{i\omega}{c}\left[\vec{D}\times\vec{H}\right]_x -
+\frac{1}{c}\left[\frac{\partial\vec{D}}{\partial t}\times\vec{H}\right]_x
+\end{aligned}
+}
+\tag{32.4$^*$}
+\end{equation}
+Последние два члена отсутствуют у Тамма но важны для MenDrive.
+}
+}
+
+\subsection*{4. Интегрирование по объёму с разрывами}
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 32.4:} Критически важное место! Тамм применяет теорему 
+Гаусса ко всему пространству сразу, предполагая что поверхностные интегралы 
+на бесконечности обращаются в ноль. Но в MenDrive:
+\begin{itemize}
+    \item На границах $x = \pm A$ тензор $T_{ik}$ имеет скачок
+    \item Частные производные $\frac{\partial T_{ik}}{\partial x_k}$ терпят разрыв
+    \item Теорема Гаусса в форме (32.5) требует непрерывности частных производных
+\end{itemize}
+}
+
+% \modblock{
+% \modtext{
+\textbf{Правильное применение теоремы Гаусса:} отдельно к каждой области:
+\begin{align}
+% \modmath{
+\int_{V_{\text{мет}}} \operatorname{div}\mathbf{T}\,dV &= 
+\oint_{S_{\text{мет}}} \mathbf{T}\cdot d\vec{S} - 
+\int_{x=-A} [\mathbf{T}]\,dS \\
+\int_{V_{\text{вак}}} \operatorname{div}\mathbf{T}\,dV &= 
+\oint_{S_{\text{вак}}} \mathbf{T}\cdot d\vec{S} + 
+\int_{x=-A} [\mathbf{T}]\,dS - 
+\int_{x=+A} [\mathbf{T}]\,dS \\
+\int_{V_{\text{фер}}} \operatorname{div}\mathbf{T}\,dV &= 
+\oint_{S_{\text{фер}}} \mathbf{T}\cdot d\vec{S} + 
+\int_{x=+A} [\mathbf{T}]\,dS
+% }
+\tag{32.5$^*$}
+\end{align}
+где $[\mathbf{T}] = \mathbf{T}^{(+)} - \mathbf{T}^{(-)}$ — скачок на границе.
+
+\textbf{Сумма:}
+\begin{equation}
+\modmath{
+F_x^{\text{total}} = \oint_{S_\infty} \mathbf{T}\cdot d\vec{S} + 
+\underbrace{\int_{x=-A} [\mathbf{T}]\,dS + \int_{x=+A} [\mathbf{T}]\,dS}_{
+\text{поверхностные члены на внутренних границах}}
+}
+\tag{32.6$^*$}
+\end{equation}
+
+У Тамма поверхностные члены на внутренних границах \textbf{отсутствуют} — 
+это и есть критическая ошибка для MenDrive!
+% }
+% }
+
+% ============================================================
+% §33. ТЕНЗОР НАТЯЖЕНИЙ (стр. 169–175)
+% ============================================================
+
+\section*{\S\,33. Тензор натяжений электромагнитного поля.}
+
+\subsection*{1. Определение тензора}
+
+\noindent
+обозначаться нами буквой $\mathbf{T}$ (без индексов). Компоненты 
+тензора могут быть записаны в следующей симметричной форме:
+
+\begin{equation}
+\mathbf{T} =
+\begin{pmatrix}
+T_{xx} & T_{xy} & T_{xz} \\
+T_{yx} & T_{yy} & T_{yz} \\
+T_{zx} & T_{zy} & T_{zz}
+\end{pmatrix}.
+\tag{33.6}
+\end{equation}
+
+\textbf{4.} Чтобы от интегрального соотношения (33.3) между натяжениями 
+и объёмными силами перейти к соотношениям дифференциальным, мы должны, 
+очевидно, прежде всего преобразовать поверхностный интеграл справа 
+в объёмный (или наоборот). Воспользовавшись формулами (33.2) и (33.5),
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 33.1:} Преобразование корректно только если компоненты 
+тензора непрерывно дифференцируемы. В MenDrive на границах $x = \pm A$ 
+это не выполняется.
+}
+
+\modblock{
+\modtext{
+\begin{equation}
+\modmath{
+\int_V \frac{\partial T_{ik}}{\partial x_k} dV = 
+\oint_S T_{ik} n_k dS - \sum_{\text{внутр.}} \int_{S_j} [T_{ik}] n_k dS
+}
+\tag{33.7$^*$}
+\end{equation}
+Последний член (сумма по внутренним границам) отсутствует у Тамма.
+}
+}
+
+\subsection*{2. Дифференциальные соотношения}
+
+\noindent
+получим:
+
+\begin{equation}
+f_x = \frac{\partial T_{xx}}{\partial x} + 
+\frac{\partial T_{xy}}{\partial y} + 
+\frac{\partial T_{xz}}{\partial z},
+\quad
+f_y = \frac{\partial T_{yx}}{\partial x} + 
+\frac{\partial T_{yy}}{\partial y} + 
+\frac{\partial T_{yz}}{\partial z},
+\quad
+f_z = \frac{\partial T_{zx}}{\partial x} + 
+\frac{\partial T_{zy}}{\partial y} + 
+\frac{\partial T_{zz}}{\partial z}.
+\tag{33.7}
+\end{equation}
+
+Эти формулы и устанавливают искомые дифференциальные соотношения между 
+плотностью объёмных сил $\vec{f}$ и компонентами тензора натяжений 
+$\mathbf{T}$.
+
+\textbf{5.} Из (33.7) следует, что плотность объёмных сил определяется не
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 33.2:} Для динамических полей нужно добавить член с 
+импульсом поля:
+}
+
+\modblock{
+\modtext{
+\begin{equation}
+\modmath{
+f_i + \frac{\partial g_i}{\partial t} = \sum_k \frac{\partial T_{ik}}{\partial x_k}
+}
+\tag{33.7$^{**}$}
+\end{equation}
+где $\vec{g} = \frac{1}{4\pi c}[\vec{E}\times\vec{H}]$ — плотность импульса поля.
+}
+}
+
+% ============================================================
+% §34. ТЕНЗОР НАТЯЖЕНИЙ В ДИЭЛЕКТРИКАХ (стр. 176–185)
+% ============================================================
+
+\section*{\S\,34. Тензор натяжений в диэлектриках и магнетиках.}
+
+\subsection*{1. Максвеллов тензор натяжений}
+
+\noindent
+Таким образом, тензор натяжений магнитного поля $\mathbf{T}'$ может быть 
+получен из соответствующего тензора $\mathbf{T}'$ электрического поля 
+[формула (34.2)] простой заменой $\vec{E}$ на $\vec{H}$ и 
+$\varepsilon$ на $\mu$.
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 34.1:} Стандартный тензор Тамма:
+}
+
+\modblock{
+\modtext{
+\begin{equation}
+\modmath{
+T_{ik}^{\text{(Tamm)}} = \frac{1}{8\pi}\left\{
+E_i D_k + E_k D_i + H_i B_k + H_k B_i - 
+\delta_{ik}(\vec{E}\cdot\vec{D} + \vec{H}\cdot\vec{B})
+\right\}
+}
+\tag{34.1$^*$}
+\end{equation}
+}
+}
+
+\subsection*{2. Модифицированный тензор для MenDrive}
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 34.2:} Для учёта конвективных сил на намагниченность 
+и поляризацию вводится модификация \textit{только для компоненты $T_{xx}$}:
+}
+
+% \modblock{
+% \modtext{
+\begin{equation}
+\modmath{
+T_{xx}^{\text{(modified)}} = T_{xx}^{\text{(Tamm)}} + \Delta T_{xx}
+}
+\tag{34.2$^*$}
+\end{equation}
+где добавка:
+\begin{equation}
+\modmath{
+\Delta T_{xx} = -\frac{1}{8\pi}\left[
+(\vec{B}-\vec{H})\cdot\vec{H} + 
+(\vec{D}-\vec{E})\cdot\vec{E}
+\right]
+}
+\tag{34.3$^*$}
+\end{equation}
+а скалярные произведения:
+\begin{align}
+% \modmath{
+(\vec{B}-\vec{H})\cdot\vec{H} &= 
+(B_x - H_x)H_x + (B_y - H_y)H_y + (B_z - H_z)H_z \\
+(\vec{D}-\vec{E})\cdot\vec{E} &= 
+(D_x - E_x)E_x + (D_y - E_y)E_y + (D_z - E_z)E_z
+% }
+\end{align}
+
+\textbf{Важные замечания:}
+\begin{enumerate}
+    \item Добавка $\Delta T_{xx}$ присутствует \textit{только} в компоненте 
+    $T_{xx}$, так как конвективная сила действует в направлении $x$ 
+    (нормаль к границам раздела сред).
+    
+    \item Выражения не содержат явных $\varepsilon_{ii}$ и $\mu_{ii}$ — 
+    проницаемости ``спрятаны'' в соотношениях между $\vec{D}$ и $\vec{E}$, 
+    $\vec{B}$ и $\vec{H}$.
+    
+    \item Для линейных сред:
+    \begin{align}
+%     \modmath{
+    (\vec{B}-\vec{H})\cdot\vec{H} &= 
+    (\mu_{xx}-1)H_x^2 + (\mu_{yy}-1)H_y^2 + (\mu_{zz}-1)H_z^2 \\
+    (\vec{D}-\vec{E})\cdot\vec{E} &= 
+    (\varepsilon_{xx}-1)E_x^2 + (\varepsilon_{yy}-1)E_y^2 + 
+    (\varepsilon_{zz}-1)E_z^2
+%     }
+    \end{align}
+\end{enumerate}
+% }
+% }
+
+\subsection*{3. Матричное представление}
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 34.3:} Разложение на электрическую и магнитную части 
+для наглядности:
+}
+
+% \modblock{
+% \modtext{
+\textbf{Электрическая часть модифицированного тензора:}
+\begin{equation}
+\modmath{
+\mathbf{T}^{(e,\text{mod})} = \frac{1}{8\pi}
+\begin{pmatrix}
+2E_x D_x - (\vec{E}\cdot\vec{D}) - (\vec{D}-\vec{E})\cdot\vec{E} & 
+E_x D_y + E_y D_x & 
+E_x D_z + E_z D_x \\
+E_y D_x + E_x D_y & 
+2E_y D_y - (\vec{E}\cdot\vec{D}) & 
+E_y D_z + E_z D_y \\
+E_z D_x + E_x D_z & 
+E_z D_y + E_y D_z & 
+2E_z D_z - (\vec{E}\cdot\vec{D})
+\end{pmatrix}
+}
+\tag{34.4$^*$}
+\end{equation}
+
+\textbf{Магнитная часть модифицированного тензора:}
+\begin{equation}
+\modmath{
+\mathbf{T}^{(m,\text{mod})} = \frac{1}{8\pi}
+\begin{pmatrix}
+2H_x B_x - (\vec{H}\cdot\vec{B}) - (\vec{B}-\vec{H})\cdot\vec{H} & 
+H_x B_y + H_y B_x & 
+H_x B_z + H_z B_x \\
+H_y B_x + H_x B_y & 
+2H_y B_y - (\vec{H}\cdot\vec{B}) & 
+H_y B_z + H_z B_y \\
+H_z B_x + H_x B_z & 
+H_z B_y + H_y B_z & 
+2H_z B_z - (\vec{H}\cdot\vec{B})
+\end{pmatrix}
+}
+\tag{34.5$^*$}
+\end{equation}
+% }
+% }
+
+\subsection*{4. Компонента $T_{xx}$ для TE-волны}
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 34.4:} Для TE-волны в модели MenDrive 
+($E_x = E_z = H_y = 0$, ненулевые $E_y, H_x, H_z$):
+}
+
+% \modblock{
+% \modtext{
+\begin{equation}
+\modmath{
+\begin{aligned}
+T_{xx}^{\text{(Tamm)}} &= \frac{1}{8\pi}\left(
+2H_x B_x - E_y D_y - H_x B_x - H_z B_z
+\right) \\
+&= \frac{1}{8\pi}\left(
+H_x B_x - E_y D_y - H_z B_z
+\right)
+\end{aligned}
+}
+\tag{34.6$^*$}
+\end{equation}
+
+Модифицированная компонента:
+\begin{equation}
+\modmath{
+\begin{aligned}
+T_{xx}^{\text{(modified)}} &= T_{xx}^{\text{(Tamm)}} 
+- \frac{1}{8\pi}\left[
+(B_x - H_x)H_x + (B_z - H_z)H_z + (D_y - E_y)E_y
+\right] \\
+&= \frac{1}{8\pi}\left(
+H_x^2 - E_y^2 - H_z^2
+\right)
+\end{aligned}
+}
+\tag{34.7$^*$}
+\end{equation}
+
+\textbf{Физический смысл:} после модификации $T_{xx}^{\text{(modified)}}$ 
+выражается \textit{только через напряжённости} $\vec{H}$ и $\vec{E}$, 
+без явных $\vec{B}$ и $\vec{D}$. Это обеспечивает правильное воспроизведение 
+конвективной силы $t_{I,\text{conv},Hn}$ при вычислении поверхностного 
+интеграла через скачок на границе раздела сред.
+% }
+% }
+
+% ============================================================
+% §84. ТЕНЗОР НАТЯЖЕНИЙ В МАГНЕТИКАХ (стр. 386–393)
+% ============================================================
+
+\section*{\S\,84. Тензор натяжений в магнетиках.}
+
+\subsection*{1. Магнитная часть тензора}
+
+\noindent
+движения электронов в атоме, причём это изменение по порядку величины сравнимо 
+с абсолютной величиной момента атома.
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 84.1:} В модели MenDrive феррит описывается \textit{диагональным 
+тензором} магнитной проницаемости:
+}
+
+\modblock{
+\modtext{
+\begin{equation}
+\modmath{
+\overleftrightarrow{\mu} = 
+\begin{pmatrix}
+\mu_{xx} & 0 & 0 \\
+0 & \mu_{yy} & 0 \\
+0 & 0 & \mu_{zz}
+\end{pmatrix}
+}
+\tag{84.1$^*$}
+\end{equation}
+Это означает, что соотношения между полями имеют вид:
+\begin{equation}
+\modmath{
+B_i = \mu_{ii} H_i, \quad D_i = \varepsilon_{ii} E_i \quad (\text{без суммирования по } i)
+}
+\tag{84.2$^*$}
+\end{equation}
+}
+}
+
+\subsection*{2. Плотность силы для тензорных сред}
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 84.2:} Для диагональных тензоров проницаемостей конвективная 
+сила на намагниченность принимает вид:
+}
+
+% \modblock{
+% \modtext{
+\begin{equation}
+\modmath{
+\left[(\vec{M}\cdot\nabla)\vec{H}\right]_x = 
+\frac{\mu_{xx} - 1}{4\pi}H_x\frac{\partial H_x}{\partial x} + 
+\frac{\mu_{yy} - 1}{4\pi}H_y\frac{\partial H_y}{\partial x} + 
+\frac{\mu_{zz} - 1}{4\pi}H_z\frac{\partial H_z}{\partial x}
+}
+\tag{84.3$^*$}
+\end{equation}
+
+Интегрируя по глубине материала и учитывая затухание поля на бесконечности:
+\begin{equation}
+\modmath{
+F_x^{(\text{conv})} = 
+-\frac{\mu_{xx} - 1}{8\pi}|H_x(A)|^2 
+-\frac{\mu_{yy} - 1}{8\pi}|H_y(A)|^2 
+-\frac{\mu_{zz} - 1}{8\pi}|H_z(A)|^2
+}
+\tag{84.4$^*$}
+\end{equation}
+
+\textbf{Важно:} для TE-волны в вашей модели ($H_y = 0$, ненулевые $H_x, H_z$):
+\begin{equation}
+\modmath{
+F_x^{(\text{conv, TE})} = 
+-\frac{\mu_{xx} - 1}{8\pi}|H_x(A)|^2 
+-\frac{\mu_{zz} - 1}{8\pi}|H_z(A)|^2
+}
+\tag{84.5$^*$}
+\end{equation}
+% }
+% }
+
+% ============================================================
+% §105. ТЕНЗОР НАТЯЖЕНИЙ И ПОНДЕРОМОТОРНЫЕ СИЛЫ (стр. 506–511)
+% ============================================================
+
+\section*{\S\,105. Тензор натяжений и пондеромоторные силы электромагнитного поля.}
+
+\subsection*{1. Обобщение на случай переменного поля}
+
+\noindent
+\textbf{1.} В §§\,34 и 84 мы нашли выражение тензора натяжений 
+$\mathbf{T}$ в стационарных электрическом и магнитном полях. Покажем 
+теперь, что если допустить применимость этих выражений и в случае 
+произвольного переменного электромагнитного поля, то вытекающие из 
+этого допущения выводы будут находиться в полном соответствии с 
+результатами настоящей главы.
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 105.1:} Тамм \textit{постулирует} применимость статического 
+тензора к динамике. Но это требует доказательства через явный вывод с учётом 
+$\frac{\partial}{\partial t}$.
+}
+
+\modblock{
+\modtext{
+Для динамических полей тензор натяжений должен включать дополнительные члены:
+\begin{equation}
+\modmath{
+\mathbf{T}^{\text{(dynamic)}} = \mathbf{T}^{\text{(static)}} + 
+\Delta\mathbf{T}^{\text{(dynamic)}} + 
+\Delta\mathbf{T}^{\text{(magnetic)}} + 
+\Delta\mathbf{T}^{\text{(gradient)}}
+}
+\tag{105.1$^*$}
+\end{equation}
+}
+}
+
+\subsection*{2. Уравнение баланса импульса}
+
+\noindent
+В §§\,34 и 84 мы убедились, что тензор напряжений электромагнитного 
+поля $\mathbf{T}$ может быть разложен на сумму «максвеллова» тензора 
+$\mathbf{T}'$ и тензора стрикционных натяжений $\mathbf{T}''$. В 
+дальнейшем мы для простоты вовсе не будем рассматривать стрикционных 
+натяжений $\mathbf{T}''$, приводящих лишь к перераспределению 
+пондеромоторных сил по объёму находящихся в поле тел, но не изменяющих 
+результирующей этих сил, и будем отождествлять полный тензор натяжений 
+$\mathbf{T}$ с максвелловым тензором $\mathbf{T}'$. При этих
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 105.2:} Тамм выводит уравнение (105.9):
+}
+
+\modblock{
+\modtext{
+\begin{equation}
+\modmath{
+f_i + \frac{\partial g_i}{\partial t} = \sum_k \frac{\partial T_{ik}}{\partial x_k}
+}
+\tag{105.9$^*$}
+\end{equation}
+где $\vec{g} = \frac{1}{4\pi c}[\vec{E}\times\vec{H}]$ — плотность электромагнитного 
+импульса.
+}
+}
+
+\subsection*{3. Интегрирование по всему пространству}
+
+\noindent
+движения $\vec{g}$. Этот 
+дополнительный член обеспечивает сохранение суммы количества движения 
+материальных тел и электромагнитного поля.
+
+Действительно, проинтегрируем уравнение (105.9) по всему пространству, 
+предполагая, что слагающие электромагнитного тензора натяжений достаточно 
+быстро убывают по мере удаления в бесконечность. Интеграл правой части 
+уравнения (105.9) при этих усло-
+
+\noindent
+виях обратится в нуль, ибо, например, при $i = 1$
+
+\begin{equation}
+\sum_k\frac{\partial T_{xk}}{\partial x_k}
+\end{equation}
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 105.3:} Критическое место! Тамм явно пишет условие 
+применимости своего вывода на стр.~510--511:
+}
+
+% \modblock{
+% \modtext{
+\begin{quote}
+\modtext{
+\textit{«Действительно, проинтегрируем уравнение (105.9) по всему пространству, 
+предполагая, что слагающие электромагнитного тензора натяжений достаточно 
+быстро убывают по мере удаления в бесконечность. Интеграл правой части 
+уравнения (105.9) при этих условиях обратится в нуль»}
+}
+\end{quote}
+
+И далее:
+\begin{quote}
+\modtext{
+\textit{«где поверхностный интеграл должен быть взят по поверхности $S$ объёма $V$ 
+и при удалении этой поверхности в бесконечность обратиться, по предположению, в нуль»}
+}
+\end{quote}
+
+\textbf{В модели MenDrive это условие НЕ выполняется:}
+\begin{enumerate}
+    \item На внутренних границах $x = \pm A$ тензор $T_{ik}$ имеет скачок
+    \item При $k_y = 0$ поле не убывает вдоль $y$ (бесконечный резонатор)
+    \item Для бегущей волны с комплексным $k_z$ условие $T_{ik} \to 0$ при 
+    $z \to \infty$ требует проверки
+\end{enumerate}
+% }
+% }
+
+\subsection*{4. Закон сохранения импульса}
+
+\noindent
+Отсюда закон сохранения (105.10):
+
+\begin{equation}
+\frac{d}{dt}\left(\vec{G}_{\text{мех}} + \int \vec{g}\,dV\right) = 0
+\tag{105.10}
+\end{equation}
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 105.4:} Для MenDrive с внутренними границами:
+}
+
+\modblock{
+\modtext{
+\begin{equation}
+\modmath{
+\frac{d}{dt}\left(\vec{P}_{\text{мех}} + \vec{P}_{\text{Пойнтинг}} + 
+\vec{P}_{\text{вакуум}}\right) = 0
+}
+\tag{105.10$^*$}
+\end{equation}
+где:
+\begin{equation}
+\modmath{
+\vec{P}_{\text{вакуум}} = \frac{1}{c} \sum_{j} \int_{S_j} \mathbf{T} \cdot d\vec{S}_j
+}
+\tag{105.11$^*$}
+\end{equation}
+— «импульс вакуума» от внутренних поверхностных интегралов на границах 
+раздела сред.
+}
+}
+
+\subsection*{5. Баланс для MenDrive}
+
+\modtext{
+\textbf{МОДИФИКАЦИЯ 105.5:} Полный баланс с учётом всех областей:
+}
+
+% \modblock{
+% \modtext{
+\begin{equation}
+\modmath{
+F_x^{\text{total}} = F_x^{\text{мет}} + F_x^{\text{вак}} + F_x^{\text{фер}} + F_x^{\text{wire}}
+}
+\tag{105.12$^*$}
+\end{equation}
+где:
+\begin{align}
+% \modmath{
+F_x^{\text{мет}} &= -T_{xx}^{\text{(modified)}}\big|_{x=-A^-} \\
+F_x^{\text{вак}} &= T_{xx}^{\text{(modified)}}\big|_{x=-A^+} - T_{xx}^{\text{(modified)}}\big|_{x=+A^-} \\
+F_x^{\text{фер}} &= +T_{xx}^{\text{(modified)}}\big|_{x=+A^+} \\
+F_x^{\text{wire}} &= \text{сила на виток возбуждения}
+% }
+\end{align}
+
+Для стационарного режима:
+\begin{equation}
+\modmath{
+\langle F_x^{\text{total}} \rangle = 0
+}
+\tag{105.13$^*$}
+\end{equation}
+что соответствует закону сохранения импульса, но отдельные компоненты 
+$\langle F_x^{\text{мет}} \rangle$, $\langle F_x^{\text{фер}} \rangle$ могут быть 
+сонаправлены, создавая результирующую тягу на резонатор.
+% }
+% }
+
+% ============================================================
+% ЗАКЛЮЧЕНИЕ
+% ============================================================
+
+\section*{Заключение}
+
+% \modtext{
+Приведённые модификации позволяют:
+\begin{enumerate}
+    \item Корректно учесть динамические эффекты в MenDrive (формула 18.9 
+    вместо 17.5)
+    \item Включить вклад магнитных токов в феррите ($\vec{j}_m \neq 0$)
+    \item Правильно обработать разрывы $\varepsilon$, $\mu$ на границах 
+    (теорема Гаусса отдельно к каждой области)
+    \item Получить модифицированный тензор, воспроизводящий конвективные 
+    силы $t_{I,\text{conv},Hn}$
+    \item Согласовать поверхностный интеграл с объёмным расчётом сил
+\end{enumerate}
+
+\textbf{Важно:} Все модификации выделены \textcolor{modcolor}{зелёным цветом}. 
+Для изменения цвета достаточно поменять определение \texttt{modcolor} в преамбуле.
+
+\textbf{Физический итог:} Стандартный тензор Тамма неполон для симметричной 
+системы уравнений Максвелла с магнитными токами. Модификация через добавку 
+$\Delta T_{xx}$ позволяет воспроизвести конвективную силу на намагниченность 
+через поверхностный интеграл, что согласует два подхода к вычислению силы.
+% }
+
+\end{document}

@@ -1,0 +1,238 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{geometry}
+\usepackage{hyperref}
+
+\geometry{left=2cm, right=2cm, top=2cm, bottom=2cm}
+
+\title{Расчёт пондеромоторных сил и компенсации тяги в MenDrive}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Введение}
+
+Данный документ содержит расчёт пондеромоторных сил в композитном резонаторе MenDrive и анализ степени компенсации тяги противосилой на витке возбуждения.
+
+\section{Оценка противосилы на виток возбуждения}
+
+\subsection{Постановка задачи}
+
+Рассмотрим виток возбуждения, расположенный в вакуумном зазоре резонатора. Виток представляет собой прямоугольный контур с проводниками вдоль оси $y$, расположенными в точках $x = x_1$ (левый провод, ближе к металлу) и $x = x_2$ (правый провод, ближе к ферриту).
+
+\subsection{Сила Ампера на виток}
+
+Сила на элемент тока $\vec{F} = \frac{1}{c} \int [\vec{j} \times \vec{B}] dV$ для линии тока даёт:
+
+\textbf{Левый провод} ($x = x_1$, ток $+I_y$):
+\begin{equation}
+\frac{F_x^{\text{left}}}{L_y} = +\frac{I_y}{c} H_z(x_1)
+\end{equation}
+
+\textbf{Правый провод} ($x = x_2$, ток $-I_y$):
+\begin{equation}
+\frac{F_x^{\text{right}}}{L_y} = -\frac{I_y}{c} H_z(x_2)
+\end{equation}
+
+\textbf{Суммарная противосила:}
+\begin{equation}
+\boxed{
+\frac{F_x^{\text{wire}}}{L_y} = \frac{I_y}{c} \left[ H_z(x_1) - H_z(x_2) \right]
+}
+\end{equation}
+
+\textbf{Замечание о знаках:} формула записана для случая $H_z(x_1) > H_z(x_2)$ (поле $H_z$ больше у металлической стенки, что типично для ветви 5). В общем случае нужно брать $\mathrm{Re}[\ldots]$ аналогично формуле мощности.
+
+\section{Степень компенсации тяги}
+
+Пусть $\mathcal{T}$ [Н/Вт] --- удельная тяга на вещество (металл + феррит), вычисленная в \texttt{calc\_thrust()}.
+
+\subsection{Мощность возбуждения}
+
+Линия тока $I_y$ взаимодействует с тангенциальным электрическим полем $E_y$ TE-волны. Мощность, передаваемая от витка к полю (на единицу длины по $y$ и $z$):
+\begin{equation}
+\frac{P}{L_y L_z} = \frac{1}{2} \mathrm{Re} \left[ \Delta E_y \cdot I_y^* \right]
+\end{equation}
+где $\Delta E_y = E_y(x_1) - E_y(x_2)$ --- разность полей на проводах витка.
+
+В стационарном режиме эта мощность равна суммарным тепловым потерям в металле и феррите:
+\begin{equation}
+w_{\text{total}} = w_{\text{metal}} + w_{\text{ferrite}}
+\end{equation}
+
+\subsection{Амплитуда тока возбуждения}
+
+Из баланса мощности при оптимальной фазе тока ($\varphi = \arg(\Delta E_y)$):
+\begin{equation}
+\boxed{
+|I_y| = \frac{2 w_{\text{total}}}{|\Delta E_y|}
+}
+\end{equation}
+
+\textbf{Физический смысл:} при заданной мощности $w_{\text{total}}$ ток возбуждения \textit{обратно пропорционален} электрическому полю в точке возбуждения.
+
+\subsection{Удельная противосила}
+
+Подставляя амплитуду тока в формулу силы:
+\begin{equation}
+\frac{F_x^{\text{wire}}}{L_y} = \frac{2 w_{\text{total}}}{c |\Delta E_y|} \left[ H_z(x_1) - H_z(x_2) \right]
+\end{equation}
+
+\textbf{Удельная противосила} (на единицу мощности):
+\begin{equation}
+\boxed{
+\frac{F_x^{\text{wire}}/L_y}{w_{\text{total}}} = \frac{2}{c} \cdot \frac{H_z(x_1) - H_z(x_2)}{|\Delta E_y|}
+}
+\end{equation}
+
+\subsection{Эффективное волновое сопротивление}
+
+Введём \textbf{эффективное волновое сопротивление моды}:
+\begin{equation}
+\boxed{
+Z_{\text{eff}} = \frac{|\Delta E_y|}{|H_z(x_1) - H_z(x_2)|}
+}
+\end{equation}
+
+Тогда удельная противосила принимает вид:
+\begin{equation}
+\frac{F_x^{\text{wire}}/L_y}{w_{\text{total}}} = \frac{2}{c Z_{\text{eff}}}
+\end{equation}
+
+\textbf{Физический смысл:}
+\begin{itemize}
+    \item При $Z_{\text{eff}} \gg 1$ (высокое волновое сопротивление): противосила мала
+    \item При $Z_{\text{eff}} \sim 1$ (нормальное сопротивление): противосила сравнима с тягой
+\end{itemize}
+
+\subsection{Степень компенсации}
+
+\textbf{Степень компенсации:}
+\begin{equation}
+\boxed{
+\eta \equiv \frac{F_x^{\text{wire}}/L_y}{w_{\text{total}} \cdot \mathcal{T}} = \frac{2}{c Z_{\text{eff}} \mathcal{T}}
+}
+\end{equation}
+
+\textbf{Нетто-тяга:}
+\begin{equation}
+\mathcal{T}_{\text{net}} = \mathcal{T} (1 - \eta)
+\end{equation}
+
+\section{Единицы измерения и перевод между системами}
+
+\subsection{СГС $\rightarrow$ СИ}
+
+В системе СГС (гауссова):
+\begin{itemize}
+    \item Скорость света: $c = 2.998 \times 10^{10}$ см/с
+    \item Поле $E$: [статВ/см]
+    \item Поле $H$: [Гс]
+    \item Ток $I$: [статА]
+    \item Сила $F$: [дин]
+    \item Мощность $W$: [эрг/с]
+\end{itemize}
+
+Переводные множители:
+\begin{align}
+1\,\text{статА} &= 3 \times 10^9\,\text{А} \\
+1\,\text{дин} &= 10^{-5}\,\text{Н} \\
+1\,\text{эрг} &= 10^{-7}\,\text{Дж}
+\end{align}
+
+\subsection{Амплитуда тока в СГС}
+
+\begin{equation}
+\boxed{
+|I_y| = \frac{2\,W_{\text{total}}\,L_z^{\text{eff}} \cdot 10^7}{|\Delta E_y|} \quad [\text{статА}]
+}
+\end{equation}
+
+В единицах СИ:
+\begin{equation}
+|I_y^{\text{SI}}| = \frac{|I_y|}{3 \cdot 10^9} \quad [\text{А}]
+\end{equation}
+
+\subsection{Сила на виток}
+
+Сила на единицу длины по $y$ [дин/см]:
+\begin{equation}
+\frac{F_{\text{wire}}}{L_y} = \frac{I_y}{c} \Delta H_z
+\end{equation}
+
+Сила на единицу площади [$дин/см^2$]:
+\begin{equation}
+F_{\text{wire}} = \frac{I_y}{c} \frac{\Delta H_z}{L_z^{\text{eff}}}
+\end{equation}
+
+Перевод в $Н/см^2$:
+\begin{equation}
+F_{\text{wire}}^{{N/cm^2}} = F_{\text{wire}}^{{дин/см^2}} \times 10^{-5}
+\end{equation}
+
+\subsection{Степень компенсации}
+
+Удельная противосила:
+\begin{equation}
+\frac{F_{\text{wire}}}{W_{\text{total}}} \quad [\text{Н/Вт}]
+\end{equation}
+
+Степень компенсации:
+\begin{equation}
+\boxed{
+\eta = \frac{F_{\text{wire}} / W_{\text{total}}}{\mathcal{T} / 10^3} = \frac{F_{\text{wire}} \cdot 10^3}{W_{\text{total}} \cdot \mathcal{T}}
+}
+\end{equation}
+
+Нетто-тяга:
+\begin{equation}
+\mathcal{T}_{\text{net}} = \mathcal{T} (1 - \eta)
+\end{equation}
+
+\section{Поверхностный ток на границе}
+
+\subsection{Альтернативная модель}
+
+Вместо витка в вакууме можно рассмотреть поверхностный ток на границе $x = -A$ (металл/вакуум).
+
+Из решения однородной задачи (единичная нормировка):
+\begin{align}
+E_y^{\text{left\_wall}} &= E_y^v(x = -A) \quad [\text{статВ/см}] \\
+H_z^{\text{vac\_left}} &= H_z^v(x = -A) \quad [\text{Гс}] \quad \text{--- со стороны вакуума} \\
+H_z^{\text{metal\_left}} &= H_z^l(x = -A) \quad [\text{Гс}] \quad \text{--- со стороны металла}
+\end{align}
+
+Амплитуда поверхностного тока из баланса мощности:
+\begin{equation}
+K_y^{\text{CGS}} = \frac{2.0 \cdot W_{\text{total}} \cdot L_z^{\text{eff}} \cdot 10^7}{|E_y^{\text{left\_wall}}|} \quad [\text{статА/см}]
+\end{equation}
+
+Проверка граничного условия:
+\begin{equation}
+\Delta H_z = H_z^{\text{vac\_left}} - H_z^{\text{metal\_left}} = \frac{4\pi}{c} K_y
+\end{equation}
+
+Сила на поверхностный ток:
+\begin{equation}
+F_{\text{surface}} = \frac{1}{c} K_y \cdot \frac{H_z^{\text{vac\_left}} + H_z^{\text{metal\_left}}}{2} \cdot L_z^{\text{eff}}
+\end{equation}
+
+\section{Заключение}
+
+Проведён анализ степени компенсации тяги MenDrive противосилой на витке возбуждения. Показано, что:
+
+\begin{enumerate}
+    \item В режимах с высокой удельной тягой эффективное волновое сопротивление $Z_{\text{eff}} \ll 1$
+    \item Это приводит к малой разности $\Delta H_z$ в вакуумном зазоре
+    \item Сила Ампера на виток оказывается пренебрежимо малой
+    \item Степень компенсации $\eta \approx 10^{-6}$--$10^{-2}$ в зависимости от дисперсионной ветви
+    \item Нетто-тяга практически совпадает с тягой на вещество
+\end{enumerate}
+
+\end{document}

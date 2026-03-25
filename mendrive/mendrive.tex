@@ -85,15 +85,116 @@
 
 \begin{itemize}
     \item \textbf{Область 1} ($x \leq -A$): металл с параметрами 
-    $\varepsilon_m \approx 1$, $\mu_m = 1$, 
-    $\sigma_m = 5.8 \times 10^{17}$ с$^{-1}$ (СГС);
+    $\varepsilon \approx 1$, $\mu = 1$,
+    $\sigma_e = 5.625 \times 10^{17}$ с$^{-1}$ (СГС);
     \item \textbf{Область 2} ($-A \leq x \leq +A$): вакуум 
     ($\varepsilon_0 = \mu_0 = 1$);
-    \item \textbf{Область 3} ($x \geq +A$): металл (правый проводник) с параметрами
-    $\varepsilon_m \approx 1$, $\mu_m = 1$, $\sigma_m = 5.8 \times 10^{17}$ с$^{-1}$ (СГС).
+    \item \textbf{Область 3} ($x \geq +A$): ферродиэлектрик с параметрами
+    $\varepsilon \approx 1$, $\mu = 100$,  $\sigma_e = 9.9 \times 10^{9}$ с$^{-1}$ (СГС), $\sigma_m = 5.625 \times 10^{7}$ с$^{-1}$ (СГС).
 \end{itemize}
 
-Параметры: $A = 0.5$ см, толщина проводников $h = 0.1$ см.
+Параметры: $A = 0.5$ см.
+
+% В преамбулу рекомендуется добавить:
+% \usepackage{amsmath}
+% \usepackage{amssymb}
+% \usepackage{amsthm}
+% \usepackage[utf8]{inputenc}
+% \usepackage[T2A]{fontenc}
+% \usepackage[russian]{babel}
+
+\section*{Пондеромоторные силы в симметричной электродинамике (СГС Гаусса)}
+
+При расчёте сил в объёме материальной среды (ферродиэлектрика) необходимо различать фундаментальные силовые поля ($\mathbf{E}, \mathbf{B}$) и вспомогательные поля ($\mathbf{D}, \mathbf{H}$). В системе СГС Гаусса сила Лоренца определяется только через $\mathbf{E}$ и $\mathbf{B}$, так как именно они действуют на заряды микроскопически.
+
+\subsection*{1. Материальные уравнения и определения полей}
+
+В ферродиэлектрике, обладающем одновременно электрической поляризацией $\mathbf{P}$ и магнитной намагниченностью $\mathbf{M}$, связь между полями задаётся следующими соотношениями:
+
+\begin{equation}
+    \mathbf{D} = \mathbf{E} + 4\pi\mathbf{P}, \quad \mathbf{B} = \mathbf{H} + 4\pi\mathbf{M}.
+    \label{eq:material_eq}
+\end{equation}
+
+Здесь $\mathbf{E}$ и $\mathbf{B}$ --- истинные напряжённость и индукция, определяющие силу. Величины $\mathbf{D}$ и $\mathbf{H}$ вводятся для учёта связанных зарядов и токов в уравнениях Максвелла.
+
+\subsection*{2. Сравнение законов для электрических и магнитных источников}
+
+В таблице ниже приведены формулы для плотностей силы. Важно отметить, что в столбце «Магнитный аналог» используются поля $\mathbf{B}$ и $\mathbf{E}$, а не $\mathbf{H}$ и $\mathbf{D}$, что обеспечивает инвариантность физической силы относительно выбора системы единиц.
+
+\begin{table}[h]
+    \centering
+    \renewcommand{\arraystretch}{1.8}
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{Величина} & \textbf{Электрический сектор} & \textbf{Магнитный сектор} \\
+        \hline
+        Свободные источники & $\rho_e, \mathbf{j}_e$ & $\rho_m, \mathbf{j}_m$ \\
+        \hline
+        Уравнения Максвелла &
+        $\nabla \cdot \mathbf{D} = 4\pi\rho_e$ &
+        $\nabla \cdot \mathbf{B} = 4\pi\rho_m$ \\
+        & $\nabla \times \mathbf{H} = \frac{4\pi}{c}\mathbf{j}_e + \frac{1}{c}\frac{\partial \mathbf{D}}{\partial t}$ &
+        $\nabla \times \mathbf{E} = -\frac{4\pi}{c}\mathbf{j}_m - \frac{1}{c}\frac{\partial \mathbf{B}}{\partial t}$ \\
+        \hline
+        Плотность силы Лоренца &
+        $\mathbf{f}_e = \rho_e \mathbf{E} + \frac{1}{c} \mathbf{j}_e \times \mathbf{B}$ &
+        $\mathbf{f}_m = \rho_m \mathbf{B} - \frac{1}{c} \mathbf{j}_m \times \mathbf{E}$ \\
+        \hline
+        Полный закон силы & \multicolumn{2}{c|}{$\mathbf{f} = \mathbf{f}_e + \mathbf{f}_m$} \\
+        \hline
+    \end{tabular}
+    \caption{Симметричные уравнения и силы в среде (СГС Гаусса)}
+    \label{tab:symmetric_forces}
+\end{table}
+
+\subsection*{3. Формулы для расчёта в объёме ферродиэлектрика}
+
+Для интегрирования пондеромоторных сил в объёме $V$ ферродиэлектрика используются следующие выражения.
+
+\subsubsection*{3.1. Магнитный аналог закона Био--Савара--Лапласа}
+Вихревое электрическое поле, создаваемое током магнитных зарядов $\mathbf{j}_m$ в среде:
+\begin{equation}
+    \mathbf{E}(\mathbf{r}) = -\frac{1}{c} \int_V \frac{\mathbf{j}_m(\mathbf{r}') \times (\mathbf{r} - \mathbf{r}')}{|\mathbf{r} - \mathbf{r}'|^3} \, dV'.
+    \label{eq:biot_savart_mag}
+\end{equation}
+\textit{Примечание: Здесь фигурирует $\mathbf{E}$, так как именно это поле входит в силу Лоренца для магнитного тока.}
+
+\subsubsection*{3.2. Плотность силы Ампера для магнитного тока}
+Сила, действующая на элемент магнитного тока со стороны электрического поля:
+\begin{equation}
+    d\mathbf{F}_m = \left( \rho_m \mathbf{B} - \frac{1}{c} \mathbf{j}_m \times \mathbf{E} \right) dV.
+    \label{eq:force_density_mag}
+\end{equation}
+
+\subsubsection*{3.3. Полная сила в объёме}
+Полная пондеромоторная сила, действующая на объём ферродиэлектрика, содержащий как электрические, так и магнитные носители:
+\begin{equation}
+    \mathbf{F}_{\text{total}} = \int_V \left[
+        \rho_e \mathbf{E} + \frac{1}{c}\mathbf{j}_e \times \mathbf{B} +
+        \rho_m \mathbf{B} - \frac{1}{c} \mathbf{j}_m \times \mathbf{E}
+    \right] dV.
+    \label{eq:total_force}
+\end{equation}
+
+\subsection*{4. Примечание о выборе полей ($\mathbf{E}, \mathbf{B}$ против $\mathbf{D}, \mathbf{H}$)}
+
+Возникающий вопрос о том, почему в формулах силы используются $\mathbf{E}$ и $\mathbf{B}$, а не $\mathbf{D}$ и $\mathbf{H}$, решается следующим образом:
+
+\begin{enumerate}
+    \item \textbf{Микроскопическая природа силы.} Сила Лоренца действует на элементарные заряды. Микроскопическое уравнение движения всегда содержит истинные поля $\mathbf{E}_{\text{micro}}$ и $\mathbf{B}_{\text{micro}}$. При усреднении по физически бесконечно малому объёму в макроскопической теории СГС эти поля переходят в $\mathbf{E}$ и $\mathbf{B}$.
+
+    \item \textbf{Роль $\mathbf{D}$ и $\mathbf{H}$.} В системе СГС векторы $\mathbf{D}$ и $\mathbf{H}$ определены так, чтобы исключить связанные заряды ($\rho_{\text{bound}} = -\nabla \cdot \mathbf{P}$) и связанные токи из явного вида уравнений Максвелла. Они не являются силовыми полями. Замена $\mathbf{E} \to \mathbf{D}$ или $\mathbf{B} \to \mathbf{H}$ в формуле силы привела бы к физической ошибке в среде, где $\mathbf{P} \neq 0$ и $\mathbf{M} \neq 0$.
+
+    \item \textbf{Инвариантность.} В системе СИ формула силы записывается как $\mathbf{F} = q_e(\mathbf{E} + \mathbf{v}\times\mathbf{B})$. В СГС Гаусса --- $\mathbf{F} = q_e(\mathbf{E} + \frac{\mathbf{v}}{c}\times\mathbf{B})$. Вид зависимости от $\mathbf{E}$ и $\mathbf{B}$ сохраняется, меняется лишь множитель $c$. Если бы мы использовали $\mathbf{D}$ и $\mathbf{H}$, форма закона менялась бы принципиально в зависимости от системы единиц, что противоречило бы принципу физической инвариантности.
+\end{enumerate}
+
+Таким образом, для корректного интегрирования сил в объёме ферродиэлектрика необходимо:
+\begin{enumerate}
+    \item Решить уравнения Максвелла для $\mathbf{D}$ и $\mathbf{H}$ (или $\mathbf{E}$ и $\mathbf{B}$) с учётом граничных условий.
+    \item Используя материальные уравнения \eqref{eq:material_eq}, найти истинные поля $\mathbf{E}$ и $\mathbf{B}$ внутри материала.
+    \item Подставить $\mathbf{E}$ и $\mathbf{B}$ в формулу для плотности силы \eqref{eq:total_force}.
+\end{enumerate}
 
 \subsection{Уравнения Максвелла в симметричной форме}
 
@@ -112,11 +213,62 @@
 где $\vec{j}_m$ --- плотность магнитного тока, вводимая для описания
 намагниченности феррита.
 
+
+\section*{Формулы симметричной электродинамики (СГС Гаусса)}
+
+В симметричной формулировке электродинамики, наряду с электрическими зарядами ($\rho_e, \mathbf{j}_e$), существуют магнитные заряды ($\rho_m, \mathbf{j}_m$). Ниже приведены аналоги классических законов для магнитных источников.
+
+\subsection*{1. Магнитный аналог закона Био--Савара--Лапласа}
+Данный закон описывает создание электрического поля $\mathbf{E}$ элементом магнитного тока. В отличие от классического случая, появляется знак «минус», обусловленный знаком в уравнении Максвелла для ротора $\mathbf{E}$.
+
+\begin{equation}
+    d\mathbf{E} = -\frac{1}{c} \frac{\mathbf{j}_m \times \mathbf{r}}{r^3} \, dV
+    \label{eq:magnetic_biot_savart}
+\end{equation}
+
+Для линейного магнитного тока $I_m$:
+\begin{equation}
+    d\mathbf{E} = -\frac{I_m}{c} \frac{d\mathbf{l} \times \mathbf{r}}{r^3}
+    \label{eq:magnetic_biot_savart_linear}
+\end{equation}
+
+\noindent где $\mathbf{r}$ --- радиус-вектор от элемента тока к точке наблюдения, $r = |\mathbf{r}|$, $c$ --- скорость света.
+
+\subsection*{2. Закон Ампера для магнитных токов}
+Сила, действующая на элемент магнитного тока со стороны внешнего электрического поля. Знак «минус» отражает дуальность взаимодействия по сравнению с электрическими токами в магнитном поле.
+
+\begin{equation}
+    d\mathbf{F} = -\frac{1}{c} \mathbf{j}_m \times \mathbf{E} \, dV
+    \label{eq:ampere_magnetic_density}
+\end{equation}
+
+Для линейного магнитного тока:
+\begin{equation}
+    d\mathbf{F} = -\frac{I_m}{c} \, d\mathbf{l} \times \mathbf{E}
+    \label{eq:ampere_magnetic_linear}
+\end{equation}
+
+\subsection*{3. Обобщённая сила Лоренца для магнитного заряда и тока}
+Полная сила, действующая на магнитный заряд $q_m$, движущийся со скоростью $\mathbf{v}$, или плотность силы для распределённых источников.
+
+\begin{equation}
+    \mathbf{F} = q_m \mathbf{B} - \frac{q_m}{c} \mathbf{v} \times \mathbf{E}
+    \label{eq:lorentz_magnetic_point}
+\end{equation}
+
+В дифференциальной форме (плотность силы $\mathbf{f}$):
+\begin{equation}
+    \mathbf{f} = \rho_m \mathbf{B} - \frac{1}{c} \mathbf{j}_m \times \mathbf{E}
+    \label{eq:lorentz_magnetic_density}
+\end{equation}
+
+\noindent Здесь первое слагаемое описывает силу, действующую на магнитный заряд со стороны магнитного поля (аналог кулоновской силы), а второе --- силу, действующую на магнитный ток со стороны электрического поля.
+
+\subsection{Граничные условия и характеристическое уравнение}
+
 Поле ищется в виде $\vec{F}(x) e^{i(k_z z - \omega t)}$ с комплексным
 волновым числом $k_z = k_z' + i k_z''$. При условии $\partial/\partial y = 0$ 
 ($k_y = 0$) уравнения разделяются на TE- и TM-моды.
-
-\subsection{Граничные условия и характеристическое уравнение}
 
 На границах $x = \pm A$ выполняются стандартные условия непрерывности
 тангенциальных компонент $\vec{E}$ и $\vec{H}$:
@@ -153,6 +305,21 @@ D_{n}^{(1)} = D_{n}^{(2)}, \quad B_{n}^{(1)} = B_{n}^{(2)}
 \textbf{Критически важно:} для расчёта сил в динамических полях необходимо
 использовать формулу 18.9 из \S 18 книги Тамма \cite{Tamm}, а не формулу 17.5, 
 которая верна только для статики.
+
+
+\subsection{Ponderomotive Forces (Complete Form)}
+\textbf{Force on dielectric material (with Lorentz force):}
+\begin{equation}
+\vec{f} = \frac{1}{c} \left[\vec{j_m} \times \vec{D} \right] + \left(\frac{\varepsilon - 1}{4\pi}\vec{E} \cdot \nabla \right) \vec{E} + \left[\frac{\varepsilon - 1}{4\pi}\vec{E} \times \nabla \times \vec{E}\right]
+\end{equation}
+
+\textbf{Force on magnetic material (with Lorentz force):}
+\begin{equation}
+\vec{f} = \frac{1}{c} \left[\vec{j_e} \times \vec{B} \right] + \left(\frac{\mu - 1}{4\pi}\vec{H} \cdot \nabla \right) \vec{B} + \left[\frac{\mu - 1}{4\pi}\vec{H} \times \nabla \times \vec{B}\right]
+\end{equation}
+
+where $\vec{D} = \varepsilon \vec{E}$, $\vec{B} = \mu \vec{H}$
+
 
 В симметричной форме с магнитными токами плотность пондеромоторной силы:
 
@@ -725,10 +892,10 @@ $F_x^{\text{(calc\_thrust)}}$ & $-307.49$ \\
     доминирующая в расчёте для феррита, не воспроизводится через поверхностный
     интеграл от $T_{xx}$.
 
-    \item \textbf{Причина:} тензор (\ref{eq:maxwell_tamm_standard}) выведен
-    Таммом для случая $\text{div}\,\vec{D} = 0$ и $\text{div}\,\vec{B} = 0$
-    (отсутствие свободных зарядов). В проводниках MenDrive это условие
-    нарушается из-за конечной проводимости $\sigma \neq 0$.
+%     \item \textbf{Причина:} тензор (\ref{eq:maxwell_tamm_standard}) выведен
+%     Таммом для случая $\text{div}\,\vec{D} = 0$ и $\text{div}\,\vec{B} = 0$
+%     (отсутствие свободных зарядов). В проводниках MenDrive это условие
+%     нарушается из-за конечной проводимости $\sigma \neq 0$.
 
     \item \textbf{Компенсация металл/вакуум:} силы на металл и вакуумный зазор
     действительно компенсируются ($+12.9 - 12.9 = 0$), что согласуется с
@@ -1210,6 +1377,22 @@ $\vec{g} = \vec{S}/c^2$, но не включает вклад от внутре
 ($x = \pm A$ в нашей геометрии).
 
 \subsubsection{Почему Тамм не учитывал внутренние границы}
+
+
+В $\S 33$ Тамм делает замечание
+
+Сила натяжения, испытываемая каким-либо элементом поверхности
+произвольного участка среды, пропорциональна величине этого элемента
+$dS$ и зависит не только от положения этого элемента, но и от его
+направления нормали $\mathbf{n}$ к элементу $dS$. В частности, при
+повороте площадки $dS$ на $180^\circ$, т.е. при изменении направления
+нормали $\mathbf{n}$ на обратное, сила натяжения меняет свой знак.
+В этом выражается тот факт, что на противоположные стороны
+произвольного элемента поверхности $dS$\,\footnote{За исключением
+элементов поверхностей разрыва, которых мы в этом параграфе не
+рассматриваем.} всегда действуют взаимно уравновешивающиеся равные
+и противоположные натяжения.
+
 
 В $\S 105$ Тамм делает следующее \textbf{неявное предположение}:
 

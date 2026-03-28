@@ -15,7 +15,11 @@
 % ============================================================
 \definecolor{modcolor}{rgb}{0.0, 0.55, 0.0}  % зелёный (измените по желанию)
 % \definecolor{modcolor}{rgb}{0.0, 0.0, 0.7}  % синий (альтернатива)
-% \definecolor{modcolor}{rgb}{0.7, 0.0, 0.0}  % красный (альтернатива)
+\definecolor{redcolor}{rgb}{0.7, 0.0, 0.0}  % красный (альтернатива)
+
+\newcommand{\redtext}[1]{\textcolor{redcolor}{#1}}
+\newcommand{\redmath}[1]{\textcolor{redcolor}{#1}}
+\newcommand{\redblock}[1]{\colorbox{redcolor!10}{\parbox{\dimexpr\linewidth-2\fboxsep}{#1}}}
 
 \newcommand{\modtext}[1]{\textcolor{modcolor}{#1}}
 \newcommand{\modmath}[1]{\textcolor{modcolor}{#1}}

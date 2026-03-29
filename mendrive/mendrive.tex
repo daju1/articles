@@ -494,14 +494,14 @@ Branch 5 & $-0.038 \dots -0.012$ & $-1.53 \dots -1.56$ & $0.33$ & Распрос
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{branch4_components.png}
+\includegraphics[width=\textwidth]{branch4_thrust_components.png}
 \caption{Декомпозиция удельной тяги по компонентам для ветви 4. Левая колонка --- феррит, правая --- металл.}
 \label{fig:thrust_components}
 \end{figure}
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{branch5_components.png}
+\includegraphics[width=\textwidth]{branch5_thrust_components.png}
 \caption{Декомпозиция удельной тяги по компонентам для ветви 5. Левая колонка --- феррит, правая --- металл.}
 \label{fig:thrust_components}
 \end{figure}
@@ -760,7 +760,7 @@ $F_x^{\text{(calc\_thrust)}}$ & $-2006.47$ & $-617.94$ \\
 \caption{Дивергенция тензора Максвелла $\text{div}\,T_x$ для ветви 5.
 Верхний ряд: действительная и мнимая части. Средний ряд: модуль в логарифмической шкале.
 Нижний ряд: интегральные силы по областям и сравнение методов.}
-\label{fig:branch5_divergence}
+\label{fig:branch5_maxwell_tensor_divergence}
 \end{figure}
 
 \begin{figure}[h]
@@ -769,7 +769,7 @@ $F_x^{\text{(calc\_thrust)}}$ & $-2006.47$ & $-617.94$ \\
 \caption{Компоненты тензора Максвелла для ветви 5.
 Верхний ряд: $T_{xx}$, $T_{xy}$, $T_{xz}$.
 Нижний ряд: дивергенция и сравнение поверхностных и объёмных сил.}
-\label{fig:branch5_components}
+\label{fig:branch5_maxwell_tensor_components}
 \end{figure}
 
 \textbf{Ключевые наблюдения для ветви 5:}
@@ -788,11 +788,11 @@ $F_x^{\text{(calc\_thrust)}}$ & $-2006.47$ & $-617.94$ \\
     тогда как объёмное интегрирование пондеромоторных сил
     (\texttt{calc\_thrust()}) даёт \textbf{$-2006$ Н/кВт}.
 
-    \item \textbf{Дивергенция сосредоточена на границах} (рис.~\ref{fig:branch5_divergence}):
+    \item \textbf{Дивергенция сосредоточена на границах} (рис.~\ref{fig:branch5_maxwell_tensor_divergence}):
     пик $\text{div}\,T_x$ наблюдается при $x \approx -A$ (граница металл/вакуум),
     что соответствует скачку $T_{xx}$ на этой границе.
 
-    \item \textbf{Компоненты тензора} (рис.~\ref{fig:branch5_components}):
+    \item \textbf{Компоненты тензора} (рис.~\ref{fig:branch5_maxwell_tensor_components}):
     $T_{xx}$ имеет наибольший вклад, $T_{xy} \approx 0$ для TE-моды,
     $T_{xz}$ показывает сдвиговые напряжения в вакуумном зазоре.
 \end{enumerate}
@@ -802,7 +802,7 @@ $F_x^{\text{(calc\_thrust)}}$ & $-2006.47$ & $-617.94$ \\
 \begin{table}[h]
 \centering
 \caption{Поверхностные интегралы тензора Максвелла для ветви 4}
-\label{tab:branch4_tensor}
+\label{tab:branch4_maxwell_tensor_components}
 \begin{tabular}{@{}lc@{}}
 % \toprule
 \textbf{Параметр} & \textbf{$\omega = 10^6$ рад/с} \\
@@ -831,20 +831,20 @@ $F_x^{\text{(calc\_thrust)}}$ & $-307.49$ \\
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{branch4_tensor_divergence.png}
+\includegraphics[width=\textwidth]{branch4_maxwell_tensor_divergence.png}
 \caption{Дивергенция тензора Максвелла $\text{div}\,T_x$ для ветви 4.
 Обозначения аналогичны рис.~\ref{fig:branch5_divergence}.
 Обратите внимание на осцилляции в вакуумном зазоре.}
-\label{fig:branch4_divergence}
+\label{fig:branch4_maxwell_tensor_divergence}
 \end{figure}
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{branch4_tensor_components.png}
+\includegraphics[width=\textwidth]{branch4_maxwell_tensor_components.png}
 \caption{Компоненты тензора Максвелла для ветви 4.
-Обозначения аналогичны рис.~\ref{fig:branch5_components}.
+Обозначения аналогичны рис.~\ref{fig:branch5_thrust_components}.
 Осцилляции $T_{xx}$ соответствуют стоячей волне в зазоре.}
-\label{fig:branch4_components}
+\label{fig:branch4_maxwell_tensor_components}
 \end{figure}
 
 \textbf{Ключевые наблюдения для ветви 4:}
@@ -856,7 +856,7 @@ $F_x^{\text{(calc\_thrust)}}$ & $-307.49$ \\
     \item Сила на феррит также пренебрежимо мала, несмотря на то что объёмный
     расчёт даёт $-253.5$ Н/кВт для компоненты $t_{I,\text{conv},Hn}$.
 
-    \item \textbf{Осцилляции дивергенции} (рис.~\ref{fig:branch4_divergence}):
+    \item \textbf{Осцилляции дивергенции} (рис.~\ref{fig:branch4_maxwell_tensor_divergence}):
     в вакуумном зазоре наблюдаются быстрые осцилляции $\text{div}\,T_x$,
     что соответствует стоячей волне с несколькими периодами.
 
@@ -937,8 +937,8 @@ $F_x^{\text{(calc\_thrust)}}$ & $-307.49$ \\
     (поверхностные силы компенсируются), но \textit{не замыкается} для феррита
     при использовании стандартного тензора.
 
-    \item \textbf{Визуализация дивергенции} (рис.~\ref{fig:branch5_divergence},
-    \ref{fig:branch4_divergence}) показывает, что основная плотность силы
+    \item \textbf{Визуализация дивергенции} (рис.~\ref{fig:branch5_maxwell_tensor_divergence},
+    \ref{fig:branch4_maxwell_tensor_divergence}) показывает, что основная плотность силы
     сосредоточена на границах раздела сред, что подтверждает необходимость
     учёта поверхностных членов при интегрировании.
 \end{enumerate}
@@ -1121,19 +1121,19 @@ Z_{\text{eff}} = \frac{|\Delta E_y|}{|H_z(x_1) - H_z(x_2)|}
 \hline
 \textbf{Параметр} & \textbf{Значение} \\
 \hline
-Удельная тяга $\mathcal{T}$ & $-2006.47$ Н/кВт \\
-Тяга на вещество $F_x$ & $-1.34 \times 10^{-5}$ Н/см$^2$ \\
-Противосила $F_x^{\text{wire}}$ & $-7.16 \times 10^{-11}$ Н/см$^2$ \\
-Удельная противосила & $-0.0209$ Н/кВт \\
-\textbf{Степень компенсации $\eta$} & $\mathbf{1.04 \times 10^{-5}}$ (0.001\%) \\
-Нетто-тяга $\mathcal{T}_{\text{net}}$ & $-2006.45$ Н/кВт \\
-$Z_{\text{eff}}$ & $\sim 2 \times 10^{-6}$ \\
-Длина затухания $L_z$ & $0.013$ см \\
+Удельная тяга $\mathcal{T}$ & $ $ Н/кВт \\
+Тяга на вещество $F_x$ & $ $ Н/см$^2$ \\
+Противосила $F_x^{\text{wire}}$ & $ $ Н/см$^2$ \\
+Удельная противосила & $ $ Н/кВт \\
+\textbf{Степень компенсации $\eta$} & $ $ (0.001\%) \\
+Нетто-тяга $\mathcal{T}_{\text{net}}$ & $ $ Н/кВт \\
+$Z_{\text{eff}}$ & $ $ \\
+Длина затухания $L_z$ & $ $ см \\
 \hline
 \end{tabular}
 \end{table}
 
-\textbf{Вывод:} противосила \textbf{в $10^5$ раз меньше} тяги!
+\textbf{Вывод:} противосила \textbf{в $ $ раз меньше} тяги!
 
 \subsection{Branch 4 (низкочастотная ветвь)}
 
@@ -1144,10 +1144,10 @@ $Z_{\text{eff}}$ & $\sim 2 \times 10^{-6}$ \\
 \hline
 \textbf{Параметр} & \textbf{Значение} \\
 \hline
-Удельная тяга $\mathcal{T}$ & $-313.02$ Н/кВт \\
-\textbf{Степень компенсации $\eta$} & $\mathbf{0.0319}$ (3.2\%) \\
-Нетто-тяга $\mathcal{T}_{\text{net}}$ & $-303.05$ Н/кВт \\
-Длина затухания $L_z$ & $0.33$ см \\
+Удельная тяга $\mathcal{T}$ & $ $ Н/кВт \\
+\textbf{Степень компенсации $\eta$} & $\mathbf{ }$ ( \%) \\
+Нетто-тяга $\mathcal{T}_{\text{net}}$ & $ $ Н/кВт \\
+Длина затухания $L_z$ & $ $ см \\
 \hline
 \end{tabular}
 \end{table}
@@ -1164,11 +1164,11 @@ $Z_{\text{eff}}$ & $\sim 2 \times 10^{-6}$ \\
 
 \textbf{Правая сторона (феррит):}
 \begin{itemize}
-    \item $t_{I,\text{conv},Hn}$ (конвективная сила): $-1993.62$ Н/кВт (доминирует)
-    \item $F_{jmD}$ (сила на магнитные токи): $-12.46$ Н/кВт
+    \item $t_{I,\text{conv},Hn}$ (конвективная сила): $ $ Н/кВт
+    \item $F_{jmD}$ (сила на магнитные токи): $ $ Н/кВт
 \end{itemize}
 
-\textbf{Итого:} полная тяга $-2006.47$ Н/кВт
+\textbf{Итого:} полная тяга $ $ Н/кВт
 
 \textbf{Физическая интерпретация:} обе силы направлены в одну сторону
 (к металлу), что создаёт результирующую тягу, а не внутреннее напряжение.
@@ -1184,16 +1184,16 @@ $Z_{\text{eff}}$ & $\sim 2 \times 10^{-6}$ \\
 
 Для Branch 5:
 \begin{itemize}
-    \item $\mathcal{T} \approx 2000$ Н/кВт (очень большая тяга)
+    \item $\mathcal{T} \approx $ Н/кВт (очень большая тяга)
     \item $Z_{\text{eff}} \approx 2 \times 10^{-6}$ (очень малое волновое
     сопротивление)
 \end{itemize}
 
-Подставляя $c = 3 \times 10^{10}$ см/с:
-\begin{equation}
-\eta \approx \frac{2}{3 \times 10^{10} \times 2 \times 10^{-6} \times 
-2000 \times 10^{-3}} \approx 10^{-5}
-\end{equation}
+% Подставляя $c = 3 \times 10^{10}$ см/с:
+% \begin{equation}
+% \eta \approx \frac{2}{3 \times 10^{10} \times 2 \times 10^{-6} \times
+% 2000 \times 10^{-3}} \approx 10^{-5}
+% \end{equation}
 
 \textbf{Физическая причина:}
 \begin{enumerate}
@@ -1274,8 +1274,8 @@ F_x^{\text{мет}} + F_x^{\text{фер}} + F_x^{\text{вак}} + F_x^{\text{wir
 Тамм \cite[\S 105]{Tamm} требует быстрого убывания полей на бесконечности для 
 обращения поверхностных интегралов в ноль. В нашей модели:
 \begin{itemize}
-    \item Поля затухают как $e^{-k_z'' z}$ с $k_z'' \approx 1.53$ см$^{-1}$
-    \item Длина затухания $L_z = 1/(2k_z'') \approx 0.33$ см
+    \item Поля затухают как $e^{-k_z'' z}$ с $k_z'' \approx  $ см$^{-1}$
+    \item Длина затухания $L_z = 1/(2k_z'') \approx  $ см
 \end{itemize}
 
 Это \textbf{быстрое затухание}, но интеграл от потока импульса по конечной 
@@ -1381,17 +1381,19 @@ $\vec{g} = \vec{S}/c^2$, но не включает вклад от внутре
 
 В $\S 33$ Тамм делает замечание
 
-Сила натяжения, испытываемая каким-либо элементом поверхности
+\begin{quote}
+\textit{«Сила натяжения, испытываемая каким-либо элементом поверхности
 произвольного участка среды, пропорциональна величине этого элемента
 $dS$ и зависит не только от положения этого элемента, но и от его
 направления нормали $\mathbf{n}$ к элементу $dS$. В частности, при
 повороте площадки $dS$ на $180^\circ$, т.е. при изменении направления
 нормали $\mathbf{n}$ на обратное, сила натяжения меняет свой знак.
 В этом выражается тот факт, что на противоположные стороны
-произвольного элемента поверхности $dS$\,\footnote{За исключением
-элементов поверхностей разрыва, которых мы в этом параграфе не
-рассматриваем.} всегда действуют взаимно уравновешивающиеся равные
-и противоположные натяжения.
+произвольного элемента поверхности $dS$ (за исключением
+элементов поверхностей разрыва(!), которых мы в этом параграфе не
+рассматриваем) всегда действуют взаимно уравновешивающиеся равные
+и противоположные натяжения.»}
+\end{quote}
 
 
 В $\S 105$ Тамм делает следующее \textbf{неявное предположение}:
@@ -1813,8 +1815,8 @@ F_{P,\text{conv}} = \frac{\varepsilon-1}{8\pi}\left(\frac{D_x^2}{\varepsilon^2} 
 
 \textbf{Вывод:} Член $I_1$, отброшенный Таммом, в точности соответствует
 \textit{конвективной силе на связанные заряды поляризации} на границе
-раздела сред! Для MenDrive с ферритом это даёт основной вклад в тягу
-($\sim 1000$ Н/кВт для ветви 5).
+раздела сред! Для MenDrive с ферритом это даёт вклад в тягу
+($\sim $ Н/кВт для ветви 5).
 
 \subsection{Второй отброшенный член: стрикционная сила на границе}
 

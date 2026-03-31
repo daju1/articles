@@ -84,10 +84,10 @@
 Рассматривается трёхслойная структура в декартовых координатах $(x, y, z)$:
 
 \begin{itemize}
-    \item \textbf{Область 1} ($x \leq -A$): металл с параметрами 
+    \item \textbf{Область 1} ($x \leq -A$): металл с параметрами
     $\varepsilon \approx 1$, $\mu = 1$,
     $\sigma_e = 5.625 \times 10^{17}$ с$^{-1}$ (СГС);
-    \item \textbf{Область 2} ($-A \leq x \leq +A$): вакуум 
+    \item \textbf{Область 2} ($-A \leq x \leq +A$): вакуум
     ($\varepsilon_0 = \mu_0 = 1$);
     \item \textbf{Область 3} ($x \geq +A$): ферродиэлектрик с параметрами
     $\varepsilon \approx 1$, $\mu = 100$,  $\sigma_e = 9.9 \times 10^{9}$ с$^{-1}$ (СГС), $\sigma_m = 5.625 \times 10^{7}$ с$^{-1}$ (СГС).
@@ -202,9 +202,9 @@
 
 \begin{equation}
 \begin{cases}
-\text{rot} \vec{E} = -\frac{1}{c}\frac{\partial \vec{B}}{\partial t} 
+\text{rot} \vec{E} = -\frac{1}{c}\frac{\partial \vec{B}}{\partial t}
 - \frac{4\pi}{c}\vec{j}_m \\
-\text{rot} \vec{H} = \frac{1}{c}\frac{\partial \vec{D}}{\partial t} 
+\text{rot} \vec{H} = \frac{1}{c}\frac{\partial \vec{D}}{\partial t}
 + \frac{4\pi}{c}\vec{j}_e
 \end{cases}
 \label{eq:maxwell_symmetric}
@@ -267,7 +267,7 @@
 \subsection{Граничные условия и характеристическое уравнение}
 
 Поле ищется в виде $\vec{F}(x) e^{i(k_z z - \omega t)}$ с комплексным
-волновым числом $k_z = k_z' + i k_z''$. При условии $\partial/\partial y = 0$ 
+волновым числом $k_z = k_z' + i k_z''$. При условии $\partial/\partial y = 0$
 ($k_y = 0$) уравнения разделяются на TE- и TM-моды.
 
 На границах $x = \pm A$ выполняются стандартные условия непрерывности
@@ -295,7 +295,7 @@ D_{n}^{(1)} = D_{n}^{(2)}, \quad B_{n}^{(1)} = B_{n}^{(2)}
 \end{equation}
 
 Определитель символьно вычислен в SageMath и скомпилирован в C-библиотеку
-(точность \texttt{float128}). Поиск корней осуществляется методом Ньютона. 
+(точность \texttt{float128}). Поиск корней осуществляется методом Ньютона.
 Для каждого $\omega$ обнаруживается 4--12 дисперсионных ветвей.
 
 \section{Методика расчёта пондеромоторных сил}
@@ -303,7 +303,7 @@ D_{n}^{(1)} = D_{n}^{(2)}, \quad B_{n}^{(1)} = B_{n}^{(2)}
 \subsection{Полная динамическая формула Тамма}
 
 \textbf{Критически важно:} для расчёта сил в динамических полях необходимо
-использовать формулу 18.9 из \S 18 книги Тамма \cite{Tamm}, а не формулу 17.5, 
+использовать формулу 18.9 из \S 18 книги Тамма \cite{Tamm}, а не формулу 17.5,
 которая верна только для статики.
 
 
@@ -324,14 +324,14 @@ where $\vec{D} = \varepsilon \vec{E}$, $\vec{B} = \mu \vec{H}$
 В симметричной форме с магнитными токами плотность пондеромоторной силы:
 
 \begin{equation}
-\vec{f} = \rho_e \vec{E} + \frac{1}{c}[\vec{j}_e \times \vec{B}] 
-+ \rho_m \vec{H} + \frac{1}{c}[\vec{j}_m \times \vec{D}] 
+\vec{f} = \rho_e \vec{E} + \frac{1}{c}[\vec{j}_e \times \vec{B}]
++ \rho_m \vec{H} + \frac{1}{c}[\vec{j}_m \times \vec{D}]
 + \vec{f}_{\text{Abraham}} + \vec{f}_{\text{conv}}
 \label{eq:tamm18.9}
 \end{equation}
 
-\textbf{Важно:} формула (18.9) справедлива для динамических полей, в отличие 
-от статической формулы (17.5). В симметричной форме с магнитными токами 
+\textbf{Важно:} формула (18.9) справедлива для динамических полей, в отличие
+от статической формулы (17.5). В симметричной форме с магнитными токами
 учитываются все компоненты силы.
 
 \subsection{Компоненты силы}
@@ -342,7 +342,7 @@ where $\vec{D} = \varepsilon \vec{E}$, $\vec{B} = \mu \vec{H}$
     \item \textbf{Сила Лоренца на токи проводимости:}
     $F_{jeB} \sim \text{Re}[\vec{j}_e \times \vec{B}^*]$
 
-    \item \textbf{Сила на магнитные токи:} 
+    \item \textbf{Сила на магнитные токи:}
     $F_{jmD} \sim \text{Re}[\vec{j}_m \times \vec{D}^*]$ (критично для феррита)
 
     \item \textbf{Силы Абрагама:} действующие на векторы намагниченности
@@ -991,7 +991,7 @@ $F_x^{\text{(calc\_thrust)}}$ & $-307.49$ \\
 
 \subsection{Направление силы}
 
-Из численных результатов (Branch 5) видно, что $H_z(x_1) > H_z(x_2)$ 
+Из численных результатов (Branch 5) видно, что $H_z(x_1) > H_z(x_2)$
 (поле максимально у металла и минимально у феррита). Следовательно:
 
 \begin{itemize}
@@ -1007,7 +1007,7 @@ $F_x^{\text{(calc\_thrust)}}$ & $-307.49$ \\
 
 \subsection{Баланс мощности}
 
-Линия тока $I_y$ взаимодействует с тангенциальным электрическим полем $E_y$ 
+Линия тока $I_y$ взаимодействует с тангенциальным электрическим полем $E_y$
 TE-волны. Мощность, передаваемая от витка к полю (на единицу длины по $y$ и $z$):
 
 \begin{equation}
@@ -1031,7 +1031,7 @@ w_{\text{total}} = w_{\text{metal}} + w_{\text{ferrite}}
 
 \subsection{Амплитуда тока возбуждения}
 
-Из (\ref{eq:power_balance}) при оптимальной фазе тока 
+Из (\ref{eq:power_balance}) при оптимальной фазе тока
 ($\varphi = \arg(\Delta E_y)$):
 
 \begin{equation}
@@ -1052,7 +1052,7 @@ w_{\text{total}} = w_{\text{metal}} + w_{\text{ferrite}}
 Подставляя (\ref{eq:current_amplitude}) в (\ref{eq:wire_force}), получаем:
 
 \begin{equation}
-\frac{F_x^{\text{wire}}}{L_y} = \frac{2 w_{\text{total}}}{c |\Delta E_y|} 
+\frac{F_x^{\text{wire}}}{L_y} = \frac{2 w_{\text{total}}}{c |\Delta E_y|}
 \left[ H_z(x_1) - H_z(x_2) \right]
 \end{equation}
 
@@ -1060,7 +1060,7 @@ w_{\text{total}} = w_{\text{metal}} + w_{\text{ferrite}}
 
 \begin{equation}
 \boxed{
-\frac{F_x^{\text{wire}}/L_y}{w_{\text{total}}} = \frac{2}{c} \cdot 
+\frac{F_x^{\text{wire}}/L_y}{w_{\text{total}}} = \frac{2}{c} \cdot
 \frac{H_z(x_1) - H_z(x_2)}{|\Delta E_y|}
 }
 \label{eq:specific_counter}
@@ -1086,9 +1086,9 @@ Z_{\text{eff}} = \frac{|\Delta E_y|}{|H_z(x_1) - H_z(x_2)|}
 
 \textbf{Физический смысл:}
 \begin{itemize}
-    \item При $Z_{\text{eff}} \gg 1$ (высокое волновое сопротивление): 
+    \item При $Z_{\text{eff}} \gg 1$ (высокое волновое сопротивление):
     противосила мала
-    \item При $Z_{\text{eff}} \sim 1$ (нормальное сопротивление): 
+    \item При $Z_{\text{eff}} \sim 1$ (нормальное сопротивление):
     противосила сравнима с тягой
 \end{itemize}
 
@@ -1098,7 +1098,7 @@ Z_{\text{eff}} = \frac{|\Delta E_y|}{|H_z(x_1) - H_z(x_2)|}
 
 \begin{equation}
 \boxed{
-\eta \equiv \frac{F_x^{\text{wire}}/L_y}{w_{\text{total}} \cdot \mathcal{T}} 
+\eta \equiv \frac{F_x^{\text{wire}}/L_y}{w_{\text{total}} \cdot \mathcal{T}}
 = \frac{2}{c Z_{\text{eff}} \mathcal{T}}
 }
 \label{eq:eta}
@@ -1240,7 +1240,7 @@ F_x^{\text{wire}} \propto I_y \cdot \Delta H_z
     \item $w_{\text{total}}$ --- передаваемая мощность
 \end{itemize}
 
-Режим Branch 5 соответствует \textbf{низкому напряжению / высокому току} 
+Режим Branch 5 соответствует \textbf{низкому напряжению / высокому току}
 ($Z_{\text{eff}} \ll 1$). При той же мощности ток велик, но сила определяется
 произведением тока на магнитное поле, которое в этом режиме мало.
 
@@ -1254,7 +1254,7 @@ F_x^{\text{wire}} \propto I_y \cdot \Delta H_z
 F_x^{\text{мет}} + F_x^{\text{фер}} + F_x^{\text{вак}} + F_x^{\text{wire}} = 0
 \end{equation}
 
-В модели $k_y = 0$ слагаемое $F_x^{\text{вак}}$ включает поток электромагнитного 
+В модели $k_y = 0$ слагаемое $F_x^{\text{вак}}$ включает поток электромагнитного
 импульса через боковые стенки $y = \pm \infty$.
 
 \subsection{Нарушение баланса в расчёте на единицу длины}
@@ -1266,19 +1266,19 @@ F_x^{\text{мет}} + F_x^{\text{фер}} + F_x^{\text{вак}} + F_x^{\text{wir
     \item \textbf{Сумма:} $-1.34 \times 10^{-5}$ Н/см$^2 \neq 0$
 \end{itemize}
 
-\textbf{Вывод:} виток \textbf{не компенсирует} тягу. Компенсирующий импульс 
+\textbf{Вывод:} виток \textbf{не компенсирует} тягу. Компенсирующий импульс
 уходит через боковые границы $z \to \infty$ (затухание волны).
 
 \subsection{Условие Тамма \S 105}
 
-Тамм \cite[\S 105]{Tamm} требует быстрого убывания полей на бесконечности для 
+Тамм \cite[\S 105]{Tamm} требует быстрого убывания полей на бесконечности для
 обращения поверхностных интегралов в ноль. В нашей модели:
 \begin{itemize}
     \item Поля затухают как $e^{-k_z'' z}$ с $k_z'' \approx  $ см$^{-1}$
     \item Длина затухания $L_z = 1/(2k_z'') \approx  $ см
 \end{itemize}
 
-Это \textbf{быстрое затухание}, но интеграл от потока импульса по конечной 
+Это \textbf{быстрое затухание}, но интеграл от потока импульса по конечной
 длине всё равно ненулевой.
 
 \section{Связь с парадоксом 4/3 и работами Ф. Рорлиха}
@@ -1577,11 +1577,11 @@ F_{\text{wire}})
 
 \subsection{Проблема доказательства Тамма}
 
-Доказательство Тамма (\S 105) содержит \textbf{неявное предположение} о 
-непрерывности полей во всём пространстве, которое в MenDrive 
-\textbf{не выполняется}. На внутренних границах $x = \pm A$ (металл/вакуум, 
-вакуум/феррит) тензор натяжений Максвелла $T_{ik}$ имеет \textbf{скачок}, 
-а частные производные $\partial T_{ik}/\partial x_k$ терпят 
+Доказательство Тамма (\S 105) содержит \textbf{неявное предположение} о
+непрерывности полей во всём пространстве, которое в MenDrive
+\textbf{не выполняется}. На внутренних границах $x = \pm A$ (металл/вакуум,
+вакуум/феррит) тензор натяжений Максвелла $T_{ik}$ имеет \textbf{скачок},
+а частные производные $\partial T_{ik}/\partial x_k$ терпят
 \textbf{разрыв}.
 
 \subsection{Правильное применение теоремы Гаусса}
@@ -1590,7 +1590,7 @@ F_{\text{wire}})
 
 \textbf{Металл} ($x \in (-\infty, -A]$):
 \begin{equation}
-F_x^{\text{мет}} = \underbrace{T_{xx}|_{x \to -\infty}}_{=0} 
+F_x^{\text{мет}} = \underbrace{T_{xx}|_{x \to -\infty}}_{=0}
 - T_{xx}|_{x=-A^-} = -T_{xx}|_{x=-A^-}
 \end{equation}
 
@@ -1601,24 +1601,24 @@ F_x^{\text{вак}} = T_{xx}|_{x=+A^-} - T_{xx}|_{x=-A^+}
 
 \textbf{Феррит} ($x \in [+A, +\infty)$):
 \begin{equation}
-F_x^{\text{фер}} = T_{xx}|_{x=+A^+} 
+F_x^{\text{фер}} = T_{xx}|_{x=+A^+}
 - \underbrace{T_{xx}|_{x \to +\infty}}_{=0} = +T_{xx}|_{x=+A^+}
 \end{equation}
 
 \textbf{Сумма:}
 \begin{equation}
-F_{\text{total}} = -T_{xx}|_{x=-A^-} + (T_{xx}|_{x=+A^-} - T_{xx}|_{x=-A^+}) 
+F_{\text{total}} = -T_{xx}|_{x=-A^-} + (T_{xx}|_{x=+A^-} - T_{xx}|_{x=-A^+})
 + T_{xx}|_{x=+A^+}
 \end{equation}
 
 Из-за скачков на границах:
 \begin{equation}
-T_{xx}|_{x=-A^-} \neq T_{xx}|_{x=-A^+}, \quad 
+T_{xx}|_{x=-A^-} \neq T_{xx}|_{x=-A^+}, \quad
 T_{xx}|_{x=+A^-} \neq T_{xx}|_{x=+A^+}
 \end{equation}
 
-Поэтому \textbf{$F_{\text{total}} \neq 0$} --- это не нарушение закона 
-сохранения, а следствие \textbf{неприменимости теоремы Гаусса ко всему 
+Поэтому \textbf{$F_{\text{total}} \neq 0$} --- это не нарушение закона
+сохранения, а следствие \textbf{неприменимости теоремы Гаусса ко всему
 пространству сразу} в среде с разрывами $\varepsilon$ и $\mu$.
 
 
@@ -3337,29 +3337,29 @@ F_x^{\text{(поверхн)}} = [T_{xx}]_{-A} + [T_{xx}]_{+A}
 \section{Заключение}
 
 \begin{enumerate}
-    \item \textbf{Построена самосогласованная модель} MenDrive с учётом всех 
+    \item \textbf{Построена самосогласованная модель} MenDrive с учётом всех
     компонент пондеромоторной силы (формула 18.9 Тамма).
 
-    \item \textbf{Обнаружена высокая удельная тяга} до 2000 Н/кВт на 
+    \item \textbf{Обнаружена высокая удельная тяга} до 2000 Н/кВт на
     дисперсионной ветви 5.
 
     \item \textbf{Выявлен механизм слабой компенсации:}
     \begin{itemize}
-        \item В режимах с большой тягой эффективное волновое сопротивление 
+        \item В режимах с большой тягой эффективное волновое сопротивление
         $Z_{\text{eff}} \ll 1$
         \item Это приводит к малой разности $\Delta H_z$ в вакуумном зазоре
-        \item Сила Ампера на виток $F_x^{\text{wire}} \propto \Delta H_z$ 
+        \item Сила Ампера на виток $F_x^{\text{wire}} \propto \Delta H_z$
         оказывается пренебрежимо малой
         \item Степень компенсации $\eta \approx 10^{-5}$--$10^{-2}$
     \end{itemize}
 
-    \item \textbf{Закон сохранения импульса} не нарушается: нескомпенсированная 
-    тяга уравновешивается потоком импульса электромагнитного поля через границы 
+    \item \textbf{Закон сохранения импульса} не нарушается: нескомпенсированная
+    тяга уравновешивается потоком импульса электромагнитного поля через границы
     системы.
 
     \item \textbf{Направления дальнейших исследований:}
     \begin{itemize}
-        \item Переход к модели с поверхностным током на металле (вместо витка 
+        \item Переход к модели с поверхностным током на металле (вместо витка
         в вакууме)
         \item Учёт конечных размеров по $y$ ($k_y \neq 0$)
         \item Переход к цилиндрической геометрии
@@ -3369,25 +3369,25 @@ F_x^{\text{(поверхн)}} = [T_{xx}]_{-A} + [T_{xx}]_{+A}
 
 \begin{thebibliography}{9}
 
-\bibitem{Mende} 
-Менде Ф.Ф. Волновой двигатель с внутренним расходом энергии электромагнитных 
+\bibitem{Mende}
+Менде Ф.Ф. Волновой двигатель с внутренним расходом энергии электромагнитных
 колебаний. --- http://fmnauka.narod.ru/dvigatel\_emdrive.pdf
 
-\bibitem{Karavashkin} 
-Каравашкин С.Б. The Reality of EmDrive in Terms of Discoveries in 
-Electromagnetism. --- 2025. --- 
+\bibitem{Karavashkin}
+Каравашкин С.Б. The Reality of EmDrive in Terms of Discoveries in
+Electromagnetism. --- 2025. ---
 https://karavashkin3.blogspot.com/2025/06/the-reality-of-emdrive-in-terms-of.html
 
-\bibitem{Drozdov} 
+\bibitem{Drozdov}
 Дроздов А.Ю. Электродинамический анализ резонатора MenDrive. --- 2026.
 Код расчётов доступен в открытом репозитории: \\
 \url{https://github.com/daju1/articles/blob/master/rezonatory\_i\_volnovody/MenDrive\_real.ipynb}
 
-\bibitem{Tamm} 
+\bibitem{Tamm}
 Тамм И.Е. Основы теории электричества. --- 10-е изд. --- М.: Наука, 1989. --- 504 с.
 
-\bibitem{Landau} 
-Landau L.D., Lifshitz E.M. Electrodynamics of Continuous Media. --- 2nd ed. --- 
+\bibitem{Landau}
+Landau L.D., Lifshitz E.M. Electrodynamics of Continuous Media. --- 2nd ed. ---
 Pergamon Press, 1984.
 
 \end{thebibliography}

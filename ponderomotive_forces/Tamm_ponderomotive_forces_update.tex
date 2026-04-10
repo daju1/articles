@@ -571,11 +571,12 @@ $$
 $$
 В электростатическом поле последний член равен нулю, так как
 $\mathbf{E} = -\nabla\varphi$, а ротор градиента равен нулю [уравнение
-$(42^*_1)$]. Таким образом, в электростатическом поле
+$(42^*_1)$]. Таким образом, в \redtext{электростатическом} \modtext{динамическом} поле
 \begin{equation}
-    \mathbf{E}\nabla\cdot\mathbf{E} = \frac{1}{2}\cdot\nabla E^2,
+    \mathbf{E}\nabla\cdot\mathbf{E} = \frac{1}{2}\cdot\nabla E^2 \,\modmath{- \left[\vec{E} \times rot \vec{E}\right]},
     \tag{32.2}
 \end{equation}
+
 \begin{equation}
     \mathbf{f} = \frac{\varepsilon-1}{8\pi}\nabla E^2.
     \tag{32.3}
@@ -653,13 +654,13 @@ $$
 \begin{equation}
     \redmath{\int \operatorname{div}\mathbf{a}\,dV = \oint a_n\,dS = 0}.
     \tag{32.5}
+\footnote{\modtext{Для системы типа MenDrive мы не можем игнорировать тот факт,
+ что на поверхностях разрыва (то есть на внутренних границах материалов
+ стенок резонатора и вакуумом внутри резонатора) тензор натяжений испытывает резкий скачёк.
+ И поэтому применение формулы (32.5) в наших выкладках, отбрасывая, как это делал Тамм,
+дивергентные интегралы, привело бы к существенной ошибке, равной как раз величине скачка тензора натяжения на каждой поверхности разрыва. Поэтомы мы, во первых, мы будем вынуждены разбираться, каким компонентам
+сил соответствуют отброшенные Таммом слагаемые, а во вторых мы не сможем игнорировать наличие скачка тензора натяжений на поверхностях разрыва в выкладках параграфа 105}}
 \end{equation}
-
-\modtext{Для системы типа MenDrive мы не можем игнорировать силы,
-приложенные к поверхностям разрыва. И поэтому мы не сможем
-применять (32.5) в наших выкладках, отбрасывая, как это делал Тамм,
-дивергентные интегралы, но будем вынуждены разбираться, каким компонентам
-сил соответствуют отброшенные Таммом слагаемые}
 
 \textbf{4.} Согласно (30.1) и (30.4) энергия электростатического поля,
 ввиду предполагаемого нами в этом параграфе отсутствия поверхностных
@@ -735,7 +736,13 @@ $$
 $\varepsilon$ при виртуальном перемещении $\mathbf{q}$ находящихся
 в поле тел.
 
-% \modblock{
+\modblock{
+% \modtext{
+
+\subsection{Первый отброшенный член: сила на связанные заряды поляризации}
+
+%\subsubsection{Где появляется в выводе Тамма}
+
 
 % В разделе 4 §32 (стр.~152, левая колонка) Тамм преобразует интеграл:
 
@@ -766,18 +773,18 @@ $\varepsilon$ при виртуальном перемещении $\mathbf{q}$ 
 % нулю»}
 % \end{quote}
 
-% и отбрасывает член:
+Мы видим, что И.Е.Тамм отбрасывает интеграл:
 
-% \begin{equation}
-% \boxed{
-% I_1 = -\int \operatorname{div}(\mathbf{D}\,\delta\varphi)\,dV
-% }
-% \label{eq:discarded_term_1}
-% \end{equation}
-% } % modblock
+\begin{equation}
+\boxed{
+I_1 = -\int \operatorname{div}(\mathbf{D}\,\delta\varphi)\,dV
+}
+\label{eq:discarded_term_1}
+\end{equation}
+}% modblock
 
 \modblock{
-% \modtext{
+
 \subsubsection{Физический смысл члена $I_1$}
 
 Применяем теорему Гаусса с учётом внутренних границ (\ref{eq:gauss_discontinuous}):
@@ -788,7 +795,7 @@ I_1 = -\oint_{S_\infty} (\mathbf{D}\,\delta\varphi)_n\,dS
 \label{eq:term_1_gauss}
 \end{equation}
 
-Для MenDrive с границами $x = \pm A$:
+Для MenDrive с границами $x = \pm a$:
 
 \begin{equation}
 I_1 = -\int_{x=-A} [D_x\,\delta\varphi]\,dS - \int_{x=+A} [D_x\,\delta\varphi]\,dS
@@ -812,7 +819,9 @@ E_x^{(+)} = \frac{D_x}{\varepsilon_+}, \quad
 E_x^{(-)} = \frac{D_x}{\varepsilon_-}
 \label{eq:boundary_conditions_D_E}
 \end{equation}
+}% modblock
 
+\modblock{
 Скачок произведения:
 
 \begin{equation}
@@ -824,7 +833,9 @@ E_x^{(-)} = \frac{D_x}{\varepsilon_-}
 \end{aligned}
 \label{eq:jump_D_delta_phi}
 \end{equation}
+}% modblock
 
+\modblock{
 \subsubsection{Сила, соответствующая члену $I_1$}
 
 Из $\delta W = -\int\mathbf{q}\cdot\mathbf{f}\,dV$ получаем силу на единицу
@@ -838,6 +849,10 @@ f_x^{(1)} = \frac{D_x^2}{8\pi}\left(\frac{1}{\varepsilon_-} - \frac{1}{\varepsil
 \label{eq:force_term_1}
 \end{equation}
 
+}% modblock
+
+\modblock{
+
 Для границы вакуум/диэлектрик ($\varepsilon_- = 1$, $\varepsilon_+ = \varepsilon$):
 
 \begin{equation}
@@ -846,13 +861,12 @@ f_x^{(1)} = \frac{\varepsilon - 1}{8\pi\varepsilon}D_x^2 =
 \label{eq:force_term_1_vacuum_dielectric}
 \end{equation}
 
-% modtext
-% modblock
-}
+}% modblock
 
+\modblock{
 
 \subsubsection{Сравнение с конвективной силой на поляризацию}
-\modblock{
+
 Конвективная сила на поляризацию из формулы (18.9) Тамма:
 
 \begin{equation}
@@ -882,8 +896,8 @@ F_{P,\text{conv}} = \frac{\varepsilon-1}{8\pi}\left(\frac{D_x^2}{\varepsilon^2} 
 
 \textbf{Вывод:} Член $I_1$, отброшенный Таммом, в точности соответствует
 \textit{конвективной силе на связанные заряды поляризации} на границе
-раздела сред! Для MenDrive с ферритом это даёт вклад в тягу
-($\sim $ Н/кВт для ветви 5).
+раздела сред!
+% Для MenDrive с ферритом это даёт вклад в тягу ($\sim $ Н/кВт для ветви 5).
 }
 
 
@@ -1014,25 +1028,26 @@ $$
     \delta W = \frac{1}{8\pi}\int E^2\operatorname{grad}\varepsilon\cdot\mathbf{q}\,dV
              + \frac{1}{8\pi}\int E^2\frac{\partial\varepsilon}{\partial\tau}
                \tau\operatorname{div}\mathbf{q}\,dV
-             - \int \varphi\operatorname{div}(\rho\mathbf{q})\,dV.
+             - \int \varphi\operatorname{div}(\rho\mathbf{q})\,dV
+             \,\modmath{+\int \operatorname{div}(\mathbf{D}\,\delta\varphi)\,dV}.
 $$
 Подынтегральные выражения двух последних интегралов можно преобразовать
 с помощью $(43^*_a)$:
 $$
     E^2\frac{\partial\varepsilon}{\partial\tau}\tau\operatorname{div}\mathbf{q}
-    = \operatorname{div}\!\left(E^2\frac{\partial\varepsilon}{\partial\tau}
-      \tau\mathbf{q}\right)
+    = \redmath{\operatorname{div}\!\left(E^2\frac{\partial\varepsilon}{\partial\tau}
+      \tau\mathbf{q}\right)}
     - \mathbf{q}\operatorname{grad}\!\left(E^2\frac{\partial\varepsilon}{\partial\tau}
       \tau\right)
 $$
 и
 $$
     \varphi\operatorname{div}(\rho\mathbf{q})
-    = \operatorname{div}(\varphi\rho\mathbf{q})
+    = \redmath{\operatorname{div}(\varphi\rho\mathbf{q})}
     - \rho\mathbf{q}\operatorname{grad}\varphi.
 $$
-Согласно (32.5) интегралы первых слагаемых этих выражений обращаются
-в нуль; приняв ещё во внимание, что $\operatorname{grad}\varphi = -\mathbf{E}$,
+\redtext{Согласно (32.5) интегралы первых слагаемых этих выражений обращаются
+в нуль;} приняв ещё во внимание, что $\operatorname{grad}\varphi = -\mathbf{E}$,
 получаем:
 $$
     \delta W = \int \mathbf{q}\left\{
@@ -1044,6 +1059,177 @@ $$
     \right\}dV.
 $$
 
+
+\modblock{
+
+\subsection{Второй отброшенный член: стрикционная сила на границе}
+
+% \subsubsection{Где появляется в выводе Тамма}
+
+%В разделе 6 §32 (стр.~154, левая колонка) Тамм преобразует стрикционный член:
+
+%\begin{equation}
+%\frac{1}{8\pi}\int E^2\frac{\partial\varepsilon}{\partial\tau}
+%\tau\operatorname{div}\mathbf{q}\,dV
+%\label{eq:tamm_integral_2}
+%\end{equation}
+
+%Используя формулу $(43^*_a)$:
+
+%\begin{equation}
+%E^2\frac{\partial\varepsilon}{\partial\tau}\tau\operatorname{div}\mathbf{q} =
+%\operatorname{div}\!\left(E^2\frac{\partial\varepsilon}{\partial\tau}
+%\tau\mathbf{q}\right) -
+%\mathbf{q}\operatorname{grad}\!\left(E^2\frac{\partial\varepsilon}{\partial\tau}
+%\tau\right)
+%\label{eq:divergence_identity_2}
+%\end{equation}
+
+Тамм отбрасывает:
+
+\begin{equation}
+\boxed{
+I_2 = \int \operatorname{div}\!\left(E^2\frac{\partial\varepsilon}{\partial\tau}
+\tau\mathbf{q}\right)\,dV
+}
+\label{eq:discarded_term_2}
+\end{equation}
+
+
+}% modblock
+
+\modblock{
+
+
+\subsubsection{Физический смысл члена $I_2$}
+
+Применяем теорему Гаусса с внутренними границами:
+
+\begin{equation}
+I_2 = \int_{x=-A} \left[E^2\frac{\partial\varepsilon}{\partial\tau}
+\tau q_x\right]\,dS + \int_{x=+A} \left[E^2\frac{\partial\varepsilon}{\partial\tau}
+\tau q_x\right]\,dS
+\label{eq:term_2_gauss}
+\end{equation}
+
+Соответствующая сила на единицу площади:
+
+\begin{equation}
+\boxed{
+f_x^{(2)} = \left[E^2\frac{\partial\varepsilon}{\partial\tau}\tau\right]_{\text{граница}}
+}
+\label{eq:force_term_2}
+\end{equation}
+
+}% modblock
+
+%\modblock{
+
+%\subsubsection{Когда этот член важен}
+
+%\begin{table}[h]
+%\centering
+%\caption{Величина стрикционного члена для различных сред}
+%\label{tab:striction_comparison}
+%\begin{tabular}{@{}lll@{}}
+%\toprule
+%\textbf{Среда} & $\frac{\partial\varepsilon}{\partial\tau}$ & \textbf{Вклад в силу} \\
+%\midrule
+%Газы & $\propto (\varepsilon-1)$ & Пренебрежимый \\
+%Жидкости & $\sim \varepsilon$ & Средний \\
+%Твёрдые диэлектрики & Зависит от упругости & Существенный \\
+%Ферриты & $\frac{\partial\mu}{\partial\tau} \neq 0$ & \textbf{Критично!} \\
+%\bottomrule
+%\end{tabular}
+%\end{table}
+
+%}% modblock
+
+\modblock{
+
+Для магнитного аналога (§84 Тамма):
+
+\begin{equation}
+f_x^{(2,m)} = \left[H^2\frac{\partial\mu}{\partial\tau}\tau\right]_{\text{граница}}
+\label{eq:force_term_2_magnetic}
+\end{equation}
+
+Для MenDrive с ферритом, где $\mu$ зависит от плотности,
+этот член даёт дополнительный вклад в силу на намагниченность.
+
+}% modblock
+
+\modblock{
+
+\subsection{Третий отброшенный член: сила на свободные поверхностные заряды}
+
+\subsubsection{Где появляется в выводе Тамма}
+
+В том же разделе 6 §32 Тамм преобразует член со свободными зарядами:
+
+\begin{equation}
+-\int \varphi\operatorname{div}(\rho\mathbf{q})\,dV
+\label{eq:tamm_integral_3}
+\end{equation}
+
+Используя $(43^*_a)$:
+
+\begin{equation}
+\varphi\operatorname{div}(\rho\mathbf{q}) =
+\operatorname{div}(\varphi\rho\mathbf{q}) -
+\rho\mathbf{q}\operatorname{grad}\varphi
+\label{eq:divergence_identity_3}
+\end{equation}
+
+Тамм отбрасывает:
+
+\begin{equation}
+\boxed{
+I_3 = \int \operatorname{div}(\varphi\rho\mathbf{q})\,dV
+}
+\label{eq:discarded_term_3}
+\end{equation}
+
+\subsubsection{Физический смысл члена $I_3$}
+
+Применяем теорему Гаусса:
+
+\begin{equation}
+I_3 = \int_{x=-A} [\varphi\rho q_x]\,dS + \int_{x=+A} [\varphi\rho q_x]\,dS
+\label{eq:term_3_gauss}
+\end{equation}
+
+На границе металл/вакуум ($x = -A$):
+\begin{itemize}
+    \item В металле: $\rho \neq 0$ (свободные заряды в скин-слое)
+    \item В вакууме: $\rho = 0$
+\end{itemize}
+
+Скачок:
+
+\begin{equation}
+[\varphi\rho] = \varphi_{\text{metal}}\sigma_{\text{surf}} - 0 = \varphi(-A)\sigma(-A)
+\label{eq:jump_phi_rho}
+\end{equation}
+
+где $\sigma$ --- поверхностная плотность заряда.
+
+\subsubsection{Сила, соответствующая члену $I_3$}
+
+\begin{equation}
+\boxed{
+f_x^{(3)} = \varphi_{\text{surf}}\sigma_{\text{surf}}
+}
+\label{eq:force_term_3}
+\end{equation}
+
+Это \textbf{сила Кулона на свободные поверхностные заряды}.
+
+}% modblock
+
+
+
+
 \textbf{7.} Это выражение для $\delta W$ должно совпадать с выражением
 (32.4) при произвольной зависимости смещения $\mathbf{q}$ от координат
 точки. Отсюда следует равенство выражений, на которые множится
@@ -1053,7 +1239,8 @@ $\mathbf{q}$ в обоих интегралах:
                - \frac{1}{8\pi}E^2\operatorname{grad}\varepsilon
                + \frac{1}{8\pi}\operatorname{grad}\!\left(
                    E^2\frac{\partial\varepsilon}{\partial\tau}\tau
-                 \right).
+                 \right)
+               \,\modmath{ + \, (\vec{P}\cdot\nabla)\vec E}.
     \tag{32.10}
 \end{equation}
 Эта формула и является искомым выражением для плотности пондеромоторных
@@ -1183,11 +1370,8 @@ $$
     \mathbf{F} = \int_V \mathbf{f}\,dV.
     \tag{33.1}
 \end{equation}
-С другой стороны, если объёмные силы вообще могут быть сведены
-
-% стр. 157 (правая колонка)
-
-к натяжениям, то той же величине должна равняться и совокупность
+С другой стороны, \redtext{если объёмные силы вообще могут быть сведены
+к натяжениям}, то той же величине должна равняться и совокупность
 натяжений, действующих \textit{извне} на замкнутую поверхность $S$.
 
 Сила натяжения, испытываемая каким-либо элементом поверхности
@@ -1199,7 +1383,10 @@ $dS$ и зависит не только от положения этого эл
 В этом выражается тот факт, что на противоположные стороны
 произвольного элемента поверхности $dS$\,\footnote{За исключением
 элементов поверхностей разрыва, которых мы в этом параграфе не
-рассматриваем.} всегда действуют взаимно уравновешивающиеся равные
+рассматриваем. \modtext{В пункте 5 параграфа 34 И.Е. Тамм рассмотрел вопрос определения сил, приложенных к поверхностям разрыва электрического поля. Физический смысл полученной Таммом формулы (34.8) это сила приложенная к поверхностным электрическим зарядам, скопившимся на поверхностях разрыва. Здесь я во-первых могу заметить, что сила именно к поверхностным зарядам была выброшена Таммом из общей формулы (32.10) о чем был произведен соответствующий анализ. А во-вторых в случае динамических полей внутри резонатора MenDrive можно наблюдать следующую ситуацию, когда плотность поверхностных зарядов на границе материала стенки резонатора и вакуума внутри резонатора равна нулю. Однако тензор на этой поверхности испытывает резкий скачёк, если его считать в точке коррдинаты, поверхности разрыва, но для полей внутри материала или для полей внутри вакуума. Таким образом получается ситуация, когда на противоположные стороны
+произвольного элемента поверхности разрыва $dS$ действуют не уравновешивающие друг друга неравные
+и противоположные натяжения. Этот случай не рассмотрен не только в данном параграфе, но и вообще во всей книге Тамма, включая важный для теории параграф 105.}
+} всегда действуют взаимно уравновешивающиеся равные
 и противоположные натяжения.
 
 Обозначим через $\mathbf{T}_n$ силу, действующую извне на единицу
@@ -1468,15 +1655,17 @@ $T_{zn}\,dS$ силы $\mathbf{T}_n\,dS$, действующей на произ
 \textbf{1.} Обращаемся к поставленной в начале предыдущего параграфа
 задаче сведения пондеромоторных сил электрического поля к натяжениям.
 С этой целью удобно разложить общее выражение (32.10) для объёмной
-плотности этих сил на два слагаемых:
+плотности этих сил на \redtext{два} \modtext{три} слагаемых:
 \begin{equation}
-    \mathbf{f} = \mathbf{f}' + \mathbf{f}'',
+    \mathbf{f} = \mathbf{f}' + \mathbf{f}'' \modmath{+ \mathbf{f}'''},
     \quad
     \mathbf{f}' = \rho\mathbf{E} - \frac{1}{8\pi}E^2\operatorname{grad}\varepsilon,
     \quad
     \mathbf{f}'' = \frac{1}{8\pi}\operatorname{grad}\!\left(
         E^2\frac{\partial\varepsilon}{\partial\tau}\tau
-    \right).
+    \right),
+    \quad
+    \modmath{\mathbf{f}''' = \left(\vec{P}\cdot\nabla\right)\vec E}.
     \tag{34.1}
 \end{equation}
 Наша задача будет, очевидно, разрешена, если мы найдём такой тензор
@@ -1503,11 +1692,14 @@ $$
     + \frac{\partial}{\partial z}(E_x D_z)
     - \mathbf{D}\nabla\cdot E_x.
 $$
-Далее, воспользовавшись (32.2), имея в виду (7.6), получаем:
+Далее, воспользовавшись $\mathbf{E}\nabla\cdot\mathbf{E} = \frac{1}{2}\cdot\nabla E^2 \,\modmath{- \left[\vec{E} \times rot \vec{E}\right]}$ (32.2), имея в виду (7.6), получаем:
+
 $$
     \mathbf{D}\nabla\cdot E_x = \varepsilon\mathbf{E}\nabla\cdot E_x
-    = \frac{\varepsilon}{2}\frac{\partial}{\partial x}E^2,
+    = \frac{\varepsilon}{2}\frac{\partial}{\partial x}E^2
+    \,\modmath{- \,\varepsilon \left[\vec{E} \times rot \vec{E}\right]_x},
 $$
+
 и, следовательно,
 $$
     -\frac{1}{4\pi}\mathbf{D}\nabla\cdot E_x
@@ -1516,7 +1708,9 @@ $$
         \varepsilon\frac{\partial E^2}{\partial x}
       + E^2\frac{\partial\varepsilon}{\partial x}
     \right\}
-    = -\frac{1}{8\pi}\frac{\partial(\varepsilon E^2)}{\partial x}.
+    \,\modmath{+ \,\frac{\varepsilon}{4\pi} \left[\vec{E} \times rot \vec{E}\right]_x}
+    = -\frac{1}{8\pi}\frac{\partial(\varepsilon E^2)}{\partial x}
+    \,\modmath{+ \,\frac{\varepsilon}{4\pi} \left[\vec{E} \times rot \vec{E}\right]_x}.
 $$
 Таким образом,
 $$
@@ -1524,7 +1718,8 @@ $$
         \frac{\partial}{\partial x}\!\left(E_x D_x - \frac{\varepsilon E^2}{2}\right)
       + \frac{\partial}{\partial y}(E_x D_y)
       + \frac{\partial}{\partial z}(E_x D_z)
-    \right\}.
+    \right\}
+    \,\modmath{+ \,\frac{1}{4\pi} \left[\vec{D} \times rot \vec{E}\right]_x}.
 $$
 Уравнение это совпадёт по форме с (33.7), если положить:
 $$
@@ -1610,9 +1805,13 @@ $\left(\text{ибо }\frac{\partial\varepsilon}{\partial\tau}\tau\text{ одно
 и (33.9), равнодействующая $\mathbf{F}$ и момент $\mathbf{N}$ этих сил
 однозначно определяются значениями тензора $\mathbf{T}$
 \textit{с внешней стороны поверхности тела} $S$. Стрикционные натяжения
-$\mathbf{T}''$ в вакууме, очевидно, равны нулю (ибо в вакууме
+$\mathbf{T}''$ в вакууме, очевидно, равны нулю \redtext{(ибо в вакууме
 $\frac{\partial\varepsilon}{\partial\tau}\tau$ нужно считать равным
-нулю). Поэтому, если тело $A$ окружено вакуумом, то стрикционные силы
+нулю)} \footnote{а ведь в этом можно усомниться, если рассмотреть
+зависимость диэлектрической проницаемости вакуума, от гравитационого потенциала,
+в рамках эфирной теории связанного с $\tau$ }.
+
+Поэтому, если тело $A$ окружено вакуумом, то стрикционные силы
 $\mathbf{f}''$ и натяжения $\mathbf{T}''$ влияют только на распределение
 сил по объёму тела $A$\,\footnote{Этим распределением определяются
 возникающие в теле под воздействием электрического поля упругие
@@ -1767,16 +1966,31 @@ $\dfrac{\varepsilon - \frac{\partial\varepsilon}{\partial\tau}\tau}{8\pi}E^2$.}.
 
 % стр. 166 (левая колонка)
 
-Конечно, с точки зрения современной теории, отрицающей существование
-материального эфира (в механистическом смысле этого слова),
+Конечно, с точки зрения современной теории, \redtext{отрицающей существование
+материального эфира} (в механистическом смысле этого слова),
 пондеромоторные силы электромагнитного поля могут быть приложены лишь
 к электрическим зарядам и к материальным телам, несущим эти заряды,
 или, точнее, состоящим из электрических зарядов (электронов и атомных
-ядер). Однако, по доказанному, результирующая сила, действующая на
+ядер). \redtext{Однако, по доказанному, результирующая сила, действующая на
 тела, находящиеся в произвольном объёме $V$, может быть формально
 представлена в виде суммы натяжений, «испытываемых» поверхностью этого
 объёма $S$ (могущей, конечно, проходить как в вакууме, так и
-в материальных телах). Следовательно, мы можем оперировать с этими
+в материальных телах)}.\footnote{\modtext{Это примечательное рассуждение
+не срабатывает для переменного поля в MenDrive если отдельно рассматривать
+силу действующую на объём левого проводника или на объём правого проводника.
+Если одну из поверхностей объёма интегрирования расположить в вакуумном промежутке
+резонатора, то изменяя координату этой поверхности, мы увидим, что сумма натяжений,
+«испытываемых» поверхностью этого
+объёма $S$ в вакууме именяется и зависит от координаты этой поверхности внутри
+вакуумного промежутка. Объяснить данное расхождение между поверхностным натяжением
+и пондеромоторными силами одним лишь \textit{«изменением количества движения
+электромагнитного поля в этом объёме»} не получается, если рассматривать
+один лишь вектор Пойнтинга, как это делает И.Е.Тамм в параграфе 105.
+И только лишь \textit{«с точки зрения механистической теории поля»},
+можно объяснить это расхождение, как следствие \textit{«силы упругости,
+возникающие в эфире»} внутри вакуумного промежутка. }}
+
+Следовательно, мы можем оперировать с этими
 натяжениями, будучи уверенными в правильности окончательных результатов.
 Принципиальное же значение понятия натяжений электромагнитного поля
 выяснится в §\,105, в котором мы убедимся, что в \textit{переменных}
@@ -1959,44 +2173,44 @@ $$
 
 % стр. 386 (левая колонка — продолжение §82)
 
-где $\overline{R^3}$ есть средний квадрат расстояния электронов от
-ядра атома и, стало быть,
-$$
-    w_{\text{кин}} = \frac{\overline{N}Ze^2\overline{R^3}}{12mc^2}H^2.
-$$
+% где $\overline{R^3}$ есть средний квадрат расстояния электронов от
+% ядра атома и, стало быть,
+% $$
+%     w_{\text{кин}} = \frac{\overline{N}Ze^2\overline{R^3}}{12mc^2}H^2.
+% $$
 
-Внося сюда выражение (69.3) для вектора намагничения диамагнетиков,
-получаем:
-$$
-    w_{\text{кин}} = -\frac{1}{2}\mathbf{I}\mathbf{H}.
-$$
+% Внося сюда выражение (69.3) для вектора намагничения диамагнетиков,
+% получаем:
+% $$
+%     w_{\text{кин}} = -\frac{1}{2}\mathbf{I}\mathbf{H}.
+% $$
 
-Вспомним, наконец, что при рассмотрении намагничения диа- и
-парамагнетиков в §§\,70 и 71 мы считали, что на атомы магнетика
-действует поле $\mathbf{H}$, тогда как правильнее было бы считать,
-что на них действует поле $\overline{H}_{\text{микро}} = \mathbf{B}$.
-Сделав соответствующую замену в последнем уравнении, получаем
-окончательно:
-\begin{equation}
-    w_{\text{кин}} = -\frac{1}{2}\mathbf{I}\mathbf{B}.
-    \tag{82.3}
-\end{equation}
+% Вспомним, наконец, что при рассмотрении намагничения диа- и
+% парамагнетиков в §§\,70 и 71 мы считали, что на атомы магнетика
+% действует поле $\mathbf{H}$, тогда как правильнее было бы считать,
+% что на них действует поле $\overline{H}_{\text{микро}} = \mathbf{B}$.
+% Сделав соответствующую замену в последнем уравнении, получаем
+% окончательно:
+% \begin{equation}
+%     w_{\text{кин}} = -\frac{1}{2}\mathbf{I}\mathbf{B}.
+%     \tag{82.3}
+% \end{equation}
 
-Сумма этой плотности кинетической энергии прецессии электронов и
-приближённого выражения (82.1) для плотности энергии магнитного поля,
-в собственном смысле этого слова\,\footnote{В этом выражении не
-учитывается разница между $(\overline{H}_{\text{микро}})^2$ и
-$\overline{H^2_{\text{микро}}}$.}, равна [см.\ уравнение (62.5)]:
-$$
-    w = \frac{1}{8\pi}B^2 - \frac{1}{2}\mathbf{I}\mathbf{B}
-      = \frac{1}{8\pi}B(B - 4\pi I) = \frac{1}{8\pi}\mathbf{B}\mathbf{H},
-$$
-т.\,е., как и требовалось доказать, равна макроскопической плотности
-магнитной энергии (82.2).
+% Сумма этой плотности кинетической энергии прецессии электронов и
+% приближённого выражения (82.1) для плотности энергии магнитного поля,
+% в собственном смысле этого слова\,\footnote{В этом выражении не
+% учитывается разница между $(\overline{H}_{\text{микро}})^2$ и
+% $\overline{H^2_{\text{микро}}}$.}, равна [см.\ уравнение (62.5)]:
+% $$
+%     w = \frac{1}{8\pi}B^2 - \frac{1}{2}\mathbf{I}\mathbf{B}
+%       = \frac{1}{8\pi}B(B - 4\pi I) = \frac{1}{8\pi}\mathbf{B}\mathbf{H},
+% $$
+% т.\,е., как и требовалось доказать, равна макроскопической плотности
+% магнитной энергии (82.2).
 
-\bigskip
-\noindent\textbf{\S\,83. Определение пондеромоторных сил магнитного поля
-из выражения энергии.}
+% \bigskip
+% \noindent\textbf{\S\,83. Определение пондеромоторных сил магнитного поля
+% из выражения энергии.}
 
 \medskip
 \textbf{1.} В §\,66 мы определили пондеромоторные силы, испытываемые
@@ -2044,10 +2258,10 @@ $$
 
 Все дальнейшие выкладки весьма аналогичны вычислениям, проведённым
 нами при определении пондеромоторных сил электрического поля.
-В частности, мы предположим, что поверхностей разрыва в поле нет и
+В частности, \redtext{мы предположим, что поверхностей разрыва в поле нет и
 что объём интегрирования охватывает полное поле, так что все
 поверхностные интегралы, с которыми мы будем встречаться в дальнейшем,
-обратятся в нуль.
+обратятся в нуль}.
 
 \textbf{2.} Изменение энергии поля при произвольном бесконечно малом
 перемещении $\mathbf{q}$ находящихся в нём тел равно:
@@ -2098,12 +2312,43 @@ $$
 Гаусса (17*), получаем:
 $$
     \delta W_1 = \frac{1}{8\pi}\int B^2\delta\!\left(\frac{1}{\mu}\right)dV
-               + \frac{1}{4\pi}\oint[\delta\mathbf{A}\cdot\mathbf{H}]_n\,dS
+               \redmath{\,+\,\frac{1}{4\pi}\oint[\delta\mathbf{A}\cdot\mathbf{H}]_n\,dS}
                + \frac{1}{c}\int\mathbf{j}\cdot\delta\mathbf{A}\,dV.
 $$
 
-Согласно условиям, формулированным в начале параграфа, поверхностный
-интеграл в этом выражении обращается в нуль. Наконец, ввиду того, что
+\redtext{Согласно условиям, формулированным в начале параграфа, поверхностный
+интеграл в этом выражении обращается в нуль}.
+\footnote{
+\modblock{
+\textbf{Для MenDrive:} этот член не обращается в ноль из-за внутренних
+границ $x = \pm a$. При виртуальном перемещении $\delta\mathbf{q} = \delta q_x\hat{x}$:
+
+\begin{equation}
+\frac{1}{4\pi}\oint[\delta\mathbf{A}\cdot\mathbf{H}]_n\,dS =
+\frac{\delta q_x}{4\pi}\int_{S}\left[\frac{\partial A_x}{\partial x}H_x\right]\,dS
+\label{eq:surface_A_H}
+\end{equation}
+
+Что соответствует силе на нормальную компоненту намагниченности:
+
+\begin{equation}
+f_x^{(A)} = \left[(\vec{M}\cdot\nabla)H_x\right]_{\text{граница}} =
+-\frac{\mu-1}{8\pi}\frac{\partial}{\partial x}|H_x|^2
+\label{eq:force_from_A}
+\end{equation}
+
+\textbf{Соответствующий тензор:} конвективный тензор натяжений:
+
+\begin{equation}
+T_{xx}^{\text{(conv)}} = -\frac{\mu-1}{8\pi}|H_x|^2
+\label{eq:convective_tensor_from_A}
+\end{equation}
+
+который был введён в разделе~\ref{sec:modified_tensor} для согласования
+поверхностного и объёмного методов расчёта силы.
+}%modblock
+}%footnote
+Наконец, ввиду того, что
 $\delta W_1 = \delta W_2$, приращение энергии $\delta W$ можно, очевидно,
 представить также в следующей форме:
 $$
@@ -2198,13 +2443,43 @@ $$
 Далее,
 $$
     B^2\frac{\partial}{\partial\tau}\frac{1}{\mu}\tau\,\operatorname{div}\mathbf{q}
-    = \operatorname{div}\!\left(B^2\frac{\partial}{\partial\tau}\frac{1}{\mu}\tau\mathbf{q}\right)
+    = \redmath{\operatorname{div}\!\left(B^2\frac{\partial}{\partial\tau}\frac{1}{\mu}\tau\mathbf{q}\right)}
     - \mathbf{q}\operatorname{grad}\!\left(B^2\frac{\partial}{\partial\tau}\frac{1}{\mu}\tau\right).
 $$
 
 Внося эти значения в выражение для $\delta W$ и принимая во внимание,
 что объёмный интеграл дивергенции может быть преобразован в интеграл
-по поверхности и поэтому, согласно нашему условию, обращается в нуль,
+по поверхности \redtext{и поэтому, согласно нашему условию, обращается в нуль},
+\footnote{
+\modblock{
+% \subsection{Отброшенный стрикционный интеграл в §83 Тамма}
+\textbf{Для MenDrive:} этот член не обращается в ноль из-за внутренних
+границ $x = \pm a$. При виртуальном перемещении $\delta\mathbf{q} = \delta q_x\hat{x}$:
+
+\begin{equation}
+\int \operatorname{div}\!\left(B^2\frac{\partial}{\partial\tau}\frac{1}{\mu}\tau\mathbf{q}\right) dV =
+\delta q_x \int_{S}\left[B^2\frac{\partial}{\partial\tau}\frac{1}{\mu}\tau\right] dS
+\label{eq:magnetic_striction_surface}
+\end{equation}
+
+Что соответствует \textbf{магнитной стрикционной силе} на границе:
+
+\begin{equation}
+f_x^{(\text{striction})} = -\left[H^2\frac{\partial\mu}{\partial\tau}\tau\right]_{\text{граница}}
+\label{eq:striction_force}
+\end{equation}
+
+\textbf{Соответствующий тензор:} стрикционный тензор натяжений:
+
+\begin{equation}
+T_{xx}^{(\text{striction})} = -\frac{1}{8\pi}H^2\frac{\partial\mu}{\partial\tau}\tau
+\label{eq:striction_tensor}
+\end{equation}
+
+который должен быть добавлен к конвективному тензору для полного
+учёта сил на границе раздела сред.
+} % modblock
+} % footnote
 получаем:
 $$
     \delta W = \int\mathbf{q}\left\{
@@ -2343,6 +2618,7 @@ $\mathbf{f}''$ плотности сил $\mathbf{f}^{(2)}$ сказываетс
 \begin{equation}
     \mathbf{f} = \mathbf{f}' + \mathbf{f}'', \quad
     \mathbf{f}' = \frac{1}{c}[\mathbf{j}\mathbf{B}]
+                \modmath{+\frac{1}{c}[\mathbf{j_{\text{см}}}\mathbf{B}]}
                - \frac{1}{8\pi}H^2\operatorname{grad}\mu, \quad
     \mathbf{f}'' = \frac{1}{8\pi}\operatorname{grad}\!\left(
         H^2\tau\frac{\partial\mu}{\partial\tau}
@@ -2856,9 +3132,14 @@ $$
 
 \textbf{1.} В §§\,34 и 84 мы нашли выражение тензора натяжений
 $\mathbf{T}$ в стационарных электрическом и магнитном полях. Покажем
-теперь, что если допустить применимость этих выражений и в случае
-произвольного переменного электромагнитного поля, то вытекающие из
-этого допущения выводы будут находиться в полном соответствии с
+теперь, что \redtext{если допустить применимость этих выражений и в случае
+произвольного переменного электромагнитного поля}
+\footnote{\modtext{это допущение является недоказанным и неверным.
+Кроме того, что при выводе тензора динамические компоненты пондеромоторной
+силы не рассматривались И.Е.Таммом, также были отброшены:
+1) конвективный, 2) поверхностный стрикционный
+и 3) поверхностно-зарядовый интегралы}},
+то вытекающие из этого допущения выводы будут находиться в полном соответствии с
 результатами настоящей главы.
 
 % стр. 507 (правая колонка)

@@ -11,7 +11,7 @@
 \usepackage{float}
 \usepackage{subcaption} % если нужны подрисуночные подписи
 
-\geometry{left=1.5cm, right=1.5cm, top=1.5cm, bottom=1.5cm}
+\geometry{left=1.25cm, right=1.25cm, top=1.25cm, bottom=1.25cm}
 
 % ============================================================
 % ЦВЕТОВОЕ ВЫДЕЛЕНИЕ МОДИФИКАЦИЙ
@@ -612,10 +612,8 @@ $\mathbf{E}$ \textit{независимо от направления этого
 $\mathbf{q}$ находящихся в поле тел (проводников и диэлектриков);
 конечно, перемещение различных точек этих тел может быть различным, так
 что $\mathbf{q}$ является произвольной, но непрерывной функцией точки.
-При соблюдении условий, рассмотренных в §\,18, это
-
+При соблюдении условий, рассмотренных в §\,18, это 
 % стр. 151 (правая колонка)
-
 изменение энергии должно быть равно взятой с обратным знаком работе $A$
 пондеромоторных сил поля [уравнение (18.1)]:
 $$
@@ -1355,6 +1353,253 @@ $$
 
 
 \modblock{
+
+Учитывая тот факт, что метод виртуальных перемещений применённый И.Е.Таммом в 32 параграфе применим лишь в статике, но не в динамике, здесь считаю уместным дать вывод плотности пондеромоторных сил методом наименьшего действия Лагранжа-Гамильтона.
+
+\subsection{Действие и лагранжиан для дуально-симметричной системы}
+
+\subsubsection{Полное действие системы}
+
+Действие для системы с электрическими и магнитными зарядами записывается как:
+\begin{equation}
+S = S_{\text{частицы}} + S_{\text{поле}} + S_{\text{взаимодействие}}
+\label{eq:total_action}
+\end{equation}
+
+\textbf{Действие свободных частиц:}
+\begin{equation}
+S_{\text{частицы}} = -\sum_i m_i c^2 \int d\tau_i = -\sum_i m_i c^2 \int \sqrt{1 - \frac{v_i^2}{c^2}} \, dt
+\label{eq:action_particles}
+\end{equation}
+
+\textbf{Действие свободного поля:}
+\begin{equation}
+S_{\text{поле}} = -\frac{1}{16\pi} \int d^4x \left( F^{(H)}_{\mu\nu} F_H^{\mu\nu} - F^{(E)}_{\mu\nu} F_E^{\mu\nu} \right)
+\label{eq:action_field}
+\end{equation}
+где тензоры напряжённости:
+\begin{align}
+F^{(H)}_{\mu\nu} &= \partial_\mu A^{(H)}_\nu - \partial_\nu A^{(H)}_\mu \\
+F^{(E)}_{\mu\nu} &= \partial_\mu A^{(E)}_\nu - \partial_\nu A^{(E)}_\mu
+\end{align}
+
+В трёхмерных обозначениях:
+\begin{equation}
+S_{\text{поле}} = \frac{1}{8\pi} \int d^4x \left( |\vec{E}|^2 - |\vec{H}|^2 \right)
+\label{eq:action_field_3d}
+\end{equation}
+
+\textbf{Действие взаимодействия:}
+\begin{equation}
+S_{\text{взаимодействие}} = \sum_i \frac{e_i}{c} \int A^{(H)}_\mu(x_i) \, dx^\mu_i + \sum_i \frac{m_i}{c} \int A^{(E)}_\mu(x_i) \, dx^\mu_i
+\label{eq:action_interaction}
+\end{equation}
+
+Введя скорость $\vec{v}_i = d\vec{r}_i/dt$:
+\begin{equation}
+S_{\text{взаимодействие}} = \int dt \sum_i \left[ \frac{e_i}{c} \left( \vec{A}_H(\vec{r}_i) \cdot \vec{v}_i - \phi(\vec{r}_i) \right) + \frac{m_i}{c} \left( \vec{A}_E(\vec{r}_i) \cdot \vec{v}_i - \psi(\vec{r}_i) \right) \right]
+\label{eq:action_interaction_explicit}
+\end{equation}
+
+
+} % modblock
+
+\modblock{
+
+\subsubsection{Лагранжиан для диполя с центром $\vec{R}(t)$}
+
+Переходим от дискретных частиц к дипольному приближению. Для системы частиц с центром $\vec{R}(t)$:
+\begin{equation}
+\vec{r}_i(t) = \vec{R}(t) + \vec{\rho}_i(t)
+\label{eq:dipole_decomposition}
+\end{equation}
+где $\vec{\rho}_i$ --- координата частицы относительно центра диполя.
+
+Разложение потенциалов в ряд Тейлора:
+\begin{align}
+\phi(\vec{r}_i) &= \phi(\vec{R}) + \vec{\rho}_i \cdot \nabla\phi(\vec{R}) + \mathcal{O}(\rho^2) \\
+\vec{A}_H(\vec{r}_i) &= \vec{A}_H(\vec{R}) + (\vec{\rho}_i \cdot \nabla)\vec{A}_H(\vec{R}) + \mathcal{O}(\rho^2)
+\end{align}
+
+} % modblock
+
+\modblock{
+
+\textbf{Определение дипольных моментов:}
+
+%\begin{table}[h]
+%\centering
+%\caption{Дуально-симметричные определения}
+%\label{tab:dipole_definitions}
+%\begin{tabular}{@{}ll@{}}
+%\toprule
+%\textbf{Электрические} & \textbf{Магнитные} \\
+%\midrule
+
+$Q_e = \sum_i e_i$ , $Q_m = \sum_i m_i$
+
+$\vec{p}_e = \sum_i e_i \vec{\rho}_i$, $\vec{p}_m = \sum_i m_i \vec{\rho}_i$ 
+
+$\vec{J}_e = \sum_i e_i \vec{v}_i$, $\vec{J}_m = \sum_i m_i \vec{v}_i$
+
+$\frac{d\vec{p}_e}{dt} = \sum_i e_i \frac{d\vec{\rho}_i}{dt}$, $\frac{d\vec{p}_m}{dt} = \sum_i m_i \frac{d\vec{\rho}_i}{dt}$
+
+%\bottomrule
+%\end{tabular}
+%\end{table}
+
+} % modblock
+
+\modblock{
+
+\textbf{Полный лагранжиан диполя:}
+
+Подставляя разложения в (\ref{eq:action_interaction_explicit}) и группируя члены:
+
+\begin{equation}
+\boxed{
+\begin{aligned}
+L_{\text{диполь}} = & -Mc^2\sqrt{1 - \frac{V^2}{c^2}} \\
+& + \frac{Q_e}{c}\vec{V}\cdot\vec{A}_H(\vec{R}) + \frac{Q_m}{c}\vec{V}\cdot\vec{A}_E(\vec{R}) \\
+& - Q_e\phi(\vec{R}) - Q_m\psi(\vec{R}) \\
+& + \vec{p}_e\cdot\vec{E}(\vec{R}) + \vec{p}_m\cdot\vec{H}(\vec{R}) \\
+& + \frac{1}{c}\frac{d\vec{p}_e}{dt}\cdot\vec{A}_H(\vec{R}) - \frac{1}{c}\frac{d\vec{p}_m}{dt}\cdot\vec{A}_E(\vec{R})
+\end{aligned}
+}
+\label{eq:dipole_lagrangian_full}
+\end{equation}
+
+где $\vec{V} = d\vec{R}/dt$ --- скорость центра диполя.
+
+\textbf{Важно:} знак минус перед последним членом следует из дуальной симметрии уравнений Максвелла и обеспечивает правильные знаки в динамических силах.
+
+} % modblock
+
+\modblock{
+
+\subsubsection{Уравнения Эйлера-Лагранжа}
+
+Уравнения Эйлера-Лагранжа для координаты центра диполя $\vec{R}(t)$:
+\begin{equation}
+\frac{d}{dt}\left(\frac{\partial L}{\partial \vec{V}}\right) - \frac{\partial L}{\partial \vec{R}} = 0
+\label{eq:euler_lagrange}
+\end{equation}
+
+\textbf{Вычисление $\frac{\partial L}{\partial \vec{V}}$:}
+\begin{align}
+\frac{\partial L}{\partial \vec{V}} &= \frac{M\vec{V}}{\sqrt{1 - V^2/c^2}} + \frac{Q_e}{c}\vec{A}_H + \frac{Q_m}{c}\vec{A}_E
+\label{eq:dL_dV}
+\end{align}
+
+\textbf{Вычисление $\frac{d}{dt}\left(\frac{\partial L}{\partial \vec{V}}\right)$:}
+\begin{align}
+\frac{d}{dt}\left(\frac{\partial L}{\partial \vec{V}}\right) &= \frac{d\vec{P}_{\text{мех}}}{dt} + \frac{Q_e}{c}\left(\frac{\partial\vec{A}_H}{\partial t} + (\vec{V}\cdot\nabla)\vec{A}_H\right) + \frac{Q_m}{c}\left(\frac{\partial\vec{A}_E}{\partial t} + (\vec{V}\cdot\nabla)\vec{A}_E\right)
+\label{eq:d_dL_dV}
+\end{align}
+
+\textbf{Вычисление $\frac{\partial L}{\partial \vec{R}}$:}
+\begin{align}
+\frac{\partial L}{\partial \vec{R}} &= \frac{Q_e}{c}\nabla(\vec{V}\cdot\vec{A}_H) + \frac{Q_m}{c}\nabla(\vec{V}\cdot\vec{A}_E) \nonumber \\
+&\quad - Q_e\nabla\phi - Q_m\nabla\psi \nonumber \\
+&\quad + \nabla(\vec{p}_e\cdot\vec{E}) + \nabla(\vec{p}_m\cdot\vec{H}) \nonumber \\
+&\quad + \frac{1}{c}\frac{d\vec{p}_e}{dt}\cdot\nabla\vec{A}_H - \frac{1}{c}\frac{d\vec{p}_m}{dt}\cdot\nabla\vec{A}_E
+\label{eq:dL_dR}
+\end{align}
+
+Используем векторное тождество:
+\begin{equation}
+\nabla(\vec{V}\cdot\vec{A}) = (\vec{V}\cdot\nabla)\vec{A} + \vec{V}\times(\nabla\times\vec{A})
+\label{eq:vector_identity}
+\end{equation}
+
+} % modblock
+
+\modblock{
+
+\subsubsection{Окончательное выражение для силы}
+
+Подставляя (\ref{eq:d_dL_dV}) и (\ref{eq:dL_dR}) в (\ref{eq:euler_lagrange}) и используя определения полей:
+\begin{align}
+\vec{E} &= -\nabla\phi - \frac{1}{c}\frac{\partial\vec{A}_H}{\partial t} \\
+\vec{H} &= -\nabla\psi - \frac{1}{c}\frac{\partial\vec{A}_E}{\partial t} \\
+\vec{B} &= \nabla\times\vec{A}_H \\
+\vec{D} &= \nabla\times\vec{A}_E
+\end{align}
+
+Получаем силу Лоренца для дуально-симметричной системы:
+
+\begin{equation}
+\boxed{
+\begin{aligned}
+\vec{F} = & Q_e\left(\vec{E} + \frac{1}{c}\vec{V}\times\vec{B}\right) + Q_m\left(\vec{H} - \frac{1}{c}\vec{V}\times\vec{D}\right) \\
+& + (\vec{p}_e\cdot\nabla)\vec{E} + (\vec{p}_m\cdot\nabla)\vec{H} \\
+& + \vec{p}_e\times(\nabla\times\vec{E}) + \vec{p}_m\times(\nabla\times\vec{H}) \\
+& + \frac{1}{c}\left[\frac{d\vec{p}_e}{dt}\times\vec{B}\right] - \frac{1}{c}\left[\frac{d\vec{p}_m}{dt}\times\vec{D}\right]
+\end{aligned}
+}
+\label{eq:final_force}
+\end{equation}
+
+} % modblock
+
+\modblock{
+
+\subsection{Переход к плотности сил для сплошной среды}
+
+\subsubsection{Плотность силы}
+
+Переходим от дискретных диполей к сплошной среде:
+\begin{align}
+Q_e &\to \rho_e dV, \quad \vec{p}_e \to \vec{P} dV \\
+Q_m &\to \rho_m dV, \quad \vec{p}_m \to \vec{M} dV \\
+\vec{J}_e &\to \vec{j}_e dV, \quad \vec{J}_m \to \vec{j}_m dV
+\end{align}
+
+Плотность силы:
+\begin{equation}
+\boxed{
+\begin{aligned}
+\vec{f} = & \rho_e\vec{E} + \frac{1}{c}[\vec{j}_e\times\vec{B}] + \rho_m\vec{H} - \frac{1}{c}[\vec{j}_m\times\vec{D}] \\
+& + (\vec{P}\cdot\nabla)\vec{E} + (\vec{M}\cdot\nabla)\vec{H} \\
+& + \vec{P}\times(\nabla\times\vec{E}) + \vec{M}\times(\nabla\times\vec{H}) \\
+& + \frac{1}{c}\left[\frac{\partial\vec{P}}{\partial t}\times\vec{B}\right] - \frac{1}{c}\left[\frac{\partial\vec{M}}{\partial t}\times\vec{D}\right]
+\end{aligned}
+}
+\label{eq:force_density_final}
+\end{equation}
+
+} % modblock
+
+\modblock{
+
+%\subsubsection{Сравнение с формулой Тамма (18.9)}
+
+%\begin{table}[h]
+%\centering
+%\caption{Сравнение компонент силы}
+%\label{tab:force_comparison}
+%\begin{tabular}{@{}lll@{}}
+%\toprule
+%\textbf{Компонента} & \textbf{Из действия} & \textbf{У Тамма (18.9)} \\
+%\midrule
+Лоренц (e): $\rho_e\vec{E} + \frac{1}{c}[\vec{j}_e\times\vec{B}]$, $\rho_e\vec{E} + \frac{1}{c}[\vec{j}_e\times\vec{B}]$
+
+Лоренц (m): $\rho_m\vec{H} - \frac{1}{c}[\vec{j}_m\times\vec{D}]$, $\rho_m\vec{H} + \frac{1}{c}[\vec{j}_m\times\vec{D}]$
+
+Конвективная (e): $(\vec{P}\cdot\nabla)\vec{E}$, $(\vec{P}\cdot\nabla)\vec{E}$
+
+Конвективная (m): $(\vec{M}\cdot\nabla)\vec{H}$, $(\vec{M}\cdot\nabla)\vec{H}$
+
+Абрагам (e): $\vec{P}\times(\nabla\times\vec{E}) + \frac{1}{c}\left[\frac{\partial\vec{P}}{\partial t}\times\vec{B}\right]$, $\frac{1}{c}\left[\frac{\partial\vec{P}}{\partial t}\times\vec{B}\right]$
+
+Абрагам (m): $\vec{M}\times(\nabla\times\vec{H}) - \frac{1}{c}\left[\frac{\partial\vec{M}}{\partial t}\times\vec{D}\right]$, $-\frac{1}{c}\left[\frac{\partial\vec{M}}{\partial t}\times\vec{D}\right]$
+
+%\bottomrule
+%\end{tabular}
+%\end{table}
+
+%\textbf{Ключевое наблюдение:} знак минус перед магнитным динамическим членом подтверждён из принципа наименьшего действия!
+
 }% modblock
 
 \section*{\S\,33. Сведение объёмных сил к натяжениям\,\footnote{Этот
@@ -1636,8 +1881,13 @@ $$
 Тензоры, компоненты которых удовлетворяют соотношениям (33.10),
 называются \textit{симметричными}.
 
+Таким образом, необходимые и достаточные условиятого, чтобы
+система объёмных сил и система натяжений были эквивалентны друг
+другу как в отношении равнодействующей сил, приложенных к
+произвольному объёму, так и в отношении момента этих сил, сводится,
+во-первых, к соотношениям (33.7), и, во-вторых, к симметрии тензора
+натяжений. Если же тензор натяжений не симметричен, то система
 % стр. 161 (правая колонка)
-
 натяжений не может быть заменена эквивалентным распределением
 объёмных сил.
 
@@ -1678,28 +1928,28 @@ $T_{zn}\,dS$ силы $\mathbf{T}_n\,dS$, действующей на произ
 \footnote{
 \modblock{
 %\modtext
-Третье слагаемое соответствует конвективному тензору натяжения, (не рассмотренному И.Е.Таммом), который нужно рассматривать вместе с тензором Максвелла и стрикционным тензором. Рассмотрим конвективную компоненту ${\mathbf{f}'''}_x$ силы:
+Третье слагаемое соответствует конвективно-роторному тензору натяжения, (не рассмотренному И.Е.Таммом), который нужно рассматривать вместе с тензором Максвелла и стрикционным тензором. Рассмотрим конвективно-роторную компоненту ${\mathbf{f}'''}$ силы:
 \begin{equation}
-{\mathbf{f}'''}_x = (\vec{P}\cdot\nabla)E_x
+{\mathbf{f}'''} = (\vec{P}\cdot\nabla)\vec E\,+\, \left[\vec{P} \times rot \vec{E}\right]
 \end{equation}
 
 Подставляем $\vec{P} = \frac{\hat{\epsilon}-\hat{I}}{4\pi}\vec{E}$ в случае диагональности тензора восприимчивости:
 \begin{equation}
-{\mathbf{f}'''}_x = \sum_j\frac{\epsilon_{jj}-1}{4\pi}E_j\frac{\partial E_j}{\partial x}
+{\mathbf{f}'''} =  \frac{\hat{\epsilon}-\hat{I}}{4\pi}\left((\vec{E}\cdot\nabla)\vec E + \left[\vec{E} \times rot \vec{E}\right]\right)
 \end{equation}
 
 используем тождество:
 \begin{equation}
-E_j\frac{\partial E_j}{\partial x} = \frac{1}{2}\frac{\partial}{\partial x}(E_j^2)
+(\vec{E}\cdot\nabla)\vec E + \left[\vec{E} \times rot \vec{E}\right] = \frac{1}{2}\nabla(E^2)
 \label{eq:derivative_identity}
 \end{equation}
 
-Тогда конвективные члены записываются как частная производная:
+Тогда конвективно-роторная компонента записывается как частная производная:
 \begin{equation}
-\sum_j\frac{\epsilon_{jj}-1}{4\pi}E_j\frac{\partial E_j}{\partial x} = \frac{\partial}{\partial x}\left(\sum_j\frac{\epsilon_{jj}-1}{8\pi}E_j^2\right)
+{\mathbf{f}'''}_x = \frac{\partial}{\partial x}\left(\sum_j\frac{\epsilon_{jj}-1}{8\pi}E_j^2\right)
 \label{eq:convective_as_derivative}
 \end{equation}
-Теперь конвективные члены могут быть включены в компоненту тензора $T'''_{xx}=\left(\sum_j\frac{\epsilon_{jj}-1}{8\pi}E_j^2\right) = \frac{1}{8\pi}\left(\vec E \cdot \vec D - \vec E \cdot \vec E\right)$.
+Теперь конвективно-роторные члены могут быть включены в компоненту тензора $T'''_{xx}=\left(\sum_j\frac{\epsilon_{jj}-1}{8\pi}E_j^2\right) = \frac{1}{8\pi}\left(\vec E \cdot \vec D - \vec E \cdot \vec E\right)$.
 
 }% \modblock
 }% \footnote
@@ -1713,7 +1963,7 @@ E_j\frac{\partial E_j}{\partial x} = \frac{1}{2}\frac{\partial}{\partial x}(E_j^
         E^2\frac{\partial\varepsilon}{\partial\tau}\tau
     \right),
     \quad
-    \modmath{\mathbf{f}''' = \left(\vec{P}\cdot\nabla\right)\vec E}.
+    \modmath{\mathbf{f}''' = \left(\vec{P}\cdot\nabla\right)\vec E\,+\, \left[\vec{P} \times rot \vec{E}\right]}.
     \tag{34.1}
 \end{equation}
 Наша задача будет, очевидно, разрешена, если мы найдём такой тензор
@@ -1769,7 +2019,15 @@ $$
     \right\}
     \,\modmath{+ \,\frac{1}{4\pi} \left[\vec{D} \times rot \vec{E}\right]_x}.
 $$
-Уравнение это совпадёт по форме с (33.7), если положить:
+Уравнение это совпадёт по форме с (33.7)
+\footnote{
+\modtext{
+только куда девать роторного вида компоненту
+$+ \,\frac{1}{4\pi} \left[\vec{D} \times rot \vec{E}\right]_x$, которую в динамике 
+отбрасывать нельзя и которая сама по себе не сводится к какому либо тензору???
+}
+}
+, если положить:
 $$
     T'_{xx} = \frac{\varepsilon}{4\pi}\!\left(E_x^2 - \frac{E^2}{2}\right),
     \quad
@@ -1874,28 +2132,10 @@ $\mathbf{N}$.
 если система тел $A$ и $B$ находится в механическом равновесии, то эта
 не учитывавшаяся Максвеллом сила $\mathbf{F}''$ точно компенсируется
 также не учитывавшимися Максвеллом дополнительными \textit{механическими}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 % ============================================================
 % ПРОДОЛЖЕНИЕ §34 (стр. 164–168)
 % ============================================================
-
 % стр. 164 (левая колонка — продолжение §34, п.3)
-
 силами, испытываемыми телом $A$ со стороны тела $B$ благодаря
 тому, что само тело $B$ подвергается электрострикции.
 

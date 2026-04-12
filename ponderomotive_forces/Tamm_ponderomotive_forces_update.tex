@@ -533,7 +533,7 @@ $N$ стремится уменьшить угол $\vartheta$ между $\math
 эквивалентными диполями и воспользуемся формулой не (17.5) а (18.9), определяющей
 равнодействующую сил, приложенных к диполю:
 $$
-    \mathbf{F} = \mathbf{p}\nabla\cdot\mathbf{E}' \modmath{+ \left[\vec{p} \times rot \vec{E'}\right]},
+    \mathbf{F} = \mathbf{p}\nabla\cdot\mathbf{E}' \modmath{\,+\, \left[\vec{p} \times rot \vec{E'}\right]},
 $$
 где $\mathbf{E}'$ означает напряжённость действующего на диполь поля.
 
@@ -541,7 +541,7 @@ $$
 отнесённая к единице объёма диэлектрика, будет, следовательно, равна:
 \begin{equation}
     \mathbf{f} = \sum\mathbf{F} = \sum\mathbf{p}\nabla\cdot\mathbf{E}'
-              = N\overline{\mathbf{p}\nabla\cdot\mathbf{E}'} \,\modmath{+ N\overline{\left[\vec{p} \times rot \vec{E'}\right]}},
+              = N\overline{\mathbf{p}\nabla\cdot\mathbf{E}'} \modmath{\,+\, N\overline{\left[\vec{p} \times rot \vec{E'}\right]}},
     \tag{32.1}
 \end{equation}
 где суммирование должно быть произведено по всем диполям (молекулам),
@@ -558,11 +558,11 @@ $\nabla\cdot\mathbf{E}'$ и, во-вторых, можно пренебречь
 где $\mathbf{E}$ есть напряжённость среднего макроскопического поля
 (см.\ §\,28). В этом приближении
 $$
-    \mathbf{f} = N\mathbf{p}\nabla\cdot\mathbf{E} = \mathbf{P}\nabla\cdot\mathbf{E} \,\modmath{+ \left[\vec{P} \times rot \vec{E}\right]},
+    \mathbf{f} = N\mathbf{p}\nabla\cdot\mathbf{E} = \mathbf{P}\nabla\cdot\mathbf{E} \modmath{\,+\, \left[\vec{P} \times rot \vec{E}\right]},
 $$
 или, на основании формулы (22.6),
 $$
-    \mathbf{f} = \frac{\varepsilon-1}{4\pi}\mathbf{E}\nabla\cdot\mathbf{E} \,\modmath{+ \left[\frac{\epsilon - 1}{4 \pi}\vec{E} \times rot \vec{E}\right]}.
+    \mathbf{f} = \frac{\varepsilon-1}{4\pi}\mathbf{E}\nabla\cdot\mathbf{E} \modmath{\,+\, \left[\frac{\epsilon - 1}{4 \pi}\vec{E} \times rot \vec{E}\right]}.
 $$
 Далее, согласно (47*),
 $$
@@ -573,7 +573,7 @@ $$
 $\mathbf{E} = -\nabla\varphi$, а ротор градиента равен нулю [уравнение
 $(42^*_1)$]. Таким образом, в \redtext{электростатическом} \modtext{динамическом} поле
 \begin{equation}
-    \mathbf{E}\nabla\cdot\mathbf{E} = \frac{1}{2}\cdot\nabla E^2 \,\modmath{- \left[\vec{E} \times rot \vec{E}\right]},
+    \mathbf{E}\nabla\cdot\mathbf{E} = \frac{1}{2}\cdot\nabla E^2 \modmath{\,-\, \left[\vec{E} \times rot \vec{E}\right]},
     \tag{32.2}
 \end{equation}
 
@@ -581,6 +581,8 @@ $(42^*_1)$]. Таким образом, в \redtext{электростатиче
     \mathbf{f} = \frac{\varepsilon-1}{8\pi}\nabla E^2.
     \tag{32.3}
 \end{equation}
+
+
 
 Таким образом, в указанном приближении плотность пондеромоторных сил в
 диэлектриках пропорциональна \textit{градиенту квадрата напряжённости
@@ -598,7 +600,12 @@ $\mathbf{E}$ \textit{независимо от направления этого
 бузиновых шариков и т.\,д.
 
 \textbf{2.} Приведённый вывод формулы (32.3) основан на ряде
-приближений и упрощений. Общее же выражение для пондеромоторных сил
+приближений и упрощений
+\footnote{
+\modtext{
+Хотя формулы (32.2) и (32.3) выглядят приближёнными и упрощёнными, это не повод бросить эти формулы на полпути. При выводе общего вида тензора натяжения И.Е.Тамм отталкивается от формулы (34.1) в суть которой сила со стороны поля $\vec E$ на свободные заряды $\rho$. Однако весьма странно, что (34.1) Тамма не содержит силу со стороны поля $\vec E$ на поляризацию $\vec P$. Ниже будет показано, что при выводе формулы (32.10) И.Е. Тамм отбросил три интеграла, один из которых имеет вид конвективной силы, что приводит к необходимости введения конвективного тензора нятяжения. И что интересно, оказывается, конвективный тензор можно получить оттолкнувшись от формулы (32.3).
+}
+}. Общее же выражение для пондеромоторных сил
 может быть получено из энергии для электрического поля $W$ [формула
 (30.1) или (30.4)] путём рассмотрения изменения этой энергии $\delta W$,
 связанного с бесконечно малым произвольным (виртуальным) перемещением
@@ -630,7 +637,15 @@ $\delta W$ из выражения энергии, можно с помощью 
 $\mathbf{f}$.
 
 В этом состоит наиболее общий метод вычисления пондеромоторных сил,
-которым мы неоднократно будем пользоваться в дальнейшем.
+которым мы неоднократно будем пользоваться в дальнейшем
+\footnote{
+\modtext{
+Формула (32.4) очевидна для пондеромоторных сил в статике, когда поля не изменяются во времени, а тела (проводники, диэлектрики и магнетики), не движутся. И более того, плотность зарядов, величина поляризации или намагничивания не изменяются. Тогда можно применять технику виртуального перемещения тел, и следить как при этом поменяется энергия.
+А в динамике? Поля изменяются, плотность зарядов, величины поляризации или намагничивания меняются динамически.
+И даже, если мы рассмотрим периодический процесс изменения полей в системе неподвижных тел, частным случаем этого рассмотрения могут служить резонаторы, то, нужно учесть тот факт, что выражения энергии полей будут значительно сложнее, применяемого в данном параграфе. В динамике метод виртуальных перемещений должен быть заменён методом наименьшего действия Лагранжа-Гамильтона. Об этом я вставлю дополнительный параграф.
+}
+}
+.
 
 \textbf{3.} Применяя этот общий метод к вычислению пондеромоторных сил
 электрического поля, мы в этом параграфе предположим, что как
@@ -1338,6 +1353,10 @@ $$
 в окружающей среде под влиянием электрического поля. Это утверждение
 будет доказано в §\,34.
 
+
+\modblock{
+}% modblock
+
 \section*{\S\,33. Сведение объёмных сил к натяжениям\,\footnote{Этот
 и следующий параграфы можно опустить при первом чтении книги.}.}
 
@@ -1655,7 +1674,36 @@ $T_{zn}\,dS$ силы $\mathbf{T}_n\,dS$, действующей на произ
 \textbf{1.} Обращаемся к поставленной в начале предыдущего параграфа
 задаче сведения пондеромоторных сил электрического поля к натяжениям.
 С этой целью удобно разложить общее выражение (32.10) для объёмной
-плотности этих сил на \redtext{два} \modtext{три} слагаемых:
+плотности этих сил \modtext{не} \redtext{на два}, \modtext{а на три}
+\footnote{
+\modblock{
+%\modtext
+Третье слагаемое соответствует конвективному тензору натяжения, (не рассмотренному И.Е.Таммом), который нужно рассматривать вместе с тензором Максвелла и стрикционным тензором. Рассмотрим конвективную компоненту ${\mathbf{f}'''}_x$ силы:
+\begin{equation}
+{\mathbf{f}'''}_x = (\vec{P}\cdot\nabla)E_x
+\end{equation}
+
+Подставляем $\vec{P} = \frac{\hat{\epsilon}-\hat{I}}{4\pi}\vec{E}$ в случае диагональности тензора восприимчивости:
+\begin{equation}
+{\mathbf{f}'''}_x = \sum_j\frac{\epsilon_{jj}-1}{4\pi}E_j\frac{\partial E_j}{\partial x}
+\end{equation}
+
+используем тождество:
+\begin{equation}
+E_j\frac{\partial E_j}{\partial x} = \frac{1}{2}\frac{\partial}{\partial x}(E_j^2)
+\label{eq:derivative_identity}
+\end{equation}
+
+Тогда конвективные члены записываются как частная производная:
+\begin{equation}
+\sum_j\frac{\epsilon_{jj}-1}{4\pi}E_j\frac{\partial E_j}{\partial x} = \frac{\partial}{\partial x}\left(\sum_j\frac{\epsilon_{jj}-1}{8\pi}E_j^2\right)
+\label{eq:convective_as_derivative}
+\end{equation}
+Теперь конвективные члены могут быть включены в компоненту тензора $T'''_{xx}=\left(\sum_j\frac{\epsilon_{jj}-1}{8\pi}E_j^2\right) = \frac{1}{8\pi}\left(\vec E \cdot \vec D - \vec E \cdot \vec E\right)$.
+
+}% \modblock
+}% \footnote
+слагаемых:
 \begin{equation}
     \mathbf{f} = \mathbf{f}' + \mathbf{f}'' \modmath{+ \mathbf{f}'''},
     \quad
@@ -2618,7 +2666,7 @@ $\mathbf{f}''$ плотности сил $\mathbf{f}^{(2)}$ сказываетс
 \begin{equation}
     \mathbf{f} = \mathbf{f}' + \mathbf{f}'', \quad
     \mathbf{f}' = \frac{1}{c}[\mathbf{j}\mathbf{B}]
-                \modmath{+\frac{1}{c}[\mathbf{j_{\text{см}}}\mathbf{B}]}
+                \modmath{\,+\,\frac{1}{c}\left[\frac{\partial\vec{P}}{\partial t} \times \vec{B}\right]}
                - \frac{1}{8\pi}H^2\operatorname{grad}\mu, \quad
     \mathbf{f}'' = \frac{1}{8\pi}\operatorname{grad}\!\left(
         H^2\tau\frac{\partial\mu}{\partial\tau}
@@ -2649,11 +2697,25 @@ $\mathbf{f}''$ плотности сил $\mathbf{f}^{(2)}$ сказываетс
 
 \textbf{2.} Рассмотрим сначала силы $\mathbf{f}'$ и тензор $\mathbf{T}'$.
 Выражая плотность токов $\mathbf{j}$ через $\operatorname{rot}\mathbf{H}$
-[уравнение (62.7)], мы можем написать:
+[уравнение (62.7)]\footnote{
+\modblock{
+Это верно в статике, но в динамике нужно брать не (62.7), а (88.5)
+\begin{equation}
+rot\,\vec{H} = \frac{1}{c}\frac{\partial \vec D}{\partial t} + \frac{4\pi}{c}\vec j_e
+ = \frac{1}{c}\frac{\partial \vec E + 4 \pi \vec P}{\partial t} + \frac{4\pi}{c}\vec j_e
+ = \frac{1}{c}\frac{\partial \vec E}{\partial t} + \frac{4\pi}{c} \frac{\partial\vec P}{\partial t} + \frac{4\pi}{c}\vec j_e
+\end{equation}
+
+\begin{equation}
+\frac{1}{4\pi}rot\,\vec{H} - \frac{1}{4\pi\,c}\frac{\partial \vec E}{\partial t} = \frac{1}{c} \frac{\partial\vec P}{\partial t} + \frac{1}{c}\vec j_e
+\end{equation}
+}% modblock
+}% footnote
+, мы можем написать:
 $$
-    \frac{1}{c}[\mathbf{j}\mathbf{B}]
-    = \frac{1}{4\pi}[\operatorname{rot}\mathbf{H}\cdot\mathbf{B}]
-    = \frac{\mu}{4\pi}[\operatorname{rot}\mathbf{H}\cdot\mathbf{H}].
+    \frac{1}{c}[\mathbf{j}\mathbf{B}] \modmath{\,+\,\frac{1}{c}\left[\frac{\partial\vec{P}}{\partial t} \times \vec{B}\right]}
+    = \frac{1}{4\pi}[\operatorname{rot}\mathbf{H}\cdot\mathbf{B}] \modmath{\,-\, \frac{1}{4\pi c}\left[\frac{\partial \vec E}{\partial t}\cdot\mathbf{B}\right]}
+    = \frac{\mu}{4\pi}[\operatorname{rot}\mathbf{H}\cdot\mathbf{H}]\modmath{\,-\, \frac{\mu}{4\pi c}\left[\frac{\partial \vec E}{\partial t}\cdot\mathbf{H}\right]}.
 $$
 
 Далее, на основании (47*)
@@ -2665,9 +2727,10 @@ $$
 \begin{align*}
     \mathbf{f}' &= \frac{\mu}{4\pi}\mathbf{H}\nabla\cdot\mathbf{H}
                  - \frac{\mu}{8\pi}\operatorname{grad}H^2
+                 \modmath{\,- \,\frac{\mu}{4\pi c}\left[\frac{\partial \vec E}{\partial t}\cdot\mathbf{H}\right]}
                  - \frac{1}{8\pi}H^2\operatorname{grad}\mu = \\
                 &= \frac{1}{4\pi}\mathbf{B}\nabla\cdot\mathbf{H}
-                 - \frac{1}{8\pi}\operatorname{grad}(\mu H^2).
+                 - \frac{1}{8\pi}\operatorname{grad}(\mu H^2)\modmath{\,- \,\frac{1}{4\pi c}\left[\frac{\partial \vec E}{\partial t}\cdot\mathbf{B}\right]}.
 \end{align*}
 
 Рассмотрим слагающую плотности сил $\mathbf{f}'$ по оси $x$:
@@ -2682,13 +2745,18 @@ $$
     \mathbf{B}\nabla\cdot H_x = \mathbf{B}\cdot\nabla H_x
     = \operatorname{div}(BH_x) - H_x\operatorname{div}\mathbf{B},
 $$
-или ввиду того, что $\operatorname{div}\mathbf{B} = 0$,
+или ввиду того, что $\operatorname{div}\mathbf{B} = \modmath{4\pi\rho_m}$\footnote{
+\modblock{
+рассмотрение электродинамики в симметричной постановке, с магнитными зарядами и магнитными токами (как это сделано, например, в Н.Н.Федоров, Основы Электродинамики, М., 1980), весьма полезно в том числе и для анализа аналогий магнитной и электрической компонент тензора натяжений
+}% modblock
+}% footnote
+,
 $$
     \mathbf{B}\cdot\nabla H_x
-    = \operatorname{div}(\mathbf{B}H_x)
+    = \operatorname{div}(\mathbf{B}H_x) \modmath{\,-\, 4\pi H_x\rho_m}
     = \frac{\partial}{\partial x}(B_x H_x)
     + \frac{\partial}{\partial y}(B_y H_x)
-    + \frac{\partial}{\partial z}(B_z H_x).
+    + \frac{\partial}{\partial z}(B_z H_x) \modmath{\,-\, 4\pi H_x\rho_m}.
 $$
 
 Внося это в предшествующее выражение для $f'_x$, убеждаемся, что

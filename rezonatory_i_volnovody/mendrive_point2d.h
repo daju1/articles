@@ -4,6 +4,7 @@
 typedef struct {
     long double kz;
     long double sz;
+    long double sin_r_s;
 } point2d_t;
 
 typedef struct {

@@ -21,6 +21,7 @@ int find_contour_intersections_with_corners(
     const long double* cv_x, const long double* cv_y, int cv_n,
     point2d_t* intersections, int max_intersections,
     long double eps_det,
+    long double eps_r_cross_s,
     long double extrap_len,          // длина экстраполяции (например, 1e-3)
     long double cos_max_angle,       // порог остроты угла, например -0.94L
     long double sin_min_angle,       // порог остроты угла, например 0.5L

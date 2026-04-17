@@ -9,15 +9,28 @@
 // Возвращает 1, если пересекаются, и заполняет (out_x, out_y)
 // Использует параметрическое представление:
 //   p + t * r,    q + u * s,    t,u ∈ [0,1]
-static int segment_intersection(
+int segment_intersection(
     long double p_x, long double p_y,
     long double r_x, long double r_y,
     long double q_x, long double q_y,
     long double s_x, long double s_y,
-    long double* out_x, long double* out_y
+    long double* out_x, long double* out_y,
+    long double* sin_r_s, long double eps_sin_r_s
 ) {
     long double r_cross_s = r_x * s_y - r_y * s_x;
-    if ( fabsl(r_cross_s ) < 1e-18L) {
+
+    // Вычисление синуса угла между векторами r и s
+    long double r_norm = sqrtl(r_x * r_x + r_y * r_y);
+    long double s_norm = sqrtl(s_x * s_x + s_y * s_y);
+
+    long double denom = r_norm * s_norm;
+    if (denom < 1e-18L) {
+        *sin_r_s = 0.0L;
+        return 0;
+    }
+    *sin_r_s = r_cross_s / denom;
+
+    if ( fabsl(*sin_r_s ) < eps_sin_r_s) {
         // printf("parallel\n");
         return 0; // параллельны или совпадают
     }
@@ -44,7 +57,8 @@ int find_contour_intersections(
     const long double* cu_x, const long double* cu_y, int cu_n,
     const long double* cv_x, const long double* cv_y, int cv_n,
     point2d_t* intersections, int max_intersections,
-    long double eps_det
+    long double eps_det,
+    long double eps_sin_r_s
 ) {
     if (cu_n < 2 || cv_n < 2 || !intersections || max_intersections <= 0) {
         // printf("find_contour_intersections wrong params\n");
@@ -64,8 +78,10 @@ int find_contour_intersections(
             long double s_x = cv_x[j+1] - q_x;
             long double s_y = cv_y[j+1] - q_y;
 
-            long double x, y;
-            if (!segment_intersection(p_x, p_y, r_x, r_y, q_x, q_y, s_x, s_y, &x, &y))
+            long double x, y, sin_r_s;
+            if (!segment_intersection(p_x, p_y, r_x, r_y, q_x, q_y, s_x, s_y,
+                &x, &y, &sin_r_s,
+                eps_sin_r_s))
                 continue;
 
             if (count >= max_intersections) {
@@ -75,6 +91,7 @@ int find_contour_intersections(
 
             intersections[count].kz = x;
             intersections[count].sz = y;
+            intersections[count].sin_r_s = sin_r_s;
             count++;
         }
     }

@@ -15,6 +15,7 @@ int find_characteristic_roots(
     characteristic_roots_t* result,
     long double eps_nan,
     long double eps_det,
+    long double eps_sin_r_s,
     long double extrap_len,
     long double cos_max_angle,
     long double sin_min_angle,

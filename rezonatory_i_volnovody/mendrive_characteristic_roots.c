@@ -16,6 +16,7 @@ int find_characteristic_roots(
     characteristic_roots_t* result,
     long double eps_nan,
     long double eps_det,
+    long double eps_sin_r_s,
     long double extrap_len,
     long double cos_max_angle,
     long double sin_min_angle,
@@ -93,7 +94,7 @@ int find_characteristic_roots(
                     cv_x, cv_y, cv->n_points,
                     intersections + total_count,
                     MAX_INTERSECTIONS - total_count,
-                    eps_det,
+                    eps_det, eps_sin_r_s,
                     extrap_len,
                     cos_max_angle,
                     sin_min_angle,
@@ -113,7 +114,7 @@ int find_characteristic_roots(
                     cv_x, cv_y, cv->n_points,
                     intersections + total_count,
                     MAX_INTERSECTIONS - total_count,
-                    eps_det
+                    eps_det, eps_sin_r_s
                 );
             }
 

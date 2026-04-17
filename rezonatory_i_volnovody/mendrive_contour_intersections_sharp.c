@@ -6,6 +6,7 @@
 #define USE_REFILTER
 #include "mendrive_point2d.h"
 #include "mendrive_isolines.h"
+#include "mendrive_contour_intersections.h"
 #include "mendrive_contour_intersections_sharp.h"
 #include <stdio.h> // This line includes the standard input/output library
 
@@ -573,10 +574,10 @@ void find_sharp_corners(
 
 #ifdef USE_ADAPTIVE_SHARP
     // Шаг 2: сортируем косинусы
-    qsort(cosines, valid_count, sizeof(long double), 
+    qsort(cosines, valid_count, sizeof(long double),
           (int(*)(const void*, const void*))compare_long_double);
-          
-    qsort(sines, valid_count, sizeof(long double), 
+
+    qsort(sines, valid_count, sizeof(long double),
           (int(*)(const void*, const void*))compare_long_double);
 
     const int HIST_BINS = 15;
@@ -603,7 +604,7 @@ void find_sharp_corners(
         cos_hist[cos_bin]++;
         sin_hist[sin_bin]++;
     }
-    
+
     // Находим плотную область слева (плавные повороты)
     int left_dense_end = -1;
     for (int i = 0; i < HIST_BINS; ++i) {
@@ -628,9 +629,9 @@ void find_sharp_corners(
     else {
         if (logging) printf("cos left_dense_end = %d\n", left_dense_end);
     }
-    
+
     //////////////////////////////////////////////////////////////////////////////
-    
+
     left_dense_end = -1;
     for (int i = 0; i < HIST_BINS; ++i) {
         if (logging) printf("%Lf sin_hist[%d]=%d\n", min_sin + i*sin_bin_width, i, sin_hist[i]);
@@ -650,7 +651,7 @@ void find_sharp_corners(
     else {
         if (logging) printf("sin left_dense_end = %d\n", left_dense_end);
     }
-    
+
     // Шаг 4: ищем максимальный разрыв между соседними бинами
 #endif
 
@@ -708,40 +709,6 @@ static void extrapolate_segment(
     *out_r_y = uy * extrap_len;
 }
 
-// Вспомогательная: пересечение двух отрезков
-// Возвращает 1, если пересекаются, и заполняет (out_x, out_y)
-// Использует параметрическое представление:
-//   p + t * r,    q + u * s,    t,u ∈ [0,1]
-static int segment_intersection(
-    long double p_x, long double p_y,
-    long double r_x, long double r_y,
-    long double q_x, long double q_y,
-    long double s_x, long double s_y,
-    long double* out_x, long double* out_y
-) {
-    long double r_cross_s = r_x * s_y - r_y * s_x;
-    if ( fabsl(r_cross_s ) < 1e-18L) {
-        // printf("parallel\n");
-        return 0; // параллельны или совпадают
-    }
-
-    long double q_minus_p_x = q_x - p_x;
-    long double q_minus_p_y = q_y - p_y;
-
-    long double t = (q_minus_p_x * s_y - q_minus_p_y * s_x) / r_cross_s;
-    long double u = (q_minus_p_x * r_y - q_minus_p_y * r_x) / r_cross_s;
-
-    if (t < 0.0L || t > 1.0L || u < 0.0L || u > 1.0L)
-    //if (t < -1.0L || t > 2.0L || u < -1.0L || u > 2.0L)
-    {
-        // printf("t = %Lf, u = %Lf\n", t, u);
-        return 0;
-    }
-
-    *out_x = p_x + t * r_x;
-    *out_y = p_y + t * r_y;
-    return 1;
-}
 
 // Возвращаем 2, если отрезки почти параллельны и близки — возможно, касание
 /*static int segment_intersection_or_tangent(
@@ -1035,6 +1002,7 @@ int find_contour_intersections_with_corners(
     const long double* cv_x, const long double* cv_y, int cv_n,
     point2d_t* intersections, int max_intersections,
     long double eps_det,
+    long double eps_sin_r_s,
     long double extrap_len,           // длина экстраполяции (например, 1e-3)
     long double cos_max_angle,        // порог остроты угла, например -0.94L
     long double sin_min_angle,        // порог остроты угла, например 0.5L
@@ -1063,12 +1031,12 @@ int find_contour_intersections_with_corners(
             long double s_x = cv_x[j+1] - q_x;
             long double s_y = cv_y[j+1] - q_y;
 
-            long double x, y;
+            long double x, y, sin_r_s;
  #if 0
             int res = segment_intersection_or_tangent(
                 p_x, p_y, r_x, r_y,
                 q_x, q_y, s_x, s_y,
-                &x, &y,
+                &x, &y, &sin_r_s,
                 eps_det,
                 1e-4L  // eps_dist — подберите под масштаб
             );
@@ -1076,7 +1044,8 @@ int find_contour_intersections_with_corners(
              int res = segment_intersection(
                 p_x, p_y, r_x, r_y,
                 q_x, q_y, s_x, s_y,
-                &x, &y
+                &x, &y, &sin_r_s,
+                eps_sin_r_s
             );
 #endif
 
@@ -1084,6 +1053,7 @@ int find_contour_intersections_with_corners(
                 if (count >= max_intersections) goto overflow;
                 intersections[count].kz = x;
                 intersections[count].sz = y;
+                intersections[count].sin_r_s = sin_r_s;
                 count++;
             }
         }

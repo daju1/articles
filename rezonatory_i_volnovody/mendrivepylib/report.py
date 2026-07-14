@@ -122,6 +122,7 @@ def match_branches_between_intervals(results, param_name, distance_threshold=0.1
 
     def compute_distance(point1, point2):
         """Вычисляет расстояние между двумя точками."""
+        import numpy as np
         # Расстояние по kz, sz
         kz_dist = (point1['kz'] - point2['kz'])**2
         sz_dist = (point1['sz'] - point2['sz'])**2
@@ -548,6 +549,7 @@ def plot_all_branches_with_detplots(
     thrust_key='thrust_N_per_kW',
 ):
     import os
+    from sage.plot.plot import point2d, line2d
     os.makedirs(output_dir, exist_ok=True)
 
     # --- строим глобальные ветви той же логикой что и plot_matched_branch_results ---

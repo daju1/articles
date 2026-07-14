@@ -42,19 +42,23 @@ def load_lib(name, precision=MENDRIVE_LIB_PRECISION):
 
 def unload_lib(lib):
     """Выгрузить загруженную CDLL-библиотеку из памяти."""
+    from ctypes.util import find_library
+    from ctypes import CDLL, c_void_p, c_int
+
     if not hasattr(lib, "_handle"):
         raise ValueError("Объект не является загруженной CDLL-библиотекой.")
 
     # Ищем libdl
+
     libdl_path = find_library("dl")
     if not libdl_path:
         raise RuntimeError("libdl не найдена — выгрузка .so невозможна.")
 
-    libdl = ctypes.CDLL(libdl_path)
+    libdl = CDLL(libdl_path)
 
     dlclose = libdl.dlclose
-    dlclose.argtypes = [ctypes.c_void_p]
-    dlclose.restype = ctypes.c_int
+    dlclose.argtypes = [c_void_p]
+    dlclose.restype = c_int
 
     handle = lib._handle
     ret = dlclose(handle)
@@ -322,7 +326,7 @@ def plotDetContoursResult(contours):
         seg_u = []
         for i in range(line.n_points):
             pt = line.points[i]
-            seg_u.append((float(pt.kz), float(pt.sz)))
+            seg_u.append((float(pt.re), float(pt.im)))
         cu.append(seg_u)
         pl += list_plot(seg_u, size=5)
 
@@ -331,7 +335,7 @@ def plotDetContoursResult(contours):
         seg_v = []
         for i in range(line.n_points):
             pt = line.points[i]
-            seg_v.append((float(pt.kz), float(pt.sz)))
+            seg_v.append((float(pt.re), float(pt.im)))
         cv.append(seg_v)
         pl += list_plot(seg_v, color="red", size=4)
 
@@ -351,8 +355,8 @@ def find_matplotlib_contour_intersections_c(lib, seg_u, seg_v,
     from ctypes import Structure, c_longdouble, POINTER, c_int
 
     class Point2D(Structure):
-        _fields_ = [("kz", c_longdouble),
-                    ("sz", c_longdouble),
+        _fields_ = [("re", c_longdouble),
+                    ("im", c_longdouble),
                     ("sin_r_s", c_longdouble)]
 
     intersections = (Point2D * int(max_n))()
@@ -392,7 +396,7 @@ def find_matplotlib_contour_intersections_c(lib, seg_u, seg_v,
     result = []
     for i in range(n_found):
         pt = intersections[i]
-        result.append((float(pt.kz), float(pt.sz)))
+        result.append((float(pt.re), float(pt.im)))
     return result
 
 def find_resonance_roots_fast(lib, omega_re_range, omega_im_range, n_re=100, n_im=100, make_plot=False, debug_plot=False):
@@ -447,6 +451,7 @@ def find_resonance_roots_fast(lib, omega_re_range, omega_im_range, n_re=100, n_i
 
                 if debug_plot:
                     from sage.plot.all import Graphics
+                    from sage.plot.all import list_plot
                     pl = Graphics()
                     pl += list_plot(seg_u, size = 5)
                     pl += list_plot(seg_v, color="red", size = 1)
@@ -487,19 +492,22 @@ def find_resonance_roots_fast_с(lib, re_range, im_range,
                                 local_angle_sharp_threshold     = 0.6,
                                 det_threshold = 1.0
                                ):
+    import ctypes
     from ctypes import Structure, c_longdouble, POINTER, c_int
-    class Point2D(ctypes.Structure):
-        _fields_ = [("kz", c_longdouble),
-                    ("sz", c_longdouble),
+    from sage.plot.all import list_plot
+
+    class Point2D(Structure):
+        _fields_ = [("re", c_longdouble),
+                    ("im", c_longdouble),
                     ("sin_r_s", c_longdouble)
                    ]
 
     # Определите структуру
-    class CharacteristicRoots(ctypes.Structure):
-        _fields_ = [("roots", ctypes.POINTER(Point2D)),
-                    ("n_roots", ctypes.c_int)]
+    class CharacteristicRoots(Structure):
+        _fields_ = [("roots", POINTER(Point2D)),
+                    ("n_roots", c_int)]
 
-    class ContourLine(ctypes.Structure):
+    class ContourLine(Structure):
         _fields_ = [("points", POINTER(Point2D)),
                     ("n_points", c_int)]
 
@@ -571,24 +579,24 @@ def find_resonance_roots_fast_с(lib, re_range, im_range,
         ctypes.c_longdouble(det_threshold),
     )
 
-    omega_graphic_solutions = []
+    graphic_solutions = []
 
     print(f"Найдено корней: {roots.n_roots}")
     for i in range(roots.n_roots):
         print(f"  re={roots.roots[i].re:.6f}, im={roots.roots[i].im:.6f}, sin_r_s={roots.roots[i].sin_r_s:.6e}")
-        omega_graphic_solutions.extend([(roots.roots[i].kz,
-                                       roots.roots[i].sz
+        graphic_solutions.extend([(roots.roots[i].re,
+                                       roots.roots[i].im
                                       )])
 
     cu, cv, pl = plotDetContoursResult(contours)
-    pl += list_plot(omega_graphic_solutions, color="green", size=32)
+    pl += list_plot(graphic_solutions, color="green", size=32)
     if make_plot:
         pl.show()
     lib.free_det_contours(contours)
     lib.free_characteristic_roots(roots)
-    return omega_graphic_solutions, (cu, cv, pl)
+    return graphic_solutions, (cu, cv, pl)
 
-def prec_graphic_solutions(lib, solver, preciser, omega_sol_num, omega_graphic_solutions, precise,
+def prec_graphic_solutions(lib, solver, preciser, sol_num, graphic_solutions, precise,
                            verbose=True, return_all_stages=False):
     """
     Уточняет графическое решение методом Ньютона.
@@ -599,12 +607,12 @@ def prec_graphic_solutions(lib, solver, preciser, omega_sol_num, omega_graphic_s
     Returns:
         dict с информацией о корне или None при ошибке
     """
-    re0, im0 = omega_graphic_solutions[omega_sol_num]
+    re0, im0 = graphic_solutions[sol_num]
     det0_re, det0_im = det_eval_fast(lib, re0, im0)
     det0_residual = float(np.sqrt((det0_re)**2 + (det0_im)**2))
 
     if verbose:
-        print('omega_sol_index =', omega_sol_num - len(omega_graphic_solutions)/2)
+        print('sol_index =', sol_num - len(graphic_solutions)/2)
         print("Root Init:", re0, im0, f"|det|={det0_residual:.4e}")
 
     # Уточняем корень методом Ньютона (первая стадия)
@@ -641,7 +649,7 @@ def prec_graphic_solutions(lib, solver, preciser, omega_sol_num, omega_graphic_s
             'im': im_prec,
             'det_residual': det_residual_prec,
             'sign_K': (sHl, sEl, sHr, sEr),
-            'omega_sol_num': omega_sol_num,
+            'sol_num': sol_num,
             're_init': re0,
             'im_init': im0,
             'det_residual_init': det0_residual
@@ -653,7 +661,7 @@ def prec_graphic_solutions(lib, solver, preciser, omega_sol_num, omega_graphic_s
             'im': im_root_num,
             'det_residual': det_residual_num,
             'sign_K': (sHl, sEl, sHr, sEr),
-            'omega_sol_num': omega_sol_num,
+            'sol_num': sol_num,
             're_init': re0,
             'im_init': im0,
             'det_residual_init': det0_residual
@@ -703,10 +711,10 @@ def find_resonance_roots_refine_and_cluster_them(
     """
 
     # 3. Находим резонансные корни
-    if True:
-        omega_graphic_solutions = find_resonance_roots_fast(lib, re_range, im_range)
+    if False:
+        graphic_solutions = find_resonance_roots_fast(lib, re_range, im_range)
     else:
-        omega_graphic_solutions, (cu, cv, pl) = find_resonance_roots_fast_с(
+        graphic_solutions, (cu, cv, pl) = find_resonance_roots_fast_с(
             lib, re_range, im_range,
             n_re=n_re, n_im=n_im,
             make_plot=make_plot,
@@ -716,19 +724,19 @@ def find_resonance_roots_refine_and_cluster_them(
             window_size=window_size
         )
 
-    if len(omega_graphic_solutions) == 0:
+    if len(graphic_solutions) == 0:
         print(f"    ⚠️ Корни не найдены для параметров {param_overrides}")
         return None
 
     # 4. Уточняем все корни и собираем базу
     if verbose:
-        print(f"\n  🔍 Уточнение {len(omega_graphic_solutions)} графических решений для параметров {param_overrides}...")
+        print(f"\n  🔍 Уточнение {len(graphic_solutions)} графических решений для параметров {param_overrides}...")
 
     refined_roots = []
-    for omega_sol_num in range(len(omega_graphic_solutions)):
+    for sol_num in range(len(graphic_solutions)):
         result = prec_graphic_solutions(
             lib, solver, preciser,
-            omega_sol_num, omega_graphic_solutions, precise=False,
+            sol_num, graphic_solutions, precise=False,
             verbose=verbose
         )
 
@@ -758,17 +766,17 @@ def find_resonance_roots_refine_and_cluster_them(
         print(f"  ✓ Будет рассчитано {len(clustered_roots)} уникальных корней для параметров {param_overrides}\n")
 
     refined_clustered_roots = []
-    for omega_sol_num in range(len(clustered_roots)):
+    for sol_num in range(len(clustered_roots)):
         result = prec_graphic_solutions(
             lib, solver, preciser,
-            omega_sol_num, omega_graphic_solutions, precise=True,
+            sol_num, graphic_solutions, precise=True,
             verbose=verbose
         )
 
         if result is not None:
             refined_clustered_roots.append(result)
 
-    return omega_graphic_solutions, refined_roots, clustered_roots, refined_clustered_roots#, (cu, cv, pl)
+    return graphic_solutions, refined_roots, clustered_roots, refined_clustered_roots, (cu, cv, pl)
 
 
 # ============================================================================

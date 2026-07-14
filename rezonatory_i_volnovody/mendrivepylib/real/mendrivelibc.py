@@ -488,7 +488,7 @@ from ctypes import Structure, c_longdouble, c_void_p, c_byte, c_ubyte, c_double
 
 def init_lib(lib, digit_values, precision=MENDRIVE_LIB_PRECISION):
 
-    #from ctypes import Structure, c_longdouble, POINTER, CDLL, byref, c_int
+    from ctypes import Structure, c_longdouble, POINTER, CDLL, byref, c_int
 
     num_type = get_numeric_type(precision)
 

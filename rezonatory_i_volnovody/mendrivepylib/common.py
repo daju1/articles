@@ -769,6 +769,139 @@ def find_resonance_roots_refine_and_cluster_them(
             refined_clustered_roots.append(result)
 
     return omega_graphic_solutions, refined_roots, clustered_roots, refined_clustered_roots#, (cu, cv, pl)
+# ============================================================================
+# ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ КЛАСТЕРИЗАЦИИ КОРНЕЙ
+# ============================================================================
+
+def euclidean_distance(root1, root2):
+    """Вычисляет евклидово расстояние между двумя корнями."""
+    return np.sqrt((root1['kz'] - root2['kz'])**2 + (root1['sz'] - root2['sz'])**2)
+
+
+def cluster_roots(roots_list, eps=1e-3, verbose=True):
+    """
+    Кластеризует близкие корни используя простой алгоритм на основе расстояний.
+
+    Args:
+        roots_list: список словарей с ключами 'kz', 'sz', 'det_residual', 'kz_sol_num'
+        eps: максимальное расстояние между корнями в одном кластере
+        verbose: выводить ли информацию о кластеризации
+
+    Returns:
+        список представителей кластеров (лучший корень из каждого кластера)
+    """
+    if len(roots_list) == 0:
+        return []
+
+    # Копируем список, чтобы не изменять оригинал
+    remaining_roots = roots_list.copy()
+    clusters = []
+
+    while remaining_roots:
+        # Берём первый оставшийся корень как центр нового кластера
+        seed = remaining_roots.pop(0)
+        current_cluster = [seed]
+
+        # Ищем все корни, близкие к seed
+        i = 0
+        while i < len(remaining_roots):
+            if euclidean_distance(seed, remaining_roots[i]) <= eps:
+                current_cluster.append(remaining_roots.pop(i))
+            else:
+                i += 1
+
+        clusters.append(current_cluster)
+
+    if verbose:
+        n_clusters = len(clusters)
+        total_roots = sum(len(c) for c in clusters)
+        print(f"  📊 Найдено кластеров: {n_clusters} из {total_roots} корней")
+
+    # Выбираем лучший корень из каждого кластера (с минимальным det_residual)
+    representative_roots = []
+    for cluster_idx, cluster_roots in enumerate(clusters):
+        # Выбираем корень с минимальной невязкой детерминанта
+        best_root = min(cluster_roots, key=lambda r: r['det_residual'])
+
+        if verbose:
+            avg_kz = np.mean([r['kz'] for r in cluster_roots])
+            avg_sz = np.mean([r['sz'] for r in cluster_roots])
+            print(f"    Кластер {cluster_idx}: {len(cluster_roots)} корней, "
+                  f"центр: kz≈{avg_kz:.6f}, sz≈{avg_sz:.6f}")
+            print(f"      → выбран: kz={best_root['kz']:.6f}, sz={best_root['sz']:.6f}, "
+                  f"|det|={best_root['det_residual']:.2e}")
+
+        representative_roots.append(best_root)
+
+    return representative_roots
+
+def cluster_roots_hierarchical(roots_list, eps=1e-3, verbose=True):
+    """
+    Альтернативная версия: иерархическая кластеризация.
+    Объединяет ближайшие пары корней, пока расстояние не превысит eps.
+
+    Args:
+        roots_list: список словарей с ключами 'kz', 'sz', 'det_residual', 'kz_sol_num'
+        eps: максимальное расстояние между корнями в одном кластере
+        verbose: выводить ли информацию о кластеризации
+
+    Returns:
+        список представителей кластеров
+    """
+    if len(roots_list) == 0:
+        return []
+
+    # Каждый корень начинает в своём кластере
+    clusters = [[root] for root in roots_list]
+
+    while True:
+        # Находим два ближайших кластера
+        min_dist = float('inf')
+        merge_i, merge_j = -1, -1
+
+        for i in range(len(clusters)):
+            for j in range(i + 1, len(clusters)):
+                # Расстояние между кластерами = минимальное расстояние между их элементами
+                dist = min(euclidean_distance(r1, r2)
+                          for r1 in clusters[i]
+                          for r2 in clusters[j])
+
+                if dist < min_dist:
+                    min_dist = dist
+                    merge_i, merge_j = i, j
+
+        # Если минимальное расстояние больше eps, останавливаемся
+        if min_dist > eps:
+            break
+
+        # Объединяем два ближайших кластера
+        if merge_i != -1:
+            clusters[merge_i].extend(clusters[merge_j])
+            clusters.pop(merge_j)
+        else:
+            break
+
+    if verbose:
+        n_clusters = len(clusters)
+        total_roots = sum(len(c) for c in clusters)
+        print(f"  📊 Найдено кластеров: {n_clusters} из {total_roots} корней (иерархический метод)")
+
+    # Выбираем лучший корень из каждого кластера
+    representative_roots = []
+    for cluster_idx, cluster_roots in enumerate(clusters):
+        best_root = min(cluster_roots, key=lambda r: r['det_residual'])
+
+        if verbose:
+            avg_kz = np.mean([r['kz'] for r in cluster_roots])
+            avg_sz = np.mean([r['sz'] for r in cluster_roots])
+            print(f"    Кластер {cluster_idx}: {len(cluster_roots)} корней, "
+                  f"центр: kz≈{avg_kz:.6f}, sz≈{avg_sz:.6f}")
+            print(f"      → выбран: kz={best_root['kz']:.6f}, sz={best_root['sz']:.6f}, "
+                  f"|det|={best_root['det_residual']:.2e}")
+
+        representative_roots.append(best_root)
+
+    return representative_roots
 
 class NewtonPrecC:
     def __init__(self, lib, precision):

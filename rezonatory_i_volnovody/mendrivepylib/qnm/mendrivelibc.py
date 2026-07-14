@@ -417,33 +417,6 @@ def create_det_c( M_det, M_det_K,
 import ctypes
 from ctypes.util import find_library
 
-def unload_lib(lib):
-    """Выгрузить загруженную CDLL-библиотеку из памяти."""
-    if not hasattr(lib, "_handle"):
-        raise ValueError("Объект не является загруженной CDLL-библиотекой.")
-
-    # Ищем libdl
-    libdl_path = find_library("dl")
-    if not libdl_path:
-        raise RuntimeError("libdl не найдена — выгрузка .so невозможна.")
-
-    libdl = ctypes.CDLL(libdl_path)
-
-    dlclose = libdl.dlclose
-    dlclose.argtypes = [ctypes.c_void_p]
-    dlclose.restype = ctypes.c_int
-
-    handle = lib._handle
-    ret = dlclose(handle)
-
-    if ret == 0:
-        print(f"✅ Библиотека {lib._name} выгружена из памяти.")
-        return True
-    else:
-        # можно вызвать ctypes.get_errno(), но dlclose не устанавливает errno на всех системах
-        print(f"❌ dlclose вернул код {ret}. Библиотека, возможно, не выгружена.")
-        return False
-
 def compile_lib(name, precision=MENDRIVE_LIB_PRECISION, loglevel='DEBUG'):
     # Command to execute -lgsl -lgslcblas -lm
     # cmd = "gcc -shared -fPIC -O3 -o {name}.so {name}.c -lm".format(name=name)

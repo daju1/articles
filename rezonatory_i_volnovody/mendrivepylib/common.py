@@ -14,7 +14,7 @@ MENDRIVE_LIB_PRECISION='long_double'
 # MENDRIVE_LIB_PRECISION='float128'
 
 import struct
-from ctypes import Structure, c_longdouble, c_void_p, c_byte, c_ubyte, c_double
+
 
 
 def load_lib(name, precision=MENDRIVE_LIB_PRECISION):
@@ -1056,8 +1056,19 @@ class NewtonRootSolver:
 
         return real128(omegare_sol.value), real128(gamma_sol.value)
 
-use_phase_y = False
+
 from sage.calculus.calculus import var
+from sage.symbolic.assumptions import assume
+
+x = var('x')
+y = var('y')
+z = var('z')
+
+assume(x, 'real')
+assume(y, 'real')
+assume(z, 'real')
+
+use_phase_y = False
 b = var('b')
 
 def avg_over_y(expr, y_min=-b, y_max=b):

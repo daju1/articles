@@ -769,13 +769,15 @@ def find_resonance_roots_refine_and_cluster_them(
             refined_clustered_roots.append(result)
 
     return omega_graphic_solutions, refined_roots, clustered_roots, refined_clustered_roots#, (cu, cv, pl)
+
+
 # ============================================================================
 # ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ КЛАСТЕРИЗАЦИИ КОРНЕЙ
 # ============================================================================
 
 def euclidean_distance(root1, root2):
     """Вычисляет евклидово расстояние между двумя корнями."""
-    return np.sqrt((root1['kz'] - root2['kz'])**2 + (root1['sz'] - root2['sz'])**2)
+    return np.sqrt((root1['re'] - root2['re'])**2 + (root1['im'] - root2['im'])**2)
 
 
 def cluster_roots(roots_list, eps=1e-3, verbose=True):
@@ -1054,6 +1056,18 @@ class NewtonRootSolver:
 
         return real128(omegare_sol.value), real128(gamma_sol.value)
 
+use_phase_y = False
+from sage.calculus.calculus import var
+b = var('b')
+
+def avg_over_y(expr, y_min=-b, y_max=b):
+    if use_phase_y:
+        """Усреднение выражения по y с нормировкой на длину интервала."""
+        from sage.calculus.calculus import integrate
+        return integrate(expr, y, y_min, y_max) / (y_max - y_min)
+    else:
+        return expr
+
 def compute_maxwell_stress_tensor_symbolic_ED(
     Ex, Ey, Ez,
     Dx, Dy, Dz,
@@ -1079,6 +1093,11 @@ def compute_maxwell_stress_tensor_symbolic_ED(
         - dT_xy_dy = diff(T_xy, y)
         - dT_xz_dz = diff(T_xz, z)
     """
+
+    from sage.functions.other import conjugate
+    from sage.symbolic.constants import pi
+    from sage.calculus.functional import diff
+
 
     # Скалярные произведения E·D и H·B
     ED = Ex*conjugate(Dx) + Ey*conjugate(Dy) + Ez*conjugate(Dz)
@@ -1148,6 +1167,11 @@ def compute_maxwell_stress_tensor_symbolic_HB(
         - dT_xz_dz = diff(T_xz, z)
     """
 
+    from sage.functions.other import conjugate
+    from sage.symbolic.constants import pi
+    from sage.calculus.functional import diff
+
+
     # Скалярные произведения E·D и H·B
     # ED = Ex*conjugate(Dx) + Ey*conjugate(Dy) + Ez*conjugate(Dz)
     HB = Hx*conjugate(Bx) + Hy*conjugate(By) + Hz*conjugate(Bz)
@@ -1216,6 +1240,11 @@ def compute_maxwell_stress_tensor_symbolic(
         - dT_xz_dz = diff(T_xz, z)
     """
 
+    from sage.functions.other import conjugate
+    from sage.symbolic.constants import pi
+    from sage.calculus.functional import diff
+
+
     # Скалярные произведения E·D и H·B
     ED = Ex*conjugate(Dx) + Ey*conjugate(Dy) + Ez*conjugate(Dz)
     HB = Hx*conjugate(Bx) + Hy*conjugate(By) + Hz*conjugate(Bz)
@@ -1283,6 +1312,11 @@ def compute_convective_stress_tensor_symbolic_PE(
         - dT_xz_dz = diff(T_xz, z)
     """
 
+    from sage.functions.other import conjugate
+    from sage.symbolic.constants import pi
+    from sage.calculus.functional import diff
+
+
     # Скалярные произведения E·D и H·B
     EE = avg_over_y(Ex*conjugate(Ex) + Ey*conjugate(Ey) + Ez*conjugate(Ez))/2
     ED = avg_over_y(Ex*conjugate(Dx) + Ey*conjugate(Dy) + Ez*conjugate(Dz))/2
@@ -1346,6 +1380,11 @@ def compute_convective_stress_tensor_symbolic_IH(
         - dT_xz_dz = diff(T_xz, z)
     """
 
+    from sage.functions.other import conjugate
+    from sage.symbolic.constants import pi
+    from sage.calculus.functional import diff
+
+
     # Скалярные произведения E·D и H·B
     EE = avg_over_y(Ex*conjugate(Ex) + Ey*conjugate(Ey) + Ez*conjugate(Ez))/2
     ED = avg_over_y(Ex*conjugate(Dx) + Ey*conjugate(Dy) + Ez*conjugate(Dz))/2
@@ -1383,3 +1422,129 @@ def compute_convective_stress_tensor_symbolic_IH(
         'dT_xy_dy': dT_xy_dy,
         'dT_xz_dz': dT_xz_dz,
     }
+
+def fix_K_sign(K):
+    K_d = []
+    for K_i in K:
+        K_val = K_i.rhs()
+        if K_val.imag().n(prec=128) < 0:
+            K_d_i = K_i.lhs() == -K_val
+        else:
+            K_d_i = K_i.lhs() == K_val
+        K_d += [K_d_i]
+    return K_d
+
+def svd_X4_old(M4_d, verbose = False, phase_ref_index=0, cond_threshold=1e12, residual_threshold=1e-8):
+    """
+    Надёжное вычисление приближённого ядра 4×4 комплексной матрицы через SVD.
+
+    Параметры:
+        M4_d: символьная или численная матрица 4×4
+        verbose: вывод отладочной информации
+        phase_ref_index: индекс компоненты, по которой нормализуется глобальная фаза
+        cond_threshold: порог числа обусловленности (если выше — решение неустойчиво)
+        residual_threshold: порог невязки ||M·X|| (если выше — режим не существует)
+
+    Возвращает:
+        X4_norm: нормализованный вектор ядра (длина 4, комплексный)
+        result: dict с ключами:
+            - 'residual': ||M·X||
+            - 'cond': число обусловленности
+            - 'svals': сингулярные значения
+            - 'valid': bool — можно ли доверять решению
+    """
+    import numpy as np
+    from scipy.linalg import svd
+
+    # Преобразуем символьную матрицу M4 в numpy-массив комплексных чисел
+    M4_np = np.array(M4_d, dtype=np.complex128)  # M4_d — ваша численная матрица 4×4
+
+    # SVD: M = U · Σ · Vᴴ
+    U, S, Vh = svd(M4_np)
+
+    # Последняя строка Vh — собственный вектор для минимального сингулярного значения
+    X4 = Vh[-1]  # комплексный вектор длины 4: [B1_zl, A1_z, A2_z, B1_zr]
+
+    # Нормируем (например, по модулю A2_z)
+    # X4 = X4 / X4[2]  # A2_z → 1
+
+    residual = np.linalg.norm(M4_np @ X4)
+
+    # Диагностика
+
+    print("Сингулярные значения:", S)
+    cond = S[0] / S[-1]  if S[-1] != 0 else np.inf # число обусловленности
+    print("Число обусловленности:", cond)
+    valid = (cond < cond_threshold) and (residual < residual_threshold)
+
+    phase_ref = np.angle(X4[phase_ref_index])
+    print("phase_ref:", phase_ref)
+
+    # Нормировка по модулю
+    norm = np.linalg.norm(X4)
+    print("norm:", norm)
+
+    if verbose:
+        print("Коэффициенты:", X4)
+        print("Невязка:", residual)  # должна быть ~1e-15
+
+    return X4, residual
+
+def svd_X4(M4_d, verbose=False, residual_threshold=1e-8):
+    """
+    Ищет решение M·X = 0 и автоматически исправляет фазовые/перестановочные ошибки.
+
+    Поддерживает исправление:
+      - глобального фазового сдвига (умножение на ±i)
+      - перестановки A1 ↔ A2 (для симметричных мод)
+    """
+    import numpy as np
+    from scipy.linalg import svd
+
+    M4_np = np.array(M4_d, dtype=np.complex128)
+    U, s, Vh = svd(M4_np)
+    X4_raw = Vh[-1]
+    residual_raw = np.linalg.norm(M4_np @ X4_raw)
+
+    # Кандидаты на исправление
+    candidates = [
+        X4_raw,                     # оригинал
+        1j * X4_raw,                # фаза +π/2
+        -1j * X4_raw,               # фаза -π/2
+        np.conj(X4_raw),            # комплексное сопряжение
+    ]
+
+    # Для 4-компонентного вектора [B_l, A1, A2, B_r] — пробуем A1↔A2
+    if len(X4_raw) == 4:
+        X_swapped = np.array([X4_raw[0], X4_raw[2], X4_raw[1], X4_raw[3]])
+        candidates.extend([
+            X_swapped,
+            1j * X_swapped,
+            -1j * X_swapped,
+            np.conj(X_swapped),
+        ])
+
+    best_X = None
+    best_residual = np.inf
+    best_candidate = None
+
+    for i, X in enumerate(candidates):
+        # Нормализуем для устойчивости
+        norm = np.linalg.norm(X)
+        if norm < 1e-15:
+            continue
+        X_norm = X / norm
+        res = np.linalg.norm(M4_np @ X_norm)
+        if res < best_residual:
+            best_residual = res
+            best_X = X_norm
+            best_candidate = i
+
+    valid = best_residual < residual_threshold
+
+    if verbose:
+        print(f"Лучший кандидат: #{best_candidate}, остаток = {best_residual:.2e}")
+        if best_candidate != 0:
+            print("⚠️ Применена коррекция фазы/перестановки")
+
+    return best_X, {'residual': best_residual, 'valid': valid, 'candidate_id': best_candidate}

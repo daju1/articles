@@ -1,4 +1,8 @@
+from sage.all import RealField, ComplexField
 
+# Create a SageMath RealField with high precision
+complex128 = ComplexField(128)
+real128    = RealField(128)
 
 MENDRIVE_LIB_PRECISION='long_double'
 # MENDRIVE_LIB_PRECISION='float128'
@@ -83,6 +87,8 @@ def get_sign_K_fast(lib):
     return \
         real128(sign_K_H_l_d.value), real128(sign_K_E_l_d.value), \
         real128(sign_K_H_r_d.value), real128(sign_K_E_r_d.value),
+
+from ctypes import Structure
 
 # === Глобальное определение Float128 ===
 class Float128(Structure):
@@ -170,6 +176,7 @@ def _to_long_double(val):
     # Для большей точности используем numpy
     try:
         import numpy as np
+        from ctypes import c_longdouble
         return c_longdouble(np.longdouble(val_str))
     except (ImportError, ValueError):
         # Fallback: теряем часть точности
@@ -186,7 +193,7 @@ def _to_float128(val):
 
     # Метод 1: Через libquadmath (если доступна)
     try:
-        from ctypes import CDLL, c_char_p
+        from ctypes import CDLL, c_char_p, c_void_p
         libquadmath = CDLL("libquadmath.so.0")
 
         # strtoflt128 конвертирует строку в __float128
@@ -263,7 +270,7 @@ def _to_float128(val):
 def float128_to_str(f128):
     """Конвертирует Float128 обратно в строку (для проверки)."""
     try:
-        from ctypes import CDLL, c_char_p, create_string_buffer
+        from ctypes import CDLL, create_string_buffer
         libquadmath = CDLL("libquadmath.so.0")
 
         buf = create_string_buffer(50)

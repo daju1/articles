@@ -1,5 +1,4 @@
 from sage.all import RealField, ComplexField
-from ctypes import *
 
 # Create a SageMath RealField with high precision
 complex128 = ComplexField(128)
@@ -134,6 +133,7 @@ def find_resonance_roots_fast(lib, omega_re_range, omega_im_range, n_re=100, n_i
         Список кортежей (kz, sz) - приближённые положения корней
     """
     import numpy as np
+    from .mendrivelibc.common import det_eval_fast
 
     omega_re_min, omega_re_max = omega_re_range
     omega_im_min, omega_im_max = omega_im_range
@@ -334,6 +334,8 @@ def prec_graphic_solutions(lib, solver, preciser, sol_num, graphic_solutions, pr
     Returns:
         dict с информацией о корне или None при ошибке
     """
+    from .mendrivelibc.common import det_eval_fast
+
     re0, im0 = graphic_solutions[sol_num]
     det0_re, det0_im = det_eval_fast(lib, re0, im0)
     det0_residual = float(np.sqrt((det0_re)**2 + (det0_im)**2))
@@ -645,6 +647,8 @@ class NewtonPrecC:
         self.precision = precision
         self.num_type = get_numeric_type(self.precision)
 
+        from ctypes import POINTER, c_int
+
         self.lib = lib
         self.lib.newton_adaptive_step.argtypes = [
             POINTER(self.num_type),  # kz
@@ -664,6 +668,7 @@ class NewtonPrecC:
         self.lib.newton_adaptive_step.restype = c_int
 
     def solve(self, re0, im0, nsteps=1000, logging=False):
+        from ctypes import byref
 
         kz = self.num_type(re0)
         sz = self.num_type(im0)
@@ -731,6 +736,8 @@ class NewtonRootAdaptiveSolver:
 
         self.num_type = get_numeric_type(precision)
 
+        from ctypes import POINTER, c_int, byref
+
         # solve_newton_root
         self.lib.newton_adaptive.argtypes = [
             POINTER(self.num_type), POINTER(self.num_type),
@@ -750,6 +757,8 @@ class NewtonRootClassicSolver:
         self.precision = precision
         self.num_type = get_numeric_type(precision)
 
+        from ctypes import POINTER, c_int, byref
+
         # solve_newton_root
         self.lib.solve_newton_root_classic.argtypes = [
             self.num_type, self.num_type,
@@ -762,6 +771,7 @@ class NewtonRootClassicSolver:
         re_sol = self.num_type()
         im_sol = self.num_type()
         f_abs_out = self.num_type()
+        from ctypes import byref
         ret = self.lib.solve_newton_root_classic(self.num_type(re0), self.num_type(im0),
                                     byref(re_sol), byref(im_sol),
                                     byref(f_abs_out), max_iter)
@@ -772,6 +782,8 @@ class NewtonRootSolver:
     def __init__(self, lib):
         self.lib = lib
 
+        from ctypes import POINTER, c_double, c_int, byref
+
         # solve_newton_root
         self.lib.solve_newton_root.argtypes = [
             POINTER(c_double), POINTER(c_double),
@@ -781,6 +793,7 @@ class NewtonRootSolver:
         self.lib.solve_newton_root.restype = c_int
 
     def solve(self, re0, im0, epsabs=1e-12, max_iter=100):
+        from ctypes import c_double, byref
         re = c_double(re0)
         im = c_double(im0)
         omegare_sol = c_double()

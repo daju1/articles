@@ -549,7 +549,10 @@ def plot_all_branches_with_detplots(
     thrust_key='thrust_N_per_kW',
 ):
     import os
-    from sage.plot.plot import point2d, line2d
+    from sage.plot.point import point2d
+    from sage.plot.line import line2d
+    from sage.plot.text import text
+
     os.makedirs(output_dir, exist_ok=True)
 
     # --- строим глобальные ветви той же логикой что и plot_matched_branch_results ---

@@ -56,6 +56,9 @@ RUN apt-get -y install texlive-lang-cyrillic
 RUN apt-get -y install texlive-publishers #(revtex, etc)
 
 RUN apt-get -y install net-tools
+RUN apt-get -y install ntp
+
+RUN apt-get -y install gdb
 
 USER ${USER_NAME}
 # WORKDIR ${PROJECT_PATH}

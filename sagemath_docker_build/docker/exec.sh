@@ -1,1 +1,1 @@
-docker exec -it --workdir=${PWD} sage_build_container  /bin/bash
+docker exec -it --workdir=$(dirname ${PWD}) sage_build_container  /bin/bash

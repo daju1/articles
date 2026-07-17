@@ -10,12 +10,16 @@ DOCKER_IMAGE=ubuntu_sage_build:18.04
 PROJECTS_DIR=$(dirname $(dirname ${PWD}))
 USR3_DIR=$(dirname $(dirname $(dirname ${PWD})))
 
-docker network create sagemath
+# docker network create sagemath
 
-docker run -it --rm --name sage_build_container --cap-add=NET_ADMIN --device /dev/net/tun \
-    --workdir=${PWD} \
+docker run -it --rm --name sage_build_container \
+    --cap-add=SYS_PTRACE \
+    --security-opt seccomp=unconfined \
+    --device /dev/net/tun \
+    --workdir=${PROJECT_ROOT} \
     -p 8880:8888 \
     --network sagemath \
+    -e HOME=/home/${USER} \
     -v /home/${USER}/.local:/home/${USER}/.local \
     -v ${USR3_DIR}/winlibghemical:${PROJECT_ROOT}/winlibghemical \
     -v ${USR3_DIR}/moldyn:${PROJECT_ROOT}/moldyn \

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include "mendrive_log.h"
 #include "mendrive_point2d.h"
 #include "mendrive_isolines.h"
 #include "mendrive_isolines_traced.h"
@@ -32,6 +33,9 @@ int find_characteristic_roots(
     long double local_angle_sharp_threshold,      // 0.6L
     long double det_threshold
 ) {
+#ifdef LOGGING
+MPREC_LOG_DEBUG("find_characteristic_roots\n");
+#endif
     if (!result) return -1;
     result->roots = NULL;
     result->n_roots = 0;
@@ -49,7 +53,14 @@ int find_characteristic_roots(
         );
     }
 
+#ifdef LOGGING
+MPREC_LOG_DEBUG("find_characteristic_roots: compute_det_contours status = %d\n", status);
+#endif
+
     if (status != 0) {
+#ifdef LOGGING
+MPREC_LOG_DEBUG("find_characteristic_roots: compute_det_contours failed. return -1\n");
+#endif
         return -1;
     }
 
@@ -58,6 +69,9 @@ int find_characteristic_roots(
     point2d_t* intersections = (point2d_t*)malloc(MAX_INTERSECTIONS * sizeof(point2d_t));
     if (!intersections) {
         free_det_contours(contours);
+#ifdef LOGGING
+MPREC_LOG_DEBUG("find_characteristic_roots no intersections returns -1\n");
+#endif
         return -1;
     }
 
@@ -78,12 +92,12 @@ int find_characteristic_roots(
             long double* cv_y = (long double*)malloc(cv->n_points * sizeof(long double));
 
             for (int k = 0; k < cu->n_points; ++k) {
-                cu_x[k] = cu->points[k].kz;
-                cu_y[k] = cu->points[k].sz;
+                cu_x[k] = cu->points[k].x;
+                cu_y[k] = cu->points[k].y;
             }
             for (int k = 0; k < cv->n_points; ++k) {
-                cv_x[k] = cv->points[k].kz;
-                cv_y[k] = cv->points[k].sz;
+                cv_x[k] = cv->points[k].x;
+                cv_y[k] = cv->points[k].y;
             }
 
             // Находим пересечения
@@ -126,7 +140,9 @@ int find_characteristic_roots(
             if (total_count >= MAX_INTERSECTIONS) break;
         }
     }
-
+#ifdef LOGGING
+MPREC_LOG_DEBUG("find_characteristic_roots total_count %d\n", total_count);
+#endif
     if (total_count == 0) {
         free(intersections);
         result->roots = NULL;
@@ -139,6 +155,9 @@ int find_characteristic_roots(
 
     result->roots = intersections;
     result->n_roots = total_count;
+#ifdef LOGGING
+MPREC_LOG_DEBUG("find_characteristic_roots return 0\n");
+#endif
     return 0;
 }
 

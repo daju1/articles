@@ -2,14 +2,14 @@
 #define MENDDRIVE_POINT2D_H
 
 typedef struct {
-    long double kz;
-    long double sz;
+    long double x;
+    long double y;
     long double sin_r_s;
 } point2d_t;
 
 typedef struct {
-    long double kz;
-    long double sz;
+    long double x;
+    long double y;
     long double cosine;
     long double sine;
     int type;

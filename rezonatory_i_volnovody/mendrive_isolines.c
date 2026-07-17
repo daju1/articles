@@ -13,23 +13,23 @@ extern void det_eval(long double kz, long double sz, long double* det_re, long d
 #define IS_INVALID(x, eps) (isnan(x) || isinf(x) || fabsl(x) > (eps))
 
 // Внутренняя структура ячейки Marching Squares
-static const int edge_table[16] = {
+/*static const int edge_table[16] = {
     0x0, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
     0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00
-};
+};*/
 
 // Сборка ломаных из отрезков
 typedef struct {
     long double x, y;
 } pt_ld;
 
-static int compare_pts(const void* a, const void* b) {
+/*static int compare_pts(const void* a, const void* b) {
     pt_ld* pa = (pt_ld*)a;
     pt_ld* pb = (pt_ld*)b;
     if (fabsl(pa->x - pb->x) > 1e-16L) return (pa->x > pb->x) ? 1 : -1;
     if (fabsl(pa->y - pb->y) > 1e-16L) return (pa->y > pb->y) ? 1 : -1;
     return 0;
-}
+}*/
 
 // Основная функция построения изолиний
 static int extract_contours_from_grid(
@@ -419,11 +419,11 @@ static int extract_contours_from_grid(
         pt_ld current_start = segments[2*start_i];
         pt_ld current_end   = segments[2*start_i + 1];
 
-        pts[pcount].kz = current_start.x;
-        pts[pcount].sz = current_start.y;
+        pts[pcount].x = current_start.x;
+        pts[pcount].y = current_start.y;
         pcount++;
-        pts[pcount].kz = current_end.x;
-        pts[pcount].sz = current_end.y;
+        pts[pcount].x = current_end.x;
+        pts[pcount].y = current_end.y;
         pcount++;
 
         used_seg[start_i] = 1;
@@ -444,8 +444,8 @@ static int extract_contours_from_grid(
                         if (!tmp) goto cleanup;
                         pts = tmp;
                     }
-                    pts[pcount].kz = b.x;
-                    pts[pcount].sz = b.y;
+                    pts[pcount].x = b.x;
+                    pts[pcount].y = b.y;
                     pcount++;
                     tail = b;
                     used_seg[j] = 1;
@@ -460,8 +460,8 @@ static int extract_contours_from_grid(
                         if (!tmp) goto cleanup;
                         pts = tmp;
                     }
-                    pts[pcount].kz = a.x;
-                    pts[pcount].sz = a.y;
+                    pts[pcount].x = a.x;
+                    pts[pcount].y = a.y;
                     pcount++;
                     tail = a;
                     used_seg[j] = 1;
@@ -488,8 +488,8 @@ static int extract_contours_from_grid(
                     }
                     // Сдвигаем все точки вправо
                     memmove(&pts[1], &pts[0], pcount * sizeof(point2d_t));
-                    pts[0].kz = a.x;
-                    pts[0].sz = a.y;
+                    pts[0].x = a.x;
+                    pts[0].y = a.y;
                     pcount++;
                     head = a;
                     used_seg[j] = 1;
@@ -505,8 +505,8 @@ static int extract_contours_from_grid(
                         pts = tmp;
                     }
                     memmove(&pts[1], &pts[0], pcount * sizeof(point2d_t));
-                    pts[0].kz = b.x;
-                    pts[0].sz = b.y;
+                    pts[0].x = b.x;
+                    pts[0].y = b.y;
                     pcount++;
                     head = b;
                     used_seg[j] = 1;

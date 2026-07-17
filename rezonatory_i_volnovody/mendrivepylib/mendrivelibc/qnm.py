@@ -1,6 +1,16 @@
+from sage.all import RealField, ComplexField
+
+# Create a SageMath RealField with high precision
+complex128 = ComplexField(128)
+real128    = RealField(128)
+
 import struct
 from ctypes import Structure, c_longdouble, c_void_p, c_byte, c_ubyte, c_double
 
+from .common import MENDRIVE_LIB_PRECISION
+
+from ..variables.common import *
+from ..variables.qnm import *
 
 def sage_expr_to_c_with_params(expr, precision, assign_to="det_v"):
     import sympy as sp
@@ -111,25 +121,9 @@ def create_det_c( M_det, M_det_K,
     M_det_diff_omega_re = M_det.diff(omega_re)
     M_det_diff_omega_im = M_det.diff(omega_im)
 
-    # выражения для отношения каждой компоненты комплексной функции к ее производной по каждой компоненте аргумента
-    M_det_div_diff_omega_re = (M_det / M_det_diff_omega_re)
-    M_det_div_diff_omega_im = (M_det / M_det_diff_omega_im)
-
     # выражения для производной комплексной функции по каждой компоненте аргумента
-    c_expr_det_diff_omega_re = sage_expr_to_c_with_params( M_det_diff_omega_re,
-                                                     precision=precision,
-                                                     assign_to="df_domega_re" )
-    c_expr_det_diff_omega_im = sage_expr_to_c_with_params( M_det_diff_omega_im,
-                                                     precision=precision,
-                                                     assign_to="df_domega_im" )
-
-    # выражения для отношения каждой компоненты комплексной функции к ее производной по каждой компоненте аргумента
-    c_expr_det_div_diff_omega_re = sage_expr_to_c_with_params( M_det_div_diff_omega_re,
-                                                         precision=precision,
-                                                         assign_to="det_div_diff_omega_re" )
-    c_expr_det_div_diff_omega_im = sage_expr_to_c_with_params( M_det_div_diff_omega_im,
-                                                         precision=precision,
-                                                         assign_to="det_div_diff_omega_im" )
+    c_expr_det_diff_omega_re = sage_expr_to_c_with_params( M_det_diff_omega_re, precision=precision, assign_to="df_domega_re" )
+    c_expr_det_diff_omega_im = sage_expr_to_c_with_params( M_det_diff_omega_im, precision=precision, assign_to="df_domega_im" )
 
     mendrive_det_c="""
         #include <stdio.h>
@@ -363,8 +357,9 @@ def create_det_c( M_det, M_det_K,
             return 0;
         }}
 
-        void det_div_diff_kz_eval(long double omega_re, long double omega_im,
-            mendrive_scalar_t *div_re, mendrive_scalar_t *div_im) {{
+
+        void det_diff_omega_re_eval(long double omega_re, long double omega_im,
+            mendrive_scalar_t *df_re, mendrive_scalar_t *df_im) {{
 
             mendrive_complex_t K_E_left_conductor;
             mendrive_complex_t K_H_left_conductor;
@@ -375,28 +370,95 @@ def create_det_c( M_det, M_det_K,
             K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
             K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
 
-            mendrive_complex_t {divomega_re}
+            mendrive_complex_t {dfdomega_re}
 
-            *div_re = MENDRIVE_COMPLEX_REAL(det_div_diff_omega_re);
-            *div_im = MENDRIVE_COMPLEX_IMAG(det_div_diff_omega_re);
+            *df_re = MENDRIVE_COMPLEX_REAL(df_domega_re);
+            *df_im = MENDRIVE_COMPLEX_IMAG(df_domega_re);
+        }}
+
+        void det_diff_omega_im_eval(long double omega_re, long double omega_im,
+            mendrive_scalar_t *df_re, mendrive_scalar_t *df_im) {{
+
+            mendrive_complex_t K_E_left_conductor;
+            mendrive_complex_t K_H_left_conductor;
+            mendrive_complex_t K_E_right_conductor;
+            mendrive_complex_t K_H_right_conductor;
+            K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
+            K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
+            K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
+            K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
+
+            mendrive_complex_t {dfdomega_im}
+
+            *df_re = MENDRIVE_COMPLEX_REAL(df_domega_im);
+            *df_im = MENDRIVE_COMPLEX_IMAG(df_domega_im);
+        }}
+
+
+        void det_div_diff_kz_eval(long double omega_re, long double omega_im,
+            mendrive_scalar_t *div_re, mendrive_scalar_t *div_im) {{
+
+            mendrive_complex_t K_E_vacuum;
+            K_E_v_eval(omega_re, omega_im, &K_E_vacuum);
+
+            mendrive_complex_t K_H_vacuum;
+            K_H_v_eval(omega_re, omega_im, &K_H_vacuum);
+
+            mendrive_complex_t K_E_left_conductor;
+            K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
+
+            mendrive_complex_t K_H_left_conductor;
+            K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
+
+            mendrive_complex_t K_E_right_conductor;
+            K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
+
+            mendrive_complex_t K_H_right_conductor;
+            K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
+
+            mendrive_complex_t {det_K}
+
+            // ∂f/∂kz ≈ (f(kz+h) - f(kz-h)) / (2h)
+            mendrive_complex_t {dfdomega_re}
+
+            // ∂f/∂sz ≈ (f(sz+h) - f(sz-h)) / (2h)
+            // mendrive_complex_t dfdomega_im
+
+            *div_re = MENDRIVE_COMPLEX_REAL((det_K_v)/(df_domega_re));
+            *div_im = MENDRIVE_COMPLEX_IMAG((det_K_v)/(df_domega_re));
         }}
 
         void det_div_diff_sz_eval(long double omega_re, long double omega_im,
             mendrive_scalar_t *div_re, mendrive_scalar_t *div_im) {{
 
+            mendrive_complex_t K_E_vacuum;
+            K_E_v_eval(omega_re, omega_im, &K_E_vacuum);
+
+            mendrive_complex_t K_H_vacuum;
+            K_H_v_eval(omega_re, omega_im, &K_H_vacuum);
+
             mendrive_complex_t K_E_left_conductor;
-            mendrive_complex_t K_H_left_conductor;
-            mendrive_complex_t K_E_right_conductor;
-            mendrive_complex_t K_H_right_conductor;
             K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
+
+            mendrive_complex_t K_H_left_conductor;
             K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
+
+            mendrive_complex_t K_E_right_conductor;
             K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
+
+            mendrive_complex_t K_H_right_conductor;
             K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
 
-            mendrive_complex_t {divomega_im}
+            mendrive_complex_t {det_K}
 
-            *div_re = MENDRIVE_COMPLEX_REAL(det_div_diff_omega_im);
-            *div_im = MENDRIVE_COMPLEX_IMAG(det_div_diff_omega_im);
+            // ∂f/∂kz ≈ (f(kz+h) - f(kz-h)) / (2h)
+            // mendrive_complex_t dfdomega_re
+
+            // ∂f/∂sz ≈ (f(sz+h) - f(sz-h)) / (2h)
+            mendrive_complex_t {dfdomega_im}
+
+            *div_re = MENDRIVE_COMPLEX_REAL((det_K_v)/(df_domega_im));
+            *div_im = MENDRIVE_COMPLEX_IMAG((det_K_v)/(df_domega_im));
         }}
 
         """.format(det=c_expr_det,
@@ -405,9 +467,7 @@ def create_det_c( M_det, M_det_K,
                    K_E_l = c_expr_K_E_l, K_E_r = c_expr_K_E_r,
                    K_H_l = c_expr_K_H_l, K_H_r = c_expr_K_H_r,
                    dfdomega_re = c_expr_det_diff_omega_re,
-                   dfdomega_im = c_expr_det_diff_omega_im,
-                   divomega_re = c_expr_det_div_diff_omega_re,
-                   divomega_im = c_expr_det_div_diff_omega_im)
+                   dfdomega_im = c_expr_det_diff_omega_im)
 
     # print(mendrive_det_c)
 
@@ -508,6 +568,7 @@ def init_lib(lib, digit_values, precision=MENDRIVE_LIB_PRECISION):
 
     from ctypes import Structure, c_longdouble, POINTER, CDLL, byref, c_int
 
+    from .common import get_numeric_type, to_numeric
     num_type = get_numeric_type(precision)
 
     class MendriveParams(Structure):

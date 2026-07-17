@@ -129,8 +129,8 @@ static int analyze_corners_smoothness(
     if (!x || !y) { free(x); free(y); return 0; }
 
     for (int i = 0; i < n_corners; ++i) {
-        x[i] = corners[i].kz;
-        y[i] = corners[i].sz;
+        x[i] = corners[i].x;
+        y[i] = corners[i].y;
     }
 
     int smooth_count = 0;
@@ -514,7 +514,7 @@ void find_sharp_corners_sin(
         }
     }
 }
-
+#if 0
 // Возвращает true, если точка i в ломаной является "острым" изломом
 static int is_sharp_corner(
     const long double* x, const long double* y, int n, int i,
@@ -530,7 +530,7 @@ static int is_sharp_corner(
 
     return (cos_val < cos_max_angle); // например, cos_max_angle = -0.94L (~160°)
 }
-
+#endif
 // Адаптивное определение острых углов
 void find_sharp_corners(
     const long double* x, const long double* y, int n,
@@ -772,7 +772,7 @@ static int smooth_segment_length(
 ) {
     if (center_idx < 0 || center_idx >= n_vals) return 0;
 
-    int max_len = 1; // минимум — сама точка
+    //int max_len = 1; // минимум — сама точка
 
     // Ищем влево
     (*left) = center_idx;
@@ -831,8 +831,8 @@ static int refine_sharp_corner_by_smoothness(
         int cand = candidates[k];
 
         // индекс в массивах cosines/sines: cand - 1
-        int cos_idx = cand - 1;
-        int sin_idx = cand - 1;
+        //int cos_idx = cand - 1;
+        //int sin_idx = cand - 1;
 
         // Вычисляем длину гладкого участка по косинусам
         // int len_cos = smooth_segment_length(cosines, n_cos, cos_idx, eps_smooth);
@@ -843,10 +843,10 @@ static int refine_sharp_corner_by_smoothness(
 
         // Вычисляем длину гладкого участка по синусам
         int left_sin, right_sin;
-        int len_sin = smooth_segment_length( sines, n_sin, sin_idx, eps_smooth, &left_sin, &right_sin );
+        //int len_sin = smooth_segment_length( sines, n_sin, sin_idx, eps_smooth, &left_sin, &right_sin );
 
         #ifdef LOGGING
-        printf("k=%d, cand=%d, i=%d, n_points=%d len_sin = %d\n\n", k, cand, i, n_points, len_sin);
+        //printf("k=%d, cand=%d, i=%d, n_points=%d len_sin = %d\n\n", k, cand, i, n_points, len_sin);
         #endif
 
         // Берём максимум из двух — можно также усреднять или взвешивать
@@ -963,8 +963,8 @@ find_sharp_corners_filtered(
         corner2d_t* temp_corners = (corner2d_t*)malloc(candidate_count * sizeof(corner2d_t));
         if (temp_corners) {
             for (int i = 0; i < candidate_count; ++i) {
-                temp_corners[i].kz = x[out_corners[i].idx];
-                temp_corners[i].sz = y[out_corners[i].idx];
+                temp_corners[i].x = x[out_corners[i].idx];
+                temp_corners[i].y = y[out_corners[i].idx];
                 temp_corners[i].cosine = cosines[out_corners[i].idx - 1];
                 temp_corners[i].sine   = sines[out_corners[i].idx - 1];
                 temp_corners[i].is_confirmed = 1;
@@ -1051,8 +1051,8 @@ int find_contour_intersections_with_corners(
 
             if (res == 1 || res == 2) {  // 1 — пересечение, 2 — касание
                 if (count >= max_intersections) goto overflow;
-                intersections[count].kz = x;
-                intersections[count].sz = y;
+                intersections[count].x = x;
+                intersections[count].y = y;
                 intersections[count].sin_r_s = sin_r_s;
                 count++;
             }
@@ -1098,8 +1098,8 @@ int find_contour_intersections_with_corners(
                     long double x = p_x + t * r_x;
                     long double y = p_y + t * r_y;
                     if (count >= max_intersections) goto overflow;
-                    intersections[count].kz = x;
-                    intersections[count].sz = y;
+                    intersections[count].x = x;
+                    intersections[count].y = y;
                     count++;
                 }
             }
@@ -1143,8 +1143,8 @@ int find_contour_intersections_with_corners(
                     long double x = p_x + t * r_x;
                     long double y = p_y + t * r_y;
                     if (count >= max_intersections) goto overflow;
-                    intersections[count].kz = x;
-                    intersections[count].sz = y;
+                    intersections[count].x = x;
+                    intersections[count].y = y;
                     count++;
                 }
             }
@@ -1206,8 +1206,8 @@ int test_sharp_corners(const contour_line_t* line,
     }
 
     for (int i = 0; i < line->n_points; ++i) {
-        x[i] = line->points[i].kz;
-        y[i] = line->points[i].sz;
+        x[i] = line->points[i].x;
+        y[i] = line->points[i].y;
     }
 
 #ifdef SHARP_CORNERS_ON_COSINES_SINES_USING_HIST
@@ -1256,8 +1256,8 @@ int test_sharp_corners(const contour_line_t* line,
             );
             if (refined_i < 1 || refined_i >= line->n_points - 1) refined_i = i;
 
-            temp_candidates[candidate_count].kz = x[i];
-            temp_candidates[candidate_count].sz = y[i];
+            temp_candidates[candidate_count].x = x[i];
+            temp_candidates[candidate_count].y = y[i];
             temp_candidates[candidate_count].cosine = cosines[i-1];
             temp_candidates[candidate_count].sine   = sines[i-1];
             temp_candidates[candidate_count].type =
@@ -1265,8 +1265,8 @@ int test_sharp_corners(const contour_line_t* line,
                 (sharp_mask_cos[i] ? 2 : 3);
             temp_candidates[candidate_count].i = i;
             temp_candidates[candidate_count].refined_i = refined_i;
-            temp_candidates[candidate_count].refined_pt.kz = x[refined_i];
-            temp_candidates[candidate_count].refined_pt.sz = y[refined_i];
+            temp_candidates[candidate_count].refined_pt.x = x[refined_i];
+            temp_candidates[candidate_count].refined_pt.y = y[refined_i];
 
             #ifdef USE_REFILTER
             temp_candidates[candidate_count].is_confirmed = 1;  // по умолчанию подтверждён
@@ -1321,7 +1321,7 @@ int test_sharp_corners(const contour_line_t* line,
 
         for (int i = 0; i < sharp_count && i < 10; ++i) {  // выводим первые 10 для краткости
             printf("  Точка %d: (%.6Lf, %.6Lf) cos=%.6Lf sin=%.6Lf type=%d refined_i=%d\n",
-                sharp_corners[i].i, sharp_corners[i].kz, sharp_corners[i].sz,
+                sharp_corners[i].i, sharp_corners[i].x, sharp_corners[i].y,
                 sharp_corners[i].cosine, sharp_corners[i].sine,
                 sharp_corners[i].type, sharp_corners[i].refined_i);
         }
@@ -1339,7 +1339,7 @@ int test_sharp_corners(const contour_line_t* line,
 
     return sharp_count;
 
-overflow:
-    fprintf(stderr, "test_sharp_corners: max_sharp_corners exceeded\n");
-    return sharp_count;
+// overflow:
+//     fprintf(stderr, "test_sharp_corners: max_sharp_corners exceeded\n");
+//     return sharp_count;
 }

@@ -1,3 +1,14 @@
+from sage.all import RealField, ComplexField
+
+# Create a SageMath RealField with high precision
+complex128 = ComplexField(128)
+real128    = RealField(128)
+
+import struct
+from ctypes import Structure, c_longdouble, c_void_p, c_byte, c_ubyte, c_double
+
+from .common import MENDRIVE_LIB_PRECISION
+
 def sage_expr_to_c_with_params(expr, precision, assign_to="det_v"):
     import sympy as sp
 
@@ -490,6 +501,7 @@ def init_lib(lib, digit_values, precision=MENDRIVE_LIB_PRECISION):
 
     from ctypes import Structure, c_longdouble, POINTER, CDLL, byref, c_int
 
+    from .common import get_numeric_type, to_numeric
     num_type = get_numeric_type(precision)
 
     class MendriveParams(Structure):

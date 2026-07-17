@@ -28,6 +28,9 @@ int newton_adaptive_step(
     mendrive_scalar_t f_abs_eps,
     int max_retries              // N = 10 в Python
 ) {
+#ifdef LOGGING
+MPREC_LOG_DEBUG("newton_adaptive_step\n");
+#endif
     // Вычисляем текущее значение функции
     mendrive_scalar_t f_re, f_im;
     det_eval(*kz, *sz, &f_re, &f_im);
@@ -79,7 +82,7 @@ int newton_adaptive_step(
         if (f_abs_new > f_abs) {
             step_decrease = f_abs / f_abs_new;
             *step_re_re *= step_decrease;
-            MPREC_LOG_TRACE("Шаг 1 отклонён: |f|_new=" MPREC_LOG_FMT_SCALAR " > " MPREC_LOG_FMT_SCALAR " step_decrease=" MPREC_LOG_FMT_SCALAR " step_re_re=" MPREC_LOG_FMT_SCALAR "", 
+            MPREC_LOG_TRACE("Шаг 1 отклонён: |f|_new=" MPREC_LOG_FMT_SCALAR " > " MPREC_LOG_FMT_SCALAR " step_decrease=" MPREC_LOG_FMT_SCALAR " step_re_re=" MPREC_LOG_FMT_SCALAR "",
                            f_abs_new, (f_abs), step_decrease, *step_re_re);
             continue;
         } else {
@@ -117,7 +120,7 @@ int newton_adaptive_step(
         if (f_abs_new > f_abs) {
             step_decrease = f_abs / f_abs_new;
             *step_im_re *= step_decrease;
-            MPREC_LOG_TRACE("Шаг 2 отклонён: |f|_new=" MPREC_LOG_FMT_SCALAR " > " MPREC_LOG_FMT_SCALAR " step_decrease=" MPREC_LOG_FMT_SCALAR " step_im_re=" MPREC_LOG_FMT_SCALAR "", 
+            MPREC_LOG_TRACE("Шаг 2 отклонён: |f|_new=" MPREC_LOG_FMT_SCALAR " > " MPREC_LOG_FMT_SCALAR " step_decrease=" MPREC_LOG_FMT_SCALAR " step_im_re=" MPREC_LOG_FMT_SCALAR "",
                            f_abs_new, (f_abs), step_decrease, *step_im_re);
             continue;
         } else {
@@ -166,7 +169,7 @@ int newton_adaptive_step(
         if (f_abs_new > f_abs) {
             step_decrease = f_abs / f_abs_new;
             *step_re_im *= step_decrease;
-            MPREC_LOG_TRACE("Шаг 3 отклонён: |f|_new=" MPREC_LOG_FMT_SCALAR " > " MPREC_LOG_FMT_SCALAR " step_decrease=" MPREC_LOG_FMT_SCALAR " step_re_im=" MPREC_LOG_FMT_SCALAR "", 
+            MPREC_LOG_TRACE("Шаг 3 отклонён: |f|_new=" MPREC_LOG_FMT_SCALAR " > " MPREC_LOG_FMT_SCALAR " step_decrease=" MPREC_LOG_FMT_SCALAR " step_re_im=" MPREC_LOG_FMT_SCALAR "",
                            f_abs_new, (f_abs), step_decrease, *step_re_im);
             continue;
         } else {
@@ -204,7 +207,7 @@ int newton_adaptive_step(
         if (f_abs_new > f_abs) {
             step_decrease = f_abs / f_abs_new;
             *step_im_im *= step_decrease;
-            MPREC_LOG_TRACE("Шаг 4 отклонён: |f|_new=" MPREC_LOG_FMT_SCALAR " > " MPREC_LOG_FMT_SCALAR " step_decrease=" MPREC_LOG_FMT_SCALAR " step_im_im=" MPREC_LOG_FMT_SCALAR "", 
+            MPREC_LOG_TRACE("Шаг 4 отклонён: |f|_new=" MPREC_LOG_FMT_SCALAR " > " MPREC_LOG_FMT_SCALAR " step_decrease=" MPREC_LOG_FMT_SCALAR " step_im_im=" MPREC_LOG_FMT_SCALAR "",
                            f_abs_new, (f_abs), step_decrease, *step_im_im);
             continue;
         } else {

@@ -20,7 +20,7 @@ CLEAN=0
 TARGET="mendrive"
 GSL_PATH="../vimaniks/gsl/local"
 KY_MODE=1
-QNM_MODE=0
+QNM_MODE=1
 GYRO_TENSOR=0
 JOBS=$(nproc 2>/dev/null || echo 2)
 STATIC=0
@@ -245,7 +245,7 @@ echo ""
 
 # Список исходников
 SOURCES=(
-    mendrive_det.c
+    mendrive_det_qnm.c
     mendrive_isolines.c
     mendrive_isolines_traced.c
     mendrive_contour_intersections.c

@@ -93,8 +93,8 @@ int trace_isoline(
     point2d_t* pts = (point2d_t*)malloc(cap * sizeof(point2d_t));
     if (!pts) return -1;
 
-    pts[0].kz = kz;
-    pts[0].sz = sz;
+    pts[0].x = kz;
+    pts[0].y = sz;
     int count = 1;
 
     long double direction = 1.0L; // направление трассировки
@@ -132,8 +132,8 @@ int trace_isoline(
 
         // Проверка замыкания (если вернулись близко к началу)
         if (count > 10) {
-            long double dx = kz1 - pts[0].kz;
-            long double dy = sz1 - pts[0].sz;
+            long double dx = kz1 - pts[0].x;
+            long double dy = sz1 - pts[0].y;
             if (dx*dx + dy*dy < 1e-10L) {
                 break; // замкнули контур
             }
@@ -146,8 +146,8 @@ int trace_isoline(
             if (!tmp) { free(pts); return -1; }
             pts = tmp;
         }
-        pts[count].kz = kz1;
-        pts[count].sz = sz1;
+        pts[count].x = kz1;
+        pts[count].y = sz1;
         count++;
 
         // Обновляем текущую точку

@@ -89,8 +89,8 @@ int find_contour_intersections(
                 return count;
             }
 
-            intersections[count].kz = x;
-            intersections[count].sz = y;
+            intersections[count].x = x;
+            intersections[count].y = y;
             intersections[count].sin_r_s = sin_r_s;
             count++;
         }

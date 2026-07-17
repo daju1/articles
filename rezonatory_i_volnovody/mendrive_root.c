@@ -5,15 +5,31 @@
 #include <gsl/gsl_multiroots.h>
 #include "mendrive_root.h"
 #include "mendrive_det.h"  // ← содержит det_eval()
+#include "mendrive_log.h"
 
 static mendrive_params_t g_params;
 
 int det_system(const gsl_vector *x, void *params, gsl_vector *f) {
+
+#ifdef LOGGING
+MPREC_LOG_DEBUG("det_system \n");
+#endif
+
     long double kz = (long double) gsl_vector_get(x, 0);
     long double sz = (long double) gsl_vector_get(x, 1);
 
+#ifdef LOGGING
+MPREC_LOG_DEBUG("det_system kz = %.19Lg\n", kz);
+MPREC_LOG_DEBUG("det_system sz = %.19Lg\n", sz);
+#endif
+
     mendrive_scalar_t re, im;
     det_eval(kz, sz, &re, &im);
+
+#ifdef LOGGING
+MPREC_LOG_DEBUG("re=" MPREC_LOG_FMT_SCALAR "\n", re);
+MPREC_LOG_DEBUG("im=" MPREC_LOG_FMT_SCALAR "\n", im);
+#endif
 
     gsl_vector_set(f, 0, (double)re);  // f₁ = Re(det)
     gsl_vector_set(f, 1, (double)im);  // f₂ = Im(det)
@@ -23,6 +39,9 @@ int det_system(const gsl_vector *x, void *params, gsl_vector *f) {
 int solve_newton_root(double *kz_guess, double *sz_guess,
                       double *kz_sol, double *sz_sol,
                       double epsabs, int max_iter) {
+#ifdef LOGGING
+MPREC_LOG_DEBUG("solve_newton_root\n");
+#endif
     const gsl_multiroot_fsolver_type *T = gsl_multiroot_fsolver_hybrids;
     gsl_multiroot_fsolver *s = gsl_multiroot_fsolver_alloc(T, 2);
     gsl_vector *x = gsl_vector_alloc(2);

@@ -126,340 +126,342 @@ def create_det_c( M_det, M_det_K,
     c_expr_det_diff_omega_im = sage_expr_to_c_with_params( M_det_diff_omega_im, precision=precision, assign_to="df_domega_im" )
 
     mendrive_det_c="""
-        #include <stdio.h>
-        #include <math.h>
-        #include <complex.h>
-        #include "mendrive_det.h"
-        #include "mendrive_log.h"
+#include <stdio.h>
+#include <math.h>
+#include <complex.h>
+#include "mendrive_det.h"
+#include "mendrive_log.h"
 
-        // Статическая копия параметров — инициализируется один раз
-        static mendrive_params_t params;
+// Статическая копия параметров — инициализируется один раз
+static mendrive_params_t params;
 
-        static int sign_K_H_l = 1;
-        static int sign_K_E_l = 1;
-        static int sign_K_H_r = 1;
-        static int sign_K_E_r = 1;
+static int sign_K_H_l = 1;
+static int sign_K_E_l = 1;
+static int sign_K_H_r = 1;
+static int sign_K_E_r = 1;
 
-        void get_sign_K( int * sign_K_H_l_d, int * sign_K_E_l_d,
-                         int * sign_K_H_r_d, int * sign_K_E_r_d ) {{
-            *sign_K_H_l_d = sign_K_H_l;
-            *sign_K_E_l_d = sign_K_E_l;
-            *sign_K_H_r_d = sign_K_H_r;
-            *sign_K_E_r_d = sign_K_E_r;
-        }}
+void get_sign_K( int * sign_K_H_l_d, int * sign_K_E_l_d,
+                    int * sign_K_H_r_d, int * sign_K_E_r_d ) {{
+    *sign_K_H_l_d = sign_K_H_l;
+    *sign_K_E_l_d = sign_K_E_l;
+    *sign_K_H_r_d = sign_K_H_r;
+    *sign_K_E_r_d = sign_K_E_r;
+}}
 
-        void minus_sign_K_H_l() {{
-            sign_K_H_l = -1;
-        }}
-        void plus_sign_K_H_l() {{
-            sign_K_H_l = +1;
-        }}
-        void minus_sign_K_H_r() {{
-            sign_K_H_r = -1;
-        }}
-        void plus_sign_K_H_r() {{
-            sign_K_H_r = +1;
-        }}
-        void minus_sign_K_E_l() {{
-            sign_K_E_l = -1;
-        }}
-        void plus_sign_K_E_l() {{
-            sign_K_E_l = +1;
-        }}
-        void minus_sign_K_E_r() {{
-            sign_K_E_r = -1;
-        }}
-        void plus_sign_K_E_r() {{
-            sign_K_E_r = +1;
-        }}
+void minus_sign_K_H_l() {{
+    sign_K_H_l = -1;
+}}
+void plus_sign_K_H_l() {{
+    sign_K_H_l = +1;
+}}
+void minus_sign_K_H_r() {{
+    sign_K_H_r = -1;
+}}
+void plus_sign_K_H_r() {{
+    sign_K_H_r = +1;
+}}
+void minus_sign_K_E_l() {{
+    sign_K_E_l = -1;
+}}
+void plus_sign_K_E_l() {{
+    sign_K_E_l = +1;
+}}
+void minus_sign_K_E_r() {{
+    sign_K_E_r = -1;
+}}
+void plus_sign_K_E_r() {{
+    sign_K_E_r = +1;
+}}
 
-        void K_E_v_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
-            mendrive_complex_t *K_E_v_v) {{
+void K_E_v_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
+    mendrive_complex_t *K_E_v_v) {{
 
-            {K_E_v}
-        }}
+    {K_E_v}
+}}
 
-        void K_H_v_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
-            mendrive_complex_t *K_H_v_v) {{
+void K_H_v_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
+    mendrive_complex_t *K_H_v_v) {{
 
-            {K_H_v}
-        }}
+    {K_H_v}
+}}
 
-        void K_E_l_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
-            mendrive_complex_t *K_E_l_v) {{
+void K_E_l_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
+    mendrive_complex_t *K_E_l_v) {{
 
-            {K_E_l}
+    {K_E_l}
 
-            if (MENDRIVE_COMPLEX_IMAG(*K_E_l_v) < 0) {{
-                minus_sign_K_E_l();
-            }}
-            else {{
-                plus_sign_K_E_l();
-            }}
-        }}
+    if (MENDRIVE_COMPLEX_IMAG(*K_E_l_v) < 0) {{
+        minus_sign_K_E_l();
+    }}
+    else {{
+        plus_sign_K_E_l();
+    }}
+}}
 
-        void K_H_l_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
-            mendrive_complex_t *K_H_l_v) {{
+void K_H_l_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
+    mendrive_complex_t *K_H_l_v) {{
 
-            {K_H_l}
+    {K_H_l}
 
-            if (MENDRIVE_COMPLEX_IMAG(*K_H_l_v) < 0) {{
-                minus_sign_K_H_l();
-            }}
-            else {{
-                plus_sign_K_H_l();
-            }}
-        }}
+    if (MENDRIVE_COMPLEX_IMAG(*K_H_l_v) < 0) {{
+        minus_sign_K_H_l();
+    }}
+    else {{
+        plus_sign_K_H_l();
+    }}
+}}
 
-        void K_E_r_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
-            mendrive_complex_t *K_E_r_v) {{
+void K_E_r_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
+    mendrive_complex_t *K_E_r_v) {{
 
-            {K_E_r}
+    {K_E_r}
 
-            if (MENDRIVE_COMPLEX_IMAG(*K_E_r_v) < 0) {{
-                minus_sign_K_E_r();
-            }}
-            else {{
-                plus_sign_K_E_r();
-            }}
-        }}
+    if (MENDRIVE_COMPLEX_IMAG(*K_E_r_v) < 0) {{
+        minus_sign_K_E_r();
+    }}
+    else {{
+        plus_sign_K_E_r();
+    }}
+}}
 
-        void K_H_r_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
-            mendrive_complex_t *K_H_r_v) {{
+void K_H_r_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
+    mendrive_complex_t *K_H_r_v) {{
 
-            {K_H_r}
+    {K_H_r}
 
-            if (MENDRIVE_COMPLEX_IMAG(*K_H_r_v) < 0) {{
-                minus_sign_K_H_r();
-            }}
-            else {{
-                plus_sign_K_H_r();
-            }}
-        }}
+    if (MENDRIVE_COMPLEX_IMAG(*K_H_r_v) < 0) {{
+        minus_sign_K_H_r();
+    }}
+    else {{
+        plus_sign_K_H_r();
+    }}
+}}
 
-        void det_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
-            mendrive_scalar_t *det_re, mendrive_scalar_t *det_im) {{
+void det_eval(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
+    mendrive_scalar_t *det_re, mendrive_scalar_t *det_im) {{
 
-            mendrive_complex_t K_E_vacuum;
-            K_E_v_eval(omega_re, omega_im, &K_E_vacuum);
+    mendrive_complex_t K_E_vacuum;
+    K_E_v_eval(omega_re, omega_im, &K_E_vacuum);
 
-            mendrive_complex_t K_H_vacuum;
-            K_H_v_eval(omega_re, omega_im, &K_H_vacuum);
+    mendrive_complex_t K_H_vacuum;
+    K_H_v_eval(omega_re, omega_im, &K_H_vacuum);
 
-            mendrive_complex_t K_E_left_conductor;
-            K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
+    mendrive_complex_t K_E_left_conductor;
+    K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
 
-            mendrive_complex_t K_H_left_conductor;
-            K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
+    mendrive_complex_t K_H_left_conductor;
+    K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
 
-            mendrive_complex_t K_E_right_conductor;
-            K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
+    mendrive_complex_t K_E_right_conductor;
+    K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
 
-            mendrive_complex_t K_H_right_conductor;
-            K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
+    mendrive_complex_t K_H_right_conductor;
+    K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
 
-            mendrive_complex_t {det_K}
+    mendrive_complex_t {det_K}
 
-            *det_re = MENDRIVE_COMPLEX_REAL(det_K_v);
-            *det_im = MENDRIVE_COMPLEX_IMAG(det_K_v);
-        }}
+    *det_re = MENDRIVE_COMPLEX_REAL(det_K_v);
+    *det_im = MENDRIVE_COMPLEX_IMAG(det_K_v);
+}}
 
-        void det_init(const mendrive_params_t* p) {{
-            params = *p;
+void det_init(const mendrive_params_t* p) {{
+    params = *p;
 
-            #ifdef LOGGING
-            MPREC_LOG_DEBUG("params.c=" MPREC_LOG_FMT_SCALAR "\\n", params.c);
+    #ifdef LOGGING
+    MPREC_LOG_DEBUG("C sizeof MendriveParams: %zu bytes\\n", sizeof(mendrive_params_t));
+
+    MPREC_LOG_DEBUG("params.c=" MPREC_LOG_FMT_SCALAR "\\n", params.c);
 #ifndef QNM
-            MPREC_LOG_DEBUG("params.omega=" MPREC_LOG_FMT_SCALAR "\\n", params.omega);
+    MPREC_LOG_DEBUG("params.omega=" MPREC_LOG_FMT_SCALAR "\\n", params.omega);
 #else
-            MPREC_LOG_DEBUG("params.L_z=" MPREC_LOG_FMT_SCALAR "\\n", params.L_z);
+    MPREC_LOG_DEBUG("params.L_z=" MPREC_LOG_FMT_SCALAR "\\n", params.L_z);
 #endif
-            MPREC_LOG_DEBUG("params.a=" MPREC_LOG_FMT_SCALAR "\\n", params.a);
+    MPREC_LOG_DEBUG("params.a=" MPREC_LOG_FMT_SCALAR "\\n", params.a);
 #ifdef KY
-            MPREC_LOG_DEBUG("params.b=" MPREC_LOG_FMT_SCALAR "\\n", params.b);
-            MPREC_LOG_DEBUG("params.m=%d\\n",  params.m);
+    MPREC_LOG_DEBUG("params.b=" MPREC_LOG_FMT_SCALAR "\\n", params.b);
+    MPREC_LOG_DEBUG("params.m=%d\\n",  params.m);
 #endif
-            MPREC_LOG_DEBUG("params.mu_l_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_l_xx);
-            MPREC_LOG_DEBUG("params.mu_l_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_l_yy);
-            MPREC_LOG_DEBUG("params.mu_l_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_l_zz);
-            MPREC_LOG_DEBUG("params.mu_r_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_r_xx);
-            MPREC_LOG_DEBUG("params.mu_r_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_r_yy);
-            MPREC_LOG_DEBUG("params.mu_r_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_r_zz);
-            MPREC_LOG_DEBUG("params.mu_l_yz=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_l_yz);
-            MPREC_LOG_DEBUG("params.mu_l_zy=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_l_zy);
-            MPREC_LOG_DEBUG("params.mu_r_yz=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_r_yz);
-            MPREC_LOG_DEBUG("params.mu_r_zy=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_r_zy);
-            MPREC_LOG_DEBUG("params.sigma_e_l_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_e_l_xx);
-            MPREC_LOG_DEBUG("params.sigma_e_l_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_e_l_yy);
-            MPREC_LOG_DEBUG("params.sigma_e_l_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_e_l_zz);
-            MPREC_LOG_DEBUG("params.sigma_e_r_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_e_r_xx);
-            MPREC_LOG_DEBUG("params.sigma_e_r_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_e_r_yy);
-            MPREC_LOG_DEBUG("params.sigma_e_r_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_e_r_zz);
-            MPREC_LOG_DEBUG("params.sigma_m_l_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_m_l_xx);
-            MPREC_LOG_DEBUG("params.sigma_m_l_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_m_l_yy);
-            MPREC_LOG_DEBUG("params.sigma_m_l_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_m_l_zz);
-            MPREC_LOG_DEBUG("params.sigma_m_r_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_m_r_xx);
-            MPREC_LOG_DEBUG("params.sigma_m_r_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_m_r_yy);
-            MPREC_LOG_DEBUG("params.sigma_m_r_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_m_r_zz);
-            MPREC_LOG_DEBUG("params.eps_l_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.eps_l_xx);
-            MPREC_LOG_DEBUG("params.eps_l_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.eps_l_yy);
-            MPREC_LOG_DEBUG("params.eps_l_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.eps_l_zz);
-            MPREC_LOG_DEBUG("params.eps_r_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.eps_r_xx);
-            MPREC_LOG_DEBUG("params.eps_r_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.eps_r_yy);
-            MPREC_LOG_DEBUG("params.eps_r_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.eps_r_zz);
-            MPREC_LOG_DEBUG("params.mu_0=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_0);
-            MPREC_LOG_DEBUG("params.epsilon_0=" MPREC_LOG_FMT_SCALAR "\\n", params.epsilon_0);
-            fflush(stdout);
-            #endif
-        }}
+    MPREC_LOG_DEBUG("params.mu_l_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_l_xx);
+    MPREC_LOG_DEBUG("params.mu_l_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_l_yy);
+    MPREC_LOG_DEBUG("params.mu_l_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_l_zz);
+    MPREC_LOG_DEBUG("params.mu_r_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_r_xx);
+    MPREC_LOG_DEBUG("params.mu_r_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_r_yy);
+    MPREC_LOG_DEBUG("params.mu_r_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_r_zz);
+    MPREC_LOG_DEBUG("params.mu_l_yz=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_l_yz);
+    MPREC_LOG_DEBUG("params.mu_l_zy=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_l_zy);
+    MPREC_LOG_DEBUG("params.mu_r_yz=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_r_yz);
+    MPREC_LOG_DEBUG("params.mu_r_zy=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_r_zy);
+    MPREC_LOG_DEBUG("params.sigma_e_l_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_e_l_xx);
+    MPREC_LOG_DEBUG("params.sigma_e_l_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_e_l_yy);
+    MPREC_LOG_DEBUG("params.sigma_e_l_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_e_l_zz);
+    MPREC_LOG_DEBUG("params.sigma_e_r_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_e_r_xx);
+    MPREC_LOG_DEBUG("params.sigma_e_r_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_e_r_yy);
+    MPREC_LOG_DEBUG("params.sigma_e_r_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_e_r_zz);
+    MPREC_LOG_DEBUG("params.sigma_m_l_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_m_l_xx);
+    MPREC_LOG_DEBUG("params.sigma_m_l_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_m_l_yy);
+    MPREC_LOG_DEBUG("params.sigma_m_l_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_m_l_zz);
+    MPREC_LOG_DEBUG("params.sigma_m_r_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_m_r_xx);
+    MPREC_LOG_DEBUG("params.sigma_m_r_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_m_r_yy);
+    MPREC_LOG_DEBUG("params.sigma_m_r_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.sigma_m_r_zz);
+    MPREC_LOG_DEBUG("params.eps_l_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.eps_l_xx);
+    MPREC_LOG_DEBUG("params.eps_l_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.eps_l_yy);
+    MPREC_LOG_DEBUG("params.eps_l_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.eps_l_zz);
+    MPREC_LOG_DEBUG("params.eps_r_xx=" MPREC_LOG_FMT_SCALAR "\\n", params.eps_r_xx);
+    MPREC_LOG_DEBUG("params.eps_r_yy=" MPREC_LOG_FMT_SCALAR "\\n", params.eps_r_yy);
+    MPREC_LOG_DEBUG("params.eps_r_zz=" MPREC_LOG_FMT_SCALAR "\\n", params.eps_r_zz);
+    MPREC_LOG_DEBUG("params.mu_0=" MPREC_LOG_FMT_SCALAR "\\n", params.mu_0);
+    MPREC_LOG_DEBUG("params.epsilon_0=" MPREC_LOG_FMT_SCALAR "\\n", params.epsilon_0);
+    fflush(stdout);
+    #endif
+}}
 
-        void det_eval_old(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
-            mendrive_scalar_t *det_re, mendrive_scalar_t *det_im) {{
-            mendrive_complex_t {det}
+void det_eval_old(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
+    mendrive_scalar_t *det_re, mendrive_scalar_t *det_im) {{
+    mendrive_complex_t {det}
 
-            *det_re = MENDRIVE_COMPLEX_REAL(det_v);
-            *det_im = MENDRIVE_COMPLEX_IMAG(det_v);
-        }}
+    *det_re = MENDRIVE_COMPLEX_REAL(det_v);
+    *det_im = MENDRIVE_COMPLEX_IMAG(det_v);
+}}
 
-        void det_derivatives(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
-                             mendrive_scalar_t* dfdomegare_re, mendrive_scalar_t* dfdomegare_im,
-                             mendrive_scalar_t* dfdgamma_re, mendrive_scalar_t* dfdgamma_im) {{
+void det_derivatives(mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
+                        mendrive_scalar_t* dfdomegare_re, mendrive_scalar_t* dfdomegare_im,
+                        mendrive_scalar_t* dfdgamma_re, mendrive_scalar_t* dfdgamma_im) {{
 
-            mendrive_complex_t K_E_left_conductor;
-            mendrive_complex_t K_H_left_conductor;
-            mendrive_complex_t K_E_right_conductor;
-            mendrive_complex_t K_H_right_conductor;
-            K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
-            K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
-            K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
-            K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
+    mendrive_complex_t K_E_left_conductor;
+    mendrive_complex_t K_H_left_conductor;
+    mendrive_complex_t K_E_right_conductor;
+    mendrive_complex_t K_H_right_conductor;
+    K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
+    K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
+    K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
+    K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
 
-            // ∂f/∂kz ≈ (f(kz+h) - f(kz-h)) / (2h)
-            mendrive_complex_t {dfdomega_re}
+    // ∂f/∂kz ≈ (f(kz+h) - f(kz-h)) / (2h)
+    mendrive_complex_t {dfdomega_re}
 
-            // ∂f/∂sz ≈ (f(sz+h) - f(sz-h)) / (2h)
-            mendrive_complex_t {dfdomega_im}
+    // ∂f/∂sz ≈ (f(sz+h) - f(sz-h)) / (2h)
+    mendrive_complex_t {dfdomega_im}
 
-            *dfdomegare_re = MENDRIVE_COMPLEX_REAL(df_domega_re);
-            *dfdomegare_im = MENDRIVE_COMPLEX_IMAG(df_domega_re);
-            *dfdgamma_re = MENDRIVE_COMPLEX_REAL(df_domega_im);
-            *dfdgamma_im = MENDRIVE_COMPLEX_IMAG(df_domega_im);
-        }}
+    *dfdomegare_re = MENDRIVE_COMPLEX_REAL(df_domega_re);
+    *dfdomegare_im = MENDRIVE_COMPLEX_IMAG(df_domega_re);
+    *dfdgamma_re = MENDRIVE_COMPLEX_REAL(df_domega_im);
+    *dfdgamma_im = MENDRIVE_COMPLEX_IMAG(df_domega_im);
+}}
 
-        int newton_eval(
-            mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
-            mendrive_scalar_t* f_re, mendrive_scalar_t* f_im,
-            mendrive_scalar_t* dfdomega_re_re, mendrive_scalar_t* dfdomega_re_im,
-            mendrive_scalar_t* dfdomega_im_re, mendrive_scalar_t* dfdomega_im_im
-        ) {{
-            det_eval(omega_re, omega_im, f_re, f_im);  // ваша функция
-            det_derivatives(omega_re, omega_im, dfdomega_re_re, dfdomega_re_im, dfdomega_im_re, dfdomega_im_im);
-            return 0;
-        }}
-
-
-        void det_diff_omega_re_eval(long double omega_re, long double omega_im,
-            mendrive_scalar_t *df_re, mendrive_scalar_t *df_im) {{
-
-            mendrive_complex_t K_E_left_conductor;
-            mendrive_complex_t K_H_left_conductor;
-            mendrive_complex_t K_E_right_conductor;
-            mendrive_complex_t K_H_right_conductor;
-            K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
-            K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
-            K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
-            K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
-
-            mendrive_complex_t {dfdomega_re}
-
-            *df_re = MENDRIVE_COMPLEX_REAL(df_domega_re);
-            *df_im = MENDRIVE_COMPLEX_IMAG(df_domega_re);
-        }}
-
-        void det_diff_omega_im_eval(long double omega_re, long double omega_im,
-            mendrive_scalar_t *df_re, mendrive_scalar_t *df_im) {{
-
-            mendrive_complex_t K_E_left_conductor;
-            mendrive_complex_t K_H_left_conductor;
-            mendrive_complex_t K_E_right_conductor;
-            mendrive_complex_t K_H_right_conductor;
-            K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
-            K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
-            K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
-            K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
-
-            mendrive_complex_t {dfdomega_im}
-
-            *df_re = MENDRIVE_COMPLEX_REAL(df_domega_im);
-            *df_im = MENDRIVE_COMPLEX_IMAG(df_domega_im);
-        }}
+int newton_eval(
+    mendrive_scalar_t omega_re, mendrive_scalar_t omega_im,
+    mendrive_scalar_t* f_re, mendrive_scalar_t* f_im,
+    mendrive_scalar_t* dfdomega_re_re, mendrive_scalar_t* dfdomega_re_im,
+    mendrive_scalar_t* dfdomega_im_re, mendrive_scalar_t* dfdomega_im_im
+) {{
+    det_eval(omega_re, omega_im, f_re, f_im);  // ваша функция
+    det_derivatives(omega_re, omega_im, dfdomega_re_re, dfdomega_re_im, dfdomega_im_re, dfdomega_im_im);
+    return 0;
+}}
 
 
-        void det_div_diff_kz_eval(long double omega_re, long double omega_im,
-            mendrive_scalar_t *div_re, mendrive_scalar_t *div_im) {{
+void det_diff_omega_re_eval(long double omega_re, long double omega_im,
+    mendrive_scalar_t *df_re, mendrive_scalar_t *df_im) {{
 
-            mendrive_complex_t K_E_vacuum;
-            K_E_v_eval(omega_re, omega_im, &K_E_vacuum);
+    mendrive_complex_t K_E_left_conductor;
+    mendrive_complex_t K_H_left_conductor;
+    mendrive_complex_t K_E_right_conductor;
+    mendrive_complex_t K_H_right_conductor;
+    K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
+    K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
+    K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
+    K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
 
-            mendrive_complex_t K_H_vacuum;
-            K_H_v_eval(omega_re, omega_im, &K_H_vacuum);
+    mendrive_complex_t {dfdomega_re}
 
-            mendrive_complex_t K_E_left_conductor;
-            K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
+    *df_re = MENDRIVE_COMPLEX_REAL(df_domega_re);
+    *df_im = MENDRIVE_COMPLEX_IMAG(df_domega_re);
+}}
 
-            mendrive_complex_t K_H_left_conductor;
-            K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
+void det_diff_omega_im_eval(long double omega_re, long double omega_im,
+    mendrive_scalar_t *df_re, mendrive_scalar_t *df_im) {{
 
-            mendrive_complex_t K_E_right_conductor;
-            K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
+    mendrive_complex_t K_E_left_conductor;
+    mendrive_complex_t K_H_left_conductor;
+    mendrive_complex_t K_E_right_conductor;
+    mendrive_complex_t K_H_right_conductor;
+    K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
+    K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
+    K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
+    K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
 
-            mendrive_complex_t K_H_right_conductor;
-            K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
+    mendrive_complex_t {dfdomega_im}
 
-            mendrive_complex_t {det_K}
+    *df_re = MENDRIVE_COMPLEX_REAL(df_domega_im);
+    *df_im = MENDRIVE_COMPLEX_IMAG(df_domega_im);
+}}
 
-            // ∂f/∂kz ≈ (f(kz+h) - f(kz-h)) / (2h)
-            mendrive_complex_t {dfdomega_re}
 
-            // ∂f/∂sz ≈ (f(sz+h) - f(sz-h)) / (2h)
-            // mendrive_complex_t dfdomega_im
+void det_div_diff_kz_eval(long double omega_re, long double omega_im,
+    mendrive_scalar_t *div_re, mendrive_scalar_t *div_im) {{
 
-            *div_re = MENDRIVE_COMPLEX_REAL((det_K_v)/(df_domega_re));
-            *div_im = MENDRIVE_COMPLEX_IMAG((det_K_v)/(df_domega_re));
-        }}
+    mendrive_complex_t K_E_vacuum;
+    K_E_v_eval(omega_re, omega_im, &K_E_vacuum);
 
-        void det_div_diff_sz_eval(long double omega_re, long double omega_im,
-            mendrive_scalar_t *div_re, mendrive_scalar_t *div_im) {{
+    mendrive_complex_t K_H_vacuum;
+    K_H_v_eval(omega_re, omega_im, &K_H_vacuum);
 
-            mendrive_complex_t K_E_vacuum;
-            K_E_v_eval(omega_re, omega_im, &K_E_vacuum);
+    mendrive_complex_t K_E_left_conductor;
+    K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
 
-            mendrive_complex_t K_H_vacuum;
-            K_H_v_eval(omega_re, omega_im, &K_H_vacuum);
+    mendrive_complex_t K_H_left_conductor;
+    K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
 
-            mendrive_complex_t K_E_left_conductor;
-            K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
+    mendrive_complex_t K_E_right_conductor;
+    K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
 
-            mendrive_complex_t K_H_left_conductor;
-            K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
+    mendrive_complex_t K_H_right_conductor;
+    K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
 
-            mendrive_complex_t K_E_right_conductor;
-            K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
+    mendrive_complex_t {det_K}
 
-            mendrive_complex_t K_H_right_conductor;
-            K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
+    // ∂f/∂kz ≈ (f(kz+h) - f(kz-h)) / (2h)
+    mendrive_complex_t {dfdomega_re}
 
-            mendrive_complex_t {det_K}
+    // ∂f/∂sz ≈ (f(sz+h) - f(sz-h)) / (2h)
+    // mendrive_complex_t dfdomega_im
 
-            // ∂f/∂kz ≈ (f(kz+h) - f(kz-h)) / (2h)
-            // mendrive_complex_t dfdomega_re
+    *div_re = MENDRIVE_COMPLEX_REAL((det_K_v)/(df_domega_re));
+    *div_im = MENDRIVE_COMPLEX_IMAG((det_K_v)/(df_domega_re));
+}}
 
-            // ∂f/∂sz ≈ (f(sz+h) - f(sz-h)) / (2h)
-            mendrive_complex_t {dfdomega_im}
+void det_div_diff_sz_eval(long double omega_re, long double omega_im,
+    mendrive_scalar_t *div_re, mendrive_scalar_t *div_im) {{
 
-            *div_re = MENDRIVE_COMPLEX_REAL((det_K_v)/(df_domega_im));
-            *div_im = MENDRIVE_COMPLEX_IMAG((det_K_v)/(df_domega_im));
-        }}
+    mendrive_complex_t K_E_vacuum;
+    K_E_v_eval(omega_re, omega_im, &K_E_vacuum);
+
+    mendrive_complex_t K_H_vacuum;
+    K_H_v_eval(omega_re, omega_im, &K_H_vacuum);
+
+    mendrive_complex_t K_E_left_conductor;
+    K_E_l_eval(omega_re, omega_im, &K_E_left_conductor);
+
+    mendrive_complex_t K_H_left_conductor;
+    K_H_l_eval(omega_re, omega_im, &K_H_left_conductor);
+
+    mendrive_complex_t K_E_right_conductor;
+    K_E_r_eval(omega_re, omega_im, &K_E_right_conductor);
+
+    mendrive_complex_t K_H_right_conductor;
+    K_H_r_eval(omega_re, omega_im, &K_H_right_conductor);
+
+    mendrive_complex_t {det_K}
+
+    // ∂f/∂kz ≈ (f(kz+h) - f(kz-h)) / (2h)
+    // mendrive_complex_t dfdomega_re
+
+    // ∂f/∂sz ≈ (f(sz+h) - f(sz-h)) / (2h)
+    mendrive_complex_t {dfdomega_im}
+
+    *div_re = MENDRIVE_COMPLEX_REAL((det_K_v)/(df_domega_im));
+    *div_im = MENDRIVE_COMPLEX_IMAG((det_K_v)/(df_domega_im));
+}}
 
         """.format(det=c_expr_det,
                    det_K = c_expr_det_K,
@@ -522,12 +524,15 @@ def compile_lib(name, precision=MENDRIVE_LIB_PRECISION, loglevel='DEBUG'):
 
     define_flag += ' -DLOGGING'
 
+    optimization_flag = '-g -O0'
+    optimization_flag = ' -O3'
+
     cmd = f"gcc -shared -fPIC -O3 -DQNM {define_flag} -I../vimaniks/gsl/local/include " \
           f"-L../vimaniks/gsl/local/lib -Wl,-rpath='$ORIGIN/../vimaniks/gsl/local/lib' " \
           f"{' '.join(source_files)} -o {name}.so {extra_libs} " \
           f"-DKY -Wl,-rpath='$ORIGIN/../vimaniks/gsl/local/lib' -lgsl -lgslcblas -lm"
 
-    cmd = f"""gcc -shared -fPIC -O3 -DQNM -o {name}.so \
+    cmd = f"""gcc -shared -fPIC {optimization_flag} -DQNM -o {name}.so \
         mendrive_det_qnm.c \
         mendrive_isolines.c \
         mendrive_isolines_traced.c \
@@ -594,6 +599,12 @@ def init_lib(lib, digit_values, precision=MENDRIVE_LIB_PRECISION):
             ("mu_0",         num_type),
             ("epsilon_0",    num_type),
         ]
+
+    # 1. Вывод размера структуры в Python
+    # print(f"PYTHON sizeof MendriveParams: {ctypes.sizeof(MendriveParams)} bytes")
+
+    # 2. (Временно) Добавьте в C-код в начало функции det_init:
+    # MPREC_LOG_DEBUG("C  sizeof MendriveParams: %zu bytes\n", sizeof(mendrive_params_t));
 
     # Привязка функций
     lib.det_init.argtypes = [POINTER(MendriveParams)]

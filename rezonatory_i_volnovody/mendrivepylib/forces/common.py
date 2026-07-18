@@ -1,4 +1,5 @@
 from ..variables.common import x, y, z, b
+from ..common import use_phase_y
 
 def avg_over_y(expr, y_min=-b, y_max=b):
     if use_phase_y:

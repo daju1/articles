@@ -58,7 +58,7 @@ def plotDetContoursResult(contours):
         seg_u = []
         for i in range(line.n_points):
             pt = line.points[i]
-            seg_u.append((float(pt.re), float(pt.im)))
+            seg_u.append((float(pt.x), float(pt.y)))
         cu.append(seg_u)
         pl += list_plot(seg_u, size=5)
 
@@ -67,7 +67,7 @@ def plotDetContoursResult(contours):
         seg_v = []
         for i in range(line.n_points):
             pt = line.points[i]
-            seg_v.append((float(pt.re), float(pt.im)))
+            seg_v.append((float(pt.x), float(pt.y)))
         cv.append(seg_v)
         pl += list_plot(seg_v, color="red", size=4)
 
@@ -128,10 +128,14 @@ def find_matplotlib_contour_intersections_c(lib, seg_u, seg_v,
     result = []
     for i in range(n_found):
         pt = intersections[i]
-        result.append((float(pt.re), float(pt.im)))
+        result.append((float(pt.x), float(pt.y)))
     return result
 
-def find_resonance_roots_fast(lib, omega_re_range, omega_im_range, n_re=100, n_im=100, make_plot=False, debug_plot=False):
+def find_resonance_roots_fast(lib,
+        omega_re_range, omega_im_range,
+        n_re=100, n_im=100,
+        make_plot=False,
+        debug_plot=False):
     """
     Быстрый поиск резонансных корней с использованием C-библиотеки.
 
@@ -207,7 +211,31 @@ def find_resonance_roots_fast(lib, omega_re_range, omega_im_range, n_re=100, n_i
         plt.scatter(x_coords, y_coords)
         plt.show()
 
-    return k_z_graphic_solutions_
+    # === Извлечение ломаных ===
+    from sage.plot.all import Graphics
+    from sage.plot.all import list_plot
+
+    #_cu = []
+    #_cv = []
+    pl = Graphics()
+
+    for seg_u in cu.allsegs[0]:
+        #_seg_u = []
+        #for i in range(len(_seg_u)):
+        #    pt = _seg_u[i]
+        #    _seg_u.append((float(pt.x), float(pt.x)))
+        #_cu.append(_seg_u)
+        pl += list_plot(seg_u, size=5)
+
+    for seg_v in cv.allsegs[0]:
+        #_seg_v = []
+        #for i in range(len(seg_v)):
+        #    pt = _seg_v[i]
+        #    _seg_v.append((float(pt.x), float(pt.y)))
+        #_cv.append(_seg_v)
+        pl += list_plot(seg_v, color="red", size=4)
+
+    return k_z_graphic_solutions_, (cu, cv, pl)
 
 def find_resonance_roots_fast_с(lib, re_range, im_range,
                                 n_re=N_re, n_im=N_im,
@@ -279,7 +307,9 @@ def find_resonance_roots_fast_с(lib, re_range, im_range,
     lib.find_characteristic_roots.restype = ctypes.c_int
 
     lib.free_det_contours.argtypes = [ POINTER(DetContoursResult) ]
+    lib.free_det_contours.restype = None
     lib.free_characteristic_roots.argtypes = [ POINTER(CharacteristicRoots) ]
+    lib.free_characteristic_roots.restype = None
 
     extrap_len = calc_extrap_len(re_range, im_range, n_re, n_im)
 
@@ -316,17 +346,17 @@ def find_resonance_roots_fast_с(lib, re_range, im_range,
 
     print(f"Найдено корней: {roots.n_roots}")
     for i in range(roots.n_roots):
-        print(f"  re={roots.roots[i].re:.6f}, im={roots.roots[i].im:.6f}, sin_r_s={roots.roots[i].sin_r_s:.6e}")
-        graphic_solutions.extend([(roots.roots[i].re,
-                                       roots.roots[i].im
-                                      )])
+        print(f"  re={roots.roots[i].x:.6f}, im={roots.roots[i].y:.6f}, sin_r_s={roots.roots[i].sin_r_s:.6e}")
+        graphic_solutions.extend([(roots.roots[i].x,
+                                    roots.roots[i].y
+        )])
 
     cu, cv, pl = plotDetContoursResult(contours)
     pl += list_plot(graphic_solutions, color="green", size=32)
     if make_plot:
         pl.show()
-    lib.free_det_contours(contours)
-    lib.free_characteristic_roots(roots)
+    lib.free_det_contours(ctypes.byref(contours))
+    lib.free_characteristic_roots(ctypes.byref(roots))
     return graphic_solutions, (cu, cv, pl)
 
 def prec_graphic_solutions(lib, solver, preciser, sol_num, graphic_solutions, precise,
@@ -447,7 +477,12 @@ def find_resonance_roots_refine_and_cluster_them(
 
     # 3. Находим резонансные корни
     if False:
-        graphic_solutions = find_resonance_roots_fast(lib, re_range, im_range)
+        graphic_solutions, (cu, cv, pl) = find_resonance_roots_fast(
+            lib, re_range, im_range,
+            n_re=n_re, n_im=n_im,
+            make_plot=make_plot,
+            debug_plot=False
+        )
     else:
         graphic_solutions, (cu, cv, pl) = find_resonance_roots_fast_с(
             lib, re_range, im_range,
@@ -674,11 +709,11 @@ class NewtonPrecC:
 
         self.lib.newton_adaptive_step.restype = c_int
 
-    def solve(self, re0, im0, nsteps=1000, logging=False):
-        from ctypes import byref
+    def solve(self, re0, im0, nsteps=100, logging=False):
+        from ctypes import byref, c_int
 
-        kz = self.num_type(re0)
-        sz = self.num_type(im0)
+        re = self.num_type(re0)
+        im = self.num_type(im0)
 
         # 4 адаптивных шага (как в Python newton_prec)
         step_init = 0.95
@@ -700,7 +735,7 @@ class NewtonPrecC:
             f_abs_prev = f_abs
 
             ret = self.lib.newton_adaptive_step(
-                byref(kz), byref(sz),
+                byref(re), byref(im),
                 byref(step_re_re), byref(step_im_re),
                 byref(step_re_im), byref(step_im_im),
                 byref(f_abs),
@@ -710,12 +745,12 @@ class NewtonPrecC:
             )
 
             if logging:
-                print(f"  iter {i}: kz={kz.value:.10e}, sz={sz.value:.10e}, "
+                print(f"  iter {i}: re={re.value:.10e}, im={im.value:.10e}, "
                       f"|f|={f_abs.value:.36e}, ret={ret}")
 
             delta_f = abs(f_abs.value - f_abs_prev.value)
             # Защита от зацикливания
-            if (delta_f < 1e-128 and i > 5 and -2 != ret):
+            if (delta_f < 1e-64 and i > 5 and -2 != ret):
                 if logging:
                     print(f"  ⚠️  Сходимость остановилась (|Δf| {delta_f}" )
                 break
@@ -734,7 +769,7 @@ class NewtonPrecC:
             if logging:
                 print(f"⚠️  max iterations ({nsteps}) reached, |f|={f_abs.value:.36e}")
 
-        return real128(kz.value), real128(sz.value)
+        return real128(re.value), real128(im.value)
 
 class NewtonRootAdaptiveSolver:
     def __init__(self, lib, precision):
@@ -781,9 +816,13 @@ class NewtonRootClassicSolver:
         im_sol = self.num_type()
         f_abs_out = self.num_type()
         from ctypes import byref
-        ret = self.lib.solve_newton_root_classic(self.num_type(re0), self.num_type(im0),
-                                    byref(re_sol), byref(im_sol),
-                                    byref(f_abs_out), max_iter)
+        ret = self.lib.solve_newton_root_classic(
+            self.num_type(re0),
+            self.num_type(im0),
+            byref(re_sol),
+            byref(im_sol),
+            byref(f_abs_out),
+            max_iter)
 
         return real128(re_sol.value), real128(im_sol.value)
 

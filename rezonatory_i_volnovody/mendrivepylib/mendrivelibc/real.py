@@ -9,6 +9,9 @@ from ctypes import Structure, c_longdouble, c_void_p, c_byte, c_ubyte, c_double
 
 from .common import MENDRIVE_LIB_PRECISION
 
+from ..variables.common import *
+from ..variables.real import *
+
 def sage_expr_to_c_with_params(expr, precision, assign_to="det_v"):
     import sympy as sp
 

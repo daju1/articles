@@ -8,7 +8,6 @@ omega = var('omega', domain='complex')  # частота в общем виде
 omega_drive = var('omega_drive', domain='real') # частота возбуждения
 omega_re = var("omega_re", domain='real')       # компоненты комплексной частоты в задаче QNM
 omega_im = var("omega_im", domain='real')       # компоненты комплексной частоты в задаче QNM
-resonator_type = "quarter"  # ← "quarter", "half", "impedance"
 
 # ======================================================
 # 1. Продольное волновое число k_z (вещественное при резонансе)

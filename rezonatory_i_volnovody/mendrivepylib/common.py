@@ -604,11 +604,11 @@ def cluster_roots(roots_list, eps=1e-3, verbose=True):
         best_root = min(cluster_roots, key=lambda r: r['det_residual'])
 
         if verbose:
-            avg_kz = np.mean([r['kz'] for r in cluster_roots])
-            avg_sz = np.mean([r['sz'] for r in cluster_roots])
+            avg_re = np.mean([r['re'] for r in cluster_roots])
+            avg_im = np.mean([r['im'] for r in cluster_roots])
             print(f"    Кластер {cluster_idx}: {len(cluster_roots)} корней, "
-                  f"центр: kz≈{avg_kz:.6f}, sz≈{avg_sz:.6f}")
-            print(f"      → выбран: kz={best_root['kz']:.6f}, sz={best_root['sz']:.6f}, "
+                  f"центр: re≈{avg_re:.6f}, sz≈{avg_im:.6f}")
+            print(f"      → выбран: re={best_root['re']:.6f}, im={best_root['im']:.6f}, "
                   f"|det|={best_root['det_residual']:.2e}")
 
         representative_roots.append(best_root)
@@ -672,11 +672,11 @@ def cluster_roots_hierarchical(roots_list, eps=1e-3, verbose=True):
         best_root = min(cluster_roots, key=lambda r: r['det_residual'])
 
         if verbose:
-            avg_kz = np.mean([r['kz'] for r in cluster_roots])
-            avg_sz = np.mean([r['sz'] for r in cluster_roots])
+            avg_re = np.mean([r['re'] for r in cluster_roots])
+            avg_im = np.mean([r['im'] for r in cluster_roots])
             print(f"    Кластер {cluster_idx}: {len(cluster_roots)} корней, "
-                  f"центр: kz≈{avg_kz:.6f}, sz≈{avg_sz:.6f}")
-            print(f"      → выбран: kz={best_root['kz']:.6f}, sz={best_root['sz']:.6f}, "
+                  f"центр: re≈{avg_re:.6f}, im≈{avg_im:.6f}")
+            print(f"      → выбран: re={best_root['re']:.6f}, im={best_root['im']:.6f}, "
                   f"|det|={best_root['det_residual']:.2e}")
 
         representative_roots.append(best_root)
@@ -979,3 +979,31 @@ def svd_X4(M4_d, verbose=False, residual_threshold=1e-8):
             print("⚠️ Применена коррекция фазы/перестановки")
 
     return best_X, {'residual': best_residual, 'valid': valid, 'candidate_id': best_candidate}
+
+# ============================================================================
+# ФУНКЦИЯ ЗАМЕНЫ ПАРАМЕТРОВ
+# ============================================================================
+
+def override_params(base_dv, overrides):
+    """
+    Корректно заменяет параметры в списке подстановок.
+    overrides: словарь {'имя_параметра': значение}
+    """
+    result = []
+    override_names = set(overrides.keys())
+    used = set()
+
+    for eq in base_dv:
+        name = str(eq.lhs())
+        if name in override_names:
+            result.append(eq.lhs() == real128(overrides[name]))
+            used.add(name)
+        else:
+            result.append(eq)
+
+    # Предупреждаем о неиспользованных параметрах
+    unused = override_names - used
+    if unused:
+        print(f"  ⚠️ Параметры не найдены в base_dv: {unused}")
+
+    return result

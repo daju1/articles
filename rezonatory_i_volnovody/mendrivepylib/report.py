@@ -1,4 +1,4 @@
-def save_detplots(detplots, param_values, param_name='omega',
+def save_detplots(detplots, param_values, param_name,
                   output_dir='detplots', file_format='png',
                   figsize=(8, 6), dpi=150, show=False):
     """
@@ -124,9 +124,9 @@ def match_branches_between_intervals(results, param_name, distance_threshold=0.1
         """Вычисляет расстояние между двумя точками."""
         import numpy as np
         # Расстояние по kz, sz
-        kz_dist = (point1['kz'] - point2['kz'])**2
-        sz_dist = (point1['sz'] - point2['sz'])**2
-        root_dist = np.sqrt(kz_dist + sz_dist)
+        re_dist = (point1['re'] - point2['re'])**2
+        im_dist = (point1['im'] - point2['im'])**2
+        root_dist = np.sqrt(re_dist + im_dist)
         return root_dist
 
 
@@ -157,8 +157,8 @@ def match_branches_between_intervals(results, param_name, distance_threshold=0.1
                     'thrust': float(result['thrust_N_per_kW']),
                     'thrust_left': float(result['thrust_N_per_kW_left']),
                     'thrust_right': float(result['thrust_N_per_kW_right']),
-                    'kz': float(result['kz']),
-                    'sz': float(result['sz']),
+                    're': float(result['re']),
+                    'im': float(result['im']),
                     'det_residual': float(result['det_residual']),
                     'K_params': K_params
                 }
@@ -174,8 +174,8 @@ def match_branches_between_intervals(results, param_name, distance_threshold=0.1
                             'thrust': float(app_point['thrust_N_per_kW']),
                             'thrust_left': float(app_point['thrust_N_per_kW_left']),
                             'thrust_right': float(app_point['thrust_N_per_kW_right']),
-                            'kz': float(app_point['kz']),
-                            'sz': float(app_point['sz']),
+                            're': float(app_point['re']),
+                            'im': float(app_point['im']),
                             'det_residual': float(app_point['det_residual']),
                             'K_params': K_params_app
                         }
@@ -269,7 +269,7 @@ def get_branches_count(results, param_name, distance_threshold=0.1,
     return len(matched_branches)
 
 
-def plot_matched_branch_results(results, param_name, figfilename, branch_id=0,
+def plot_matched_branch_results(results, param_name, figdir, figfilename, branch_id,
                                 distance_threshold=0.1,
                                 use_K_params=False,
                                 language='ru'):
@@ -356,6 +356,9 @@ def plot_matched_branch_results(results, param_name, figfilename, branch_id=0,
         print(f"{lang['no_data']} для ветви {branch_id}")
         return
 
+    import matplotlib.pyplot as plt
+    import numpy as np
+
     # Сортируем данные по x
     branch_data = sorted(branch_data, key=lambda p: p['x'])
 
@@ -364,8 +367,8 @@ def plot_matched_branch_results(results, param_name, figfilename, branch_id=0,
     thrust       = [p['thrust'] for p in branch_data]
     thrust_left  = [p['thrust_left'] for p in branch_data]
     thrust_right = [p['thrust_right'] for p in branch_data]
-    kz           = [p['kz'] for p in branch_data]
-    sz           = [p['sz'] for p in branch_data]
+    kz           = [p['re'] for p in branch_data]
+    sz           = [p['im'] for p in branch_data]
     det_residual = [p['det_residual'] for p in branch_data]
 
     if use_K_params:
@@ -540,7 +543,7 @@ def plot_all_branches_with_detplots(
     scan_results,
     detplots,
     param_values,
-    param_name='omega',
+    param_name,
     distance_threshold=0.1,
     output_dir="branch_detplots",
     figsize=(800, 600),
@@ -570,8 +573,8 @@ def plot_all_branches_with_detplots(
 
         for point in branch_points:
             omega      = point['x']
-            kz_f       = point['kz']
-            sz_f       = point['sz']
+            kz_f       = point['re']
+            sz_f       = point['im']
             thrust_val = point['thrust']
 
             detplot_tuple = detplot_by_omega.get(omega)
@@ -657,8 +660,8 @@ def plot_all_branches_with_detplots(
 
 # функция для покомпонентного анализа тяги каждой ветви:
 
-def plot_branch_thrust_components(results, param_name, figfilename,
-                                  branch_id=0,
+def plot_branch_thrust_components(results, param_name, figdir, figfilename,
+                                  branch_id,
                                   distance_threshold=0.1,
                                   use_K_params=False,
                                   language='ru'):
@@ -743,7 +746,7 @@ def plot_branch_thrust_components(results, param_name, figfilename,
     branch_points = matched_branches[branch_id]
 
     # Создаем словарь для быстрого поиска точек по (x, kz)
-    branch_points_map = {(round(p['x'], 10), round(p['kz'], 6)): p for p in branch_points}
+    branch_points_map = {(round(p['x'], 10), round(p['re'], 6)): p for p in branch_points}
 
     # Собираем все компоненты
     components_data = {
@@ -784,9 +787,9 @@ def plot_branch_thrust_components(results, param_name, figfilename,
 
         for result in results_list:
             # Обрабатываем основную точку
-            if 'params' in result and param_name in result['params'] and 'kz' in result:
+            if 'params' in result and param_name in result['params'] and 're' in result:
                 x_val = float(result['params'][param_name])
-                kz_val = float(result['kz'])
+                kz_val = float(result['re'])
                 key = (round(x_val, 10), round(kz_val, 6))
 
                 if key in branch_points_map:
@@ -795,9 +798,9 @@ def plot_branch_thrust_components(results, param_name, figfilename,
             # Обрабатываем аппендикс
             if 'thrust_appendix' in result and len(result['thrust_appendix']) > 0:
                 for app_point in result['thrust_appendix']:
-                    if 'params' in app_point and param_name in app_point['params'] and 'kz' in app_point:
+                    if 'params' in app_point and param_name in app_point['params'] and 're' in app_point:
                         x_app = float(app_point['params'][param_name])
-                        kz_app = float(app_point['kz'])
+                        kz_app = float(app_point['re'])
                         key_app = (round(x_app, 10), round(kz_app, 6))
 
                         if key_app in branch_points_map:
@@ -807,6 +810,9 @@ def plot_branch_thrust_components(results, param_name, figfilename,
         print(f"{lang['no_data']} для ветви {branch_id}")
         print(f"Проверьте, что результаты содержат все необходимые компоненты тяги")
         return
+
+    import matplotlib.pyplot as plt
+    import numpy as np
 
     # Сортируем по x
     sorted_indices = np.argsort(components_data['x'])
@@ -1054,7 +1060,8 @@ def _add_component_data(components_data, result, x_val):
 
 
 def plot_field_report_for_branch(results, param_name, branch_id, base_digit_values,
-        figfilename,
+        figdir, figfilename,
+        problem_type, # 'k_z','qnm' or 'drive'
         distance_threshold=0.1,
         use_K_params=False,
         language='ru',
@@ -1148,6 +1155,11 @@ def plot_field_report_for_branch(results, param_name, branch_id, base_digit_valu
 
     import matplotlib.pyplot as plt
     import numpy as np
+    from .common import override_params
+    from sage.all import I
+
+    from .variables.real import omega, kz, sz, k_z
+    from .variables.qnm import omega_re, omega_im
 
     # Определяем тип волны (TM или TE)
     try:
@@ -1156,14 +1168,19 @@ def plot_field_report_for_branch(results, param_name, branch_id, base_digit_valu
         wave_type = 'TM'
 
     # Функция для вычисления полей в точке
-    def compute_fields_for_point(kz_val, sz_val, params_dict, dv_local,
+    def compute_fields_for_point(re_val, im_val, params_dict, dv_local,
                                  sign_K_H_l_d,
                                  sign_K_E_l_d,
                                  sign_K_H_r_d,
                                  sign_K_E_r_d,
                                 ):
         """Вычисляет поля для заданной точки"""
-        k_z_cur = [kz == kz_val, sz == sz_val, k_z == kz_val + I * sz_val]
+        if 'k_z' == problem_type:
+            k_z_cur = [kz == re_val, sz == im_val, k_z == re_val + I * im_val]
+        if 'qnm' == problem_type:
+            k_z_cur = [omega_re == re_val, omega_im == im_val, omega == re_val + I * im_val]
+        if 'drive' == problem_type:
+            k_z_cur = [omega_re == re_val, omega_im == 0, omega == re_val]
 
         dv = override_params(dv_local, params_dict)
 
@@ -1222,8 +1239,8 @@ def plot_field_report_for_branch(results, param_name, branch_id, base_digit_valu
         for results_list in results:
             if results_list:
                 for result in results_list:
-                    if (abs(result['kz'] - bp['kz']) < 1e-6 and
-                        abs(result['sz'] - bp['sz']) < 1e-6):
+                    if (abs(result['re'] - bp['re']) < 1e-6 and
+                        abs(result['im'] - bp['im']) < 1e-6):
                         points_with_results.append({
                             'branch_point': bp,
                             'result': result
@@ -1250,11 +1267,15 @@ def plot_field_report_for_branch(results, param_name, branch_id, base_digit_valu
     dv = override_params(base_digit_values, param_overrides)
 
     A_val = None
-    h_l_val = h_conductor_l
-    h_r_val = h_conductor_r
+    h_l_val = None
+    h_r_val = None
     for eq in dv:
         if str(eq.lhs()) == 'a':
             A_val = float(eq.rhs())
+        if str(eq.lhs()) == 'h_l':
+            h_l_val = float(eq.rhs())
+        if str(eq.lhs()) == 'h_r':
+            h_r_val = float(eq.rhs())
 
     if A_val is None:
         A_val = A
@@ -1275,8 +1296,8 @@ def plot_field_report_for_branch(results, param_name, branch_id, base_digit_valu
         result = pw['result']
 
         points_to_plot.append({
-            'kz': float(bp['kz']),
-            'sz': float(bp['sz']),
+            're': float(bp['re']),
+            'im': float(bp['im']),
             'params': result['params'],
             'dv': override_params(base_digit_values, result['params']),
             'label': f"{param_name}={bp['x']:.2e}",
@@ -1289,7 +1310,7 @@ def plot_field_report_for_branch(results, param_name, branch_id, base_digit_valu
     print(f"Вычисление полей для {len(points_to_plot)} точек...")
     all_fields = []
     for point in points_to_plot:
-        fields = compute_fields_for_point(point['kz'], point['sz'],
+        fields = compute_fields_for_point(point['re'], point['im'],
                                           point['params'], point['dv'],
                                           sign_K_H_l_d = 1,
                                           sign_K_E_l_d = 1,
@@ -1309,8 +1330,8 @@ def plot_field_report_for_branch(results, param_name, branch_id, base_digit_valu
     # Строка 0: График затухания E(z) и нормальная компонента Bx
     # График 0,0: Затухание вдоль z для первой точки
     ax = fig.add_subplot(gs[0, 0])
-    kz_sol = points_to_plot[0]['kz']
-    sz_sol = points_to_plot[0]['sz']
+    kz_sol = points_to_plot[0]['re']
+    sz_sol = points_to_plot[0]['im']
     kz_re = float(abs(kz_sol))
     kz_im = float(abs(sz_sol))
 
@@ -1580,6 +1601,7 @@ def plot_tensor_report_for_branch(results, param_name, branch_id, base_digit_val
 
     import matplotlib.pyplot as plt
     import numpy as np
+    from .common import override_params
 
     # Функция для вычисления значений дивергенции на массиве x
     def eval_divergence_array(div_expr, x_array):
@@ -1598,8 +1620,8 @@ def plot_tensor_report_for_branch(results, param_name, branch_id, base_digit_val
         for results_list in results:
             if results_list:
                 for result in results_list:
-                    if (abs(result['kz'] - bp['kz']) < 1e-6 and
-                        abs(result['sz'] - bp['sz']) < 1e-6):
+                    if (abs(result['re'] - bp['re']) < 1e-6 and
+                        abs(result['im'] - bp['im']) < 1e-6):
                         points_with_results.append({
                             'branch_point': bp,
                             'result': result
@@ -1651,8 +1673,8 @@ def plot_tensor_report_for_branch(results, param_name, branch_id, base_digit_val
         result = pw['result']
 
         points_to_plot.append({
-            'kz': float(bp['kz']),
-            'sz': float(bp['sz']),
+            're': float(bp['re']),
+            'im': float(bp['im']),
             'params': result['params'],
             'dv': override_params(base_digit_values, result['params']),
             'label': f"{param_name}={bp['x']:.2e}",
@@ -1667,8 +1689,8 @@ def plot_tensor_report_for_branch(results, param_name, branch_id, base_digit_val
     all_divergences = []
 
     for point in points_to_plot:
-        kz_val = point['kz']
-        sz_val = point['sz']
+        kz_val = point['re']
+        sz_val = point['im']
         dv_point = point['dv']
 
         div_l = point[stress_tensor_name]['div_T_x_l']
@@ -1905,8 +1927,9 @@ def plot_tensor_report_for_branch(results, param_name, branch_id, base_digit_val
     plt.close()
 
 
-def plot_tensor_report_for_branch_2(results, param_name, branch_id, base_digit_values,
-        figfilename, stress_tensor_name = 'maxwell_stress_tensor',
+def plot_tensor_report_for_branch_2(results, param_name,
+        branch_id, base_digit_values,
+        figdir, figfilename, stress_tensor_name = 'maxwell_stress_tensor',
         distance_threshold=0.1, use_K_params=False,
         language='ru', max_points_to_show=5):
     """
@@ -1982,6 +2005,8 @@ def plot_tensor_report_for_branch_2(results, param_name, branch_id, base_digit_v
     print(f"{'='*80}\n")
 
     import matplotlib.pyplot as plt
+    import numpy as np
+    from .common import override_params
 
     # Функция для вычисления значений тензора на массиве x
     def eval_tensor_component(tensor_expr, x_array, dv_local):
@@ -2002,8 +2027,8 @@ def plot_tensor_report_for_branch_2(results, param_name, branch_id, base_digit_v
         for results_list in results:
             if results_list:
                 for result in results_list:
-                    if (abs(result['kz'] - bp['kz']) < 1e-6 and
-                        abs(result['sz'] - bp['sz']) < 1e-6):
+                    if (abs(result['re'] - bp['re']) < 1e-6 and
+                        abs(result['im'] - bp['im']) < 1e-6):
                         points_with_results.append({
                             'branch_point': bp,
                             'result': result
@@ -2054,8 +2079,8 @@ def plot_tensor_report_for_branch_2(results, param_name, branch_id, base_digit_v
         result = pw['result']
 
         points_to_plot.append({
-            'kz': float(bp['kz']),
-            'sz': float(bp['sz']),
+            're': float(bp['re']),
+            'im': float(bp['im']),
             'params': result['params'],
             'dv': override_params(base_digit_values, result['params']),
             'label': f"{param_name}={bp['x']:.2e}",
@@ -2378,6 +2403,8 @@ def compute_surface_integral_force(results, param_name, branch_id, base_digit_va
     print(f"{'='*80}\n")
 
     import numpy as np
+    from .common import override_params
+    from .variables.common import x
 
     # Результаты для вывода
     output = []
@@ -2388,8 +2415,8 @@ def compute_surface_integral_force(results, param_name, branch_id, base_digit_va
         for results_list in results:
             if results_list:
                 for r in results_list:
-                    if (abs(r['kz'] - bp['kz']) < 1e-6 and
-                        abs(r['sz'] - bp['sz']) < 1e-6):
+                    if (abs(r['re'] - bp['re']) < 1e-6 and
+                        abs(r['im'] - bp['im']) < 1e-6):
                         result = r
                         break
             if result:
@@ -2400,8 +2427,8 @@ def compute_surface_integral_force(results, param_name, branch_id, base_digit_va
 
         # Извлекаем данные
         dv = override_params(base_digit_values, result['params'])
-        kz_val = result['kz']
-        sz_val = result['sz']
+        kz_val = result['re']
+        sz_val = result['im']
         W_total_W   = result['W_total_W']  # [Вт/см²]
         thrust_N_per_kW = result['thrust_N_per_kW']    # [Н/кВт] из calc_thrust
 
@@ -2491,8 +2518,8 @@ def compute_surface_integral_force(results, param_name, branch_id, base_digit_va
         # === СОХРАНЕНИЕ РЕЗУЛЬТАТОВ ===
         entry = {
             'param_value': bp['x'],
-            'kz': kz_val,
-            'sz': sz_val,
+            're': kz_val,
+            'im': sz_val,
             'L_z_eff': L_z_eff,
             'W_total_W': W_total_W,
             'thrust_N_per_kW': thrust_N_per_kW,
@@ -2522,7 +2549,7 @@ def compute_surface_integral_force(results, param_name, branch_id, base_digit_va
 def plot_surface_integral_results(surface_results,
                                   param_name,
                                   stress_tensor_name,
-                                  figfilename,
+                                  figdir, figfilename,
                                   language='ru'):
     """
     Визуализация результатов поверхностных интегралов.
@@ -2568,7 +2595,6 @@ def plot_surface_integral_results(surface_results,
         return
 
     import matplotlib.pyplot as plt
-    import numpy as np
 
     # Извлекаем данные
     x_vals      = [r['param_value']        for r in surface_results]
@@ -2693,7 +2719,7 @@ def get_best_solution_branch(results, param_name,
         # Извлекаем тягу
         thrust_values = [p['thrust'] for p in points]
         x_values = [p['x'] for p in points]
-        k_z_values = [{'param':p['x'], 'k_z' : (p['kz'], p['sz'])} for p in points]
+        k_z_values = [{'param':p['x'], 'k_z' : (p['re'], p['im'])} for p in points]
 
         # Вычисляем критерий
         if criterion == 'max_thrust':
@@ -2874,112 +2900,144 @@ def get_solution_branch(results, param_name, branch_id,
     return branch_points
 
 # Перебор всех ветвей
-def report_branch_results(branch_id):
-    plot_matched_branch_results(results_omega, 'omega',
+def report_branch_results(results,
+        param_name,
+        figdir,
+        problem_type, # 'k_z','qnm' or 'drive'
+        branch_id,
+        base_digit_values,
+        language,
+        max_points_to_show):
+    plot_matched_branch_results(results, param_name,
+        figdir=figdir,
         figfilename=f"branch{branch_id}_details.png", branch_id=branch_id,
         distance_threshold=0.1,
         use_K_params=False,
         language=language)
 
-    plot_branch_thrust_components(results_omega, 'omega',
+    plot_branch_thrust_components(results, param_name,
+        figdir=figdir,
         figfilename=f"branch{branch_id}_thrust_components.png",
         branch_id=branch_id, language=language)
 
     # Вычислить поверхностные интегралы для ветви
     maxwell_surface_results = compute_surface_integral_force(
-        results_omega, 'omega', branch_id=branch_id,
-        base_digit_values=digit_values_init.copy() + omega_value.copy(),
+        results, param_name, branch_id=branch_id,
+        base_digit_values=base_digit_values,
         stress_tensor_name = 'stress_tensor', language=language)
 
     # Построить графики поверхностных интегралов
     plot_surface_integral_results(maxwell_surface_results,
-        'omega', figfilename=f"branch{branch_id}_stress_tensor.png",
+        param_name,
+        figdir=figdir,
+        figfilename=f"branch{branch_id}_stress_tensor.png",
         stress_tensor_name = 'stress_tensor', language=language)
 
     # Вычислить поверхностные интегралы для ветви
     maxwell_surface_results = compute_surface_integral_force(
-        results_omega, 'omega', branch_id=branch_id,
-        base_digit_values=digit_values_init.copy() + omega_value.copy(),
+        results, param_name, branch_id=branch_id,
+        base_digit_values=base_digit_values,
         stress_tensor_name = 'maxwell_stress_tensor', language=language)
 
     # Построить графики поверхностных интегралов
     plot_surface_integral_results(maxwell_surface_results,
-        'omega', figfilename=f"branch{branch_id}_maxwell_tensor.png",
-        stress_tensor_name = 'maxwell_stress_tensor', language=language)
+        param_name,
+        stress_tensor_name = 'maxwell_stress_tensor',
+        figdir=figdir,
+        figfilename=f"branch{branch_id}_maxwell_tensor.png",
+        language=language)
 
     # Вычислить поверхностные интегралы для ветви
     convective_surface_results_PE = compute_surface_integral_force(
-        results_omega, 'omega', branch_id=branch_id,
-        base_digit_values=digit_values_init.copy() + omega_value.copy(),
+        results, param_name, branch_id=branch_id,
+        base_digit_values=base_digit_values,
         stress_tensor_name = 'convective_stress_tensor_PE', language=language)
 
     # Построить графики поверхностных интегралов
     plot_surface_integral_results(convective_surface_results_PE,
-        'omega', figfilename=f"branch{branch_id}_conv_tensor_PE.png",
-        stress_tensor_name = 'convective_stress_tensor_PE', language=language)
+        param_name,
+        stress_tensor_name = 'convective_stress_tensor_PE',
+        figdir=figdir,
+        figfilename=f"branch{branch_id}_conv_tensor_PE.png",
+        language=language)
 
     # Вычислить поверхностные интегралы для ветви
     convective_surface_results_IH = compute_surface_integral_force(
-        results_omega, 'omega', branch_id=branch_id,
-        base_digit_values=digit_values_init.copy() + omega_value.copy(),
+        results, param_name, branch_id=branch_id,
+        base_digit_values=base_digit_values,
         stress_tensor_name = 'convective_stress_tensor_IH', language=language)
 
     # Построить графики поверхностных интегралов
     plot_surface_integral_results(convective_surface_results_IH,
-        'omega', figfilename=f"branch{branch_id}_conv_tensor_IH.png",
-        stress_tensor_name = 'convective_stress_tensor_IH', language=language)
+        param_name,
+        stress_tensor_name = 'convective_stress_tensor_IH',
+        figdir=figdir,
+        figfilename=f"branch{branch_id}_conv_tensor_IH.png",
+        language=language)
 
     # Построить отчёт по полям для конкретной ветви
-    plot_field_report_for_branch(results_omega, 'omega',
-        base_digit_values=digit_values_init.copy() + omega_value.copy(),
-        figfilename=f"branch{branch_id}_fields.png", branch_id=branch_id,
-        language=language, max_points_to_show=5)
+    plot_field_report_for_branch(results, param_name, branch_id=branch_id,
+        base_digit_values=base_digit_values,
+        figdir=figdir,
+        figfilename=f"branch{branch_id}_fields.png",
+        problem_type=problem_type, # 'k_z','qnm' or 'drive'
+        language=language, max_points_to_show=max_points_to_show)
 
     # Построить отчёт по тензору для конкретной ветви
-    plot_tensor_report_for_branch_2(results_omega, 'omega',
-        branch_id=branch_id, base_digit_values=digit_values_init.copy() + omega_value.copy(),
+    plot_tensor_report_for_branch_2(results, param_name,
+        branch_id=branch_id, base_digit_values=base_digit_values,
+        figdir=figdir,
         figfilename=f"branch{branch_id}_stress_tensor_components.png",
-        stress_tensor_name = 'stress_tensor', language=language, max_points_to_show=5)
+        stress_tensor_name = 'stress_tensor',
+        language=language, max_points_to_show=max_points_to_show)
 
-    plot_tensor_report_for_branch(results_omega, 'omega',
-        base_digit_values=digit_values_init.copy() + omega_value.copy(),
+    plot_tensor_report_for_branch(results, param_name,
+        base_digit_values=base_digit_values,
+        figdir=figdir,
         figfilename=f"branch{branch_id}_stress_tensor_divergence.png", branch_id=branch_id,
-        stress_tensor_name = 'stress_tensor', language=language, max_points_to_show=5)
+        stress_tensor_name = 'stress_tensor',
+        language=language, max_points_to_show=max_points_to_show)
 
-#     plot_tensor_report_for_branch_2(results_omega, 'omega',
-#         base_digit_values=digit_values_init.copy() + omega_value.copy(),
-#         figfilename=f"branch{branch_id}_maxwell_tensor_components.png", branch_id=branch_id,
+#     plot_tensor_report_for_branch_2(results, param_name,
+#         branch_id=branch_id, base_digit_values=base_digit_values,
+#         figdir=figdir,
+#         figfilename=f"branch{branch_id}_maxwell_tensor_components.png",
 #         stress_tensor_name = 'maxwell_stress_tensor',
-#         language=language, max_points_to_show=5)
+#         language=language, max_points_to_show=max_points_to_show)
 
-#     plot_tensor_report_for_branch(results_omega, 'omega',
+#     plot_tensor_report_for_branch(results, param_name,
+#         figdir=figdir,
 #         figfilename=f"branch{branch_id}_maxwell_tensor_divergence.png", branch_id=branch_id,
-#         base_digit_values=digit_values_init.copy() + omega_value.copy(),
+#         base_digit_values=base_digit_values,
 #         stress_tensor_name = 'maxwell_stress_tensor',
-#         language=language, max_points_to_show=5)
+#         language=language, max_points_to_show=max_points_to_show)
 
 #     # Построить отчёт по тензору для конкретной ветви
-#     plot_tensor_report_for_branch_2(results_omega, 'omega',
+#     plot_tensor_report_for_branch_2(results, param_name,
+#         figdir=figdir,
 #         figfilename=f"branch{branch_id}_conv_tensor_PE_components.png", branch_id=branch_id,
-#         base_digit_values=digit_values_init.copy() + omega_value.copy(),
+#         base_digit_values=base_digit_values,
 #         stress_tensor_name = 'convective_stress_tensor_PE',
-#         language=language, max_points_to_show=5)
+#         language=language, max_points_to_show=max_points_to_show)
 
-#     plot_tensor_report_for_branch(results_omega, 'omega',
-#         base_digit_values=digit_values_init.copy() + omega_value.copy(),
+#     plot_tensor_report_for_branch(results, param_name,
+#         base_digit_values=base_digit_values,
+#         figdir=figdir,
 #         figfilename=f"branch{branch_id}_conv_tensor_PE_divergence.png", branch_id=branch_id,
 #         stress_tensor_name = 'convective_stress_tensor_PE',
-#         language=language, max_points_to_show=5)
+#         language=language, max_points_to_show=max_points_to_show)
 
 #     # Построить отчёт по тензору для конкретной ветви
-#     plot_tensor_report_for_branch_2(results_omega, 'omega',
-#         base_digit_values=digit_values_init.copy() + omega_value.copy(),
+#     plot_tensor_report_for_branch_2(results, param_name,
+#         base_digit_values=base_digit_values,
+#         figdir=figdir,
 #         figfilename=f"branch{branch_id}_conv_tensor_IH_components.png", branch_id=branch_id,
 #         stress_tensor_name = 'convective_stress_tensor_IH',
-#         language=language, max_points_to_show=5)
+#         language=language, max_points_to_show=max_points_to_show)
 
-#     plot_tensor_report_for_branch(results_omega, 'omega',
-#         base_digit_values=digit_values_init.copy() + omega_value.copy(),
+#     plot_tensor_report_for_branch(results, param_name,
+#         base_digit_values=base_digit_values,
+#         figdir=figdir,
 #         figfilename=f"branch{branch_id}_conv_tensor_IH_divergence.png", branch_id=branch_id,
 #         stress_tensor_name = 'convective_stress_tensor_IH',
-#         language=language, max_points_to_show=5)
+#         language=language, max_points_to_show=max_points_to_shownhy76)

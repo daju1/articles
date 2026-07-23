@@ -192,3 +192,6 @@ m = var('m')
 c = var('c')
 assume(c, 'real')
 assume(c>0)
+
+h_l = var('h_l', domain='real')
+h_r = var('h_r', domain='real')

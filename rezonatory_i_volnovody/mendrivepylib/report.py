@@ -1648,11 +1648,15 @@ def plot_tensor_report_for_branch(results, param_name, branch_id, base_digit_val
     dv = override_params(base_digit_values, param_overrides)
 
     A_val = None
-    h_l_val = h_conductor_l
-    h_r_val = h_conductor_r
+    h_l_val = None
+    h_r_val = None
     for eq in dv:
         if str(eq.lhs()) == 'a':
             A_val = float(eq.rhs())
+        if str(eq.lhs()) == 'h_l':
+            h_l_val = float(eq.rhs())
+        if str(eq.lhs()) == 'h_r':
+            h_r_val = float(eq.rhs())
 
     if A_val is None:
         A_val = A
@@ -2054,11 +2058,15 @@ def plot_tensor_report_for_branch_2(results, param_name,
     dv = override_params(base_digit_values, param_overrides)
 
     A_val = None
-    h_l_val = h_conductor_l
-    h_r_val = h_conductor_r
+    h_l_val = None
+    h_r_val = None
     for eq in dv:
         if str(eq.lhs()) == 'a':
             A_val = float(eq.rhs())
+        if str(eq.lhs()) == 'h_l':
+            h_l_val = float(eq.rhs())
+        if str(eq.lhs()) == 'h_r':
+            h_r_val = float(eq.rhs())
 
     if A_val is None:
         A_val = A
@@ -2976,12 +2984,12 @@ def report_branch_results(results,
         language=language)
 
     # Построить отчёт по полям для конкретной ветви
-    plot_field_report_for_branch(results, param_name, branch_id=branch_id,
-        base_digit_values=base_digit_values,
-        figdir=figdir,
-        figfilename=f"branch{branch_id}_fields.png",
-        problem_type=problem_type, # 'k_z','qnm' or 'drive'
-        language=language, max_points_to_show=max_points_to_show)
+    # plot_field_report_for_branch(results, param_name, branch_id=branch_id,
+    #     base_digit_values=base_digit_values,
+    #     figdir=figdir,
+    #     figfilename=f"branch{branch_id}_fields.png",
+    #     problem_type=problem_type, # 'k_z','qnm' or 'drive'
+    #     language=language, max_points_to_show=max_points_to_show)
 
     # Построить отчёт по тензору для конкретной ветви
     plot_tensor_report_for_branch_2(results, param_name,

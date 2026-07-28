@@ -15,6 +15,13 @@ N_im = 1000
 use_phase_y = False
 
 
+def set_use_phase_y(v):
+    use_phase_y = v
+
+def get_use_phase_y():
+    return use_phase_y
+
+
 def calc_extrap_len(kz_range, sz_range, nk, ns):
     extrap_len = np.sqrt(
         ((kz_range[1] - kz_range[0])/nk)**2 +

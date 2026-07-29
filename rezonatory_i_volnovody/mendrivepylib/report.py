@@ -1602,6 +1602,7 @@ def plot_tensor_report_for_branch(results, param_name, branch_id, base_digit_val
     import matplotlib.pyplot as plt
     import numpy as np
     from .common import override_params
+    from .variables.common import x
 
     # Функция для вычисления значений дивергенции на массиве x
     def eval_divergence_array(div_expr, x_array):
@@ -2011,6 +2012,7 @@ def plot_tensor_report_for_branch_2(results, param_name,
     import matplotlib.pyplot as plt
     import numpy as np
     from .common import override_params
+    from .variables.common import x
 
     # Функция для вычисления значений тензора на массиве x
     def eval_tensor_component(tensor_expr, x_array, dv_local):

@@ -1502,7 +1502,7 @@ def plot_field_report_for_branch(results, param_name, branch_id, base_digit_valu
 
 
 def plot_tensor_report_for_branch(results, param_name, branch_id, base_digit_values,
-        figfilename, stress_tensor_name = 'maxwell_stress_tensor',
+        figdir, figfilename, stress_tensor_name = 'maxwell_stress_tensor',
         distance_threshold=0.1,
         use_K_params=False,
         language='ru',

@@ -272,7 +272,8 @@ def get_branches_count(results, param_name, distance_threshold=0.1,
 def plot_matched_branch_results(results, param_name, figdir, figfilename, branch_id,
                                 distance_threshold=0.1,
                                 use_K_params=False,
-                                language='ru'):
+                                language='ru',
+                                branch_points):
     """
     Построение графиков для конкретной сопоставленной ветви решения.
     Включает графики K-параметров и улучшенный график детерминанта с промежуточными точками.
@@ -340,17 +341,7 @@ def plot_matched_branch_results(results, param_name, figdir, figfilename, branch
 
     lang = translations.get(language, translations['ru'])
 
-    # Сопоставляем ветви
-    matched_branches = match_branches_between_intervals(
-        results, param_name, distance_threshold, use_K_params
-    )
-
-    if branch_id not in matched_branches:
-        print(f"{lang['no_data']} для ветви {branch_id}")
-        print(f"Доступные ветви: {list(matched_branches.keys())}")
-        return
-
-    branch_data = matched_branches[branch_id]
+    branch_data = branch_points
 
     if len(branch_data) == 0:
         print(f"{lang['no_data']} для ветви {branch_id}")
@@ -664,7 +655,8 @@ def plot_branch_thrust_components(results, param_name, figdir, figfilename,
                                   branch_id,
                                   distance_threshold=0.1,
                                   use_K_params=False,
-                                  language='ru'):
+                                  language='ru',
+                                  branch_points):
     """
     Построение покомпонентных графиков тяги для конкретной ветви.
     Показывает все компоненты силы, которые складываются в общую тягу.
@@ -732,18 +724,9 @@ def plot_branch_thrust_components(results, param_name, figdir, figfilename,
 
     lang = translations.get(language, translations['ru'])
 
-    # Сопоставляем ветви
-    matched_branches = match_branches_between_intervals(
-        results, param_name, distance_threshold, use_K_params
-    )
-
-    if branch_id not in matched_branches:
+    if len(branch_points) == 0:
         print(f"{lang['no_data']} для ветви {branch_id}")
-        print(f"Доступные ветви: {list(matched_branches.keys())}")
         return
-
-    # Получаем точки ветви для сопоставления
-    branch_points = matched_branches[branch_id]
 
     # Создаем словарь для быстрого поиска точек по (x, kz)
     branch_points_map = {(round(p['x'], 10), round(p['re'], 6)): p for p in branch_points}
@@ -1508,7 +1491,9 @@ def plot_tensor_report_for_branch(results, param_name, branch_id, base_digit_val
         language='ru',
         show_appendix=False,
         appendix_step=5,
-        max_points_to_show=5):
+        max_points_to_show=5,
+        branch_points,
+        verbose=False):
     """
     Построение отчёта по тензору Максвелла для конкретной ветви решения.
     Визуализирует дивергенцию тензора натяжений div T_x в трёх областях.
@@ -1578,26 +1563,16 @@ def plot_tensor_report_for_branch(results, param_name, branch_id, base_digit_val
 
     lang = translations.get(language, translations['ru'])
 
-    # Получаем точки ветви
-    matched_branches = match_branches_between_intervals(
-        results, param_name, distance_threshold, use_K_params
-    )
-
-    if branch_id not in matched_branches:
-        print(f"❌ Ветвь {branch_id} не найдена")
-        return
-
-    branch_points = matched_branches[branch_id]
-
     if len(branch_points) == 0:
         print(f"❌ Ветвь {branch_id} не содержит точек")
         return
 
-    print(f"\n{'='*80}")
-    print(f"{lang['tensor_report']} {branch_id}")
-    print(f"Параметр: {param_name}")
-    print(f"Количество точек в ветви: {len(branch_points)}")
-    print(f"{'='*80}\n")
+    if verbose:
+        print(f"\n{'='*80}")
+        print(f"{lang['tensor_report']} {branch_id}")
+        print(f"Параметр: {param_name}")
+        print(f"Количество точек в ветви: {len(branch_points)}")
+        print(f"{'='*80}\n")
 
     import matplotlib.pyplot as plt
     import numpy as np
@@ -1690,7 +1665,8 @@ def plot_tensor_report_for_branch(results, param_name, branch_id, base_digit_val
         })
 
     # Вычисляем дивергенцию для всех точек
-    print(f"Вычисление дивергенции тензора для {len(points_to_plot)} точек...")
+    if verbose:
+        print(f"Вычисление дивергенции тензора для {len(points_to_plot)} точек...")
     all_divergences = []
 
     for point in points_to_plot:
@@ -1936,7 +1912,8 @@ def plot_tensor_report_for_branch_2(results, param_name,
         branch_id, base_digit_values,
         figdir, figfilename, stress_tensor_name = 'maxwell_stress_tensor',
         distance_threshold=0.1, use_K_params=False,
-        language='ru', max_points_to_show=5):
+        language='ru', max_points_to_show=5,
+        branch_points, verbose=False):
     """
     Построение отчёта по тензору Максвелла для конкретной ветви решения.
     Визуализирует компоненты тензора T_xx, T_xy, T_xz и их дивергенцию.
@@ -1989,25 +1966,16 @@ def plot_tensor_report_for_branch_2(results, param_name,
 
     lang = translations.get(language, translations['ru'])
 
-    # Получаем точки ветви
-    matched_branches = match_branches_between_intervals(
-        results, param_name, distance_threshold, use_K_params
-    )
-
-    if branch_id not in matched_branches:
-        print(f"❌ Ветвь {branch_id} не найдена")
-        return
-
-    branch_points = matched_branches[branch_id]
     if len(branch_points) == 0:
         print(f"❌ Ветвь {branch_id} не содержит точек")
         return
 
-    print(f"\n{'='*80}")
-    print(f"{lang['tensor_report']} {branch_id}")
-    print(f"Параметр: {param_name}")
-    print(f"Количество точек в ветви: {len(branch_points)}")
-    print(f"{'='*80}\n")
+    if verbose:
+        print(f"\n{'='*80}")
+        print(f"{lang['tensor_report']} {branch_id}")
+        print(f"Параметр: {param_name}")
+        print(f"Количество точек в ветви: {len(branch_points)}")
+        print(f"{'='*80}\n")
 
     import matplotlib.pyplot as plt
     import numpy as np
@@ -2102,7 +2070,8 @@ def plot_tensor_report_for_branch_2(results, param_name,
         })
 
     # Вычисляем значения для всех точек
-    print(f"Вычисление компонент тензора для {len(points_to_plot)} точек...")
+    if verbose:
+        print(f"Вычисление компонент тензора для {len(points_to_plot)} точек...")
     all_tensor_data = []
 
     for point in points_to_plot:
@@ -2331,7 +2300,9 @@ def compute_surface_integral_force(results, param_name, branch_id, base_digit_va
                                    stress_tensor_name = 'maxwell_stress_tensor',
                                    distance_threshold=0.1,
                                    use_K_params=False,
-                                   language='ru'):
+                                   language='ru',
+                                   branch_points,
+                                   verbose=False):
     """
     Вычисление поверхностных интегралов тензора Максвелла для трёх областей:
     левый металл, вакуумный зазор, правый феррит.
@@ -2393,24 +2364,15 @@ def compute_surface_integral_force(results, param_name, branch_id, base_digit_va
 
     lang = translations.get(language, translations['ru'])
 
-    # Получаем точки ветви
-    matched_branches = match_branches_between_intervals(
-        results, param_name, distance_threshold, use_K_params
-    )
-
-    if branch_id not in matched_branches:
-        print(f"❌ Ветвь {branch_id} не найдена")
-        return None
-
-    branch_points = matched_branches[branch_id]
     if len(branch_points) == 0:
         print(f"❌ Ветвь {branch_id} не содержит точек")
         return None
 
-    print(f"\n{'='*80}")
-    print(f"{lang['surface_integral']} для ветви {branch_id}")
-    print(f"{lang['param']}: {param_name}")
-    print(f"{'='*80}\n")
+    if verbose:
+        print(f"\n{'='*80}")
+        print(f"{lang['surface_integral']} для ветви {branch_id}")
+        print(f"{lang['param']}: {param_name}")
+        print(f"{'='*80}\n")
 
     import numpy as np
     from .common import override_params
@@ -2469,14 +2431,16 @@ def compute_surface_integral_force(results, param_name, branch_id, base_digit_va
         # x = -A: граница металл/вакуум
         T_xx_metal_side    = eval_T_xx (result[stress_tensor_name]['T_xx_l'], -A_val, dv)  # со стороны металла
         T_xx_vac_side_left = eval_T_xx (result[stress_tensor_name]['T_xx_v'], -A_val, dv)  # со стороны вакуума
-        print("T_xx_metal_side", T_xx_metal_side)
-        print("T_xx_vac_side_left", T_xx_vac_side_left)
+        if verbose:
+            print("T_xx_metal_side", T_xx_metal_side)
+            print("T_xx_vac_side_left", T_xx_vac_side_left)
 
         # x = +A: граница вакуум/феррит
         T_xx_vac_side_right = eval_T_xx(result[stress_tensor_name]['T_xx_v'], A_val, dv)  # со стороны вакуума
         T_xx_ferrite_side   = eval_T_xx(result[stress_tensor_name]['T_xx_r'], A_val, dv)  # со стороны феррита
-        print("T_xx_vac_side_right", T_xx_vac_side_right)
-        print("T_xx_ferrite_side", T_xx_ferrite_side)
+        if verbose:
+            print("T_xx_vac_side_right", T_xx_vac_side_right)
+            print("T_xx_ferrite_side", T_xx_ferrite_side)
 
         # === ПОВЕРХНОСТНЫЕ ИНТЕГРАЛЫ ДЛЯ КАЖДОЙ ОБЛАСТИ ===
         # Формула: F_x = ∮ T_xn dS = [T_xx]_boundary * L_y * L_z_eff
@@ -2486,35 +2450,40 @@ def compute_surface_integral_force(results, param_name, branch_id, base_digit_va
         # Поверхности: x → -∞ (T=0) и x = -A (нормаль направлена ВЛЕВО, т.е. -x^)
         # F_metal = T_xx|_{x→-∞} - T_xx|_{x=-A^-} = 0 - T_xx_metal_side
         F_metal_dyn = -T_xx_metal_side * L_z_eff  # [дин/см²]
-        print("F_metal_dyn", F_metal_dyn)
+        if verbose:
+            print("F_metal_dyn", F_metal_dyn)
 
         # 2. ВАКУУМНЫЙ ЗАЗОР (объём: x ∈ [-A, +A])
         # Поверхности: x = -A (нормаль +x^) и x = +A (нормаль -x^)
         # F_vacuum = T_xx|_{x=-A^+} - T_xx|_{x=+A^-}
         F_vacuum_dyn = (T_xx_vac_side_left - T_xx_vac_side_right) * L_z_eff  # [дин/см²]
-        print("F_vacuum_dyn", F_vacuum_dyn)
+        if verbose:
+            print("F_vacuum_dyn", F_vacuum_dyn)
 
         # 3. ПРАВЫЙ ФЕРРИТ (объём: x ∈ [+A, +∞))
         # Поверхности: x = +A (нормаль +x^) и x → +∞ (T=0)
         # F_ferrite = T_xx|_{x=+A^+} - T_xx|_{x→+∞} = T_xx_ferrite_side - 0
         F_ferrite_dyn = T_xx_ferrite_side * L_z_eff  # [дин/см²]
-        print("L_z_eff", L_z_eff)
-        print("F_ferrite_dyn", F_ferrite_dyn)
+        if verbose:
+            print("L_z_eff", L_z_eff)
+            print("F_ferrite_dyn", F_ferrite_dyn)
 
         # === ПЕРЕВОД В Н/кВт ===
         # 1 Н = 10^5 дин, 1 кВт = 1000 Вт
         # Удельная сила: [Н/кВт] = [дин/см²] * (10^-5 Н/дин) / [Вт/см²] * 1000
         factor_dyn_to_NkW = 1e-5 * 1000 / W_total_W if W_total_W > 1e-20 else 0
-        print("W_total_W", W_total_W)
-        print("thrust_N_per_kW", thrust_N_per_kW)
-        print("factor_dyn_to_NkW", factor_dyn_to_NkW)
+        if verbose:
+            print("W_total_W", W_total_W)
+            print("thrust_N_per_kW", thrust_N_per_kW)
+            print("factor_dyn_to_NkW", factor_dyn_to_NkW)
 
         F_metal_NkW   = F_metal_dyn   * factor_dyn_to_NkW
         F_vacuum_NkW  = F_vacuum_dyn  * factor_dyn_to_NkW
         F_ferrite_NkW = F_ferrite_dyn * factor_dyn_to_NkW
-        print("F_metal_NkW", F_metal_NkW)
-        print("F_vacuum_NkW", F_vacuum_NkW)
-        print("F_ferrite_NkW", F_ferrite_NkW)
+        if verbose:
+            print("F_metal_NkW", F_metal_NkW)
+            print("F_vacuum_NkW", F_vacuum_NkW)
+            print("F_ferrite_NkW", F_ferrite_NkW)
 
         # === БАЛАНС ИМПУЛЬСА ===
         # По Тамму §105: сумма поверхностных интегралов = -d/dt ∫g dV
@@ -2917,24 +2886,44 @@ def report_branch_results(results,
         branch_id,
         base_digit_values,
         language,
-        max_points_to_show):
+        max_points_to_show,
+        branch_points=None,
+        verbose=False):
+    # Если снаружи (в цикле по всем ветвям) уже посчитан общий словарь
+    # match_branches_between_intervals(...) и передан конкретный branch_points —
+    # используем его и НЕ пересчитываем сопоставление ветвей внутри каждой
+    # из следующих функций (раньше это происходило 8 раз за один вызов
+    # report_branch_results, т.к. каждая функция сама вызывала
+    # match_branches_between_intervals по всему results).
+    if branch_points is None:
+        matched_branches = match_branches_between_intervals(
+            results, param_name, distance_threshold=0.1, use_K_params=False
+        )
+        if branch_id not in matched_branches:
+            print(f"❌ Ветвь {branch_id} не найдена")
+            return
+        branch_points = matched_branches[branch_id]
+
     plot_matched_branch_results(results, param_name,
         figdir=figdir,
         figfilename=f"branch{branch_id}_details.png", branch_id=branch_id,
         distance_threshold=0.1,
         use_K_params=False,
-        language=language)
+        language=language,
+        branch_points=branch_points)
 
     plot_branch_thrust_components(results, param_name,
         figdir=figdir,
         figfilename=f"branch{branch_id}_thrust_components.png",
-        branch_id=branch_id, language=language)
+        branch_id=branch_id, language=language,
+        branch_points=branch_points)
 
     # Вычислить поверхностные интегралы для ветви
     maxwell_surface_results = compute_surface_integral_force(
         results, param_name, branch_id=branch_id,
         base_digit_values=base_digit_values,
-        stress_tensor_name = 'stress_tensor', language=language)
+        stress_tensor_name = 'stress_tensor', language=language,
+        branch_points=branch_points, verbose=verbose)
 
     # Построить графики поверхностных интегралов
     plot_surface_integral_results(maxwell_surface_results,
@@ -2947,7 +2936,8 @@ def report_branch_results(results,
     maxwell_surface_results = compute_surface_integral_force(
         results, param_name, branch_id=branch_id,
         base_digit_values=base_digit_values,
-        stress_tensor_name = 'maxwell_stress_tensor', language=language)
+        stress_tensor_name = 'maxwell_stress_tensor', language=language,
+        branch_points=branch_points, verbose=verbose)
 
     # Построить графики поверхностных интегралов
     plot_surface_integral_results(maxwell_surface_results,
@@ -2961,7 +2951,8 @@ def report_branch_results(results,
     convective_surface_results_PE = compute_surface_integral_force(
         results, param_name, branch_id=branch_id,
         base_digit_values=base_digit_values,
-        stress_tensor_name = 'convective_stress_tensor_PE', language=language)
+        stress_tensor_name = 'convective_stress_tensor_PE', language=language,
+        branch_points=branch_points, verbose=verbose)
 
     # Построить графики поверхностных интегралов
     plot_surface_integral_results(convective_surface_results_PE,
@@ -2975,7 +2966,8 @@ def report_branch_results(results,
     convective_surface_results_IH = compute_surface_integral_force(
         results, param_name, branch_id=branch_id,
         base_digit_values=base_digit_values,
-        stress_tensor_name = 'convective_stress_tensor_IH', language=language)
+        stress_tensor_name = 'convective_stress_tensor_IH', language=language,
+        branch_points=branch_points, verbose=verbose)
 
     # Построить графики поверхностных интегралов
     plot_surface_integral_results(convective_surface_results_IH,
@@ -2999,14 +2991,16 @@ def report_branch_results(results,
         figdir=figdir,
         figfilename=f"branch{branch_id}_stress_tensor_components.png",
         stress_tensor_name = 'stress_tensor',
-        language=language, max_points_to_show=max_points_to_show)
+        language=language, max_points_to_show=max_points_to_show,
+        branch_points=branch_points, verbose=verbose)
 
     plot_tensor_report_for_branch(results, param_name,
         base_digit_values=base_digit_values,
         figdir=figdir,
         figfilename=f"branch{branch_id}_stress_tensor_divergence.png", branch_id=branch_id,
         stress_tensor_name = 'stress_tensor',
-        language=language, max_points_to_show=max_points_to_show)
+        language=language, max_points_to_show=max_points_to_show,
+        branch_points=branch_points, verbose=verbose)
 
 #     plot_tensor_report_for_branch_2(results, param_name,
 #         branch_id=branch_id, base_digit_values=base_digit_values,

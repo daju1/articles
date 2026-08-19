@@ -269,11 +269,11 @@ def get_branches_count(results, param_name, distance_threshold=0.1,
     return len(matched_branches)
 
 
-def plot_matched_branch_results(results, param_name, figdir, figfilename, branch_id,
-                                distance_threshold=0.1,
-                                use_K_params=False,
-                                language='ru',
-                                branch_points):
+def plot_matched_branch_results(results, branch_points,
+                                param_name,
+                                figdir, figfilename,
+                                branch_id,
+                                language='ru'):
     """
     Построение графиков для конкретной сопоставленной ветви решения.
     Включает графики K-параметров и улучшенный график детерминанта с промежуточными точками.
@@ -651,12 +651,12 @@ def plot_all_branches_with_detplots(
 
 # функция для покомпонентного анализа тяги каждой ветви:
 
-def plot_branch_thrust_components(results, param_name, figdir, figfilename,
+def plot_branch_thrust_components(results,
+                                  branch_points,
+                                  param_name,
+                                  figdir, figfilename,
                                   branch_id,
-                                  distance_threshold=0.1,
-                                  use_K_params=False,
-                                  language='ru',
-                                  branch_points):
+                                  language='ru'):
     """
     Построение покомпонентных графиков тяги для конкретной ветви.
     Показывает все компоненты силы, которые складываются в общую тягу.
@@ -1484,15 +1484,14 @@ def plot_field_report_for_branch(results, param_name, branch_id, base_digit_valu
     plt.close()
 
 
-def plot_tensor_report_for_branch(results, param_name, branch_id, base_digit_values,
+def plot_tensor_report_for_branch(results,
+        branch_points,
+        param_name, branch_id, base_digit_values,
         figdir, figfilename, stress_tensor_name = 'maxwell_stress_tensor',
-        distance_threshold=0.1,
-        use_K_params=False,
         language='ru',
         show_appendix=False,
         appendix_step=5,
         max_points_to_show=5,
-        branch_points,
         verbose=False):
     """
     Построение отчёта по тензору Максвелла для конкретной ветви решения.
@@ -1908,12 +1907,11 @@ def plot_tensor_report_for_branch(results, param_name, branch_id, base_digit_val
     plt.close()
 
 
-def plot_tensor_report_for_branch_2(results, param_name,
+def plot_tensor_report_for_branch_2(results, branch_points, param_name,
         branch_id, base_digit_values,
         figdir, figfilename, stress_tensor_name = 'maxwell_stress_tensor',
-        distance_threshold=0.1, use_K_params=False,
         language='ru', max_points_to_show=5,
-        branch_points, verbose=False):
+        verbose=False):
     """
     Построение отчёта по тензору Максвелла для конкретной ветви решения.
     Визуализирует компоненты тензора T_xx, T_xy, T_xz и их дивергенцию.
@@ -2296,12 +2294,9 @@ def plot_tensor_report_for_branch_2(results, param_name,
     plt.savefig(f"{figdir}/{figfilename}")
     plt.close()
 
-def compute_surface_integral_force(results, param_name, branch_id, base_digit_values,
+def compute_surface_integral_force(results, branch_points, param_name, branch_id, base_digit_values,
                                    stress_tensor_name = 'maxwell_stress_tensor',
-                                   distance_threshold=0.1,
-                                   use_K_params=False,
                                    language='ru',
-                                   branch_points,
                                    verbose=False):
     """
     Вычисление поверхностных интегралов тензора Максвелла для трёх областей:
@@ -2904,26 +2899,29 @@ def report_branch_results(results,
             return
         branch_points = matched_branches[branch_id]
 
-    plot_matched_branch_results(results, param_name,
-        figdir=figdir,
+    plot_matched_branch_results(results,
+        branch_points = branch_points,
+        param_name = param_name,
+        figdir = figdir,
         figfilename=f"branch{branch_id}_details.png", branch_id=branch_id,
-        distance_threshold=0.1,
-        use_K_params=False,
-        language=language,
-        branch_points=branch_points)
+        language=language)
 
-    plot_branch_thrust_components(results, param_name,
-        figdir=figdir,
+    plot_branch_thrust_components(results,
+        branch_points = branch_points,
+        param_name = param_name,
+        figdir = figdir,
         figfilename=f"branch{branch_id}_thrust_components.png",
-        branch_id=branch_id, language=language,
-        branch_points=branch_points)
+        branch_id=branch_id, language=language)
 
     # Вычислить поверхностные интегралы для ветви
     maxwell_surface_results = compute_surface_integral_force(
-        results, param_name, branch_id=branch_id,
+        results,
+        branch_points = branch_points,
+        param_name = param_name,
+        branch_id = branch_id,
         base_digit_values=base_digit_values,
         stress_tensor_name = 'stress_tensor', language=language,
-        branch_points=branch_points, verbose=verbose)
+        verbose=verbose)
 
     # Построить графики поверхностных интегралов
     plot_surface_integral_results(maxwell_surface_results,
@@ -2934,10 +2932,13 @@ def report_branch_results(results,
 
     # Вычислить поверхностные интегралы для ветви
     maxwell_surface_results = compute_surface_integral_force(
-        results, param_name, branch_id=branch_id,
+        results,
+        branch_points = branch_points,
+        param_name = param_name,
+        branch_id = branch_id,
         base_digit_values=base_digit_values,
         stress_tensor_name = 'maxwell_stress_tensor', language=language,
-        branch_points=branch_points, verbose=verbose)
+        verbose=verbose)
 
     # Построить графики поверхностных интегралов
     plot_surface_integral_results(maxwell_surface_results,
@@ -2949,10 +2950,13 @@ def report_branch_results(results,
 
     # Вычислить поверхностные интегралы для ветви
     convective_surface_results_PE = compute_surface_integral_force(
-        results, param_name, branch_id=branch_id,
+        results,
+        branch_points = branch_points,
+        param_name = param_name,
+        branch_id = branch_id,
         base_digit_values=base_digit_values,
         stress_tensor_name = 'convective_stress_tensor_PE', language=language,
-        branch_points=branch_points, verbose=verbose)
+        verbose=verbose)
 
     # Построить графики поверхностных интегралов
     plot_surface_integral_results(convective_surface_results_PE,
@@ -2964,10 +2968,13 @@ def report_branch_results(results,
 
     # Вычислить поверхностные интегралы для ветви
     convective_surface_results_IH = compute_surface_integral_force(
-        results, param_name, branch_id=branch_id,
+        results,
+        branch_points = branch_points,
+        param_name = param_name,
+        branch_id=branch_id,
         base_digit_values=base_digit_values,
         stress_tensor_name = 'convective_stress_tensor_IH', language=language,
-        branch_points=branch_points, verbose=verbose)
+        verbose=verbose)
 
     # Построить графики поверхностных интегралов
     plot_surface_integral_results(convective_surface_results_IH,

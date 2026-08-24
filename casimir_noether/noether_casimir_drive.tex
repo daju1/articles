@@ -1,0 +1,231 @@
+\documentclass[twoside, 10pt]{article}
+\usepackage[T1, T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ukrainian, english]{babel}
+\usepackage{mathptmx}
+\usepackage{indentfirst}
+\usepackage{sectsty}
+\sectionfont{\normalfont\Large\textbf}
+\subsectionfont{\normalfont\large\textbf}
+\usepackage{multicol}
+\usepackage{orcidlink}
+\usepackage{fancyhdr}
+\usepackage{filecontents}
+\usepackage{hyperref, doi}
+\usepackage[numbers]{natbib}
+\bibliographystyle{myunsrtnat}
+
+% --- METADATA (ADJUSTED FOR NEW ARTICLE) ---
+\def\myfirstpage{1}
+\def\mylastpage{15}
+\def\mypages{\myfirstpage-\mylastpage}
+\def\myfilename{noether_casimir_drive}
+\def\myname{A. Drozdov}
+\def\mynameukr{А. Дроздов}
+\def\mytitle{Noether's Theorem and the Casimir Honeycomb Drive: On Momentum Non-Conservation in Asymmetric Vacuum Systems}
+\def\mytitleukr{Теорема Нетер та стильниковий рушій Казимира: про не збереження імпульсу в асиметричних вакуумних системах}
+\def\myissn{2222-5617}
+\def\mydoi{10.26565/2222-5617-2026-XX-XX} % ← placeholder, замените при подаче
+\def\myemail{alexey.drozdov.07@gmail.com}
+\def\ukrvisnyk{Вісник Харківського національного університету імені В.~Н.~Каразіна, серія «Фізика», вип. XX, \mypages~(2026)}
+\def\envisnyk{The Journal of V.~N.~Karazin Kharkiv National University. Series “Physics” Iss. XX, \mypages~(2026)}
+\def\myworkplace{V.~N.~Karazin Kharkiv National University, 61022, 4 Svoboda Sq., Kharkiv, Ukraine}
+\def\myworkplaceukr{Харківський національний університет імені В.~Н.~Каразіна, майдан Свободи, 4, 61022 Харків, Україна}
+\def\myorcidlink{0009-0004-1386-4534}
+\def\myreceived{Received on January 9, 2026.}
+\def\myaccepted{Accepted for publication on January 9, 2026.}
+\def\myreceivedukr{Надійшла до редакції 9 січня 2026 р.}
+\def\myacceptedukr{Прийнято до друку 9 січня 2026 р.}
+\def\licenseref{http://creativecommons.org/licenses/by/4.0/}
+\def\myvspacebeforesubsection{-2.0mm}
+\def\myvspaceaftersubsection{-2.5mm}
+\def\collontitulasfontcode{lmss}
+
+\newcommand{\MyTitle}{\expandafter\MakeUppercase\expandafter{\mytitle}}
+\newcommand{\MyTitleUkr}{\expandafter\MakeUppercase\expandafter{\mytitleukr}}
+
+\fancypagestyle{firstpagestyle}{
+  \renewcommand{\headrulewidth}{0.6pt}
+  \fancyhead[C]{\ukrvisnyk \\ \envisnyk}
+  \renewcommand{\footrulewidth}{0.6pt}
+  \fancyfoot[L]{${}^{\copyright}$ \myname}
+  \fancyfoot[R]{~ \\ \fontencoding{T1}\fontfamily{\collontitulasfontcode}{\selectfont \textit{Open Access. This article is licensed under a Creative Commons Attribution 4.0}} \\
+  \href{\licenseref}{\fontencoding{T1}\fontfamily{\collontitulasfontcode}{\selectfont \textit{\licenseref}}}}
+}
+
+\usepackage{graphicx}
+\usepackage{caption}
+\DeclareCaptionFormat{nocaption}{}
+\captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+\usepackage{float}
+\floatplacement{figure}{H}
+\usepackage{xcolor}
+\usepackage{enumerate}
+\usepackage{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{textcomp}
+\usepackage{upquote}
+\usepackage{ucs}
+\usepackage{grffile}
+\usepackage[Export]{adjustbox}
+\adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+\usepackage{longtable, booktabs, enumitem, ulem, wrapfig, sidecap}
+
+\providecommand{\keywords}[1]{\textbf{\textit{Keywords:}} #1}
+\providecommand{\keywordsukr}[1]{\textbf{Ключові слова:} #1}
+
+\author{\myname \,\orcidlink{\myorcidlink}}
+\title{\textbf{\MyTitle.}}
+\date{}
+
+\definecolor{urlcolor}{rgb}{0,.145,.698}
+\definecolor{linkcolor}{rgb}{0,0,0}
+\definecolor{citecolor}{rgb}{0,0,0}
+\providecommand{\doi}[1]{DOI: \href{https://doi.org/#1}{#1}}
+
+\geometry{verbose,includehead,nomarginpar,tmargin=1.1cm,bmargin=3.0cm,lmargin=1.85cm,rmargin=1.85cm}
+\setlength{\columnsep}{0.5cm}
+\hyphenpenalty=10000
+
+\begin{document}
+\fontencoding{T2A}\fontfamily{ptm}\selectfont
+\setcounter{page}{\myfirstpage}
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[CE]{\fontencoding{T1}\fontfamily{ptm}{\selectfont \textit{\mytitle.}}}
+\fancyhead[CO]{\fontencoding{T1}\fontfamily{ptm}{\selectfont \textit{\myname}}}
+\renewcommand{\headrulewidth}{0.6pt}
+\fancyfoot{}
+\fancyfoot[LE,RO]{\thepage}
+\fancyfoot[LO,RE]{{~} \\ {\fontencoding{T1}\fontfamily{ptm}{\selectfont \envisnyk}} \\ {\fontencoding{T2A}\fontfamily{\collontitulasfontcode}{\selectfont \ukrvisnyk}}}
+\fancyfoot[CO,CE]{}
+
+$\,$
+\thispagestyle{firstpagestyle}
+\vspace{-9.4mm}
+\fontencoding{T1}\fontfamily{ptm}\selectfont
+\begin{tabular}{lcr}
+\doi{\mydoi} & & ISSN \myissn (Print)
+\end{tabular}
+\vspace{9mm}
+\begin{tabular}{l}
+Original article \\
+In print article \\
+\href{https://doi.org/\mydoi}{https://doi.org/\mydoi} \\
+UDC 53.09, 621.3, 629.7 \\
+PACS numbers: 11.10.Ef, 03.70.+k, 42.50.Lc \\
+\end{tabular}
+
+\section*{\centering {\fontencoding{T1}\fontfamily{ptm}{\selectfont \MyTitle}}}
+\vspace{7mm}
+\centerline{\Large{\myname \,\orcidlink{\myorcidlink} }}
+\vspace{7.5mm}
+\centerline{\textit{\myworkplace}}
+\centerline{\textit{E-mail: \href{mailto:\myemail}{\myemail}}}
+\vspace{5mm}
+\centerline{\myreceived}
+\centerline{\myaccepted}
+\vspace{5mm}
+
+In this paper, we analyze the Casimir honeycomb drive through the lens of Noether’s theorem. The system under consideration—a perfectly conducting plate with a nanoscale honeycomb structure on one side—lacks translational symmetry along the axis normal to the plate due to the geometric asymmetry of vacuum modes on its two faces. As a consequence, the vacuum Hamiltonian depends explicitly on the coordinate \(l\) (the effective cavity length), and by Noether’s theorem, the corresponding component of momentum is not conserved. This non-conservation manifests as a net quantum-vacuum force (Casimir thrust). We show that the derived expression for the force per unit area directly reflects this broken symmetry and is consistent with both the Hamiltonian formulation and the energy-density difference approach. The result underscores a profound physical principle: macroscopic thrust from quantum vacuum fluctuations arises precisely because the system is not invariant under spatial translations.
+
+\vspace{5mm}
+\noindent
+\begin{keywords}
+Noether’s theorem, Casimir effect, quantum vacuum, momentum non-conservation, nanohoneycomb, Casimir thrust
+\end{keywords}
+\vspace{5mm}
+
+\fontencoding{T2A}\fontfamily{ptm}\selectfont
+\noindent
+\textbf{Як цитувати}: \textit{\mynameukr}. \textit{\mytitleukr}. {\ukrvisnyk}. \href{https://doi.org/\mydoi}{https://doi.org/\mydoi}.
+
+\vspace{5mm}
+\fontencoding{T1}\fontfamily{ptm}\selectfont
+\noindent
+\textbf{In cites}: \textit{\myname}. \textit{\mytitle}. {\envisnyk}. \href{https://doi.org/\mydoi}{https://doi.org/\mydoi}.
+
+\newpage
+\begin{multicols}{2}
+\vspace{\myvspacebeforesubsection}
+\subsection*{\centering{\fontencoding{T1}\fontfamily{ptm}{\selectfont INTRODUCTION}}}
+\vspace{\myvspaceaftersubsection}
+
+Noether’s theorem establishes a profound correspondence between continuous symmetries of a physical system and conserved quantities. In particular, invariance under spatial translations implies conservation of linear momentum. In the classical two-plate Casimir configuration, the system remains symmetric under translations parallel to the plates, so transverse momentum is conserved; only the normal component is affected by boundary conditions.
+
+In contrast, the \textit{one-body} Casimir honeycomb drive breaks translational symmetry explicitly along the \(z\)-axis due to differing boundary conditions on the two faces of a single plate: one side is smooth, the other structured with subwavelength conducting cavities. This asymmetry renders the vacuum Hamiltonian \(\langle 0|\hat{\mathcal{H}}|0\rangle\) a function of the geometric parameter \(l\), which represents the effective length of the nanocavities.
+
+\vspace{\myvspacebeforesubsection}
+\subsection*{\centering{\fontencoding{T1}\fontfamily{ptm}{\selectfont NOETHER’S THEOREM AND MOMENTUM NON-CONSERVATION}}}
+\vspace{\myvspaceaftersubsection}
+
+Consider the vacuum Hamiltonian per unit area derived for the honeycomb system:
+
+\end{multicols}
+
+\[
+\frac{\langle 0|\hat{\mathcal{H}}|0\rangle}{S} = \frac{\hbar c}{a^2\pi} \Bigg\{
+l \sum_{n_x=(0)1}^{\infty}\sum_{n_y=(0)1}^{\infty}
+\int_0^{\infty} \sqrt{ \frac{\pi^2}{a^2}(n_x^2 + n_y^2) + k_z^2 } \, dk_z
++ (L - l) \int_0^{\infty}\!\!\int_0^{\infty}
+\int_0^{\infty} \sqrt{k_x^2 + k_y^2 + k_z^2} \, dk_z \, \frac{a}{\pi}dk_x \frac{a}{\pi}dk_y
+\Bigg\}.
+\]
+
+\begin{multicols}{2}
+
+This expression depends explicitly on \(l\). Hence, the system is \textbf{not invariant} under infinitesimal translations \(z \to z + \delta z\).
+
+According to Noether’s theorem, the generator of spatial translations—momentum component \(P_z\)—is conserved \textbf{if and only if} the Hamiltonian is independent of \(z\). Since \(\partial \langle H \rangle / \partial l \neq 0\), the symmetry is broken, and \(P_z\) is not conserved.
+
+The resulting force is
+\end{multicols}
+
+\[
+\frac{F}{S} = \frac{\partial}{\partial l} \frac{\langle 0|\hat{\mathcal{H}}|0\rangle}{S}
+= \frac{\hbar c}{a^2\pi} \left\{
+\sum_{n_x=(0)1}^{\infty}\sum_{n_y=(0)1}^{\infty}
+\int_0^{\infty} \sqrt{ \frac{\pi^2}{a^2}(n_x^2 + n_y^2) + k_z^2 } \, dk_z
+- \int_0^{\infty}\!\!\int_0^{\infty}
+\int_0^{\infty} \sqrt{k_x^2 + k_y^2 + k_z^2} \, dk_z \, dn_x dn_y
+\right\},
+\]
+
+\begin{multicols}{2}
+which matches the Casimir thrust formula obtained via energy-density difference in prior work.
+
+Thus, the appearance of net thrust is not paradoxical—it is the expected consequence of broken translational symmetry. The quantum vacuum “pushes” more strongly on one side because the mode structure differs, and Noether’s theorem provides the fundamental reason why momentum need not be conserved.
+
+\vspace{\myvspacebeforesubsection}
+\subsection*{\centering{\fontencoding{T1}\fontfamily{ptm}{\selectfont CONCLUSION}}}
+\vspace{\myvspaceaftersubsection}
+
+The Casimir honeycomb drive exemplifies a physical system where Noether’s theorem directly explains the origin of macroscopic force: \textbf{the lack of spatial homogeneity leads to non-conservation of momentum}, and hence to thrust. This insight reinforces that quantum vacuum effects are not mere mathematical artifacts but manifestations of deep symmetry principles. Experimental verification would not only confirm the reality of virtual photons but also validate the intimate link between geometry, symmetry, and dynamics in quantum field theory.
+
+\end{multicols}
+
+% --- UKRAINIAN VERSION (TEXT ONLY) ---
+\newpage
+\fontencoding{T2A}\fontfamily{ptm}\selectfont
+\section*{\centering {\fontencoding{T2A}\fontfamily{ptm}{\selectfont \MyTitleUkr}}}
+\centerline{\Large{\mynameukr \,\orcidlink{\myorcidlink} }}
+\vspace{3mm}
+\centerline{\textit{\myworkplaceukr}}
+\centerline{\textit{E-mail: \href{mailto:\myemail}{\myemail}}}
+\vspace{3mm}
+\centerline{\myreceivedukr}
+\centerline{\myacceptedukr}
+\vspace{3.5mm}
+
+У цій роботі аналізується стильниковий рушій Казимира через призму теореми Нетер. Розглянута система — ідеально провідна пластина з нанорозмірною сотовою структурою з одного боку — не має трансляційної симетрії вздовж осі, нормальної до пластини, через геометричну асиметрію вакуумних мод з двох її сторін. Як наслідок, гамільтоніан вакууму явно залежить від координати \(l\) (ефективної довжини резонатора), і, згідно з теоремою Нетер, відповідна компонента імпульсу не зберігається. Це не збереження проявляється як результуюча сила квантового вакууму (тяга Казимира). Показано, що отриманий вираз для сили на одиницю площі безпосередньо відображає цю порушену симетрію й узгоджується як з гамільтоновим підходом, так і з різницею густин енергії. Результат підкреслює глибокий фізичний принцип: макроскопічна тяга від квантових флуктуацій вакууму виникає саме тому, що система не є інваріантною відносно просторових зсувів.
+
+\begin{thebibliography}{9}
+\bibitem{Drozdov2024}
+A. Drozdov, \textit{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate}, The Journal of V. N. Karazin Kharkiv National University. Series “Physics”, Iss. 41, 28--41 (2024). \url{https://doi.org/10.26565/2222-5617-2024-41-04}
+\bibitem{Noether1918}
+E. Noether, \textit{Invariante Variationsprobleme}, Nachr. d. König. Gesellsch. d. Wiss. zu Göttingen, Math-phys. Klasse, 235–257 (1918).
+\bibitem{Casimir1948}
+H. B. G. Casimir, \textit{On the attraction between two perfectly conducting plates}, Proc. K. Ned. Akad. Wet. B \textbf{51}, 793 (1948).
+\end{thebibliography}
+
+\end{document}

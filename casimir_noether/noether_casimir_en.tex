@@ -1,0 +1,78 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{csquotes}
+\usepackage{url}
+\usepackage{geometry}
+\geometry{a4paper, left=2cm, right=2cm, top=2cm, bottom=2cm}
+
+\title{Noether's Theorem and the Casimir Honeycomb Drive: On the Non-Conservation of Momentum in Asymmetric Vacuum Systems}
+\author{A. Drozdov\\
+V. N. Karazin Kharkiv National University, 4 Svoboda Sq., Kharkiv, 61022, Ukraine\\
+\texttt{alexey.drozdov.07@gmail.com}}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+In this paper, we analyze the Casimir honeycomb drive through the lens of Noether’s theorem. The system under consideration—a perfectly conducting plate with a nanoscale honeycomb structure on one side—lacks translational symmetry along the axis normal to the plate due to the geometric asymmetry of vacuum modes on its two faces. As a consequence, the vacuum Hamiltonian depends explicitly on the coordinate $l$ (the effective cavity length), and by Noether’s theorem, the corresponding component of momentum is not conserved. This non-conservation manifests as a net quantum-vacuum force (Casimir thrust). We show that the derived expression for the force per unit area directly reflects this broken symmetry and is consistent with both the Hamiltonian formulation and the energy-density difference approach. The result underscores a profound physical principle: macroscopic thrust from quantum vacuum fluctuations arises precisely because the system is not invariant under spatial translations.
+\end{abstract}
+
+\medskip
+\noindent\textbf{Keywords:} Noether’s theorem, Casimir effect, quantum vacuum, momentum non-conservation, nanohoneycomb, Casimir thrust
+
+\medskip
+\noindent\textbf{UDC:} 53.09, 621.3, 629.7 \quad
+\textbf{PACS numbers:} 11.10.Ef, 03.70.+k, 42.50.Lc
+
+\section{Introduction}
+Noether’s theorem establishes a deep correspondence between continuous symmetries of a physical system and conserved quantities. In particular, invariance under spatial translations implies conservation of linear momentum. In the classical two-plate Casimir configuration, the system remains symmetric under translations parallel to the plates, so transverse momentum is conserved; only the normal component is affected by boundary conditions, but even then, forces balance between the two bodies.
+
+In contrast, the \textit{one-body} Casimir honeycomb drive, as introduced in \cite{Drozdov2024}, breaks translational symmetry explicitly along the $z$-axis due to differing boundary conditions on the two faces of a single plate: one side is smooth, the other structured with subwavelength conducting cavities. This asymmetry renders the vacuum Hamiltonian $\langle 0|\hat{\mathcal{H}}|0\rangle$ a function of the geometric parameter $l$, which represents the effective length of the nanocavities.
+
+\section{Noether’s Theorem and Momentum Non-Conservation}
+Consider the vacuum Hamiltonian per unit area derived in \cite{Drozdov2024}:
+\begin{equation}
+\frac{\langle 0|\hat{\mathcal{H}}|0\rangle}{S} = \frac{\hbar c}{a^2\pi} \Bigg\{
+l \sum_{n_x=(0)1}^{\infty}\sum_{n_y=(0)1}^{\infty}
+\int_0^{\infty} \sqrt{ \frac{\pi^2}{a^2}(n_x^2 + n_y^2) + k_z^2 } \, dk_z
++ (L - l) \int_0^{\infty}\!\!\int_0^{\infty}
+\int_0^{\infty} \sqrt{k_x^2 + k_y^2 + k_z^2} \, dk_z \, \frac{a}{\pi}dk_x \frac{a}{\pi}dk_y
+\Bigg\}.
+\end{equation}
+This expression depends explicitly on $l$. Hence, the system is **not invariant** under infinitesimal translations $z \to z + \delta z$, because such a transformation would alter the effective cavity geometry on the structured side.
+
+According to Noether’s theorem, the generator of spatial translations—the momentum component $P_z$—is conserved **if and only if** the action (or Hamiltonian, in static cases) is independent of $z$. Since $\partial \langle H \rangle / \partial l \neq 0$, the symmetry is broken, and $P_z$ is not conserved.
+
+The resulting force is
+\begin{equation}
+\frac{F}{S} = \frac{\partial}{\partial l} \frac{\langle 0|\hat{\mathcal{H}}|0\rangle}{S}
+= \frac{\hbar c}{a^2\pi} \left\{
+\sum_{n_x=(0)1}^{\infty}\sum_{n_y=(0)1}^{\infty}
+\int_0^{\infty} \sqrt{ \frac{\pi^2}{a^2}(n_x^2 + n_y^2) + k_z^2 } \, dk_z
+- \int_0^{\infty}\!\!\int_0^{\infty}
+\int_0^{\infty} \sqrt{k_x^2 + k_y^2 + k_z^2} \, dk_z \, dn_x dn_y
+\right\},
+\end{equation}
+which is precisely the Casimir thrust reported in \cite{Drozdov2024}.
+
+Thus, the appearance of a net force is not a paradox—it is the expected consequence of broken translational symmetry. The quantum vacuum “pushes” more strongly on one side because the mode structure differs, and Noether’s theorem provides the fundamental reason why momentum need not be conserved in such an open, boundary-defined system.
+
+\section{Conclusion}
+The Casimir honeycomb drive exemplifies a physical system where Noether’s theorem directly explains the origin of a macroscopic force: **the lack of spatial homogeneity leads to non-conservation of momentum**, and hence to thrust. This insight reinforces that quantum vacuum effects are not merely mathematical curiosities but manifestations of deep symmetry principles. Experimental verification of this thrust would not only confirm the reality of virtual photons but also validate the intimate link between geometry, symmetry, and dynamics in quantum field theory.
+
+\begin{thebibliography}{9}
+\bibitem{Drozdov2024}
+A. Drozdov, \textit{Casimir honeycomb drive: on the force on perfectly conducting honeycomb on a plate}, The Journal of V. N. Karazin Kharkiv National University. Series “Physics”, Iss. 41, 28--41 (2024). \url{https://doi.org/10.26565/2222-5617-2024-41-04}
+\bibitem{Noether1918}
+E. Noether, \textit{Invariante Variationsprobleme}, Nachr. d. König. Gesellsch. d. Wiss. zu Göttingen, Math-phys. Klasse, 235–257 (1918).
+\bibitem{Casimir1948}
+H. B. G. Casimir, \textit{On the attraction between two perfectly conducting plates}, Proc. K. Ned. Akad. Wet. B \textbf{51}, 793 (1948).
+\end{thebibliography}
+
+\end{document}

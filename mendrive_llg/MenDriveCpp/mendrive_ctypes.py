@@ -33,7 +33,7 @@ DBLP = ctypes.POINTER(ctypes.c_double)
 lib.mendrive_run.argtypes = [
     ctypes.c_void_p, ctypes.c_double, ctypes.c_int, ctypes.c_int,
     ctypes.c_double, ctypes.c_double, ctypes.c_int,
-    DBLP, DBLP, DBLP, DBLP, DBLP, DBLP, DBLP, DBLP, DBLP,
+    DBLP, DBLP, DBLP, DBLP, DBLP, DBLP, DBLP, DBLP, DBLP, DBLP,
     ctypes.POINTER(ctypes.c_int)]
 lib.mendrive_run.restype = ctypes.c_int
 
@@ -45,7 +45,7 @@ EXC_CODE = {'magnetic_right': 0, 'electric_left': 1}
 class MenDriveCpp:
     """Python-обёртка над C++ ядром резонатора МенДрайв. Интерфейс совпадает
     с оригинальным MenDriveFDTD -- run() возвращает тот же dict с ключами
-    t, dTxx, Hn, Mn, HzJA, MzJA, P, T, dt, blew_up."""
+    t, dTxx, Hn, Mn, HzJA, MzJA, P, Pdiss, T, dt, blew_up."""
 
     def __init__(self, N, a=0.2, h_l=0.2, h_r=0.2, dt_frac=0.1,
                  excitation_mode='magnetic_right', ferrite_model='JA',
@@ -79,22 +79,25 @@ class MenDriveCpp:
         max_rec = max(0, nsteps - record_start)
         if max_rec <= 0:
             return dict(t=np.array([]), dTxx=np.array([]), Hn=np.array([]), Mn=np.zeros((0, 3)),
-                        HzJA=np.array([]), MzJA=np.array([]), P=np.array([]),
+                        HzJA=np.array([]), MzJA=np.array([]), P=np.array([]), Pdiss=np.array([]),
                         T=T, dt=self.dt, blew_up=False)
         out_t = np.zeros(max_rec); out_dTxx = np.zeros(max_rec)
         out_Hn = np.zeros(max_rec); out_P = np.zeros(max_rec)
         out_Mx = np.zeros(max_rec); out_My = np.zeros(max_rec); out_Mz = np.zeros(max_rec)
         out_HzJA = np.zeros(max_rec); out_MzJA = np.zeros(max_rec)
+        out_Pdiss = np.zeros(max_rec)
         blew_up = ctypes.c_int(0)
         n_rec = lib.mendrive_run(
             self.handle, omega0, nsteps, record_start, amp, ramp_periods, probe_idx,
             out_t.ctypes.data_as(DBLP), out_dTxx.ctypes.data_as(DBLP),
             out_Hn.ctypes.data_as(DBLP), out_P.ctypes.data_as(DBLP),
             out_Mx.ctypes.data_as(DBLP), out_My.ctypes.data_as(DBLP), out_Mz.ctypes.data_as(DBLP),
-            out_HzJA.ctypes.data_as(DBLP), out_MzJA.ctypes.data_as(DBLP), ctypes.byref(blew_up))
+            out_HzJA.ctypes.data_as(DBLP), out_MzJA.ctypes.data_as(DBLP),
+            out_Pdiss.ctypes.data_as(DBLP), ctypes.byref(blew_up))
         Mn = np.stack([out_Mx[:n_rec], out_My[:n_rec], out_Mz[:n_rec]], axis=1)
         return dict(t=out_t[:n_rec], dTxx=out_dTxx[:n_rec], Hn=out_Hn[:n_rec], Mn=Mn,
                     HzJA=out_HzJA[:n_rec], MzJA=out_MzJA[:n_rec], P=out_P[:n_rec],
+                    Pdiss=out_Pdiss[:n_rec],
                     T=T, dt=self.dt, blew_up=bool(blew_up.value))
 
     def force_per_power(self, res, last_frac=0.5,
@@ -125,9 +128,33 @@ class MenDriveCpp:
         P_avg = float(np.mean(P[-n_use:]))
         force_per_power_code = dTxx_avg / P_avg if abs(P_avg) > 1e-300 else np.nan
 
-        force_dyn = dTxx_avg * area_cm2                       # эрг/см^3 * см^2 = дин
+        force_dyn = dTxx_avg * area_cm2                        # эрг/см^3 * см^2 = дин
         power_erg_s = P_avg * (length_unit_cm ** 2) / time_unit_s
         force_N = force_dyn * 1e-5                             # дин -> Н
         power_kW = power_erg_s * 1e-7 * 1e-3                   # эрг/с -> Вт -> кВт
         force_per_kW = force_N / power_kW if abs(power_kW) > 1e-300 else np.nan
         return force_per_power_code, force_per_kW
+
+    def check_energy_balance(self, res, last_frac=0.5):
+        """Сверка энергобаланса: сравнение мощности источника (P, из -j*E) с
+        прямым временным интегралом закона Джоуля sigma*E^2 (+ sigma_m_leak*H^2
+        для JA/Hybrid/Preisach) по обеим стенкам (Pdiss). ВАЖНО: Pdiss учитывает
+        только электрический канал (точно) и линейный вязкий магнитный канал
+        sigma_m_leak (частично) -- площадь петли гистерезиса (JA/Preisach) и
+        демпфирование Гильберта (LLG) в Pdiss НЕ включены, поэтому для этих
+        механизмов ожидается систематическое расхождение P > Pdiss. Совпадение
+        electric-only части служит проверкой корректности дискретизации закона
+        Джоуля, а не полноты магнитного энергобаланса.
+        Возвращает (P_avg, Pdiss_avg, относительное расхождение)."""
+        t, dt, T = res['t'], res['dt'], res['T']
+        if len(t) == 0:
+            return np.nan, np.nan, np.nan
+        spp = max(1, int(round(T / dt)))
+        n_periods = max(1, len(t) // spp)
+        n_use = max(1, int(round(n_periods * last_frac))) * spp
+        n_use = min(n_use, len(t))
+        P_avg = float(np.mean(res['P'][-n_use:]))
+        Pdiss_avg = float(np.mean(res['Pdiss'][-n_use:]))
+        denom = max(abs(P_avg), abs(Pdiss_avg), 1e-300)
+        rel_diff = abs(P_avg - Pdiss_avg) / denom
+        return P_avg, Pdiss_avg, rel_diff

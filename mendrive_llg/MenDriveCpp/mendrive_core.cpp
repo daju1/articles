@@ -264,6 +264,7 @@ struct MenDriveSim {
 
     std::vector<long double> Ca_e, Cb_e, src_mag_B, src_el_A, Ey, Ez, Hy, Hz;
     long double t;
+    std::vector<long double> sigma_e_profile;  // диагностика: sigma_e(x) на A-сетке
 
     std::vector<long double> M_irr, M_field;         // JA
     std::vector<Vec3> M_llg;                     // LLG
@@ -322,11 +323,12 @@ struct MenDriveSim {
             pr.reset(new PreisachEngine(Ms, Hc_mean_pr, Hc_sigma_pr, Hb_sigma_pr, n_hyst_pr));
         }
 
-        Ca_e.resize(N+1); Cb_e.resize(N+1);
+        Ca_e.resize(N+1); Cb_e.resize(N+1); sigma_e_profile.resize(N+1);
         for (int i = 0; i <= N; ++i) {
             long double sig = leftA[i] ? sigma_e_left : (rightA[i] ? sigma_e_ferrite : 0.0);
             Ca_e[i] = (1 - 2*M_PI*sig*dt) / (1 + 2*M_PI*sig*dt);
             Cb_e[i] = (dt/dx) / (1 + 2*M_PI*sig*dt);
+            sigma_e_profile[i] = sig;
         }
         src_mag_B.resize(N); src_el_A.resize(N+1);
         for (int i = 0; i < N; ++i) src_mag_B[i] = rightB[i] ? std::exp(-(xB[i]-a)/skin_depth) : 0.0;
@@ -432,6 +434,32 @@ struct MenDriveSim {
     }
 
     bool fields_finite() const { for (long double v : Hz) if (!std::isfinite(v)) return false; return true; }
+
+    // Диагностика энергобаланса: прямой временной интеграл закона Джоуля
+    // sigma_e*E^2 по обеим проводящим стенкам (профиль sigma_e_profile на
+    // A-сетке) + sigma_m_leak*H^2 по ферритовой стенке для линейного вязкого
+    // канала (JA/Hybrid/Preisach). Для чистого LLG линейного sigma_m нет --
+    // гильбертово демпфирование не сводится к sigma*H^2, поэтому магнитная
+    // часть в этом режиме диагностикой не учитывается (см. return 0 ниже).
+    // В установившемся периодическом режиме среднее по периоду значение
+    // этой величины должно совпадать со средней мощностью источника (P_e+P_m
+    // из step_once) -- это внешняя проверка энергобаланса FDTD-схемы.
+    long double dissipated_power_density() const {
+        long double p_diss = 0.0;
+        for (int i = 0; i <= N; ++i) {
+            p_diss += sigma_e_profile[i] * (Ey[i]*Ey[i] + Ez[i]*Ez[i]) * dx;
+        }
+        long double sigma_m_wall = 0.0;
+        if (ferrite_model == 0 || ferrite_model == 2) sigma_m_wall = ja->sigma_m_leak;
+        else if (ferrite_model == 3) sigma_m_wall = sigma_m_leak_pr;
+        if (sigma_m_wall != 0.0) {
+            for (int i = 0; i < N; ++i) {
+                if (!rightB[i]) continue;
+                p_diss += sigma_m_wall * (Hy[i]*Hy[i] + Hz[i]*Hz[i]) * dx;
+            }
+        }
+        return p_diss;
+    }
 };
 
 // ---------------- C API для ctypes ----------------
@@ -463,7 +491,7 @@ int mendrive_run(void* handle, double omega0, int nsteps, int record_start,
                   double amp, double ramp_periods, int probe_idx,
                   double* out_t, double* out_dTxx, double* out_Hn, double* out_P,
                   double* out_Mx, double* out_My, double* out_Mz,
-                  double* out_HzJA, double* out_MzJA, int* out_blew_up) {
+                  double* out_HzJA, double* out_MzJA, double* out_Pdiss, int* out_blew_up) {
     MenDriveSim* sim = static_cast<MenDriveSim*>(handle);
     double T = 2*M_PI/omega0;
     int rec_count = 0;
@@ -474,6 +502,7 @@ int mendrive_run(void* handle, double omega0, int nsteps, int record_start,
             out_t[rec_count] = sim->t;
             out_P[rec_count] = P_step / sim->dt;
             out_dTxx[rec_count] = sim->Txx_at(sim->iR_A) - sim->Txx_at(sim->iL_A);
+            out_Pdiss[rec_count] = (double)sim->dissipated_power_density();
             int fi = 0, gi = -1;
             for (int i = 0; i < sim->N; ++i) { if (sim->rightB[i]) { if (fi == probe_idx) { gi = i; break; } fi++; } }
             out_Hn[rec_count] = (gi >= 0) ? sim->Hz[gi] : 0.0;

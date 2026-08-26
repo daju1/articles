@@ -122,7 +122,7 @@ class MenDriveCpp:
             return np.nan, np.nan
         spp = max(1, int(round(T / dt)))
         n_periods = max(1, len(t) // spp)
-        n_use = max(1, int(round(n_periods * last_frac))) * spp
+        n_use = max(1, int(n_periods * last_frac)) * spp
         n_use = min(n_use, len(t))
         dTxx_avg = float(np.mean(dTxx[-n_use:]))
         P_avg = float(np.mean(P[-n_use:]))

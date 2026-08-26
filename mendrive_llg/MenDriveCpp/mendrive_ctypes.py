@@ -21,7 +21,8 @@ lib.mendrive_create.argtypes = [
     ctypes.c_double, ctypes.c_double, ctypes.c_double,
     ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double,
     ctypes.c_int, ctypes.c_int, ctypes.c_int,
-    ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+    ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double,
+    ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
 lib.mendrive_destroy.argtypes = [ctypes.c_void_p]
 lib.mendrive_get_n_fer.argtypes = [ctypes.c_void_p]
 lib.mendrive_get_n_fer.restype = ctypes.c_int
@@ -37,7 +38,7 @@ lib.mendrive_run.argtypes = [
 lib.mendrive_run.restype = ctypes.c_int
 
 BIAS_CODE = {'none': 0, 'x': 1, 'y': 2, 'z': 3, 'parallel': 4}
-FERRITE_CODE = {'JA': 0, 'LLG': 1, 'Hybrid': 2}
+FERRITE_CODE = {'JA': 0, 'LLG': 1, 'Hybrid': 2, 'Preisach': 3}
 EXC_CODE = {'magnetic_right': 0, 'electric_left': 1}
 
 
@@ -52,7 +53,9 @@ class MenDriveCpp:
                  sigma_m_leak=3.0, sigma_e_left=3.0, sigma_e_ferrite=0.0,
                  Ms=1.0, a_JA=0.3, alpha_JA=0.001, k_JA=0.15, c_JA=0.15,
                  n_sub=4, n_fp=3, n_newton=6,
-                 Ms_llg=0.3, gamma_llg=1.0, alpha_llg=0.1, skin_depth=0.06):
+                 Ms_llg=0.3, gamma_llg=1.0, alpha_llg=0.1, skin_depth=0.06,
+                 n_hyst_pr=201, Hc_mean_pr=1.0, Hc_sigma_pr=0.3, Hb_sigma_pr=0.5,
+                 sigma_m_leak_pr=3.0):
         self.handle = lib.mendrive_create(
             N, a, h_l, h_r, dt_frac,
             EXC_CODE[excitation_mode], FERRITE_CODE[ferrite_model],
@@ -60,7 +63,8 @@ class MenDriveCpp:
             sigma_m_leak, sigma_e_left, sigma_e_ferrite,
             Ms, a_JA, alpha_JA, k_JA, c_JA,
             n_sub, n_fp, n_newton,
-            Ms_llg, gamma_llg, alpha_llg, skin_depth)
+            Ms_llg, gamma_llg, alpha_llg, skin_depth,
+            n_hyst_pr, Hc_mean_pr, Hc_sigma_pr, Hb_sigma_pr, sigma_m_leak_pr)
         self.n_fer = lib.mendrive_get_n_fer(self.handle)
         self.dt = lib.mendrive_get_dt(self.handle)
 
@@ -92,3 +96,38 @@ class MenDriveCpp:
         return dict(t=out_t[:n_rec], dTxx=out_dTxx[:n_rec], Hn=out_Hn[:n_rec], Mn=Mn,
                     HzJA=out_HzJA[:n_rec], MzJA=out_MzJA[:n_rec], P=out_P[:n_rec],
                     T=T, dt=self.dt, blew_up=bool(blew_up.value))
+
+    def force_per_power(self, res, last_frac=0.5,
+                         length_unit_cm=1.0, area_cm2=1.0, time_unit_s=1.0):
+        """Отношение силы (тензор Максвелла, dTxx) к затраченной мощности (P) в
+        Н/кВт, усреднённое по последней доле last_frac записанной траектории.
+
+        ВНИМАНИЕ (калибровка СГС -> СИ): dTxx возвращается ядром в тех же
+        единицах, что и энергия поля (E^2+H^2)/8*pi, то есть как плотность
+        энергии в коде (код-единицы длины/времени/поля). Чтобы получить
+        физическую силу в динах, эту плотность нужно умножить на площадь
+        поперечного сечения резонатора в см^2 (area_cm2); чтобы получить
+        физическую мощность в эрг/с, P нужно домножить на характерный масштаб
+        мощности вашей нормировки (time_unit_s, length_unit_cm).
+        По умолчанию все три калибровочных множителя равны 1.0, то есть метод
+        возвращает "код-единицы Н/кВт" -- ПОДСТАВЬТЕ фактические масштабы из
+        вашей нормировки (см. MenDrive_qnm_theory.ipynb), прежде чем
+        интерпретировать force_per_kW как физическую величину.
+        """
+        t, dTxx, P, dt, T = res['t'], res['dTxx'], res['P'], res['dt'], res['T']
+        if len(t) == 0:
+            return np.nan, np.nan
+        spp = max(1, int(round(T / dt)))
+        n_periods = max(1, len(t) // spp)
+        n_use = max(1, int(round(n_periods * last_frac))) * spp
+        n_use = min(n_use, len(t))
+        dTxx_avg = float(np.mean(dTxx[-n_use:]))
+        P_avg = float(np.mean(P[-n_use:]))
+        force_per_power_code = dTxx_avg / P_avg if abs(P_avg) > 1e-300 else np.nan
+
+        force_dyn = dTxx_avg * area_cm2                       # эрг/см^3 * см^2 = дин
+        power_erg_s = P_avg * (length_unit_cm ** 2) / time_unit_s
+        force_N = force_dyn * 1e-5                             # дин -> Н
+        power_kW = power_erg_s * 1e-7 * 1e-3                   # эрг/с -> Вт -> кВт
+        force_per_kW = force_N / power_kW if abs(power_kW) > 1e-300 else np.nan
+        return force_per_power_code, force_per_kW

@@ -378,9 +378,10 @@ int mendrive_run(void* handle, double omega0, int nsteps, int record_start,
     int rec_count = 0;
     *out_blew_up = 0;
     for (int n = 0; n < nsteps; ++n) {
-        sim->step_once(omega0, amp, ramp_periods, T);
+        double P_step = sim->step_once(omega0, amp, ramp_periods, T);
         if (n >= record_start) {
             out_t[rec_count] = sim->t;
+            out_P[rec_count] = P_step / sim->dt;
             out_dTxx[rec_count] = sim->Txx_at(sim->iR_A) - sim->Txx_at(sim->iL_A);
             int fi = 0, gi = -1;
             for (int i = 0; i < sim->N; ++i) { if (sim->rightB[i]) { if (fi == probe_idx) { gi = i; break; } fi++; } }

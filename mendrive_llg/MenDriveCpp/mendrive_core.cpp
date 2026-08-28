@@ -186,7 +186,6 @@ struct LLGEngine {
     }
 };
 
-
 // Классическая скалярная модель Прейзаха: ансамбль элементарных реле
 // (гистеронов) gamma_{alpha,beta}[H], пороги включения/выключения alpha_k>=beta_k
 // заданы через физически интерпретируемые Hc=(alpha-beta)/2 (коэрцитивность)
@@ -254,7 +253,7 @@ struct PreisachEngine {
 struct MenDriveSim {
     int N;
     long double a, h_l, h_r, dx, dt;
-    int ferrite_model;   // 0='JA', 1='LLG', 2='Hybrid'
+    int ferrite_model;   // 0='JA', 1='LLG', 2='Hybrid', 3='Preisach'
     int excitation_mode; // 0='magnetic_right', 1='electric_left'
     int n_newton;
 
@@ -266,10 +265,10 @@ struct MenDriveSim {
     long double t;
     std::vector<long double> sigma_e_profile;  // диагностика: sigma_e(x) на A-сетке
 
-    std::vector<long double> M_irr, M_field;         // JA
-    std::vector<Vec3> M_llg;                     // LLG
+    std::vector<long double> M_irr, M_field;          // JA
+    std::vector<Vec3> M_llg;                          // LLG
     std::vector<long double> hyb_M_irr, hyb_M_field;  // Hybrid (внутренний JA)
-    std::vector<Vec3> hyb_M;                     // Hybrid (LLG-часть)
+    std::vector<Vec3> hyb_M;                          // Hybrid (LLG-часть)
     std::vector<long double> last_HzJA;               // Hybrid (неискажённое поле)
 
     std::unique_ptr<JAEngine> ja;
@@ -278,6 +277,7 @@ struct MenDriveSim {
     std::vector<std::vector<int8_t>> pr_state;          // Preisach (состояния гистеронов)
     std::vector<long double> pr_M;                      // Preisach (намагниченность)
     long double sigma_m_leak_pr;                        // Preisach (утечка энергии в стенку)
+    long double p_mag_dynamics;  // диагностика: H*dM/dt за последний шаг (энергия к намагниченности)
 
     // bias_orientation: 0='none', 1='x', 2='y', 3='z', 4='parallel'
     MenDriveSim(int N_, long double a_, long double h_l_, long double h_r_, long double dt_frac,
@@ -338,6 +338,7 @@ struct MenDriveSim {
 
     void reset_state() {
         Ey.assign(N+1, 0.0); Ez.assign(N+1, 0.0); Hy.assign(N, 0.0); Hz.assign(N, 0.0); t = 0.0;
+        p_mag_dynamics = 0.0;
         if (ferrite_model == 0) { M_irr.assign(n_fer, 0.0); M_field.assign(n_fer, 0.0); }
         else if (ferrite_model == 1) { Vec3 M0 = llg->initial_M(); M_llg.assign(n_fer, M0); }
         else if (ferrite_model == 2) {
@@ -382,50 +383,63 @@ struct MenDriveSim {
 
         if (ferrite_model == 0) {
             int fi = 0;
+            long double p_mag_acc = 0.0;
             for (int i = 0; i < N; ++i) {
                 if (!rightB[i]) continue;
                 long double rhs_extra = dt*rotE_z[i] + dt*4*M_PI*j_m_z_B[i];
                 long double Hz_f, M_irr_new, M_new;
                 ja->implicit_step(M_irr[fi], Hz[i], M_field[fi], rhs_extra, dt, n_newton, 0.25, 1e-5, Hz_f, M_irr_new, M_new);
+                p_mag_acc += 0.5*(Hz[i]+Hz_f) * (M_new-M_field[fi]) / dt * dx;
                 Hz_new[i] = Hz_f; M_irr[fi] = M_irr_new; M_field[fi] = M_new; fi++;
             }
+            p_mag_dynamics = p_mag_acc;
         } else if (ferrite_model == 1) {
             int fi = 0;
+            long double p_mag_acc = 0.0;
             for (int i = 0; i < N; ++i) {
                 if (!rightB[i]) continue;
                 Vec3 M_new; long double dMy_dt, dMz_dt;
                 llg->step(M_llg[fi], Hy[i], Hz[i], dt, M_new, dMy_dt, dMz_dt);
+                p_mag_acc += (Hy[i]*dMy_dt + Hz[i]*dMz_dt) * dx;
                 M_llg[fi] = M_new;
                 Hy_new[i] = Hy[i] + (dt/dx)*(Ez[i+1]-Ez[i]) - dt*4*M_PI*dMy_dt;
                 Hz_new[i] = Hz[i] - dt*rotE_z[i] - dt*4*M_PI*j_m_z_B[i] - dt*4*M_PI*dMz_dt;
                 fi++;
             }
+            p_mag_dynamics = p_mag_acc;
         } else if (ferrite_model == 2) {
             int fi = 0;
+            long double p_mag_acc = 0.0;
             for (int i = 0; i < N; ++i) {
                 if (!rightB[i]) continue;
                 long double rhs_extra_z = dt*rotE_z[i] + dt*4*M_PI*j_m_z_B[i];
                 long double Hz_after_JA, M_irr_new, M_field_new;
                 ja->implicit_step(hyb_M_irr[fi], Hz[i], hyb_M_field[fi], rhs_extra_z, dt, n_newton, 0.25, 1e-5, Hz_after_JA, M_irr_new, M_field_new);
+                p_mag_acc += 0.5*(Hz[i]+Hz_after_JA) * (M_field_new-hyb_M_field[fi]) / dt * dx;
                 hyb_M_irr[fi] = M_irr_new; hyb_M_field[fi] = M_field_new;
                 last_HzJA[fi] = Hz_after_JA;
                 Vec3 M_new; long double dMy_dt, dMz_dt;
                 llg->step(hyb_M[fi], Hy[i], Hz_after_JA, dt, M_new, dMy_dt, dMz_dt);
+                p_mag_acc += (Hy[i]*dMy_dt + Hz_after_JA*dMz_dt) * dx;
                 hyb_M[fi] = M_new;
                 Hy_new[i] = Hy[i] + (dt/dx)*(Ez[i+1]-Ez[i]) - dt*4*M_PI*dMy_dt;
                 Hz_new[i] = Hz_after_JA - dt*4*M_PI*dMz_dt;
                 fi++;
             }
+            p_mag_dynamics = p_mag_acc;
         } else if (ferrite_model == 3) {
             int fi = 0;
+            long double p_mag_acc = 0.0;
             for (int i = 0; i < N; ++i) {
                 if (!rightB[i]) continue;
                 long double rhs_extra = dt*rotE_z[i] + dt*4*M_PI*j_m_z_B[i];
                 long double leak_coef = 4*M_PI*sigma_m_leak_pr*dt;
                 long double Hz_f, M_new;
                 pr->implicit_step(pr_state[fi], Hz[i], pr_M[fi], rhs_extra, leak_coef, n_newton, Hz_f, M_new);
+                p_mag_acc += 0.5*(Hz[i]+Hz_f) * (M_new-pr_M[fi]) / dt * dx;
                 Hz_new[i] = Hz_f; pr_M[fi] = M_new; fi++;
             }
+            p_mag_dynamics = p_mag_acc;
         }
         long double P_m = 0.0;
         for (int i = 0; i < N; ++i) P_m -= j_m_z_B[i] * 0.5*(Hz[i]+Hz_new[i]) * dx;
@@ -437,13 +451,12 @@ struct MenDriveSim {
 
     // Диагностика энергобаланса: прямой временной интеграл закона Джоуля
     // sigma_e*E^2 по обеим проводящим стенкам (профиль sigma_e_profile на
-    // A-сетке) + sigma_m_leak*H^2 по ферритовой стенке для линейного вязкого
-    // канала (JA/Hybrid/Preisach). Для чистого LLG линейного sigma_m нет --
-    // гильбертово демпфирование не сводится к sigma*H^2, поэтому магнитная
-    // часть в этом режиме диагностикой не учитывается (см. return 0 ниже).
-    // В установившемся периодическом режиме среднее по периоду значение
-    // этой величины должно совпадать со средней мощностью источника (P_e+P_m
-    // из step_once) -- это внешняя проверка энергобаланса FDTD-схемы.
+    // A-сетке) + sigma_m_leak*H^2 по ферритовой стенке (линейный вязкий
+    // канал JA/Hybrid/Preisach) + H*dM/dt (энергия, передаваемая
+    // намагниченности -- площадь петли гистерезиса для JA/Preisach/Hybrid,
+    // работа демпфирования Гильберта для LLG). Формула H*dM/dt проверена
+    // независимо: на изолированном тесте JAEngine под чистым синусоидальным
+    // H(t) она точно совпала с площадью петли гистерезиса (shoelace-метод).
     long double dissipated_power_density() const {
         long double p_diss = 0.0;
         for (int i = 0; i <= N; ++i) {
@@ -458,6 +471,7 @@ struct MenDriveSim {
                 p_diss += sigma_m_wall * (Hy[i]*Hy[i] + Hz[i]*Hz[i]) * dx;
             }
         }
+        p_diss += p_mag_dynamics;
         return p_diss;
     }
 };

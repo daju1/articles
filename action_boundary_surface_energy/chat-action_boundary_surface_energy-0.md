@@ -120,13 +120,15 @@ $$\frac{\partial \Phi}{\partial T_2} = 2(u + a_1 T_1)\frac{\partial u}{\partial 
 
 Обозначив $S = 2u + a_1 T_1 + a_2 T_2$, получаем:
 
-$$
-\begin{aligned}
-S \cdot \frac{\partial u}{\partial T_1} + a_1(u + a_1 T_1) = 0 \quad &\Rightarrow \quad S \cdot \frac{-1 + a_1 T_1 u}{\Delta} = -a_1(u + a_1 T_1) \qquad \text{(I)} \\
-S \cdot \frac{\partial u}{\partial T_2} + a_2(u + a_2 T_2) = 0 \quad &\Rightarrow \quad S \cdot \frac{1 - a_2 T_2 u}{\Delta} = -a_2(u + a_2 T_2) \qquad \text{(II)}
-\end{aligned}
-$$
+\begin{equation}
+S \cdot \frac{\partial u}{\partial T_1} + a_1(u + a_1 T_1) = 0 \quad \Rightarrow \quad S \cdot \frac{-1 + a_1 T_1 u}{\Delta} = -a_1(u + a_1 T_1)
+\tag{I}
+\end{equation}
 
+\begin{equation}
+S \cdot \frac{\partial u}{\partial T_2} + a_2(u + a_2 T_2) = 0 \quad \Rightarrow \quad S \cdot \frac{1 - a_2 T_2 u}{\Delta} = -a_2(u + a_2 T_2)
+\tag{II}
+\end{equation}
 
 ---
 
@@ -150,13 +152,15 @@ $$\Phi \approx \frac{2\tau^2}{d^2} + \frac{2\tau}{d}(a_1 T_1 + a_2 T_2)$$
 
 Условия экстремума:
 
-$$
-\begin{aligned}
-\frac{\partial \Phi}{\partial T_1} &= -\frac{4\tau}{d^2} - \frac{2}{d}(a_1 T_1 + a_2 T_2) + \frac{2\tau a_1}{d} = 0 \qquad \text{(A)} \\
-\frac{\partial \Phi}{\partial T_2} &= \frac{4\tau}{d^2} + \frac{2}{d}(a_1 T_1 + a_2 T_2) + \frac{2\tau a_2}{d} = 0 \qquad \text{(B)}
-\end{aligned}
-$$
+\begin{equation}
+\frac{\partial \Phi}{\partial T_1} = -\frac{4\tau}{d^2} - \frac{2}{d}(a_1 T_1 + a_2 T_2) + \frac{2\tau a_1}{d} = 0
+\tag{A}
+\end{equation}
 
+\begin{equation}
+\frac{\partial \Phi}{\partial T_2} = \frac{4\tau}{d^2} + \frac{2}{d}(a_1 T_1 + a_2 T_2) + \frac{2\tau a_2}{d} = 0
+\tag{B}
+\end{equation}
 
 **Сложение (A) и (B):**
 

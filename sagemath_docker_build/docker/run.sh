@@ -18,9 +18,9 @@ docker run -it --rm --name sage_build_container \
     --device /dev/net/tun \
     --workdir=${PROJECT_ROOT} \
     -p 8880:8888 \
-    --network sagemath \
     -e HOME=/home/${USER} \
-    -v /home/${USER}/.local:/home/${USER}/.local \
+    -v ${HOME}/.local:/home/${USER}/.local \
+    -v ${HOME}/.ssh:/home/${USER}/.ssh \
     -v ${USR3_DIR}/winlibghemical:${PROJECT_ROOT}/winlibghemical \
     -v ${USR3_DIR}/moldyn:${PROJECT_ROOT}/moldyn \
     -v ${USR3_DIR}/science:${PROJECT_ROOT}/science \
@@ -32,10 +32,6 @@ docker run -it --rm --name sage_build_container \
     -v ${USR3_DIR}/Prompt-Engineering-Guide:${PROJECT_ROOT}/Prompt-Engineering-Guide \
     -v ${PROJECTS_DIR}:${PROJECT_ROOT}/work \
     -v ${PROJECT_ROOT}:${PROJECT_ROOT} \
-    -v /opt/output/target/root:/opt/output/target/root \
-    -v /home/${USER}/.ssh_daju/id_rsa:/home/${USER}/.ssh/id_rsa \
-    -v /home/${USER}/.ssh_daju/id_rsa.pub:/home/${USER}/.ssh/id_rsa.pub \
-    -v /home/${USER}/.ssh/known_hosts:/home/${USER}/.ssh/known_hosts \
     -e DISPLAY=$DISPLAY --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
     --user ${USER}:${USER} ${DOCKER_IMAGE} /bin/bash
 

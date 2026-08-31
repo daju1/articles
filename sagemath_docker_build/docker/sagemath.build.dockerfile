@@ -7,12 +7,26 @@ ARG GROUP_ID
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+USER root
+
+# -----------------------------------------------------------------------------
+# 3. Создание пользователя и настройка sudo
+# -----------------------------------------------------------------------------
 # Configure a 'docker' sudo user without password
-RUN apt-get update && apt-get -y install sudo
-RUN addgroup --gid ${GROUP_ID} ${GROUP_NAME}
-RUN adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}
-RUN usermod -aG sudo ${USER_NAME}
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+# RUN apt-get update && apt-get -y install sudo
+# RUN addgroup --gid ${GROUP_ID} ${GROUP_NAME}
+# RUN adduser --disabled-password --gecos '' --uid ${USER_ID} --gid ${GROUP_ID} ${USER_NAME}
+# RUN usermod -aG sudo ${USER_NAME}
+# RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Создаем группу (если GID 20 занят, команда мягко завершится благодаря "|| true")
+RUN groupadd -g ${GROUP_ID} ${GROUP_NAME} || true
+
+# Создаем пользователя. Флаг -o (non-unique) разрешает использовать уже занятый GID 20
+RUN useradd -m -s /bin/bash -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME} && \
+    usermod -aG sudo ${USER_NAME} && \
+    echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 
 # Install build-essential package (for cross compilation)
 RUN apt-get update

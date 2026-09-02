@@ -27,6 +27,8 @@ SOURCES=(
 
 for src in "${SOURCES[@]}"; do
     xelatex "$src"
+    bibtex "$src"
+    xelatex "$src"
     pdflatex "$src"
 done
 

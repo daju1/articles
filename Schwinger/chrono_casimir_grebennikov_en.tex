@@ -1,16 +1,32 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
 \usepackage{graphicx}
+\usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{geometry}
 \usepackage{bm}
+\usepackage{siunitx}
+\usepackage{cite}
+\usepackage{array}
+\usepackage{multirow}
 
 \geometry{top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm}
 
-\title{\textbf{Chronometric Casimir Effect and Biological Levitation: \\ From Fermi's 1923 Theory to Grebennikov's Cavity Structures}}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    citecolor=blue
+}
 
-\author{A. Yu. Drozdov \\ Independent Research}
+\title{\textbf{Biological Chronometric Casimir Effect:\\
+A Model of Insect Levitation via Asymmetric\\
+Chitin Resonators and Dielectric Hysteresis}}
+
+\author{A. Yu. Drozdov \\
+\small Independent Research}
 
 \date{\today}
 
@@ -20,299 +36,357 @@
 
 \begin{abstract}
 \noindent
-This paper presents a theoretical framework connecting Enrico Fermi's 1923 work on electromagnetic mass with the chronometric Casimir effect and its manifestation in biological systems, particularly the Effect of Cavity Structures (EPS) discovered by Viktor Grebennikov. We demonstrate that hierarchical cavity structures in insect elytra can function as natural Casimir honeycomb drives, generating lift through asymmetric deformation of 4D time boundaries. The model explains anomalous insect flight characteristics and provides a physical basis for bio-inspired anti-gravity propulsion systems.
+This paper presents a physical model explaining the anomalous levitation of certain insects, as described by V.\,S.\,Grebennikov within the framework of his ``Effect of Cavity Structures'' (ECS). The hypothesis is based on three sequentially operating mechanisms: (i) acoustic generation of electromagnetic waves in asymmetric air bubbles enclosed within chitinous elytra, via a mechanism analogous to sonoluminescence; (ii) dielectric hysteresis of the chitinous shell, ensuring a non-zero integral of the Maxwell stress tensor over the vacuum (air) volume within the bubble; (iii) a chronometric Casimir component arising from accelerated motion of the bubbles in the acoustic field. It is shown that, for typical biological system parameters, the resulting lift force can reach values sufficient for partial compensation of the insect's weight. Testable predictions for experimental verification of the model are formulated.
 
 \bigskip
-\noindent\textbf{Keywords:} chronometric Casimir effect, Fermi boundaries, Grebennikov effect, cavity structures, biological levitation, Casimir honeycomb drive, 4D geometry
+\noindent\textbf{Keywords:} effect of cavity structures, chronometric Casimir effect, dielectric hysteresis, Maxwell stress tensor, biological levitation, chitinous elytra, sonoluminescence, 4D Fermi boundaries
 \end{abstract}
 
 \tableofcontents
+
 \newpage
 
-\section{Introduction: From Fermi to Biological Anti-Gravity}
+\section{Introduction}
 
-\subsection{Historical Context}
+\subsection{Grebennikov's Effect of Cavity Structures}
 
-In 1923, Enrico Fermi resolved the famous $4/3$ paradox of electromagnetic mass by introducing chronometric corrections to time integration boundaries for accelerating charges \cite{fermi1923}. His work revealed that the proper treatment of simultaneity for extended accelerating bodies requires deformation of integration hyperplanes orthogonal to world lines.
-
-Decades later, entomologist Viktor Grebennikov discovered the mysterious \textbf{Effect of Cavity Structures} (EPS) \cite{grebennikov1997}, observing that hierarchical cavity patterns on insect elytra could produce anomalous levitation effects, time perception alterations, and visual anomalies.
-
-This paper bridges these two discoveries, showing that Grebennikov's EPS is a macroscopic manifestation of the \textbf{chronometric Casimir effect} arising from Fermi's dynamic 4D boundaries.
-
-\subsection{The Casimir Honeycomb Drive Concept}
-
-Our 2024 publication \cite{drozdov2024} introduced the concept of the Casimir Honeycomb Drive (CHD) — a propulsion mechanism based on asymmetric deformation of vacuum 4D boundaries in structured cavities. We now recognize that nature implemented this principle millions of years ago in insect flight apparatus.
-
-\section{Theoretical Framework}
-
-\subsection{Dynamic 4D Fermi Boundaries}
-
-For an accelerating charge with 4-acceleration $a^\mu$, Fermi showed that the proper time element transforms as:
-\begin{equation}
-dt_{\text{eff}} = dt\left(1 + \frac{a_\mu R^\mu}{c^2}\right)
-\label{eq:fermi_correction}
-\end{equation}
-
-where $R^\mu$ is the 4-radius vector to the observation point.
-
-For two non-synchronously accelerating charges at macroscopic separation $R$, the boundary between their world tubes must smoothly interpolate between differently tilted Fermi hyperplanes. This interpolation creates a curved 4D membrane with minimal surface energy.
-
-\subsection{Quadratic Approximation of Boundary Deformation}
-
-Following the variational principle of minimal 4D boundary curvature, the time deformation profile between two charges can be approximated as:
-\begin{equation}
-dt(x) = c_2 x^2 + c_1 x + c_0
-\label{eq:quadratic_profile}
-\end{equation}
-
-where coefficients $c_1$ and $c_2$ are determined by boundary conditions:
-\begin{align}
-2c_2 x_1 + c_1 &= -a_1 dt_1 \\
-2c_2 x_2 + c_1 &= -a_2 dt_2
-\end{align}
-
-Solving this system yields:
-\begin{equation}
-c_2 = \frac{a_1 dt_1 - a_2 dt_2}{2(x_2 - x_1)}
-\end{equation}
-
-The curvature coefficient $c_2$ represents the global bending of the 4D boundary, directly proportional to the \textbf{acceleration difference} between the charges.
-
-\subsection{Chronometric Casimir Energy}
-
-The deformation of 4D boundaries creates zero-point fluctuations of the time membrane with energy density:
-\begin{equation}
-\rho_{\text{chrono}} \sim \sigma_4 \frac{(a \cdot \tau)^2}{R^2}
-\label{eq:chrono_density}
-\end{equation}
-
-where $\sigma_4 = c^4/G \approx 1.2 \times 10^{44}$ N is the Planck-scale elasticity of the vacuum time membrane.
-
-The total chronometric Casimir energy in volume $V \sim R^3$:
-\begin{equation}
-E_{\text{chrono}} \sim \sigma_4 (a\tau)^2 R
-\label{eq:chrono_energy}
-\end{equation}
-
-\section{Biological Implementation: Insect Elytra as Casimir Honeycomb Drives}
-
-\subsection{Hierarchical Cavity Structure}
-
-Microscopic examination of beetle elytra reveals hierarchical cavity matrices \cite{grebennikov1997}:
+In the 1990s, entomologist V.\,S.\,Grebennikov described a phenomenon called the ``Effect of Cavity Structures'' (ECS) \cite{grebennikov}. According to his observations, microscopic cavity structures (honeycombs) on the elytra of certain Siberian beetles can produce biophysical effects including:
 \begin{itemize}
-    \item \textbf{First level:} Macro-cavities $\sim 100$--$500$ $\mu$m arranged in hexagonal matrices
-    \item \textbf{Second level:} Micro-cavities $\sim 10$--$50$ $\mu$m inside macro-cavities
-    \item \textbf{Third level:} Nano-cavities $\sim 100$ nm -- $1$ $\mu$m on cavity walls
+    \item A sensation of levitation in observers within the action zone;
+    \item Alteration of subjective time perception;
+    \item Visual anomalies within the action zone;
+    \item Disruption of electronic equipment operation.
 \end{itemize}
 
-Crucially, these cavities possess \textbf{geometric asymmetry} — truncated cone or pyramid shapes with different entrance and exit diameters.
+Mainstream science treated these observations with skepticism, as they found no explanation within classical aerodynamics and known physical mechanisms. However, detailed microscopic investigation of the elytra revealed the presence of a complex hierarchical cavity structure with characteristic dimensions ranging from units to hundreds of micrometers, organized into ordered matrices \cite{grebennikov}.
 
-\subsection{Air Bubbles in Chitin Cavities}
+\subsection{Purpose of this Work}
 
-The cavities contain air bubbles isolated by chitin walls with characteristic sizes:
-\begin{equation}
-R_{\text{bubble}} \sim 10 \text{ -- } 100 \text{ } \mu\text{m}
-\end{equation}
+In this paper, we propose a physical model that:
+\begin{enumerate}
+    \item Explains the mechanism of lift force generation through the interaction of acoustic, electromagnetic, and quantum-vacuum effects;
+    \item Connects the observed effects with the chronometric Casimir mechanism developed in previous works \cite{chrono_casimir, fermi_1923};
+    \item Formulates testable experimental predictions.
+\end{enumerate}
 
-Chitin exhibits:
+\section{Biological Basis: Chitinous Elytra}
+
+\subsection{Structure of Cavity Matrices}
+
+Microscopic investigation of beetle elytra revealed the presence of a hierarchical cavity structure \cite{grebennikov}:
 \begin{itemize}
-    \item Dielectric permittivity: $\varepsilon_{\text{chitin}} \approx 2.5$--$3.5$
-    \item Loss tangent: $\tan \delta \sim 0.01$--$0.1$
-    \item \textbf{Dielectric hysteresis} due to complex molecular structure (polysaccharide with crystalline and amorphous regions)
+    \item \textbf{First level:} Macro-cavities of size $\sim 100$--$500$~$\mu$m, organized in hexagonal matrices;
+    \item \textbf{Second level:} Micro-cavities of size $\sim 10$--$50$~$\mu$m inside macro-cavities;
+    \item \textbf{Third level:} Nano-cavities of size $\sim 100$~nm -- $1$~$\mu$m on the walls of micro-cavities.
 \end{itemize}
 
-\subsection{Acoustic Excitation Mechanism}
+An important feature is the \textbf{geometric asymmetry} of the cavities: they have the shape of truncated cones or pyramids with different entrance and exit diameters. This asymmetry plays a key role in the proposed model.
 
-During flight, insects produce wing vibrations at frequencies:
+\subsection{Air Bubbles in Chitinous Cavities}
+
+Air bubbles are enclosed in the elytra cavities, isolated by chitin walls. Characteristic bubble sizes:
 \begin{equation}
-f_{\text{wing}} \sim 50 \text{ -- } 500 \text{ Hz}
+    R_{\text{bubble}} \sim 10 \text{ -- } 100~\mu\text{m}
 \end{equation}
 
-These vibrations create acoustic fields inside the elytra, exciting oscillations of air bubbles in the cavities. Under certain conditions, \textbf{nonlinear acoustic resonances} can generate higher harmonics and electromagnetic components via mechanisms analogous to sonoluminescence.
+The chitin shell possesses the following properties:
+\begin{itemize}
+    \item Dielectric permittivity: $\varepsilon_{\text{chitin}} \approx 2.5$--$3.5$;
+    \item Loss tangent: $\tan \delta \sim 0.01$--$0.1$;
+    \item Presence of \textbf{dielectric hysteresis} due to the complex molecular structure of chitin (a polysaccharide with crystalline and amorphous regions).
+\end{itemize}
 
-\subsection{Maxwell Stress Tensor Integration}
+\section{Theoretical Model}
 
-The electromagnetic field inside a bubble creates stress described by the Maxwell stress tensor:
+\subsection{Mechanism I: Acoustic Generation of Electromagnetic Waves}
+
+\subsubsection{Wing Buzzing as a Source of Acoustic Field}
+
+During flight, the insect performs wing oscillations at frequencies:
 \begin{equation}
-T_{ij} = \varepsilon_0 \left( E_i E_j - \frac{1}{2} \delta_{ij} E^2 \right) + \frac{1}{\mu_0} \left( B_i B_j - \frac{1}{2} \delta_{ij} B^2 \right)
-\label{eq:maxwell_tensor}
+    f_{\text{wing}} \sim 50 \text{ -- } 500~\text{Hz}
 \end{equation}
 
-The integral over the bubble surface gives the resultant force:
+These oscillations create an acoustic field inside the elytra, which excites oscillations of air bubbles in the cavities. Under certain conditions, \textbf{nonlinear acoustic resonances} can arise, leading to the generation of higher harmonics.
+
+\subsubsection{Analogy with Sonoluminescence}
+
+Bubble oscillations in an acoustic field are analogous to processes occurring during sonoluminescence \cite{sonoluminescence}. In both cases, we have:
+\begin{enumerate}
+    \item Periodic compression-expansion of a gas bubble;
+    \item Nonlinear dynamics at large amplitudes;
+    \item Possible generation of electromagnetic radiation during extreme compressions.
+\end{enumerate}
+
+However, in a biological system, the oscillation amplitudes are significantly smaller than in sonoluminescence, so direct compression to plasma temperatures is impossible. Nevertheless, the \textbf{electromagnetic component} can arise through other mechanisms.
+
+\subsection{Mechanism II: Dielectric Hysteresis and the Maxwell Stress Tensor}
+
+\subsubsection{Maxwell Stress Tensor in the Bubble}
+
+The electromagnetic field inside the bubble creates a stress described by the Maxwell stress tensor:
 \begin{equation}
-F_i = \oint_S T_{ij} \, dS_j
-\label{eq:maxwell_force}
+    T_{ij} = \varepsilon_0 \left( E_i E_j - \frac{1}{2} \delta_{ij} E^2 \right) + \frac{1}{\mu_0} \left( B_i B_j - \frac{1}{2} \delta_{ij} B^2 \right)
+    \label{eq:maxwell_tensor}
 \end{equation}
 
-\subsection{Role of Dielectric Hysteresis}
-
-In a linear lossless medium, the integral (\ref{eq:maxwell_force}) over a full oscillation period vanishes. However, \textbf{dielectric hysteresis} of the chitin shell makes the polarization $\mathbf{P}$ dependence on electric field $\mathbf{E}$ nonlinear and hysteretic:
+The integral of the tensor over the bubble surface gives the resultant force:
 \begin{equation}
-\mathbf{P}(t) = \varepsilon_0 \chi(\mathbf{E}) \mathbf{E}(t) + \mathbf{P}_{\text{hyst}}(t)
-\label{eq:hysteresis}
+    F_i = \oint_S T_{ij} \, dS_j
+    \label{eq:maxwell_force}
 \end{equation}
 
-where $\mathbf{P}_{\text{hyst}}(t)$ is the hysteretic component depending on field history.
+\subsubsection{Role of Dielectric Hysteresis}
 
-Consequently, the integral (\ref{eq:maxwell_force}) over period $T$ becomes \textbf{non-zero}:
+In a linear lossless medium, the integral (\ref{eq:maxwell_force}) over a full oscillation period vanishes. However, the presence of \textbf{dielectric hysteresis} in the chitinous shell leads to a nonlinear and hysteretic dependence of polarization $\bm{P}$ on electric field $\bm{E}$:
 \begin{equation}
-\langle F_i \rangle = \frac{1}{T} \int_0^T \oint_S T_{ij}[\mathbf{E}(t), \mathbf{P}_{\text{hyst}}(t)] \, dS_j \, dt \neq 0
-\label{eq:nonzero_force}
+    \bm{P}(t) = \varepsilon_0 \chi(\bm{E}) \bm{E}(t) + \bm{P}_{\text{hyst}}(t)
+    \label{eq:hysteresis}
 \end{equation}
 
-\subsection{Direction of Force}
+where $\bm{P}_{\text{hyst}}(t)$ is the hysteretic component depending on the field history.
 
-The geometric asymmetry of cavities (conical shape) determines the \textbf{direction} of the resultant force. Analogous to the Knudsen effect in acoustics or photonic drives, system asymmetry produces directed thrust:
+As a result, the integral (\ref{eq:maxwell_force}) over period $T$ becomes \textbf{non-zero}:
 \begin{equation}
-\mathbf{F}_{\text{res}} = F_{\text{vert}} \, \hat{\mathbf{z}} + F_{\text{hor}} \, \hat{\mathbf{x}}
-\label{eq:force_direction}
+    \langle F_i \rangle = \frac{1}{T} \int_0^T \oint_S T_{ij}[\bm{E}(t), \bm{P}_{\text{hyst}}(t)] \, dS_j \, dt \neq 0
+    \label{eq:nonzero_force}
+\end{equation}
+
+\subsubsection{Direction of Force}
+
+The geometric asymmetry of the cavities (conical shape) determines the \textbf{direction} of the resultant force. Analogous to the Knudsen effect in acoustics or photonic drives, system asymmetry leads to the emergence of a directed force:
+\begin{equation}
+    \bm{F}_{\text{res}} = F_{\text{vert}} \, \hat{\bm{z}} + F_{\text{hor}} \, \hat{\bm{x}}
+    \label{eq:force_direction}
 \end{equation}
 
 where $F_{\text{vert}}$ is the vertical component responsible for levitation.
 
-\section{Quantitative Estimates}
+\subsection{Mechanism III: Chronometric Casimir Component}
 
-\subsection{Lift Force from Maxwell Tensor}
+\subsubsection{Chronometric Casimir Effect}
 
-For a bubble of radius $R \sim 50$ $\mu$m with electric field strength $E \sim 10^5$ V/m (typical for biological systems):
+According to the model developed in \cite{chrono_casimir, fermi_1923}, during accelerated motion of the boundaries of a dielectric cavity, an additional component of vacuum energy arises, associated with the deformation of 4D boundaries of action integration. The density of this energy is:
 \begin{equation}
-F_{\text{Maxwell}} \sim \varepsilon_0 E^2 R^2 \sim 10^{-11} \times 10^{10} \times 10^{-9} \sim 10^{-10} \text{ N}
-\label{eq:maxwell_estimate}
+    \rho_{\text{chrono}} \sim \sigma_4 \frac{(a \cdot \tau)^2}{R^2}
+    \label{eq:chrono_density}
 \end{equation}
 
-Accounting for hysteretic correction (coefficient $\eta \sim 0.01$--$0.1$):
+where $\sigma_4 = c^4/G \approx 1.2 \times 10^{44}$~N is the Planck-scale elasticity of the vacuum, $a$ is the acceleration of the bubble wall, $\tau$ is the characteristic time, and $R$ is the bubble radius.
+
+\subsubsection{Contribution to Lift Force}
+
+During bubble oscillations with acceleration $a \sim \omega^2 \Delta R$, where $\Delta R$ is the oscillation amplitude of the radius, an additional force arises:
 \begin{equation}
-F_{\text{hyst}} \sim \eta \cdot F_{\text{Maxwell}} \sim 10^{-12} \text{ -- } 10^{-11} \text{ N}
-\label{eq:hysteresis_force}
+    F_{\text{chrono}} \sim \frac{\partial}{\partial z} \int_V \rho_{\text{chrono}} \, dV
+    \label{eq:chrono_force}
 \end{equation}
 
-\subsection{Chronometric Casimir Contribution}
-
-For oscillating bubbles with acceleration $a \sim \omega^2 \Delta R$, where $\Delta R$ is the oscillation amplitude:
+For biological parameters:
 \begin{itemize}
-    \item $\omega \sim 2\pi \times 100$ Hz (buzzing frequency)
-    \item $\Delta R \sim 1$ $\mu$m (oscillation amplitude)
-    \item $R \sim 50$ $\mu$m (bubble radius)
-    \item $a \sim (2\pi \times 100)^2 \times 10^{-6} \approx 0.4$ m/s$^2$
+    \item $\omega \sim 2\pi \times 100$~Hz (buzzing frequency);
+    \item $\Delta R \sim 1$~$\mu$m (oscillation amplitude);
+    \item $R \sim 50$~$\mu$m (bubble radius);
+    \item $a \sim (2\pi \times 100)^2 \times 10^{-6} \approx 0.4$~m/s$^2$
 \end{itemize}
 
-The chronometric energy density:
+We obtain:
 \begin{equation}
-\rho_{\text{chrono}} \sim 10^{44} \times \frac{(0.4 \times 10^{-6})^2}{(50 \times 10^{-6})^2} \sim 10^{30} \text{ J/m}^3
-\label{eq:chrono_estimate}
+    \rho_{\text{chrono}} \sim 10^{44} \times \frac{(0.4 \times 10^{-6})^2}{(50 \times 10^{-6})^2} \sim 10^{30}~\text{J/m}^3
+    \label{eq:chrono_estimate}
+\end{equation}
+
+However, this estimate requires accounting for the actual distribution of accelerations and the system geometry. The real contribution may be significantly smaller due to volume averaging.
+
+\section{Quantitative Estimation of Lift Force}
+
+\subsection{Estimation of Force from the Maxwell Tensor}
+
+For a bubble of radius $R \sim 50$~$\mu$m with electric field strength $E \sim 10^5$~V/m (estimation for biological systems):
+\begin{equation}
+    F_{\text{Maxwell}} \sim \varepsilon_0 E^2 R^2 \sim 10^{-11} \times 10^{10} \times 10^{-9} \sim 10^{-10}~\text{N}
+    \label{eq:maxwell_estimate}
+\end{equation}
+
+Accounting for the hysteretic correction (coefficient $\eta \sim 0.01$--$0.1$):
+\begin{equation}
+    F_{\text{hyst}} \sim \eta \cdot F_{\text{Maxwell}} \sim 10^{-12} \text{ -- } 10^{-11}~\text{N}
+    \label{eq:hysteresis_force}
 \end{equation}
 
 \subsection{Total Lift Force}
 
-For a matrix of $N \sim 10^3$--$10^4$ bubbles on elytra:
+For a matrix of $N \sim 10^3$--$10^4$ bubbles on the elytra:
 \begin{equation}
-F_{\text{total}} = N \cdot (F_{\text{hyst}} + F_{\text{chrono}})
-\label{eq:total_force}
+    F_{\text{total}} = N \cdot (F_{\text{hyst}} + F_{\text{chrono}})
+    \label{eq:total_force}
 \end{equation}
 
-With $N \sim 10^4$ and $F_{\text{hyst}} \sim 10^{-11}$ N:
+With $N \sim 10^4$ and $F_{\text{hyst}} \sim 10^{-11}$~N:
 \begin{equation}
-F_{\text{total}} \sim 10^4 \times 10^{-11} = 10^{-7} \text{ N}
-\label{eq:total_estimate}
+    F_{\text{total}} \sim 10^4 \times 10^{-11} = 10^{-7}~\text{N}
+    \label{eq:total_estimate}
 \end{equation}
 
-For comparison, the weight of a typical beetle with mass $m \sim 0.1$ g:
+For comparison, the weight of a typical beetle with mass $m \sim 0.1$~g:
 \begin{equation}
-mg \sim 10^{-3} \text{ N}
-\label{eq:weight}
+    mg \sim 10^{-3}~\text{N}
+    \label{eq:weight}
 \end{equation}
 
-Thus, the proposed mechanism can provide lift force constituting $\sim 0.01\%$--$10\%$ of the insect's weight, sufficient for partial weight compensation and the ``lightening'' effect observed by Grebennikov.
+Thus, the proposed mechanism can provide a lift force constituting $\sim 0.01\%$--$10\%$ of the insect's weight, which is sufficient for partial weight compensation and the creation of a ``lightening'' effect.
 
 \section{Testable Predictions}
 
 \subsection{Prediction 1: Electromagnetic Radiation}
 
-The model predicts weak electromagnetic radiation from beetle elytra in the frequency range:
+The model predicts the presence of weak electromagnetic radiation from beetle elytra in the frequency range:
 \begin{equation}
-f_{\text{EM}} \sim n \cdot f_{\text{wing}}, \quad n = 1, 2, 3, \ldots
+    f_{\text{EM}} \sim n \cdot f_{\text{wing}}, \quad n = 1, 2, 3, \ldots
 \end{equation}
 
-with characteristic polarization determined by cavity geometry.
+with characteristic polarization determined by the cavity geometry.
 
-\textbf{Experimental test:} Register EM radiation from live beetles using sensitive antennas in a shielded chamber.
+\textbf{Experimental test:} Registration of EM radiation from live beetles using ultra-sensitive antennas in a shielded chamber.
 
 \subsection{Prediction 2: Humidity Dependence}
 
-The presence of air bubbles critically depends on humidity. At high humidity ($> 90\%$), bubbles should fill with water vapor, changing dielectric properties and leading to \textbf{disappearance of the effect}.
+The presence of air bubbles critically depends on humidity. At high humidity ($> 90\%$), bubbles should fill with water vapor, which will change the dielectric properties and lead to \textbf{disappearance of the effect}.
 
-\textbf{Experimental test:} Measure lift force dependence on environmental humidity.
+\textbf{Experimental test:} Measurement of lift force dependence on environmental humidity.
 
 \subsection{Prediction 3: Frequency Resonance}
 
-The effect should exhibit resonant behavior at specific wing frequencies corresponding to natural oscillation frequencies of bubbles:
+The effect should exhibit resonant behavior at specific buzzing frequencies corresponding to the natural oscillation frequencies of the bubbles:
 \begin{equation}
-f_{\text{res}} \sim \frac{1}{2\pi} \sqrt{\frac{3\gamma P_0}{\rho R^2}}
-\label{eq:resonance}
+    f_{\text{res}} \sim \frac{1}{2\pi} \sqrt{\frac{3\gamma P_0}{\rho R^2}}
+    \label{eq:resonance}
 \end{equation}
 
-where $\gamma$ is the adiabatic index, $P_0$ is pressure, $\rho$ is gas density.
+where $\gamma$ is the adiabatic index, $P_0$ is pressure, and $\rho$ is gas density.
 
-\textbf{Experimental test:} Compare effects across different beetle species with varying wing frequencies.
+\textbf{Experimental test:} Measurement of the effect depending on wing frequency (comparison of different beetle species).
 
-\subsection{Prediction 4: Structure Destruction}
+\subsection{Prediction 4: Effect Change upon Structure Destruction}
 
 Chemical or mechanical destruction of the hierarchical cavity structure should lead to \textbf{disappearance of the effect}.
 
-\textbf{Experimental test:} Compare effects from intact versus damaged elytra.
+\textbf{Experimental test:} Comparison of the effect from intact versus damaged elytra.
+
+\section{Evolutionary Aspect: Life as a 4D-Boundary Minimizer}
+
+\subsection{Problem Statement}
+
+The presence of optimized cavity matrix structures on beetle elytra raises an interesting question for evolutionary biology: how could such a complex nanostructure arise through classical neo-Darwinian selection?
+
+\subsection{Concept of Chronometric Casimir Attractors}
+
+Within the framework of the proposed theory, the space of possible forms is not ``flat'' and equiprobable. There exist \textbf{geometric attractors} in the phase space of 4D Fermi boundaries. Certain structures (e.g., asymmetric chitinous honeycombs with a specific aspect ratio) possess a fundamental physical advantage: they minimize the kink of the 4D membrane and resonate with chronometric Casimir vacuum fluctuations.
+
+Nature did not ``select'' this form over millions of years by random trial. This form is a \textbf{physical imperative}. Just as water always finds its way to the sea along a potential gradient, biological matter in the process of self-organization ``flows'' into states with minimal 4D-boundary tension. Evolution simply ``discovered'' this ready-made physical law and fixed it.
+
+\subsection{Why Chitin Specifically?}
+
+Evolution ``chose'' chitin not by chance. Chitin is a polysaccharide with a specific crystalline lattice, which upon deformation (wing vibrations) exhibits piezoelectric and hysteretic properties. Within our theory, this means:
+\begin{enumerate}
+    \item Mechanical wing vibration creates an acoustic wave.
+    \item The asymmetric geometry of the honeycomb directs this wave.
+    \item \textbf{Dielectric hysteresis of the honeycomb walls} breaks the symmetry of the response to the electromagnetic component of this wave.
+    \item The integral of the Maxwell stress tensor over the air volume in the honeycomb becomes \textbf{non-zero}.
+    \item A directed force (ECS lift force) arises, giving the insect a colossal evolutionary advantage.
+\end{enumerate}
+
+An organism that randomly acquired a mutation improving this asymmetry or hysteresis received not just ``slightly better wings'', but a \textbf{qualitatively new physical principle of flight}, allowing it to bypass classical aerodynamics. Selection fixed this almost instantly, because the energy gain was enormous.
+
+\subsection{Life as a Higher-Order Dissipative Structure}
+
+Here we approach a rethinking of the ``vital force''. Life does not violate the Second Law of Thermodynamics through magic. A living organism is a \textbf{macroscopic quantum system} that has evolutionarily learned to use vacuum elasticity (the chronometric Casimir effect) for local entropy reduction.
+
+\begin{itemize}
+    \item DNA is not just a chemical code, but a fractal antenna tuned to certain phase resonances of 4D boundaries.
+    \item Cell membranes and microtubules work as nano-resonators maintaining coherence.
+    \item Beetle elytra are a macroscopic manifestation of the same principle: using geometry to rectify vacuum fluctuations.
+\end{itemize}
+
+In this sense, ``natural selection'' is merely an external mechanism that encourages those biological structures that are best \textbf{aligned with the fundamental geometry of space-time}.
 
 \section{Discussion}
 
 \subsection{Comparison with Alternative Explanations}
 
-Our model differs from alternative explanations (electrostatic levitation, acoustic levitation) in that it:
+The proposed model differs from alternative explanations (electrostatic levitation, acoustic levitation) in that it:
 \begin{enumerate}
-    \item Accounts for quantum vacuum effects (chronometric Casimir)
-    \item Explains the specific role of hierarchical cavity geometry
-    \item Connects the effect to chitin dielectric hysteresis
+    \item Accounts for quantum vacuum effects (chronometric Casimir);
+    \item Explains the specific role of hierarchical cavity geometry;
+    \item Connects the effect to chitin dielectric hysteresis.
 \end{enumerate}
 
-\subsection{Evolutionary Implications}
+\subsection{Limitations of the Model}
 
-The presence of optimized cavity structures in insects suggests evolutionary selection for geometries that maximize chronometric Casimir lift. This represents nature's implementation of bio-inspired anti-gravity technology millions of years before human engineering.
-
-\subsection{Technological Applications}
-
-Understanding the physical principles behind Grebennikov's EPS opens pathways for:
 \begin{itemize}
-    \item Bio-inspired propulsion systems
-    \item Hierarchical metamaterials for vacuum energy extraction
-    \item Novel anti-gravity devices based on Casimir honeycomb drives
+    \item The estimation of lift force is qualitative in nature and requires refinement;
+    \item Real parameters of the biological system (oscillation amplitudes, field strengths) may differ from the estimates used;
+    \item Experimental verification of key predictions is necessary.
 \end{itemize}
 
 \section{Conclusion}
 
-We have established a theoretical connection between Fermi's 1923 chronometric corrections, the dynamic Casimir effect, and Grebennikov's biological observations. Insect elytra function as natural Casimir honeycomb drives, generating lift through:
+In this work, a physical model has been proposed explaining Grebennikov's effect of cavity structures through a combination of three mechanisms: acoustic generation of EM waves, dielectric hysteresis, and the chronometric Casimir effect. The model predicts the presence of a lift force sufficient for partial compensation of the insect's weight, and formulates testable experimental predictions.
+
+Further development of the model requires:
 \begin{enumerate}
-    \item Acoustic excitation of air bubbles in hierarchical cavities
-    \item Dielectric hysteresis of chitin creating non-zero Maxwell stress integrals
-    \item Chronometric Casimir effect from 4D boundary deformation
+    \item Detailed microscopic investigation of elytra structure;
+    \item Measurement of chitin dielectric properties in the frequency range corresponding to buzzing;
+    \item Registration of electromagnetic radiation from live beetles;
+    \item Numerical modeling of bubble dynamics in an acoustic field.
 \end{enumerate}
 
-The model makes specific testable predictions and provides a foundation for bio-inspired propulsion technologies. Nature has already solved the anti-gravity problem — we need only learn from its design.
+\section*{Acknowledgments}
+
+The author is grateful to participants in discussions on the theory of the chronometric Casimir effect for constructive criticism and useful comments, as well as to V.\,S.\,Grebennikov for the original observations that formed the basis of this work.
 
 \begin{thebibliography}{99}
 
-\bibitem{fermi1923}
-Fermi E. ``Sul contrasto fra le teorie elettrodinamica e relativistica della massa elettromagnetica.'' \textit{Nuovo Cimento}, 1923.
+\bibitem{grebennikov}
+Grebennikov V.\,S. \textit{My World}. Moscow, 1997.
 
-\bibitem{grebennikov1997}
-Grebennikov V. S. \textit{My World}. Moscow, 1997.
+\bibitem{chrono_casimir}
+Drozdov A.\,Yu. \textit{Chronometric Casimir Effect and its Applications}. Preprint, 2024.
 
-\bibitem{drozdov2024}
-Drozdov A. Yu. ``Casimir Honeycomb Drive: Asymmetric Vacuum Fluctuations for Propulsion.'' \textit{Journal of Kharkiv National University}, 2024.
+\bibitem{fermi_1923}
+Fermi E. \textit{\"Uber einen Widerspruch zwischen der elektrodynamischen und der relativistischen Theorie der elektromagnetischen Masse} // Physikalische Zeitschrift. 1923. Vol. 24. P. 340--343.
 
-\bibitem{casimir1948}
-Casimir H. B. G. ``On the attraction between two perfectly conducting plates.'' \textit{Proc. Kon. Ned. Akad. Wet.}, 1948, Vol. 51, p. 793.
+\bibitem{sonoluminescence}
+Barber B.P., Hiller R.A., Lofstedt R., Putterman S.J., Weninger K.R. \textit{Defining the unknowns of sonoluminescence} // Physics Reports. 1997. Vol. 281. P. 65--143.
 
-\bibitem{schwingersl}
-Schwinger J. ``Casimir energy for a spherical cavity in a dielectric: Toward a model for sonoluminescence.'' \textit{Proc. Natl. Acad. Sci. USA}, 1993, Vol. 90, p. 2105.
+\bibitem{maxwell_stress}
+Jackson J.D. \textit{Classical Electrodynamics}. 3rd ed. Wiley, 1998.
+
+\bibitem{chitin_properties}
+Neville A.C. \textit{Biology of Fibrous Materials}. Edward Arnold, 1975.
 
 \end{thebibliography}
+
+\appendix
+
+\section{Mathematical Details}
+
+\subsection{Calculation of the Maxwell Stress Tensor for an Asymmetric Cavity}
+
+For a conical cavity with opening angle $\theta$ and base radius $R$, the integral (\ref{eq:maxwell_force}) gives:
+\begin{equation}
+    F_z = \frac{\varepsilon_0 E^2 \pi R^2}{2} (1 - \cos\theta) \cdot \eta_{\text{hyst}}
+    \label{eq:cone_force}
+\end{equation}
+
+where $\eta_{\text{hyst}}$ is the coefficient accounting for hysteretic losses.
+
+\subsection{Chronometric Casimir Correction}
+
+Accounting for the acceleration of the bubble wall $a(t) = a_0 \sin(\omega t)$, the average energy density is:
+\begin{equation}
+    \langle \rho_{\text{chrono}} \rangle = \frac{\sigma_4 a_0^2 \tau^2}{4 R^2}
+    \label{eq:chrono_avg}
+\end{equation}
 
 \end{document}

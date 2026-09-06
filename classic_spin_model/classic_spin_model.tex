@@ -1,0 +1,340 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{physics}
+\usepackage{siunitx}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+
+\usetikzlibrary{arrows, decorations.markings, calc}
+
+\title{Классическая модель спина электрона и альтернативная модель прецессирующего магнитного диполя}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+В работе рассматривается классическая проблема объяснения магнитного момента электрона через вращение заряженного шара и предлагается альтернативная модель, основанная на прецессии магнитного диполя. Показано, что классическая модель требует сверхсветовых скоростей вращения, тогда как модель прецессирующего магнитного диполя дает физически осмысленные результаты.
+\end{abstract}
+
+\section{Классическая модель: вращающийся заряженный шар}
+
+\subsection{Постановка задачи}
+
+Рассмотрим классическую модель электрона как равномерно заряженную сферу радиуса $R$, вращающуюся с угловой скоростью $\omega$. Цель -- объяснить наблюдаемый магнитный момент электрона (магнетон Бора $\mu_B$) через механическое вращение заряда.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=1.2]
+% Сфера
+\draw[thick] (0,0) circle (2cm);
+\draw[dashed] (0,0) ellipse (2cm and 0.5cm);
+\draw[dashed] (0,0) ellipse (0.5cm and 2cm);
+
+% Ось вращения
+\draw[thick,->] (0,-2.5) -- (0,2.5) node[above] {$\vec{\omega}$};
+
+% Заряд на поверхности
+\filldraw[red] (1.4,1.4) circle (0.1) node[above right] {$e^-$};
+\filldraw[red] (-1.4,-1.4) circle (0.1) node[below left] {$e^-$};
+
+% Стрелки вращения
+\draw[thick,->,blue] (1.5,0.5) arc (20:160:1.5cm);
+\draw[thick,->,blue] (-1.5,-0.5) arc (200:340:1.5cm);
+
+% Радиус
+\draw[thick,->] (0,0) -- (1.4,1.4) node[midway,above right] {$R$};
+
+\caption{Классическая модель: вращающаяся заряженная сфера}
+\label{fig:classical}
+\end{tikzpicture}
+\end{figure}
+
+\subsection{Магнитный момент вращающейся сферы}
+
+Поверхностная плотность заряда:
+\begin{equation}
+\sigma = \frac{e}{4\pi R^2}
+\end{equation}
+
+Элемент заряда на широте $\theta$:
+\begin{equation}
+dq = \sigma \cdot 2\pi R \sin\theta \cdot R d\theta = \frac{e}{2} \sin\theta \, d\theta
+\end{equation}
+
+Этот элемент создает ток:
+\begin{equation}
+dI = \frac{dq \cdot \omega}{2\pi} = \frac{e\omega}{4\pi} \sin\theta \, d\theta
+\end{equation}
+
+Магнитный момент элемента (площадь кольца $\pi R^2 \sin^2\theta$):
+\begin{equation}
+dM = \frac{dI \cdot \pi R^2 \sin^2\theta}{c} = \frac{e\omega R^2}{4c} \sin^3\theta \, d\theta
+\end{equation}
+
+Интегрируем по всей сфере:
+\begin{equation}
+M = \frac{e\omega R^2}{4c} \int_0^\pi \sin^3\theta \, d\theta
+\end{equation}
+
+Вычисляем интеграл:
+\begin{equation}
+\int_0^\pi \sin^3\theta \, d\theta = \int_0^\pi \sin\theta(1-\cos^2\theta) \, d\theta = \left[-\cos\theta + \frac{\cos^3\theta}{3}\right]_0^\pi = \frac{4}{3}
+\end{equation}
+
+Получаем магнитный момент:
+\begin{equation}
+\boxed{M = \frac{e\omega R^2}{3c}}
+\label{eq:classical_moment}
+\end{equation}
+
+\subsection{Классический радиус электрона}
+
+Из условия равенства энергии электростатического поля энергии покоя:
+\begin{equation}
+W = \frac{e^2}{2R} = m_e c^2
+\end{equation}
+
+Отсюда классический радиус:
+\begin{equation}
+R = \frac{e^2}{2m_e c^2} = \frac{(4.8 \times 10^{-10})^2}{2 \times 9.1 \times 10^{-28} \times (3 \times 10^{10})^2} \approx 1.4 \times 10^{-13} \text{ см}
+\end{equation}
+
+\subsection{Проблема сверхсветовой скорости}
+
+Приравниваем классический магнитный момент к магнетону Бора:
+\begin{equation}
+M_B = \frac{e\omega R^2}{3c} = 9.274 \times 10^{-21} \text{ эрг/Гс}
+\end{equation}
+
+Выражаем линейную скорость на экваторе $v = \omega R$:
+\begin{equation}
+v = \omega R = \frac{3c M_B}{e R}
+\end{equation}
+
+Подставляем численные значения:
+\begin{equation}
+v = \frac{3 \times 3 \times 10^{10} \times 9.274 \times 10^{-21}}{4.8 \times 10^{-10} \times 1.4 \times 10^{-13}}
+\end{equation}
+
+\begin{equation}
+v = \frac{8.35 \times 10^{-10}}{6.72 \times 10^{-23}} \approx 1.24 \times 10^{13} \text{ см/с}
+\end{equation}
+
+Отношение к скорости света:
+\begin{equation}
+\boxed{\frac{v}{c} \approx 414}
+\end{equation}
+
+\textbf{Вывод:} Классическая модель требует, чтобы поверхность электрона вращалась со скоростью, превышающей скорость света в 414 раз, что физически невозможно.
+
+\section{Альтернативная модель: прецессирующий магнитный диполь}
+
+\subsection{Постановка задачи}
+
+Рассмотрим электрон как систему двух магнитных зарядов $+q_m$ и $-q_m$, разделенных расстоянием $2R$ и прецессирующих вокруг общей оси.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=1.2]
+% Верхний магнитный заряд
+\draw[thick] (0,1.5) ellipse (1.5cm and 0.4cm);
+\draw[thick,->,blue] (1.5,1.5) arc (0:180:1.5cm and 0.4cm);
+\draw[thick,->,blue] (-1.5,1.5) arc (180:360:1.5cm and 0.4cm);
+\filldraw[red] (1.5,1.5) circle (0.15) node[above right] {$+q_m$};
+
+% Нижний магнитный заряд
+\draw[thick] (0,-1.5) ellipse (1.5cm and 0.4cm);
+\draw[thick,->,blue] (1.5,-1.5) arc (0:180:1.5cm and 0.4cm);
+\draw[thick,->,blue] (-1.5,-1.5) arc (180:360:1.5cm and 0.4cm);
+\filldraw[blue] (-1.5,-1.5) circle (0.15) node[below left] {$-q_m$};
+
+% Ось прецессии
+\draw[thick,->] (0,-2.5) -- (0,2.5) node[above] {$\vec{\omega}$};
+
+% Расстояние
+\draw[thick,<->] (2,1.5) -- (2,-1.5) node[midway,right] {$2R$};
+
+% Стрелки прецессии
+\draw[thick,->,green!60!black] (0.5,1.5) arc (20:160:0.5cm);
+\draw[thick,->,green!60!black] (-0.5,-1.5) arc (200:340:0.5cm);
+
+\caption{Модель прецессирующего магнитного диполя}
+\label{fig:precession}
+\end{tikzpicture}
+\end{figure}
+
+\subsection{Магнитный момент диполя}
+
+Магнитный момент системы двух магнитных зарядов:
+\begin{equation}
+M_B = 2R \cdot q_m
+\label{eq:magnetic_dipole}
+\end{equation}
+
+Из условия равенства магнетону Бора находим величину магнитного заряда:
+\begin{equation}
+q_m = \frac{M_B}{2R} = \frac{9.274 \times 10^{-21}}{2 \times 1.4 \times 10^{-13}} = 3.312 \times 10^{-8} \text{ СГСМ}
+\end{equation}
+
+\subsection{Связь движения магнитного заряда с потоком электрического поля}
+
+\subsubsection{Задача ``наизнанку''}
+
+В классической электродинамике вращение электрического заряда создает магнитное поле. Рассмотрим обратную задачу: вращение магнитного заряда создает электрическое поле.
+
+Из модифицированных уравнений Максвелла с магнитными зарядами:
+\begin{equation}
+\oint \vec{E} \cdot d\vec{l} = -\frac{4\pi}{c} I_m
+\end{equation}
+
+где $I_m$ -- магнитный ток.
+
+\subsubsection{Магнитный ток}
+
+Магнитный заряд $q_m$, вращающийся по кольцу радиуса $R$ с угловой скоростью $\omega$:
+\begin{equation}
+I_m = \frac{q_m \omega}{2\pi}
+\end{equation}
+
+\subsubsection{Электрическое поле}
+
+Для кольца радиуса $R$:
+\begin{equation}
+E \cdot 2\pi R = \frac{4\pi}{c} \cdot \frac{q_m \omega}{2\pi}
+\end{equation}
+
+\begin{equation}
+E = \frac{q_m \omega}{\pi c R}
+\label{eq:e_field}
+\end{equation}
+
+\subsubsection{Поток электрического поля через кольцо}
+
+\begin{equation}
+\Phi_E^{ring} = E \cdot \pi R^2 = \frac{q_m \omega R}{c}
+\end{equation}
+
+\subsubsection{Учет двух магнитных зарядов}
+
+Оба магнитных заряда ($+q_m$ и $-q_m$) вращаются в одном направлении, создавая электрические поля, направленные одинаково (знак заряда компенсируется направлением вращения):
+
+\begin{equation}
+\Phi_E^{total} = 2 \cdot \frac{q_m \omega R}{c} = \frac{2q_m \omega R}{c}
+\label{eq:total_flux}
+\end{equation}
+
+\subsection{Сравнение с потоком от электрического заряда}
+
+Электрический заряд $e$ на сфере радиуса $R$ создает поток:
+\begin{equation}
+\Phi_E^{sphere} = 4\pi e
+\end{equation}
+
+Приравниваем потоки для получения эффективного электрического заряда:
+\begin{equation}
+4\pi e = \frac{2q_m \omega R}{c}
+\end{equation}
+
+Отсюда получаем основное уравнение:
+\begin{equation}
+\boxed{\omega R = \frac{2\pi c e}{q_m}}
+\label{eq:main}
+\end{equation}
+
+Или в безразмерном виде:
+\begin{equation}
+\frac{\omega R}{c} = \frac{2\pi e}{q_m}
+\end{equation}
+
+\subsection{Численный расчет}
+
+Подставляем значения:
+\begin{align}
+\omega R &= \frac{2\pi \times 3 \times 10^{10} \times 4.8 \times 10^{-10}}{3.312 \times 10^{-8}} \\
+&= \frac{2\pi \times 14.4}{3.312 \times 10^{-8}} \\
+&\approx 2.73 \times 10^9 \text{ см/с}
+\end{align}
+
+Отношение к скорости света:
+\begin{equation}
+\boxed{\frac{\omega R}{c} = \frac{2\pi e}{q_m} = \frac{2\pi \times 4.8 \times 10^{-10}}{3.312 \times 10^{-8}} \approx 0.091}
+\end{equation}
+
+\subsection{Альтернативный вывод через ток}
+
+Можно также рассмотреть задачу через эквивалентный электрический ток. Вращающийся магнитный заряд создает эффективный электрический ток:
+
+\begin{equation}
+J_m = \frac{q_m \omega_m}{2\pi}
+\end{equation}
+
+Этот магнитный ток эквивалентен электрическому току:
+\begin{equation}
+J_m = c \frac{e}{\pi R}
+\end{equation}
+
+Отсюда:
+\begin{equation}
+\frac{q_m \omega_m}{2\pi} = c \frac{e}{\pi R}
+\end{equation}
+
+\begin{equation}
+\omega_m R = 2c \frac{e}{q_m}
+\end{equation}
+
+Численно:
+\begin{equation}
+\frac{\omega R}{c} = \frac{2e}{q_m} = \frac{2 \times 4.8 \times 10^{-10}}{3.312 \times 10^{-8}} \approx 2.89 \times 10^{-2}
+\end{equation}
+
+\section{Сравнение моделей}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Параметр} & \textbf{Классическая модель} & \textbf{Модель прецессии} \\
+\hline
+Исходный объект & Вращающийся заряд $e$ & Прецессирующий диполь $q_m$ \\
+\hline
+Формула момента & $M = \frac{e\omega R^2}{3c}$ & $M = 2R q_m$ \\
+\hline
+Требуемая скорость & $v \approx 414c$ & $v \approx 0.03c - 0.09c$ \\
+\hline
+Физическая осмысленность & Нарушает СТО & Согласуется с СТО \\
+\hline
+\end{tabular}
+\caption{Сравнение классической и альтернативной моделей}
+\label{tab:comparison}
+\end{table}
+
+\section{Выводы}
+
+\begin{enumerate}
+\item Классическая модель вращающегося заряженного шара требует сверхсветовых скоростей ($v \approx 414c$) для объяснения магнитного момента электрона, что делает её физически несостоятельной.
+
+\item Модель прецессирующего магнитного диполя предлагает альтернативное объяснение: электрон представляет собой систему двух магнитных зарядов, прецессирующих вокруг общей оси.
+
+\item Вращение магнитных зарядов создает эффективный электрический заряд через поток электрического поля, что является задачей ``наизнанку'' по отношению к классической задаче о магнитном потоке токового кольца.
+
+\item Требуемая скорость прецессии составляет всего $\sim 3-9\%$ от скорости света, что физически осмысленно и не противоречит специальной теории относительности.
+
+\item Полученный результат подтверждает гипотезу о том, что ``магнитная природа'' электрона является более фундаментальной, чем ``электрическая природа''.
+\end{enumerate}
+
+\begin{thebibliography}{9}
+\bibitem{classical} Абрагам М. Теория электричества. -- М.: ОНТИ, 1934.
+\bibitem{dirac} Дирак П. Квантованная сингулярность в электромагнитном поле. // Труды Королевского общества. -- 1931. -- Т. A133. -- С. 60-72.
+\bibitem{magnetic_charge} Джексон Дж. Классическая электродинамика. -- М.: Мир, 1965.
+\end{thebibliography}
+
+\end{document}

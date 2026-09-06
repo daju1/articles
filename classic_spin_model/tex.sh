@@ -23,10 +23,7 @@ rm *.out
 
 # Список исходников
 SOURCES=(
-    chrono_casimir_en.tex
-    chrono_casimir_ru.tex
-    chrono_casimir_grebennikov_ru.tex
-    chrono_casimir_grebennikov_en.tex
+    classic_spin_model.tex
 )
 
 for src in "${SOURCES[@]}"; do

@@ -12,8 +12,8 @@
 \usetikzlibrary{arrows, decorations.markings, calc}
 
 \title{Классическая модель спина электрона и альтернативная модель прецессирующего магнитного диполя}
-\author{}
-\date{}
+\author{Алексей Дроздов}
+\date{\today}
 
 \begin{document}
 
@@ -42,14 +42,11 @@
 \node at (0.3,2.7) {$\omega$};
 
 % Заряд на поверхности
-\filldraw[red] (1.4,1.4) circle (0.1);
-\node at (1.8,1.6) {$e^-$};
-\filldraw[red] (-1.4,-1.4) circle (0.1);
 \node at (-1.8,-1.6) {$e^-$};
 
-% Стрелки вращения
-\draw[thick,->,blue] (1.5,0.5) arc (20:160:1.5cm);
-\draw[thick,->,blue] (-1.5,-0.5) arc (200:340:1.5cm);
+% Одна стрелка вращения на экваторе
+\draw[thick,->,blue] (1.5,0) arc (0:120:1.5cm and 0.4cm);
+
 
 % Радиус
 \draw[thick,->] (0,0) -- (1.4,1.4);
@@ -58,6 +55,7 @@
 \caption{Классическая модель: вращающаяся заряженная сфера}
 \label{fig:classical}
 \end{figure}
+
 
 \subsection{Магнитный момент вращающейся сферы}
 
@@ -166,13 +164,21 @@ v = \frac{8.35 \times 10^{-10}}{6.72 \times 10^{-23}} \approx 1.24 \times 10^{13
 
 % Расстояние
 \draw[thick,<->] (2,1.5) -- (2,-1.5);
-\node at (2.3,0) {$2R$};
+\node at (2.8,0) {$2R \cdot cos \varphi$};
+
+% Диагональная линия связи 2R
+\draw[thick,<->] (-1.5,-1.5) -- (1.5,1.5);
+\node at (1.3,0.5) {$2R$};
+
+% Центральная точка (центр диполя)
+\filldraw[black] (0, 0) circle (0.08);
 
 % Стрелки прецессии
 \draw[thick,->,green!60!black] (0.5,1.5) arc (20:160:0.5cm);
 \draw[thick,->,green!60!black] (-0.5,-1.5) arc (200:340:0.5cm);
 \end{tikzpicture}
-\caption{Модель прецессирующего магнитного диполя}
+
+\caption{Модель прецессирующего магнитного диполя: два магнитных заряда $+q_m$ и $-q_m$ прецессируют по кольцам радиуса $R \cdot sin \varphi$, расстояние между зарядами $2R$}
 \label{fig:precession}
 \end{figure}
 

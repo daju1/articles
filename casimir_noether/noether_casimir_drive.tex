@@ -1,18 +1,27 @@
 \documentclass[twoside, 10pt]{article}
-\usepackage[T1, T2A]{fontenc}
-\usepackage[utf8]{inputenc}
+
+\usepackage[T1, T2A]{fontenc}   % Standard package for selecting font encodings
+\usepackage[utf8]{inputenc} % Accept different input encodings
 \usepackage[ukrainian, english]{babel}
+
 \usepackage{mathptmx}
-\usepackage{indentfirst}
-\usepackage{sectsty}
+
+\usepackage{indentfirst}    % Indent first paragraph after section header
+
+\usepackage{sectsty}        % Control sectional headers
+%\allsectionsfont{\mdseries\scshape\textbf}
+
 \sectionfont{\normalfont\Large\textbf}
 \subsectionfont{\normalfont\large\textbf}
-\usepackage{multicol}
-\usepackage{orcidlink}
-\usepackage{fancyhdr}
+
+\usepackage{multicol}       % Intermix single and multiple columns
+\usepackage{orcidlink}      % Insert hyperlinked ORCiD logo
+\usepackage{fancyhdr}       % Extensive control of page headers and footers
+
 \usepackage{filecontents}
 \usepackage{hyperref, doi}
 \usepackage[numbers]{natbib}
+
 \bibliographystyle{myunsrtnat}
 
 % --- METADATA (ADJUSTED FOR NEW ARTICLE) ---
@@ -32,25 +41,31 @@
 \def\myworkplace{V.~N.~Karazin Kharkiv National University, 61022, 4 Svoboda Sq., Kharkiv, Ukraine}
 \def\myworkplaceukr{Харківський національний університет імені В.~Н.~Каразіна, майдан Свободи, 4, 61022 Харків, Україна}
 \def\myorcidlink{0009-0004-1386-4534}
+
 \def\myreceived{Received on January 9, 2026.}
 \def\myaccepted{Accepted for publication on January 9, 2026.}
 \def\myreceivedukr{Надійшла до редакції 9 січня 2026 р.}
 \def\myacceptedukr{Прийнято до друку 9 січня 2026 р.}
+
 \def\licenseref{http://creativecommons.org/licenses/by/4.0/}
+
 \def\myvspacebeforesubsection{-2.0mm}
 \def\myvspaceaftersubsection{-2.5mm}
+
 \def\collontitulasfontcode{lmss}
 
 \newcommand{\MyTitle}{\expandafter\MakeUppercase\expandafter{\mytitle}}
 \newcommand{\MyTitleUkr}{\expandafter\MakeUppercase\expandafter{\mytitleukr}}
 
 \fancypagestyle{firstpagestyle}{
-  \renewcommand{\headrulewidth}{0.6pt}
-  \fancyhead[C]{\ukrvisnyk \\ \envisnyk}
-  \renewcommand{\footrulewidth}{0.6pt}
-  \fancyfoot[L]{${}^{\copyright}$ \myname}
-  \fancyfoot[R]{~ \\ \fontencoding{T1}\fontfamily{\collontitulasfontcode}{\selectfont \textit{Open Access. This article is licensed under a Creative Commons Attribution 4.0}} \\
-  \href{\licenseref}{\fontencoding{T1}\fontfamily{\collontitulasfontcode}{\selectfont \textit{\licenseref}}}}
+% Definition of the header
+\renewcommand{\headrulewidth}{0.6pt} % top horizontal rule
+% Arial 9.5
+\fancyhead[C]{\ukrvisnyk \\ \envisnyk}
+\renewcommand{\footrulewidth}{0.6pt} % bottom horizontal rule
+\fancyfoot[L]{${}^{\copyright}$ \myname}
+\fancyfoot[R]{~ \\ \fontencoding{T1}\fontfamily{\collontitulasfontcode}{\selectfont \textit{Open Access. This article is licensed under a Creative Commons Attribution 4.0}} \\
+\href{\licenseref}{\fontencoding{T1}\fontfamily{\collontitulasfontcode}{\selectfont \textit{\licenseref}}}}
 }
 
 \usepackage{graphicx}
@@ -78,36 +93,66 @@
 \title{\textbf{\MyTitle.}}
 \date{}
 
+    % Colors for the hyperref package
 \definecolor{urlcolor}{rgb}{0,.145,.698}
 \definecolor{linkcolor}{rgb}{0,0,0}
 \definecolor{citecolor}{rgb}{0,0,0}
+
 \providecommand{\doi}[1]{DOI: \href{https://doi.org/#1}{#1}}
 
-\geometry{verbose,includehead,nomarginpar,tmargin=1.1cm,bmargin=3.0cm,lmargin=1.85cm,rmargin=1.85cm}
+\geometry{verbose,includehead,
+nomarginpar,% We don't want any margin paragraphs
+tmargin=1.1cm,bmargin=3.0cm,lmargin=1.85cm,rmargin=1.85cm}
+
 \setlength{\columnsep}{0.5cm}
+
+% forbid word transfer
 \hyphenpenalty=10000
 
 \begin{document}
+
 \fontencoding{T2A}\fontfamily{ptm}\selectfont
+
 \setcounter{page}{\myfirstpage}
+
+% Set the page style to "fancy"...
 \pagestyle{fancy}
-\fancyhead{}
+
+%... then configure it.
+\fancyhead{} % clear all header fields
+
+% Arial 9.5
 \fancyhead[CE]{\fontencoding{T1}\fontfamily{ptm}{\selectfont \textit{\mytitle.}}}
+
+% Times New Roman 11
 \fancyhead[CO]{\fontencoding{T1}\fontfamily{ptm}{\selectfont \textit{\myname}}}
-\renewcommand{\headrulewidth}{0.6pt}
-\fancyfoot{}
+
+\renewcommand{\headrulewidth}{0.6pt} % remove the top horizontal rule
+
+\fancyfoot{} % clear all footer fields
+
+% Arial 9.0
 \fancyfoot[LE,RO]{\thepage}
 \fancyfoot[LO,RE]{{~} \\ {\fontencoding{T1}\fontfamily{ptm}{\selectfont \envisnyk}} \\ {\fontencoding{T2A}\fontfamily{\collontitulasfontcode}{\selectfont \ukrvisnyk}}}
 \fancyfoot[CO,CE]{}
 
 $\,$
+
+
 \thispagestyle{firstpagestyle}
+
 \vspace{-9.4mm}
+
 \fontencoding{T1}\fontfamily{ptm}\selectfont
+
 \begin{tabular}{lcr}
-\doi{\mydoi} & & ISSN \myissn (Print)
+\doi{\mydoi}
+& \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\,
+& ISSN \myissn (Print)
 \end{tabular}
+
 \vspace{9mm}
+
 \begin{tabular}{l}
 Original article \\
 In print article \\
@@ -117,14 +162,17 @@ PACS numbers: 11.10.Ef, 03.70.+k, 42.50.Lc \\
 \end{tabular}
 
 \section*{\centering {\fontencoding{T1}\fontfamily{ptm}{\selectfont \MyTitle}}}
+
 \vspace{7mm}
 \centerline{\Large{\myname \,\orcidlink{\myorcidlink} }}
 \vspace{7.5mm}
 \centerline{\textit{\myworkplace}}
 \centerline{\textit{E-mail: \href{mailto:\myemail}{\myemail}}}
+
 \vspace{5mm}
 \centerline{\myreceived}
 \centerline{\myaccepted}
+
 \vspace{5mm}
 
 In this paper, we analyze the Casimir honeycomb drive through the lens of Noether’s theorem.
@@ -141,23 +189,33 @@ The result underscores a profound physical principle: macroscopic thrust from qu
 arises precisely because the system is not invariant under spatial translations.
 
 \vspace{5mm}
+
 \noindent
 \begin{keywords}
-Noether’s theorem, Casimir effect, quantum vacuum, momentum non-conservation, nanohoneycomb, Casimir thrust
+\textit{Noether’s theorem, Casimir effect, quantum vacuum, momentum non-conservation, nanohoneycomb, Casimir thrust}
 \end{keywords}
+
 \vspace{5mm}
 
 \fontencoding{T2A}\fontfamily{ptm}\selectfont
+
 \noindent
-\textbf{Як цитувати}: \textit{\mynameukr}. \textit{\mytitleukr}. {\ukrvisnyk}. \href{https://doi.org/\mydoi}{https://doi.org/\mydoi}.
+\textbf{Як цитувати}: \textit{\mynameukr}. \textit{\mytitleukr}. {\ukrvisnyk}. \href{https://doi.org/\mydoi} {https://doi.org/\mydoi}.
 
 \vspace{5mm}
-\fontencoding{T1}\fontfamily{ptm}\selectfont
-\noindent
-\textbf{In cites}: \textit{\myname}. \textit{\mytitle}. {\envisnyk}. \href{https://doi.org/\mydoi}{https://doi.org/\mydoi}.
 
+\fontencoding{T1}\fontfamily{ptm}\selectfont
+
+\noindent
+\textbf{In cites}: \textit{\myname}. \textit{\mytitle}. {\envisnyk}. \href{https://doi.org/\mydoi} {https://doi.org/\mydoi}.
+
+\vspace{5mm}
+
+%\pagebreak
 \newpage
+
 \begin{multicols}{2}
+
 \vspace{\myvspacebeforesubsection}
 \subsection*{\centering{\fontencoding{T1}\fontfamily{ptm}{\selectfont INTRODUCTION}}}
 \vspace{\myvspaceaftersubsection}
@@ -232,17 +290,24 @@ the intimate link between geometry, symmetry, and dynamics in quantum field theo
 
 \end{multicols}
 
-% --- UKRAINIAN VERSION (TEXT ONLY) ---
+    % Add a bibliography block to the postdoc
+
+% \pagebreak
 \newpage
+
 \fontencoding{T2A}\fontfamily{ptm}\selectfont
-\section*{\centering {\fontencoding{T2A}\fontfamily{ptm}{\selectfont \MyTitleUkr}}}
+
+\section*{\centering {\fontencoding{T2A}\fontfamily{ptm}{\selectfont \uppercase{\MyTitleUkr}}}}
+
 \centerline{\Large{\mynameukr \,\orcidlink{\myorcidlink} }}
 \vspace{3mm}
 \centerline{\textit{\myworkplaceukr}}
 \centerline{\textit{E-mail: \href{mailto:\myemail}{\myemail}}}
+
 \vspace{3mm}
 \centerline{\myreceivedukr}
 \centerline{\myacceptedukr}
+
 \vspace{3.5mm}
 
 У цій роботі аналізується стильниковий рушій Казимира через призму теореми Нетер.

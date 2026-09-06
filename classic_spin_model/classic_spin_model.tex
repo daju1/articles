@@ -6,8 +6,6 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{tikz}
-\usepackage{physics}
-\usepackage{siunitx}
 \usepackage{geometry}
 \geometry{a4paper, margin=2.5cm}
 
@@ -40,22 +38,25 @@
 \draw[dashed] (0,0) ellipse (0.5cm and 2cm);
 
 % Ось вращения
-\draw[thick,->] (0,-2.5) -- (0,2.5) node[above] {$\vec{\omega}$};
+\draw[thick,->] (0,-2.5) -- (0,2.5);
+\node at (0.3,2.7) {$\omega$};
 
 % Заряд на поверхности
-\filldraw[red] (1.4,1.4) circle (0.1) node[above right] {$e^-$};
-\filldraw[red] (-1.4,-1.4) circle (0.1) node[below left] {$e^-$};
+\filldraw[red] (1.4,1.4) circle (0.1);
+\node at (1.8,1.6) {$e^-$};
+\filldraw[red] (-1.4,-1.4) circle (0.1);
+\node at (-1.8,-1.6) {$e^-$};
 
 % Стрелки вращения
 \draw[thick,->,blue] (1.5,0.5) arc (20:160:1.5cm);
 \draw[thick,->,blue] (-1.5,-0.5) arc (200:340:1.5cm);
 
 % Радиус
-\draw[thick,->] (0,0) -- (1.4,1.4) node[midway,above right] {$R$};
-
+\draw[thick,->] (0,0) -- (1.4,1.4);
+\node at (0.9,0.9) {$R$};
+\end{tikzpicture}
 \caption{Классическая модель: вращающаяся заряженная сфера}
 \label{fig:classical}
-\end{tikzpicture}
 \end{figure}
 
 \subsection{Магнитный момент вращающейся сферы}
@@ -149,27 +150,30 @@ v = \frac{8.35 \times 10^{-10}}{6.72 \times 10^{-23}} \approx 1.24 \times 10^{13
 \draw[thick] (0,1.5) ellipse (1.5cm and 0.4cm);
 \draw[thick,->,blue] (1.5,1.5) arc (0:180:1.5cm and 0.4cm);
 \draw[thick,->,blue] (-1.5,1.5) arc (180:360:1.5cm and 0.4cm);
-\filldraw[red] (1.5,1.5) circle (0.15) node[above right] {$+q_m$};
+\filldraw[red] (1.5,1.5) circle (0.15);
+\node at (2,1.7) {$+q_m$};
 
 % Нижний магнитный заряд
 \draw[thick] (0,-1.5) ellipse (1.5cm and 0.4cm);
 \draw[thick,->,blue] (1.5,-1.5) arc (0:180:1.5cm and 0.4cm);
 \draw[thick,->,blue] (-1.5,-1.5) arc (180:360:1.5cm and 0.4cm);
-\filldraw[blue] (-1.5,-1.5) circle (0.15) node[below left] {$-q_m$};
+\filldraw[blue] (-1.5,-1.5) circle (0.15);
+\node at (-2,-1.7) {$-q_m$};
 
 % Ось прецессии
-\draw[thick,->] (0,-2.5) -- (0,2.5) node[above] {$\vec{\omega}$};
+\draw[thick,->] (0,-2.5) -- (0,2.5);
+\node at (0.3,2.7) {$\omega$};
 
 % Расстояние
-\draw[thick,<->] (2,1.5) -- (2,-1.5) node[midway,right] {$2R$};
+\draw[thick,<->] (2,1.5) -- (2,-1.5);
+\node at (2.3,0) {$2R$};
 
 % Стрелки прецессии
 \draw[thick,->,green!60!black] (0.5,1.5) arc (20:160:0.5cm);
 \draw[thick,->,green!60!black] (-0.5,-1.5) arc (200:340:0.5cm);
-
+\end{tikzpicture}
 \caption{Модель прецессирующего магнитного диполя}
 \label{fig:precession}
-\end{tikzpicture}
 \end{figure}
 
 \subsection{Магнитный момент диполя}

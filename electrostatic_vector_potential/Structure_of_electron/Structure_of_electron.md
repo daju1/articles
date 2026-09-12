@@ -44,6 +44,7 @@ is angular frequency of magnetic charge
 
 # How it looks like?
 
+![precessing_dipole_electron_positron.gif](precessing_dipole_electron_positron.gif)
 
 ```python
 n = 4

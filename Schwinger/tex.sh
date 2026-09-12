@@ -7,6 +7,8 @@
 # sudo tlmgr install palatino
 # sudo tlmgr install newpx pxfonts
 # sudo tlmgr install mathpazo
+
+# sudo tlmgr install cm-unicode
 # sudo updmap-sys
 
 

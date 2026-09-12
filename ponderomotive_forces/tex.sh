@@ -29,3 +29,9 @@ for src in "${SOURCES[@]}"; do
     xelatex "$src"
     pdflatex "$src"
 done
+
+
+
+rm *.aux
+rm *.log
+rm *.out

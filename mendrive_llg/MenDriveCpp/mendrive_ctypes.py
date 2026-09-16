@@ -38,7 +38,7 @@ lib.mendrive_run.argtypes = [
 lib.mendrive_run.restype = ctypes.c_int
 
 BIAS_CODE = {'none': 0, 'x': 1, 'y': 2, 'z': 3, 'parallel': 4}
-FERRITE_CODE = {'JA': 0, 'LLG': 1, 'Hybrid': 2, 'Preisach': 3}
+FERRITE_CODE = {'JA': 0, 'LLG': 1, 'Hybrid': 2, 'Preisach': 3, 'Preisach2D': 4}
 EXC_CODE = {'magnetic_right': 0, 'electric_left': 1}
 
 

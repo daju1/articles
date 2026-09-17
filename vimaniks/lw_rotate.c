@@ -621,6 +621,8 @@ int calc_fields(long double k, distance r,
     (*j_z) = (-3*q*c/(k*k*k*k*r*r*r) * (one - one_m_v2_c2_p_ra_c2/k) * (one_m_v2_c2_p_ra_c2*(nz - vz/c) - (k*r)*wz/(c*c))
               + q/(k*k*k*r*r) * (-vz/r*one_m_v2_c2_p_ra_c2 + (nz - vz/c)/k*(rdota_c2-3*va_c2) - r*dot_wz/(c*c) - wz*k*r/c))
               /(4*M_PI);
+
+    return 0;
 }
 
 int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,

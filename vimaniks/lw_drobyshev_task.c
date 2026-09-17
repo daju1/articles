@@ -623,6 +623,8 @@ int calc_fields(long double k, distance r,
         // printf("B_x=%Le, B_y=%Le, B_z=%Le\n", (*B_x), (*B_y), (*B_z));
         // fflush(stdout);
     }
+
+    return 0;
 }
 
 int electr_magnet_ex(coordinate x, coordinate y, coordinate z, timevalue t,

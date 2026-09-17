@@ -80,6 +80,10 @@ int main()
     long double Hn;
     long double An;
     long double jn;
+
+    long double ra_c2_sum;
+    long double four_a_four_R_c2_sum;
+
     int ret = spherical_y_ccalc_Maxwells_stress_tensor(R, theta, varphi, t_i,
                                                      &Txn, &Tyn, &Tzn,
                                                      &Nx, &Ny, &Nz,
@@ -90,6 +94,8 @@ int main()
                                                      &Hn,
                                                      &An,
                                                      &jn,
+                                                     &ra_c2_sum,
+                                                     &four_a_four_R_c2_sum,
                                                      &sum_rlagerror_sqare);
     if (0 != ret)
     {
@@ -113,6 +119,8 @@ int main()
                                                      &Hn,
                                                      &An,
                                                      &jn,
+                                                     &ra_c2_sum,
+                                                     &four_a_four_R_c2_sum,
                                                      &sum_rlagerror_sqare);
     if (0 != ret)
     {

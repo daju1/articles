@@ -158,10 +158,15 @@ long double spherical_x_calc_En_R_t (long double xc, long double theta, long dou
     long double Ny;
     long double Nz;
     long double Sn;
+    long double E1n;
+    long double E2n;
     long double En;
     long double Hn;
     long double An;
     long double jn;
+
+    long double ra_c2_sum;
+    long double four_a_four_R_c2_sum;
 
     coordinate sum_rlagerror_square;
 
@@ -175,10 +180,14 @@ long double spherical_x_calc_En_R_t (long double xc, long double theta, long dou
         &Ny,
         &Nz,
         &Sn,
+        &E1n,
+        &E2n,
         &En,
         &Hn,
         &An,
         &jn,
+        &ra_c2_sum,
+        &four_a_four_R_c2_sum,
         &sum_rlagerror_square);
 
     // printf("sum_rlagerror_square = %Le\n", sum_rlagerror_square);
@@ -191,7 +200,7 @@ long double spherical_x_calc_En_R_t (long double xc, long double theta, long dou
     return jn;
 }
 
-void main()
+int main()
 {
     for ( int i = 0; i < 10; ++i)
     {
@@ -208,4 +217,6 @@ void main()
         printf("xc = %Lf\n", xc);
         // printf("En = %Lf\n", En);
     }
+
+    return 0;
 }

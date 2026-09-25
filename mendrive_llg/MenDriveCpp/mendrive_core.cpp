@@ -16,6 +16,15 @@
 #include <memory>
 #include <random>
 
+enum {
+    JA         = 0,
+    LLG        = 1,
+    Hybrid     = 2,
+    Preisach   = 3,
+    Preisach2D = 4,
+} FERRITE_CODE;
+
+
 static inline long double langevin_L(long double x) {
     if (std::fabs(x) < 1e-6) { return x/3.0 - x*x*x/45.0; }
     return 1.0/std::tanh(x) - 1.0/x;
@@ -238,12 +247,18 @@ struct PreisachEngine {
                         long double& H_new_out, long double& M_new_out) const {
         long double H_new = H_old - rhs_extra;
         long double M_new = M_old;
+        const long double tol = 1e-10;
         for (int it = 0; it < n_iter; ++it) {
             std::vector<int8_t> trial = state;
             step(trial, H_old, H_new, M_new);
             long double F = H_new - H_old + 4*M_PI*(M_new - M_old) + leak_coef*H_new + rhs_extra;
-            long double denom = 1.0 + leak_coef;
-            H_new -= F / denom;
+            long double dM_dH = (M_new - M_old) / (H_new - H_old + 1e-15);
+            long double denom = 1.0 + 4*M_PI*dM_dH + leak_coef;
+            long double damping = 0.5;  // коэффициент демпфирования
+            long double delta = F / denom;
+            H_new -= damping * delta;
+
+            if (std::abs(delta) < tol) break;  // выход при сходимости
         }
         step(state, H_old, H_new, M_new); // фиксируем состояния реле только после сходимости
         H_new_out = H_new; M_new_out = M_new;
@@ -320,12 +335,18 @@ struct PreisachEngine2D {
                         long double& H_new_out, long double& M_new_out) const {
         long double H_new = H_old - rhs_extra;
         long double M_new = M_old;
+        const long double tol = 1e-10;
         for (int it = 0; it < n_iter; ++it) {
             std::vector<int8_t> trial = state;
             step(trial, H_old, H_new, M_new);
             long double F = H_new - H_old + 4*M_PI*(M_new - M_old) + leak_coef*H_new + rhs_extra;
-            long double denom = 1.0 + leak_coef;
-            H_new -= F / denom;
+            long double dM_dH = (M_new - M_old) / (H_new - H_old + 1e-15);
+            long double denom = 1.0 + 4*M_PI*dM_dH + leak_coef;
+            long double damping = 0.5;  // коэффициент демпфирования
+            long double delta = F / denom;
+            H_new -= damping * delta;
+
+            if (std::abs(delta) < tol) break;  // выход при сходимости
         }
         step(state, H_old, H_new, M_new);
         H_new_out = H_new; M_new_out = M_new;
@@ -392,19 +413,19 @@ struct MenDriveSim {
         n_fer = 0; for (int i = 0; i < N; ++i) if (rightB[i]) n_fer++;
         n_left = 0; for (int i = 0; i < N; ++i) if (leftB[i]) n_left++;
 
-        if (ferrite_model == 0) {
+        if (ferrite_model == JA) {
             long double H0_eff = (bias_orientation == 4 || bias_orientation == 3) ? H0_bias : 0.0;
             ja.reset(new JAEngine(Ms, a_JA, alpha_JA, k_JA, c_JA, sigma_m_leak, H0_eff, n_sub, n_fp));
-        } else if (ferrite_model == 1) {
+        } else if (ferrite_model == LLG) {
             int axis = (bias_orientation >= 1 && bias_orientation <= 3) ? bias_orientation : 0;
             llg.reset(new LLGEngine(Ms_llg, gamma_llg, alpha_llg, H0_bias, axis));
-        } else if (ferrite_model == 2) {
+        } else if (ferrite_model == Hybrid) {
             ja.reset(new JAEngine(Ms, a_JA, alpha_JA, k_JA, c_JA, sigma_m_leak, 0.0, n_sub, n_fp));
             int axis = (bias_orientation >= 1 && bias_orientation <= 3) ? bias_orientation : 0;
             llg.reset(new LLGEngine(Ms_llg, gamma_llg, alpha_llg, H0_bias, axis));
-        } else if (ferrite_model == 3) {
+        } else if (ferrite_model == Preisach) {
             pr.reset(new PreisachEngine(Ms, Hc_mean_pr, Hc_sigma_pr, Hb_sigma_pr, n_hyst_pr));
-        } else if (ferrite_model == 4) {
+        } else if (ferrite_model == Preisach2D) {
             pr2d.reset(new PreisachEngine2D(Ms, Hc_mean_pr, Hc_sigma_pr, Hb_sigma_pr, n_hyst_pr));
         }
 
@@ -424,18 +445,18 @@ struct MenDriveSim {
     void reset_state() {
         Ey.assign(N+1, 0.0); Ez.assign(N+1, 0.0); Hy.assign(N, 0.0); Hz.assign(N, 0.0); t = 0.0;
         p_mag_dynamics = 0.0;
-        if (ferrite_model == 0) { M_irr.assign(n_fer, 0.0); M_field.assign(n_fer, 0.0); }
-        else if (ferrite_model == 1) { Vec3 M0 = llg->initial_M(); M_llg.assign(n_fer, M0); }
-        else if (ferrite_model == 2) {
+        if (ferrite_model == JA) { M_irr.assign(n_fer, 0.0); M_field.assign(n_fer, 0.0); }
+        else if (ferrite_model == LLG) { Vec3 M0 = llg->initial_M(); M_llg.assign(n_fer, M0); }
+        else if (ferrite_model == Hybrid) {
             hyb_M_irr.assign(n_fer, 0.0); hyb_M_field.assign(n_fer, 0.0);
             Vec3 M0 = llg->initial_M(); hyb_M.assign(n_fer, M0);
             last_HzJA.assign(n_fer, 0.0);
         } 
-        else if (ferrite_model == 3) {
+        else if (ferrite_model == Preisach) {
             pr_state.assign(n_fer, std::vector<int8_t>(pr->n_hyst, -1));
             pr_M.assign(n_fer, -pr->Ms);
         }
-        else if (ferrite_model == 4) {
+        else if (ferrite_model == Preisach2D) {
             pr_state.assign(n_fer, std::vector<int8_t>(pr2d->n_pairs, -1));
             pr_M.assign(n_fer, -pr2d->Ms);
         }
@@ -471,7 +492,7 @@ struct MenDriveSim {
         for (int i = 0; i < N; ++i) Hy_new[i] = Hy[i] + (dt/dx)*(Ez[i+1]-Ez[i]);
         for (int i = 0; i < N; ++i) { if (!rightB[i]) Hz_new[i] = Hz[i] - dt*rotE_z[i] - dt*4*M_PI*j_m_z_B[i]; }
 
-        if (ferrite_model == 0) {
+        if (ferrite_model == JA) {
             int fi = 0;
             long double p_mag_acc = 0.0;
             for (int i = 0; i < N; ++i) {
@@ -483,7 +504,7 @@ struct MenDriveSim {
                 Hz_new[i] = Hz_f; M_irr[fi] = M_irr_new; M_field[fi] = M_new; fi++;
             }
             p_mag_dynamics = p_mag_acc;
-        } else if (ferrite_model == 1) {
+        } else if (ferrite_model == LLG) {
             int fi = 0;
             long double p_mag_acc = 0.0;
             for (int i = 0; i < N; ++i) {
@@ -497,7 +518,7 @@ struct MenDriveSim {
                 fi++;
             }
             p_mag_dynamics = p_mag_acc;
-        } else if (ferrite_model == 2) {
+        } else if (ferrite_model == Hybrid) {
             int fi = 0;
             long double p_mag_acc = 0.0;
             for (int i = 0; i < N; ++i) {
@@ -517,7 +538,7 @@ struct MenDriveSim {
                 fi++;
             }
             p_mag_dynamics = p_mag_acc;
-        } else if (ferrite_model == 3) {
+        } else if (ferrite_model == Preisach) {
             int fi = 0;
             long double p_mag_acc = 0.0;
             for (int i = 0; i < N; ++i) {
@@ -530,7 +551,7 @@ struct MenDriveSim {
                 Hz_new[i] = Hz_f; pr_M[fi] = M_new; fi++;
             }
             p_mag_dynamics = p_mag_acc;
-        } else if (ferrite_model == 4) {
+        } else if (ferrite_model == Preisach2D) {
             int fi = 0;
             long double p_mag_acc = 0.0;
             for (int i = 0; i < N; ++i) {
@@ -567,8 +588,8 @@ struct MenDriveSim {
             p_diss += sigma_e_profile[i] * (Ey[i]*Ey[i] + Ez[i]*Ez[i]) * dx;
         }
         long double sigma_m_wall = 0.0;
-        if (ferrite_model == 0 || ferrite_model == 2) sigma_m_wall = ja->sigma_m_leak;
-        else if (ferrite_model == 3 || ferrite_model == 4) sigma_m_wall = sigma_m_leak_pr;
+        if (ferrite_model == JA || ferrite_model == Hybrid) sigma_m_wall = ja->sigma_m_leak;
+        else if (ferrite_model == Preisach || ferrite_model == Preisach2D) sigma_m_wall = sigma_m_leak_pr;
         if (sigma_m_wall != 0.0) {
             for (int i = 0; i < N; ++i) {
                 if (!rightB[i]) continue;
@@ -624,20 +645,20 @@ int mendrive_run(void* handle, double omega0, int nsteps, int record_start,
             int fi = 0, gi = -1;
             for (int i = 0; i < sim->N; ++i) { if (sim->rightB[i]) { if (fi == probe_idx) { gi = i; break; } fi++; } }
             out_Hn[rec_count] = (gi >= 0) ? sim->Hz[gi] : 0.0;
-            if (sim->ferrite_model == 0) {
+            if (sim->ferrite_model == JA) {
                 out_My[rec_count] = sim->M_field[probe_idx];
                 out_Mx[rec_count] = 0.0; out_Mz[rec_count] = 0.0;
                 out_HzJA[rec_count] = 0.0; out_MzJA[rec_count] = 0.0;
-            } else if (sim->ferrite_model == 1) {
+            } else if (sim->ferrite_model == LLG) {
                 Vec3 M = sim->M_llg[probe_idx];
                 out_Mx[rec_count] = M.x; out_My[rec_count] = M.y; out_Mz[rec_count] = M.z;
                 out_HzJA[rec_count] = 0.0; out_MzJA[rec_count] = 0.0;
-            } else if (sim->ferrite_model == 2) {
+            } else if (sim->ferrite_model == Hybrid) {
                 Vec3 M = sim->hyb_M[probe_idx];
                 out_Mx[rec_count] = M.x; out_My[rec_count] = M.y; out_Mz[rec_count] = M.z;
                 out_HzJA[rec_count] = sim->last_HzJA[probe_idx];
                 out_MzJA[rec_count] = sim->hyb_M_field[probe_idx];
-            } else {
+            } else { // Preisach Preisach2D
                 out_My[rec_count] = (double)sim->pr_M[probe_idx];
                 out_Mx[rec_count] = 0.0; out_Mz[rec_count] = 0.0;
                 out_HzJA[rec_count] = 0.0; out_MzJA[rec_count] = 0.0;

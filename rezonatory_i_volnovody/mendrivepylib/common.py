@@ -16,6 +16,7 @@ use_phase_y = False
 
 
 def set_use_phase_y(v):
+    global use_phase_y
     use_phase_y = v
 
 def get_use_phase_y():

@@ -1,0 +1,293 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{circuitikz}
+\usepackage{geometry}
+\usepackage{graphicx}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\title{Тепловые флуктуации в интегральных схемах:\\
+обобщение метода Найквиста для множественных элементов}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Введение: подход Найквиста}
+
+Найквист (1928) рассмотрел два резистора $R_1$ и $R_2$, соединенных последовательно, каждый из которых генерирует тепловую ЭДС $E_1$ и $E_2$ соответственно.
+
+\begin{figure}[h]
+\centering
+\begin{circuitikz}[scale=0.8]
+\draw (0,0) to[R=$R_1$, v=$E_1$] (0,3) 
+      to[short] (3,3) 
+      to[R=$R_2$, v=$E_2$] (3,0) -- (0,0);
+\end{circuitikz}
+\caption{Два резистора с тепловыми ЭДС}
+\end{figure}
+
+Ток в цепи:
+\begin{equation}
+I = \frac{E_1}{R_1 + R_2}
+\end{equation}
+
+Мощность, рассеиваемая на $R_2$:
+\begin{equation}
+Q_2 = I^2 R_2 = \left(\frac{E_1}{R_1+R_2}\right)^2 R_2
+\end{equation}
+
+При $R_1 = R_2 = R$:
+\begin{equation}
+W = Q_2 = \left(\frac{E_1}{2R}\right)^2 R = \frac{E_1^2}{4R}
+\end{equation}
+
+\section{Спектральный подход Найквиста}
+
+Рассмотрим линию передачи длиной $l$, соединяющую два сопротивления $R$.
+
+\begin{figure}[h]
+\centering
+\begin{circuitikz}[scale=0.8]
+\draw (0,0) to[R=$R$] (0,2) 
+      to[transmission line, l=$l$] (4,2)
+      to[R=$R$] (4,0) -- (0,0);
+\end{circuitikz}
+\caption{Линия передачи между сопротивлениями}
+\end{figure}
+
+Частоты собственных мод:
+\begin{equation}
+\nu_i = i \frac{v}{2l}, \quad i = 1, 2, 3, \ldots
+\end{equation}
+
+где $v$ --- скорость распространения волны.
+
+Число мод в интервале частот $d\nu$:
+\begin{equation}
+N_{dof} = \frac{2l}{v} d\nu
+\end{equation}
+
+\subsection{Энергия мод}
+
+Согласно классической статистической механике, на каждую степень свободы приходится энергия $kT$:
+\begin{equation}
+E_{\text{classical}} = \sum_i kT
+\end{equation}
+
+Согласно квантовой теории (Планк):
+\begin{equation}
+E_{\text{quantum}} = \sum_i \frac{h\nu_i}{e^{h\nu_i/kT} - 1}
+\end{equation}
+
+Полная энергия в интервале частот $d\nu$:
+\begin{equation}
+dW = N_{dof} \cdot \langle \varepsilon \rangle = \frac{2l}{v} d\nu \cdot \frac{h\nu}{e^{h\nu/kT} - 1}
+\end{equation}
+
+\section{Обобщение на RC-цепи}
+
+Рассмотрим цепь с сопротивлением $R$ и емкостью $C$.
+
+\begin{figure}[h]
+\centering
+\begin{circuitikz}[scale=0.8]
+\draw (0,0) to[R=$R$] (0,2) 
+      to[C=$C$] (2,2)
+      to[short] (2,0) -- (0,0);
+\end{circuitikz}
+\caption{RC-цепь}
+\end{figure}
+
+Импеданс емкости:
+\begin{equation}
+Z_C = \frac{1}{j\omega C}
+\end{equation}
+
+Полный импеданс:
+\begin{equation}
+Z = R + \frac{1}{j\omega C}
+\end{equation}
+
+Ток:
+\begin{equation}
+I = \frac{E}{R + \frac{1}{j\omega C}}
+\end{equation}
+
+Мощность на резисторе:
+\begin{equation}
+I^2 R = C U^2 \frac{h\nu}{e^{h\nu/kT} + 1} d\nu
+\end{equation}
+
+\section{Нелинейные элементы: варикапы}
+
+Для варикапа с нелинейной вольт-фарадной характеристикой $C(V)$:
+
+\begin{equation}
+Z_C(V) = \frac{1}{j\omega C(V)}
+\end{equation}
+
+где $C(V)$ --- функция напряжения.
+
+\section{Системы из множества элементов}
+
+\subsection{Цепочка из N одинаковых элементов}
+
+\begin{figure}[h]
+\centering
+\begin{circuitikz}[scale=0.6]
+\foreach \i in {0,1,2,3,4} {
+    \draw (\i*2,0) to[R=$R$, l=$\ell$] (\i*2,1.5);
+}
+\draw (0,0) -- (8,0);
+\draw (0,1.5) -- (8,1.5);
+\end{circuitikz}
+\caption{Цепочка из 5 элементов}
+\end{figure}
+
+Для цепочки из $N$ элементов длиной $\ell$ каждый:
+
+Частоты мод:
+\begin{equation}
+\nu_i = i \frac{v}{2N\ell}, \quad i = 1, 2, \ldots
+\end{equation}
+
+Длины волн:
+\begin{equation}
+\lambda_i = \frac{2N\ell}{i}
+\end{equation}
+
+\subsection{Случай N = 5}
+
+\begin{equation}
+\nu_i = i \frac{v}{10\ell}, \quad i = 1, 2, 3, 4, 6, 7, 8, 9, \ldots
+\end{equation}
+(исключая $i$, делящиеся на 5)
+
+\begin{equation}
+\lambda_i = \frac{10\ell}{i}
+\end{equation}
+
+Плотность состояний:
+\begin{equation}
+\frac{di_{i5}}{d\nu} = \frac{10\ell}{v} \cdot \frac{4}{5} = \frac{8\ell}{v}
+\end{equation}
+
+\subsection{Случай N = 7}
+
+\begin{equation}
+\nu_i = i \frac{v}{12\ell}, \quad i = 1, 5, 7, 11, 13, 17, 19, 23, \ldots
+\end{equation}
+(исключая $i$, делящиеся на 2, 3, 4, 6)
+
+\begin{equation}
+\lambda_i = \frac{12\ell}{i}
+\end{equation}
+
+\section{Плотность состояний для различных конфигураций}
+
+\subsection{Два элемента}
+
+\begin{equation}
+\nu_i = i \frac{v}{2\ell}, \quad i = 1, 2, 3, 4
+\end{equation}
+
+\begin{equation}
+\lambda_i = \frac{2\ell}{i}
+\end{equation}
+
+\begin{equation}
+\frac{di}{d\nu} = \frac{2\ell}{v}
+\end{equation}
+
+\subsection{Три элемента}
+
+\begin{equation}
+\nu_j = j \frac{v}{4\ell}, \quad j = 1, 3, 5, 7, \ldots
+\end{equation}
+(нечетные $j$)
+
+\begin{equation}
+\lambda_j = \frac{4\ell}{j}
+\end{equation}
+
+Плотность состояний:
+\begin{equation}
+N_{dof} = \left(\frac{di}{d\nu} + \frac{dj}{d\nu}\right) d\nu = \left(\frac{2\ell}{v} + \frac{2\ell}{v}\right) d\nu = \frac{4\ell}{v} d\nu
+\end{equation}
+
+\subsection{Четыре элемента}
+
+\begin{equation}
+\nu_k = k \frac{v}{6\ell}, \quad k = 1, 2, 4, 5, 7, 8, 10, 11, 13, 14, \ldots
+\end{equation}
+(исключая $k$, делящиеся на 3)
+
+Плотность состояний:
+\begin{equation}
+N_{dof} = \left(\frac{di_2}{d\nu} + 2\frac{di_3}{d\nu} + \frac{dk_4}{d\nu}\right) d\nu = \left(\frac{2\ell}{v} + 2\cdot\frac{2\ell}{v} + \frac{4\ell}{v}\right) d\nu = \frac{10\ell}{v} d\nu
+\end{equation}
+
+\section{Обобщенная формула для N элементов}
+
+Для цепочки из $N$ элементов:
+
+\begin{equation}
+\nu_i = i \frac{v}{2N\ell}
+\end{equation}
+
+\begin{equation}
+\lambda_i = \frac{2N\ell}{i}
+\end{equation}
+
+Плотность состояний:
+\begin{equation}
+N_{dof} = \sum_{m} c_m \frac{d i_m}{d\nu}
+\end{equation}
+
+где $c_m$ --- коэффициенты, зависящие от конфигурации.
+
+\section{Применение к интегральным схемам}
+
+Рассмотрим интегральную схему, состоящую из $N$ параллельно соединенных элементов.
+
+\subsection{Суммирование мощностей}
+
+Если каждый элемент генерирует мощность теплового шума $P_i$, то полная мощность:
+
+\begin{equation}
+P_{\text{total}} = \sum_{i=1}^{N} P_i
+\end{equation}
+
+При одинаковых элементах:
+\begin{equation}
+P_{\text{total}} = N \cdot P_{\text{single}}
+\end{equation}
+
+\subsection{Плотность размещения}
+
+На площади $S = 1 \text{ см}^2$ можно разместить $N$ элементов размером $a \times b$:
+
+\begin{equation}
+N = \frac{S}{a \cdot b} = \frac{10^{-4} \text{ м}^2}{(35 \times 10^{-9})(30 \times 10^{-9}) \text{ м}^2} \approx 9.5 \times 10^{10}
+\end{equation}
+
+\section{Выводы}
+
+1. Метод Найквиста может быть обобщен на системы из множества элементов.
+
+2. Плотность состояний зависит от конфигурации соединений.
+
+3. Для интегральных схем возможно суммирование мощностей тепловых флуктуаций.
+
+4. Нелинейные элементы (варикапы) требуют учета зависимости $C(V)$.
+
+\end{document}

@@ -1,4 +1,4 @@
-\documentclass[12pt,a4paper]{article}
+\documentclass[11pt,a4paper]{article}
 \usepackage[T2A]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[russian]{babel}
@@ -7,9 +7,17 @@
 \usepackage{geometry}
 \usepackage{hyperref}
 \usepackage{caption}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{sidecap}
 \geometry{a4paper, margin=2.5cm}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5em}
+
+% Fix for PNG images without BoundingBox
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.jpeg}
+\graphicspath{{./}{figures/}}
+
 \title{Никель-водородный кольцар}
 \author{А. Ю. Дроздов}
 \date{}
@@ -17,24 +25,24 @@
 \begin{document}
 \maketitle
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{Ni_H2_ring.jpg}
 \caption{Схема никель-водородного кольцара}
 \label{fig:ni_h2_ring}
 \end{figure}
 
-В данной работе рассматривается схема водородно-никелевого кольцара, ожидаемый эффект работы которого состоит в монотермическом превращении рассеянного тепла окружающей среды в механическую работу путем возникновения самопроизвольного устойчивого стационарного потока рабочего тела, которым является водород сквозь металлическую мембрану.
+В данной работе рассматривается схема водородно-никелевого кольцара, ожидаемый эффект работы которого состоит в монотермическом превращении рассеянного тепла окружающей среды в механическую работу путем возникновения самопроизвольного устойчивого стационарного потока рабочего тела, которым является водород, сквозь металлическую мембрану.
 
-Идея была сформулирована с использованием теоретической информации изложенной в Christmann K. Interaction of hydrogen with solid surfaces // Surf. Sci. Rep. 1988. Vol. 9. P. 1--163 [ \url{https://doi.org/10.1016/0167-5729(88)90009-X} ].
+Идея была сформулирована с использованием теоретической информации, изложенной в работе Christmann K. \textit{Interaction of hydrogen with solid surfaces} // Surf. Sci. Rep. 1988. Vol. 9. P. 1--163.
 
-Мой конспект этой работы с моими комментариями см. по ссылке: \url{https://nbviewer.org/github/daju1/articles/blob/master/perpetuum_mobile_of_the_second_kind/hydrogen_metal_membrane/iteraction_of_hydrogen_with_solid_surfaces.ipynb}
+Мой конспект этой работы с моими комментариями см. по ссылке:
+% \url{https://nbviewer.org/github/daju1/articles/blob/master/perpetuum_mobile_of_the_second_kind/hydrogen_metal_membrane/iteraction_of_hydrogen_with_solid_surfaces.ipynb}
+\url{https://github.com/daju1/articles/blob/master/perpetuum_mobile_of_the_second_kind/hydrogen_metal_membrane/iteraction_of_hydrogen_with_solid_surfaces.ipynb}
 
 \section{Формула потока через мембрану}
 
-Далее в работе 35. Nishimura C., Komaki M., Amano M. Hydrogen permeation characteristics of vanadium-nickel alloys // Mater. Trans. 1991. Vol. 32(5). P. 501--507 [\url{https://doi.org/10.2320/matertrans1989.32.501}].
-
-приводится формула для потока через мембрану
+Далее в работе Nishimura C., Komaki M., Amano M. \textit{Hydrogen permeation characteristics of vanadium-nickel alloys} // Mater. Trans. 1991. Vol. 32(5). P. 501--507 приводится формула для потока через мембрану:
 
 \[
 J = \Phi \left(P_u^{1/2} - P_d^{1/2} \right) \big / L
@@ -50,21 +58,19 @@ J = \Phi \left(P_u^{1/2} - P_d^{1/2} \right) \big / L
 
 В этой же работе приводится график:
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{nishimura1991_fig4.png}
 \caption{График проницаемости водородных сплавов (Nishimura et al., 1991)}
 \label{fig:nishimura}
 \end{figure}
 
-Из этого графика для температуры $T = 35 ^\circ \text{C} = 308 \text{ K}$ для палладиевой мембраны
-
+Из этого графика для температуры $T = 35^\circ\text{C} = 308\,\text{K}$ для палладиевой мембраны:
 \[
 \Phi = 8 \cdot 10^{-9} \text{ mol}\, H_2 \cdot \text{m}^{-1} \cdot \text{s}^{-1} \cdot \text{Pa}^{-1/2}
 \]
 
-для мембраны из сплава ванадия с 10 \% никеля
-
+для мембраны из сплава ванадия с 10\% никеля:
 \[
 \Phi = 5 \cdot 10^{-8} \text{ mol}\, H_2 \cdot \text{m}^{-1} \cdot \text{s}^{-1} \cdot \text{Pa}^{-1/2}
 \]
@@ -73,37 +79,33 @@ J = \Phi \left(P_u^{1/2} - P_d^{1/2} \right) \big / L
 
 Примем давления:
 \[
-p_{Pd(111)} = 7.94 \cdot 10^{-7} \text{ Torr} = 0.0001056 \text{ Pa}
+p_{\text{Pd}(111)} = 7.94 \cdot 10^{-7} \text{ Torr} = 0.0001056 \text{ Pa}
 \]
 \[
-\sqrt{p_{Pd(111)}} = 0.010278 \text{ Pa}^{-1/2}
+\sqrt{p_{\text{Pd}(111)}} = 0.010278 \text{ Pa}^{-1/2}
 \]
 
 Вычислим поток:
 \[
-J_{V\_10Ni} = \Phi_{V\_10Ni} \frac{\sqrt{p_{Pt}} - \sqrt{p_{Pd}}}{L}
+J_{\text{V\_10Ni}} = \Phi_{\text{V\_10Ni}} \frac{\sqrt{p_{\text{Pt}}} - \sqrt{p_{\text{Pd}}}}{L}
 \]
 
 При заданных параметрах ($L = 100 \cdot 10^{-6}$ м, $R = 8.31446262$ Дж/(моль·К), $T = 306.5$ К):
-
 \[
-J_{V\_10Ni} \approx 5.457 \cdot 10^{-5} \text{ mol}/(\text{m}^2\cdot\text{s})
+J_{\text{V\_10Ni}} \approx 5.457 \cdot 10^{-5} \text{ mol}/(\text{m}^2\cdot\text{s})
 \]
 
-Допустим, что установление потока в 4 раза уменьшит величину $P_{Pd}$ и в столько же раз увеличит величину $P_{Pt}$. Тогда скорректированный поток:
-
+Допустим, что установление потока в 4 раза уменьшит величину $P_{\text{Pd}}$ и в столько же раз увеличит величину $P_{\text{Pt}}$. Тогда скорректированный поток:
 \[
-J = \Phi_{V\_10Ni} \frac{\sqrt{p_{Pt\_k}} - \sqrt{p_{Pd\_k}}}{L}
+J = \Phi_{\text{V\_10Ni}} \frac{\sqrt{p_{\text{Pt\_k}}} - \sqrt{p_{\text{Pd\_k}}}}{L}
 \]
 
 Скорость потока в газовой фазе в метрах в секунду:
-
 \[
 v = \frac{J}{c} = J \frac{R T}{p}
 \]
 
-Получаем скорости на разных сторонах мембраны и расчетную удельную мощность по формуле, аналогичной оной в работе ``жидкокристаллический осмос'' (\url{https://nbviewer.org/github/daju1/articles/blob/master/liquidcrystalosmos/liquidcrystalosmos.ipynb}):
-
+Получаем скорости на разных сторонах мембраны и расчетную удельную мощность по формуле, аналогичной оной в работе ``жидкокристаллический осмос'':
 \[
 w = \eta \cdot p \cdot V_{\text{ос}} \quad [\text{Вт}/\text{м}^2]
 \]
@@ -117,13 +119,11 @@ w = \eta \cdot p \cdot V_{\text{ос}} \quad [\text{Вт}/\text{м}^2]
 \section{Вычисление потока по модели десорбции}
 
 Формула для плотности газа при десорбции:
-
 \[
 s_0 \bar{c} n_g = \nu_2 (\Theta) \, \exp \left(-\frac{\Delta E^{*}_{d} (\Theta)}{kT} \right) n_{ad}^2
 \]
 
 Отсюда плотность газа:
-
 \[
 n_g = \frac{\nu_2 (\Theta)}{s_0} \, \exp \left(-\frac{\Delta E^{*}_{d} (\Theta)}{kT} \right) \frac{n_{ad}^2}{\bar{c}}
 \]
@@ -138,7 +138,6 @@ Pd(110) & $23$ & $0.7$ & $96.6$ \\
 \end{center}
 
 При $R = 8.314$, $T = 300$ К, $n_s = 1.8 \cdot 10^{15}$ см$^{-2}$:
-
 \[
 n_g(100) \approx 6.27 \cdot 10^{10} \text{ м}^{-3}
 \]
@@ -154,21 +153,21 @@ n_g(110) \approx 5.60 \cdot 10^{12} \text{ м}^{-3}
 
 А вот если бы удалось создать такой монокристалл, у которого бы периодические барьеры активации процесса диффузии того же атомарного водорода также обладали бы свойством несимметричной деформируемости, но это был бы уже высший пилотаж.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{conrad1974_fig4.png}
 \caption{Изотермы адсорбции водорода на палладии (Conrad et al.)}
 \label{fig:conrad4}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{conrad1974_fig6.png}
 \caption{Температурная зависимость проницаемости (Conrad et al.)}
 \label{fig:conrad6}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{Christmann_fig24.png}
 \caption{Спектр термодесорбции водорода (Christmann)}
@@ -177,13 +176,15 @@ n_g(110) \approx 5.60 \cdot 10^{12} \text{ м}^{-3}
 
 \section{Физико-химическое происхождение сверхпроницаемости}
 
-Следует отметить крупномасштабное влияние химии поверхности на проницаемость и поглощение ``горячего'' водорода в металлах. См. работу: Livshits A. I., Notkin M. E., Samartsev A. A. Physico-Chemical Origin of Superpermeability-Large-Scale Effects of Surface Chemistry on ``Hot'' Hydrogen Permeation and Absorption in Metals // J. Nucl. Mater. 1990. Vol. 170, N 1. P. 79--94 [\url{https://doi.org/10.1016/0022-3115(90)90329-L}].
+Следует отметить крупномасштабное влияние химии поверхности на проницаемость и поглощение ``горячего'' водорода в металлах. См. работу: Livshits A. I., Notkin M. E., Samartsev A. A. \textit{Physico-Chemical Origin of Superpermeability-Large-Scale Effects of Surface Chemistry on ``Hot'' Hydrogen Permeation and Absorption in Metals} // J. Nucl. Mater. 1990. Vol. 170, N 1. P. 79--94.
 
 В разделе 2.4. Non-symmetric membranes рассматриваются несимметричные мембраны.
 
-Мой конспект этой работы с критическими комментариями см. по ссылке: \url{https://nbviewer.org/github/daju1/articles/blob/master/perpetuum_mobile_of_the_second_kind/hydrogen_metal_membrane/sticking_of_hydrogen_to_Nb_containing_oxygen.ipynb}
+Мой конспект этой работы с критическими комментариями см. по ссылке:
+% \url{https://nbviewer.org/github/daju1/articles/blob/master/perpetuum_mobile_of_the_second_kind/hydrogen_metal_membrane/sticking_of_hydrogen_to_Nb_containing_oxygen.ipynb}
+\url{https://github.com/daju1/articles/blob/master/perpetuum_mobile_of_the_second_kind/hydrogen_metal_membrane/sticking_of_hydrogen_to_Nb_containing_oxygen.ipynb}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.6\textwidth]{VFK.jpg}
 \caption{Схема вакуумно-фотокаталитического кольцара (аналогия)}
@@ -203,21 +204,21 @@ n_g(110) \approx 5.60 \cdot 10^{12} \text{ м}^{-3}
 
 Так как на самом деле на кинетику диффузии водорода будут в значительной мере влиять явления дифракции, которые со своей стороны зависят от ориентации $hkl$ кристалла. Поэтому одномерная постановка задачи, которая рассматривается в теоретических работах, это лишь некоторое первое приближение, не учитывающее трехмерных ориентационных эффектов кристаллической решетки.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{Capek_fig7.5.png}
 \caption{Схема осмоса в нанопорах (Capek et al.)}
 \label{fig:capek5}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{Capek_fig7.6.png}
 \caption{Зависимость потока от градиента давления (Capek et al.)}
 \label{fig:capek6}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{Capek_fig7.7.png}
 \caption{Температурная зависимость проницаемости (Capek et al.)}

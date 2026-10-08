@@ -1,10 +1,11 @@
 from ..variables.common import x, y, z, b
-from ..common import use_phase_y
+from ..common import get_use_phase_y
 
 def avg_over_y(expr, y_min=-b, y_max=b):
-    if use_phase_y:
+    if get_use_phase_y():
         """Усреднение выражения по y с нормировкой на длину интервала."""
-        from sage.calculus.calculus import integrate
+        # from sage.calculus.functional import integrate
+        from sage.symbolic.integration.integral import definite_integral as integrate
         return integrate(expr, y, y_min, y_max) / (y_max - y_min)
     else:
         return expr

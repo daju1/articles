@@ -187,6 +187,9 @@ assume(y, 'real')
 assume(z, 'real')
 
 b = var('b')
+assume(b, 'real')
+assume(b>0)
+
 m = var('m')
 
 c = var('c')

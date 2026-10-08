@@ -5,8 +5,12 @@ def avg_over_y(expr, y_min=-b, y_max=b):
     if get_use_phase_y():
         """Усреднение выражения по y с нормировкой на длину интервала."""
         # from sage.calculus.functional import integrate
-        from sage.symbolic.integration.integral import definite_integral as integrate
-        return integrate(expr, y, y_min, y_max) / (y_max - y_min)
+        # return integrate(expr, y, y_min, y_max) / (y_max - y_min)
+        # from sage.symbolic.integration.integral import definite_integral
+        from sage.symbolic.integration.integral import indefinite_integral
+        v = indefinite_integral(expr, y)
+        ans = v.subs(y == y_max) - v.subs(y == y_min)
+        return ans
     else:
         return expr
 

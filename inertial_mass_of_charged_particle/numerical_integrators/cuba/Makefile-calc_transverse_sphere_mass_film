@@ -1,0 +1,9 @@
+include ./cuba.mk
+
+OBJ = calc_transverse_sphere_mass_film.o main_transverse_sphere_mass_film.o
+
+all : calc_transverse_sphere_mass_film
+
+calc_transverse_sphere_mass_film: $(OBJ)
+	$(info OBJ=$(OBJ))
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS) -lm

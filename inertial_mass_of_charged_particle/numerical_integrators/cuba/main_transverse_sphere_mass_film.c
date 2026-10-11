@@ -46,14 +46,13 @@ int main() {
   //double omega = sqrt(3*5 * R0 * Sq(c) / (4*3*2*4* Cb(rho0)));  /* угловая скорость орбитального движения*/
   double v_c = omega * rho0 / c;  /* отношение скорости заряда к скорости света*/
 
-  int use_delay                  = 0;
+  int use_delay                  = 1;
   int use_lorentz_factor         = 0;
   int use_lorentz_general_factor = 0;
   int use_fermi_factor_O         = 0;
   int use_fermi_factor           = 0;
   int use_fermi_general_factor   = 0;
   int use_fast_integrand         = 1;
-
 
   int use_fermi_general_factor_O = 0;
   int use_fermi_film_factor      = 1;

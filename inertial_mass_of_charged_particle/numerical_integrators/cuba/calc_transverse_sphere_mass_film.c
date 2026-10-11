@@ -1237,6 +1237,14 @@ int integrate(
     params.use_fermi_general_factor   = use_fermi_general_factor;
     params.use_fast_integrand         = use_fast_integrand;
 
+    params.use_fermi_general_factor_O = use_fermi_general_factor_O;
+    params.use_fermi_film_factor      = use_fermi_film_factor;
+    params.use_fermi_film_instant     = use_fermi_film_instant;
+    params.fermi_film_K               = fermi_film_K;
+    params.use_fermi_pde_factor       = use_fermi_pde_factor;
+    params.pde_grid_n                 = pde_grid_n;
+    params.pde_T_grid                 = pde_T_grid;
+
     double v = params.rho0 * params.omega;
     double v_c =  v / params.c;  /* отношение скорости заряда к скорости света*/
 

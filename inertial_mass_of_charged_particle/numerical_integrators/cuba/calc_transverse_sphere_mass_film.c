@@ -12,6 +12,8 @@
 typedef double cubareal;
 #endif
 
+#include "integrator_enum.h"
+
 //#define Z_Z
 #define Z_RHO
 //#define Z_PHI
@@ -1019,7 +1021,8 @@ int Integrand(const int *ndim, const cubareal xx[],
     ProblemParams *params = (ProblemParams *)userdata;
 
     // theta_a, ra, phi_q, theta_q, rq
-#if 0
+#if 1
+    // NDIM == 6
     #define psi_a   xx[0]
     #define theta_a xx[1]
     #define ra      xx[2]
@@ -1027,6 +1030,7 @@ int Integrand(const int *ndim, const cubareal xx[],
     #define theta_q xx[4]
     #define rq      xx[5]
 #else
+    // NDIM == 5
     #define psi_a 0.0
     #define theta_a xx[0]
     #define ra      xx[1]
@@ -1034,6 +1038,7 @@ int Integrand(const int *ndim, const cubareal xx[],
     #define theta_q xx[3]
     #define rq      xx[4]
 #endif
+
     #define observed_ratio_1_rho ff[0]
     #define observed_ratio_1_phi ff[1]
     #define observed_ratio_1_z   ff[2]
@@ -1169,6 +1174,7 @@ int Integrand(const int *ndim, const cubareal xx[],
 #define VERBOSE 2
 #define LAST 4
 #define SEED 0
+#define SEED 38304
 #define MINEVAL 0
 #define MAXEVAL 500000
 
@@ -1217,6 +1223,8 @@ int integrate(
     int pde_grid_n,
     double *pde_T_grid,
 
+    Integrator integrator,
+
     cubareal* integral, cubareal* error, cubareal* prob)
 {
     int comp, nregions, neval, fail;
@@ -1248,47 +1256,46 @@ int integrate(
     double v = params.rho0 * params.omega;
     double v_c =  v / params.c;  /* отношение скорости заряда к скорости света*/
 
-#if 1
-  printf("-------------------- Vegas test --------------------\n");
+    if (VegasIntegrator == integrator) {
+        printf("-------------------- Vegas test --------------------\n");
 
-    Vegas(NDIM, NCOMP, Integrand, &params, NVEC,
-        EPSREL, EPSABS, VERBOSE, SEED,
-        MINEVAL, MAXEVAL, NSTART, NINCREASE, NBATCH,
-        GRIDNO, STATEFILE, SPIN,
-        &neval, &fail, integral, error, prob);
-#endif
+        Vegas(NDIM, NCOMP, Integrand, &params, NVEC,
+            EPSREL, EPSABS, VERBOSE, SEED,
+            MINEVAL, MAXEVAL, NSTART, NINCREASE, NBATCH,
+            GRIDNO, STATEFILE, SPIN,
+            &neval, &fail, integral, error, prob);
+    }
 
-#if 0
-  printf("\n-------------------- Suave test --------------------\n");
+    if (SuaveIntegrator == integrator) {
+    printf("\n-------------------- Suave test --------------------\n");
 
-  Suave(NDIM, NCOMP, Integrand, USERDATA, NVEC,
-    EPSREL, EPSABS, VERBOSE | LAST, SEED,
-    MINEVAL, MAXEVAL, NNEW, NMIN, FLATNESS,
-    STATEFILE, SPIN,
-    &nregions, &neval, &fail, integral, error, prob);
-#endif
+        Suave(NDIM, NCOMP, Integrand, &params, NVEC,
+            EPSREL, EPSABS, VERBOSE | LAST, SEED,
+            MINEVAL, MAXEVAL, NNEW, NMIN, FLATNESS,
+            STATEFILE, SPIN,
+            &nregions, &neval, &fail, integral, error, prob);
+    }
 
-#if 0
-  printf("\n------------------- Divonne test -------------------\n");
+    if (DivonneIntegrator == integrator) {
+        printf("\n------------------- Divonne test -------------------\n");
 
-  Divonne(NDIM, NCOMP, Integrand, USERDATA, NVEC,
-    EPSREL, EPSABS, VERBOSE, SEED,
-    MINEVAL, MAXEVAL, KEY1, KEY2, KEY3, MAXPASS,
-    BORDER, MAXCHISQ, MINDEVIATION,
-    NGIVEN, LDXGIVEN, NULL, NEXTRA, NULL,
-    STATEFILE, SPIN,
-    &nregions, &neval, &fail, integral, error, prob);
-#endif
+        Divonne(NDIM, NCOMP, Integrand, &params, NVEC,
+            EPSREL, EPSABS, VERBOSE, SEED,
+            MINEVAL, MAXEVAL, KEY1, KEY2, KEY3, MAXPASS,
+            BORDER, MAXCHISQ, MINDEVIATION,
+            NGIVEN, LDXGIVEN, NULL, NEXTRA, NULL,
+            STATEFILE, SPIN,
+            &nregions, &neval, &fail, integral, error, prob);
+    }
 
-#if 0
-  printf("\n-------------------- Cuhre test --------------------\n");
+    if (CuhreIntegrator == integrator) {
+        printf("\n-------------------- Cuhre test --------------------\n");
 
-  Cuhre(NDIM, NCOMP, Integrand, USERDATA, NVEC,
-    EPSREL, EPSABS, VERBOSE | LAST,
-    MINEVAL, MAXEVAL, KEY,
-    STATEFILE, SPIN,
-    &nregions, &neval, &fail, integral, error, prob);
-#endif
-
+        Cuhre(NDIM, NCOMP, Integrand, &params, NVEC,
+            EPSREL, EPSABS, VERBOSE | LAST,
+            MINEVAL, MAXEVAL, KEY,
+            STATEFILE, SPIN,
+            &nregions, &neval, &fail, integral, error, prob);
+    }
 }
 #endif // #ifdef INCLUDE_CUBA_H

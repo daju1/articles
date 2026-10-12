@@ -1,5 +1,6 @@
 #define INCLUDE_CUBA_H
 #include "calc_RO.h"
+#include "integrator_enum.h"
 
 int Integrand(const int *ndim, const cubareal xx[],
   const int *ncomp, cubareal ff[], void *userdata);
@@ -29,6 +30,8 @@ int integrate(
     int pde_grid_n,
     double *pde_T_grid,
 
+    Integrator integrator,
+
     cubareal* integral, cubareal* error, cubareal* prob);
 
 int main() {
@@ -54,13 +57,15 @@ int main() {
   int use_fermi_general_factor   = 0;
   int use_fast_integrand         = 1;
 
-  int use_fermi_general_factor_O = 0;
-  int use_fermi_film_factor      = 1;
+  int use_fermi_general_factor_O = 1;
+  int use_fermi_film_factor      = 0;
   int use_fermi_film_instant     = 0;
   int fermi_film_K               = 0;
   int use_fermi_pde_factor       = 0;
   int pde_grid_n                 = 0;
   double *pde_T_grid             = NULL;
+
+  Integrator integrator = VegasIntegrator;
 
   integrate(
     R0,    /* Радиус сферы */
@@ -82,6 +87,8 @@ int main() {
     use_fermi_pde_factor,
     pde_grid_n,
     pde_T_grid,
+
+    integrator,
 
     integral, error, prob);
 

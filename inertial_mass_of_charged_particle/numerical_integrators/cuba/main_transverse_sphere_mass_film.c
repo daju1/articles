@@ -57,7 +57,7 @@ int main() {
   int use_fermi_general_factor   = 0;
   int use_fast_integrand         = 1;
 
-  int use_fermi_general_factor_O = 1;
+  int use_fermi_general_factor_O = 0;
   int use_fermi_film_factor      = 0;
   int use_fermi_film_instant     = 0;
   int fermi_film_K               = 0;

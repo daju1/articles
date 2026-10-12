@@ -351,6 +351,10 @@ static void compute_electric_field(
     double x_q = params->rho0 + rq * sin(theta_q) * cos(psi_q);
     double y_q = rq * sin(theta_q) * sin(psi_q);
     double z_q = rq * cos(theta_q);
+
+    double x_O = params->rho0;
+    double y_O = 0.0;
+    double z_O = 0.0;
 #endif
 
 #ifdef Z_RHO
@@ -385,6 +389,10 @@ static void compute_electric_field(
     double x_q = params->rho0 + rq * sin(theta_q) * cos(psi_q);
     double y_q = rq * cos(theta_q);
     double z_q = rq * sin(theta_q) * sin(psi_q);
+
+    double x_O = params->rho0;
+    double y_O = 0.0;
+    double z_O = 0.0;
 #endif
 
     /*

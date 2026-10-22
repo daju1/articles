@@ -1,5 +1,5 @@
 /*
-    calc_transverse_sphere_mass.c
+    calc_transverse_sphere_mass_film.c
 */
 
 #include <stdio.h>
@@ -47,6 +47,7 @@ typedef struct {
     int use_fermi_pde_factor;
     int pde_grid_n;
     double *pde_T_grid;
+    int use_rot_to_lab;   /* 1: повернуть E из базиса источника в лаб. оси x,y */
 } ProblemParams;
 
 /* Функция для вычисления поправки Ферми по отношению к опорной точке О*/
@@ -98,13 +99,11 @@ static double fermi_correction_general(
     double v_z,
     double c
 ) {
-    /* В 4-пространстве необходимо преобразовать цилиндрические координаты в декартовы */
-    double R_x = R_rho * cos(R_phi);
-    double R_y = R_rho * sin(R_phi);
-    double a_x = a_rho * cos(R_phi) - a_phi * sin(R_phi);
-    double a_y = a_rho * sin(R_phi) + a_phi * cos(R_phi);
-    double v_x = v_rho * cos(R_phi) - v_phi * sin(R_phi);
-    double v_y = v_rho * sin(R_phi) + v_phi * cos(R_phi);
+    /* R, a, v заданы в одном локальном базисе (rho^, phi^, z^); 4-скалярное
+       произведение инвариантно, поворот в декартовы не нужен */
+    double R_x = R_rho, R_y = R_phi;
+    double a_x = a_rho, a_y = a_phi;
+    double v_x = v_rho, v_y = v_phi;
 
     /* Вычисляем скорость */
     double v = sqrt(v_x*v_x + v_y*v_y + v_z*v_z);
@@ -144,12 +143,12 @@ static double fermi_correction_general_O(
     double v_z,
     double c
 ) {
-    double R_x = R_rho_O * cos(R_phi_O),
-           R_y = R_rho_O * sin(R_phi_O);
-    double a_x = a_rho * cos(R_phi_O) - a_phi * sin(R_phi_O),
-           a_y = a_rho * sin(R_phi_O) + a_phi * cos(R_phi_O);
-    double v_x = v_rho * cos(R_phi_O) - v_phi * sin(R_phi_O),
-           v_y = v_rho * sin(R_phi_O) + v_phi * cos(R_phi_O);
+    /* R, a, v заданы в одном локальном базисе (rho^, phi^, z^); 4-скалярное
+       произведение инвариантно, поворот в декартовы не нужен */
+    double R_x = R_rho_O, R_y = R_phi_O;
+    double a_x = a_rho, a_y = a_phi;
+    double v_x = v_rho, v_y = v_phi;
+
     double v=sqrt(v_x*v_x+v_y*v_y+v_z*v_z);
 
 
@@ -177,13 +176,51 @@ static double fermi_correction_general_O(
     return (/*1.0*/ - 1.0 * R_dot_a_O / (c * c));
 }
 
+/*
+ Поле считается в точке наблюдения, а R, v и a в формулах Лиенара–Вихерта
+ берутся в точке источника.
+ это значит, что E_ρ и E_φ выходят в базисе (ρ̂_q, φ̂_q),
+ и у каждой пары (a, q) он свой.
+ Это ошибка системная, а не накапливающаяся: интегрируются проекции на разные оси.
+
+ Скалярные величины (фактор Ферми, R, R*) от выбора базиса не зависят.
+ Поворот нужен только для векторных выходов E1, E2 и E_total.
+*/
+
+static inline void rot_to_lab(double phi, double *e_rho, double *e_phi)
+{
+
+    /*
+     Как исправить
+     Я бы поворачивал не к базису точки наблюдения и не к ρ̂_O,
+     а сразу в лабораторные декартовы оси. Причины:
+
+     При t = 0 центр O лежит в (ρ₀, 0), поэтому ρ̂_O = x̂, а φ̂_O = ŷ.
+     Базис O и декартов базис совпадают.
+     Базис наблюдателя ρ̂_a тоже свой для каждой точки a,
+     так что переход к нему проблему не решает.
+
+     При use_delay = 1 нужен именно лабораторный базис в t = 0,
+     а не базис O в запаздывающий момент t′_O.
+     Для этого поворачивайте на φ_q, лабораторный азимут источника,
+     в котором уже записаны R_ρ и R_φ. Не используйте φ_q − φ_O.
+    */
+    double cs = cos(phi), sn = sin(phi);
+    double ex = *e_rho * cs - *e_phi * sn;
+    double ey = *e_rho * sn + *e_phi * cs;
+    *e_rho = ex;   /* теперь: проекция на x (= rho^_O при t=0) */
+    *e_phi = ey;   /* проекция на y (= phi^_O при t=0) */
+}
+
 static void computing_electric_field(
     double t_prime,     /* запаздывающее время */
     double R,
     double R_rho_O, double R_phi_O, double R_z_O,
+    double v_phi_O, /* азимутальная скорость в точке O */
+    double a_rho_O, /* радиальное ускорение в точке O */
     double R_rho, double R_phi, double R_z,
-    double v_phi,
-    double a_rho,
+    double v_phi, /* азимутальная скорость в точке источника q */
+    double a_rho, /* радиальное ускорение в точке источника q */
     double c,
     double *E1_rho, double *E1_phi, double *E1_z,
     double *E2_rho, double *E2_phi, double *E2_z,
@@ -226,9 +263,9 @@ static void computing_electric_field(
         fermi_factor = fermi_correction_general_O(
            t,
            t_O_prime,
-           R_rho_O,R_phi_O,R_z_O,
-           a_rho,a_phi,a_z,
-           v_rho,v_phi,v_z,
+           R_rho_O, R_phi_O, R_z_O,
+           a_rho_O, a_phi,   a_z,
+           v_rho,   v_phi_O, v_z,
            c);
     }
     else if (use_fermi_general_factor)
@@ -254,7 +291,7 @@ static void computing_electric_field(
     {
         fermi_factor = fermi_correction_O(
             R_rho_O, R_phi_O, R_z_O,
-            a_rho, a_phi, a_z,
+            a_rho_O, a_phi, a_z,
             c);
     }
     double v2_c2 = (Sq(v_rho) + Sq(v_phi) + Sq(v_z) ) / Sq(c);
@@ -418,16 +455,17 @@ static void compute_electric_field(
     double phi_q = atan2(y_q, x_q);
     if (phi_q < 0) phi_q += 2.0 * M_PI;
 
-    // double rho_O = sqrt(pow(x_O, 2) + pow(y_O, 2));
-    // double phi_O = atan2(y_O, x_O);
-    // if (phi_O < 0) phi_O += 2.0 * M_PI;
-
-    double rho_O = x_O;
-    double phi_O = 0.0;
+    double rho_O = sqrt(pow(x_O, 2) + pow(y_O, 2));
+    double phi_O = atan2(y_O, x_O);
+    if (phi_O < 0) phi_O += 2.0 * M_PI;
 
     /* Скорость и ускорение источника */
     double v_phi = rho_q * params->omega;
     double a_rho = -rho_q * pow(params->omega, 2);
+
+    /* Скорость и ускорение точки O */
+    double v_phi_O = rho_O * params->omega;
+    double a_rho_O = -rho_O * pow(params->omega, 2);
 
     if (params->use_lorentz_factor || params->use_lorentz_general_factor)
     {
@@ -460,6 +498,7 @@ static void compute_electric_field(
     double R_z_O = z_a - z_O;
 
     /* Вектор от источника к наблюдателю */
+    /* R_rho, R_phi и R_z заданы в базисе точки источника */
     double R_rho = rho_a * cos(phi_a - phi_q) - rho_q;
     double R_phi = rho_a * sin(phi_a - phi_q);
     double R_z = z_a - z_q;
@@ -474,6 +513,8 @@ static void compute_electric_field(
         t_prime,     /* запаздывающее время */
         R,
         R_rho_O, R_phi_O, R_z_O,
+        v_phi_O,
+        a_rho_O,
         R_rho, R_phi, R_z,
         v_phi,
         a_rho,
@@ -490,6 +531,11 @@ static void compute_electric_field(
         use_ext,
         ext_val
     );
+    if (params->use_rot_to_lab) {
+        rot_to_lab(phi_q, E1_rho, E1_phi);
+        rot_to_lab(phi_q, E2_rho, E2_phi);
+        rot_to_lab(phi_q, E_total_rho, E_total_phi);
+    }
 }
 
 /* Функция для вычисления координат источника в запаздывающий момент времени */
@@ -540,8 +586,8 @@ static void get_source_position(
     double rho_q = sqrt(pow(x_q0, 2) + pow(y_q0, 2));
     if (use_lorentz_factor || use_lorentz_general_factor)
     {
-    	/* Скорость источника */
-    	double v_phi = rho_q * omega;
+        /* Скорость источника */
+        double v_phi = rho_q * omega;
         /* Учет Лоренц-сокращения в направлении движения */
         double gamma = lorentz_factor(v_phi, c);
         /* Учет Лоренц-сокращения: в системе отсчета наблюдателя
@@ -566,8 +612,8 @@ static void get_source_position(
     /* Поворот системы координат сферы на угол phi_prime */
     phi_q += phi_prime;
 
-    *x_q = rho_q * sin(phi_q);
-    *y_q = rho_q * cos(phi_q);
+    *x_q = rho_q * cos(phi_q);
+    *y_q = rho_q * sin(phi_q);
     *z_q = z_q0;
 }
 
@@ -638,7 +684,7 @@ static double compute_dR_dt_prime_analytical(
     double R_y = y_a - y_q;
     double R_z = z_a - z_q;
     double R = sqrt(R_x*R_x + R_y*R_y + R_z*R_z);
-
+#if 0
     /* Скорость источника в запаздывающий момент времени */
     double phi_prime = omega * t_prime;
     double v_x = rho_q * omega * cos(phi_prime);
@@ -652,7 +698,12 @@ static double compute_dR_dt_prime_analytical(
     /* Вычисляем проекцию скорости на направление к наблюдателю */
     double cos_theta = (R_x * v_x + R_y * v_y + R_z * v_z) / (R * v);
     double v_radial = v_r * cos_theta;
-
+#else
+    double phi_cur = atan2(y_q, x_q);
+    double v_x = -rho_q * omega * sin(phi_cur);
+    double v_y =  rho_q * omega * cos(phi_cur);
+    double v_radial = (R_x * v_x + R_y * v_y) / R;   /* R^ · v */
+#endif
     /* Аналитическое выражение для dR/dt' */
     return -v_radial;
 }
@@ -763,7 +814,8 @@ static void film_average_accel(
         double a_rho_pt=-rho_pt*pow(params->omega,2);
         double ax_pt=a_rho_pt*cos(phi_pt), ay_pt=a_rho_pt*sin(phi_pt);
         double d=sqrt(pow(xa-xq,2)+pow(ya-yq,2)+pow(za-zq,2)); if(d<1e-6) d=1e-6;
-        double w=1.0/d;
+        //double w=1.0/d;
+        double w=1.0;
         wsum+=w; axsum+=w*ax_pt; aysum+=w*ay_pt;
     }
     if (wsum>1e-30) { *a_rho_film=axsum/wsum; *a_phi_film=aysum/wsum; }
@@ -791,7 +843,9 @@ static void precompute_pde_grid(ProblemParams *params) {
             if (!inside[idx]) continue;
             if (i==cx&&j==cy&&k==cz) continue;
             double x=-R0+i*h, y=-R0+j*h;
-            double Ax=omega*(-y)/(c*c), Ay=omega*(rho0+x)/(c*c);
+
+            /* BC: grad T = a/c^2, a = -omega^2 (x_lab, y) */
+            double Ax=-omega*omega*(rho0+x)/(c*c), Ay=-omega*omega*y/(c*c);
             double sum=0.0;
             int di[6]={1,-1,0,0,0,0}, dj[6]={0,0,1,-1,0,0}, dk[6]={0,0,0,0,1,-1};
             double Acomp[6]={Ax,Ax,Ay,Ay,0.0,0.0};
@@ -806,7 +860,8 @@ static void precompute_pde_grid(ProblemParams *params) {
                 }
                 sum+=nv;
             }
-            double Tnew=sum/6.0;
+            double divA = -2.0*omega*omega/(c*c);    /* совместимость Неймана */
+            double Tnew=(sum - h*h*divA)/6.0;
             T[idx]=T[idx]+sor*(Tnew-T[idx]);
         }
     }
@@ -899,11 +954,20 @@ static void compute_electric_field_with_delay(
     double R_rho = rho_a * cos(phi_a - phi_q) - rho_q;
     double R_phi = rho_a * sin(phi_a - phi_q);
     double R_z = z_a - z_q;
+
+    // double R_y = y_a - y_q;
+    // double R_x = x_a - x_q;
+    // double R_decart = sqrt(pow(R_x, 2) + pow(R_y, 2) + pow(R_z, 2));
+
     double R = sqrt(pow(R_rho, 2) + pow(R_phi, 2) + pow(R_z, 2));
 
     /* Скорость и ускорение источника */
-    double v_phi = rho_q * params->omega;
-    double a_rho = -rho_q * pow(params->omega, 2);
+    double v_phi_q = rho_q * params->omega;
+    double a_rho_q = -rho_q * pow(params->omega, 2);
+
+    /* Скорость и ускорение точки O */
+    double v_phi_O = rho_O * params->omega;
+    double a_rho_O = -rho_O * pow(params->omega, 2);
 
     int use_ext = 0; double ext_val = 0.0;
     if (params->use_fermi_film_factor) {
@@ -911,7 +975,16 @@ static void compute_electric_field_with_delay(
         film_average_accel(x_a, y_a, z_a, 0.0, params,
             params->fermi_film_K>0?params->fermi_film_K:20,
             params->use_fermi_film_instant, &a_rho_f, &a_phi_f);
+#if 0
         ext_val = (R_rho_O*a_rho_f + R_phi_O*a_phi_f) / (params->c*params->c);
+#else
+        /* a_rho_f, a_phi_f здесь на самом деле лабораторные ax, ay */
+        // ext_val = ((x_a - x_O) * a_rho_f + (y_a - y_O) * a_phi_f) / (params->c*params->c);
+
+        double xO_f = params->use_fermi_film_instant ? params->rho0 : x_O;
+        double yO_f = params->use_fermi_film_instant ? 0.0         : y_O;
+        ext_val = ((x_a - xO_f) * a_rho_f + (y_a - yO_f) * a_phi_f) / (params->c*params->c);
+#endif
         use_ext = 1;
     } else if (params->use_fermi_pde_factor && params->pde_T_grid) {
         ext_val = sample_pde_T(params, x_a - params->rho0, y_a, z_a);
@@ -922,9 +995,11 @@ static void compute_electric_field_with_delay(
         t_prime,     /* запаздывающее время */
         R,
         R_rho_O, R_phi_O, R_z_O,
+        v_phi_O,
+        a_rho_O,
         R_rho, R_phi, R_z,
-        v_phi,
-        a_rho,
+        v_phi_q,
+        a_rho_q,
         params->c,
         E1_rho, E1_phi, E1_z,
         E2_rho, E2_phi, E2_z,
@@ -937,6 +1012,12 @@ static void compute_electric_field_with_delay(
         params->use_fermi_general_factor_O,
         use_ext,
         ext_val);
+
+    if (params->use_rot_to_lab) {
+        rot_to_lab(phi_q, E1_rho, E1_phi);
+        rot_to_lab(phi_q, E2_rho, E2_phi);
+        rot_to_lab(phi_q, E_total_rho, E_total_phi);
+    }
 }
 
 // the charge distribution
@@ -1102,9 +1183,9 @@ int Integrand(const int *ndim, const cubareal xx[],
 
     /*
         Твою энегрию электрического поля для сравнения с моим результатом самодействия я умножил на 2
-        double U = 3.0 / (5.0 * params.R0);     // Энергия электрического поля 
-        double m_perp_B = 2 * U / (params.c * params.c);  // Вариация типа В (теоретическое значение) 
-        Потому что никто за сто с лишним лет на это не обращает внимание, но даже у Ферми есть ошибка в строке 
+        double U = 3.0 / (5.0 * params.R0);     // Энергия электрического поля
+        double m_perp_B = 2 * U / (params.c * params.c);  // Вариация типа В (теоретическое значение)
+        Потому что никто за сто с лишним лет на это не обращает внимание, но даже у Ферми есть ошибка в строке
         ```
             или, заменив $O$ на $Р'$ (что ничего не изменяет) и взяв полусумму двух полученных таким образом значений,
 
@@ -1179,12 +1260,17 @@ int Integrand(const int *ndim, const cubareal xx[],
 #define EPSREL 1e-3
 #define EPSABS 1e-12
 #endif
-#define VERBOSE 2
+#define VERBOSE 0
 #define LAST 4
-#define SEED 0
-#define SEED 38304
+
+// #ifndef SEED
+// #define SEED 38304
+// #endif
+
 #define MINEVAL 0
-#define MAXEVAL 500000
+// #ifndef MAXEVAL
+// #define MAXEVAL 500000
+// #endif
 
 #define NSTART 1000
 #define NINCREASE 500
@@ -1230,12 +1316,16 @@ int integrate(
     int use_fermi_pde_factor,
     int pde_grid_n,
     double *pde_T_grid,
+    int use_rot_to_lab,
+
+    int seed,
+    int maxeval,
 
     Integrator integrator,
 
     cubareal* integral, cubareal* error, cubareal* prob)
 {
-    int comp, nregions, neval, fail;
+    int comp, nregions, neval = 0, fail = 0;
 
     /* Параметры задачи */
     ProblemParams params;
@@ -1260,6 +1350,13 @@ int integrate(
     params.use_fermi_pde_factor       = use_fermi_pde_factor;
     params.pde_grid_n                 = pde_grid_n;
     params.pde_T_grid                 = pde_T_grid;
+    params.use_rot_to_lab             = use_rot_to_lab;
+
+    if (params.use_fermi_pde_factor)
+        precompute_pde_grid(&params);   /* заполняет params.pde_T_grid */
+
+    printf("CUBA seed=%d maxeval=%d\n", seed, maxeval);
+    fflush(stdout);
 
     double v = params.rho0 * params.omega;
     double v_c =  v / params.c;  /* отношение скорости заряда к скорости света*/
@@ -1268,8 +1365,8 @@ int integrate(
         printf("-------------------- Vegas test --------------------\n");
 
         Vegas(NDIM, NCOMP, Integrand, &params, NVEC,
-            EPSREL, EPSABS, VERBOSE, SEED,
-            MINEVAL, MAXEVAL, NSTART, NINCREASE, NBATCH,
+            EPSREL, EPSABS, VERBOSE, seed,
+            MINEVAL, maxeval, NSTART, NINCREASE, NBATCH,
             GRIDNO, STATEFILE, SPIN,
             &neval, &fail, integral, error, prob);
     }
@@ -1278,8 +1375,8 @@ int integrate(
     printf("\n-------------------- Suave test --------------------\n");
 
         Suave(NDIM, NCOMP, Integrand, &params, NVEC,
-            EPSREL, EPSABS, VERBOSE | LAST, SEED,
-            MINEVAL, MAXEVAL, NNEW, NMIN, FLATNESS,
+            EPSREL, EPSABS, VERBOSE | LAST, seed,
+            MINEVAL, maxeval, NNEW, NMIN, FLATNESS,
             STATEFILE, SPIN,
             &nregions, &neval, &fail, integral, error, prob);
     }
@@ -1288,8 +1385,8 @@ int integrate(
         printf("\n------------------- Divonne test -------------------\n");
 
         Divonne(NDIM, NCOMP, Integrand, &params, NVEC,
-            EPSREL, EPSABS, VERBOSE, SEED,
-            MINEVAL, MAXEVAL, KEY1, KEY2, KEY3, MAXPASS,
+            EPSREL, EPSABS, VERBOSE, seed,
+            MINEVAL, maxeval, KEY1, KEY2, KEY3, MAXPASS,
             BORDER, MAXCHISQ, MINDEVIATION,
             NGIVEN, LDXGIVEN, NULL, NEXTRA, NULL,
             STATEFILE, SPIN,
@@ -1301,9 +1398,13 @@ int integrate(
 
         Cuhre(NDIM, NCOMP, Integrand, &params, NVEC,
             EPSREL, EPSABS, VERBOSE | LAST,
-            MINEVAL, MAXEVAL, KEY,
+            MINEVAL, maxeval, KEY,
             STATEFILE, SPIN,
             &nregions, &neval, &fail, integral, error, prob);
     }
+
+    free_pde_grid(&params);
+
+    return fail;
 }
 #endif // #ifdef INCLUDE_CUBA_H

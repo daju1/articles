@@ -21,7 +21,7 @@ static inline cubareal rho_q (cubareal r0, cubareal q)
 }
 
 // интегрирование по координатам заряда источника потенциала
-// E1 
+// E1
 // Градиентное электрическое поле ($z$ компонента)
 /*\[{E}_{1}=\\
 \int\limits_{{{r}_{q}}}\int\limits_{{{\varphi}_{q}}}\int\limits_{{{\theta}_{q}}}\\

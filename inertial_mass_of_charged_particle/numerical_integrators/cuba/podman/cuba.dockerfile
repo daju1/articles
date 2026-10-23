@@ -28,6 +28,15 @@ RUN apt-get update && apt-get -y install \
     ca-certificates \
     tar
 
+# Update package lists and install Python 3 + Pip
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+# (Optional) Verify installation by checking the Python version
+RUN python3 --version
+
 # Interpret sh as bash (same as the docker/ environment next to this folder)
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 

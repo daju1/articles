@@ -1,15 +1,30 @@
-// ===================== dislocation_rings.c =====================
+// ===================== dislocation_rings_v3.c =====================
+// ---------------------------------------------------------------------
+// v3: модель частицы как ДИСЛОКАЦИОННОГО КОЛЬЦА (или диполя из двух колец)
+// в калибровочной теории дислокаций Лазара-Брагинского, изоморфной
+// электродинамике. Заряд кольца здесь СКАЛЯРНЫЙ (total_charge * charge_sign);
+// векторный Бюргерс появляется только в v4.
+//
+// ПОЛЕ раскладывается на два канала (как у Лиенара-Вихерта):
+//   central -- кулоно-аналог (радиальная часть, R*-формула с фактором Ферми);
+//   vortex  -- аналог магнитного поля B (= n x central), даёт силу Пича-Кёлера.
+// Поле ВСЕГДА запаздывающее (досветовое). Поправка Ферми -- три режима
+// (PLAIN / FILM_RETARDED / FILM_INSTANT), см. dislocation_rings.h.
+//
+// Единицы: c -- скорость света (обычно c=1). t -- лабораторное время.
+// ---------------------------------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include "dislocation_rings.h"
 
-static void vec_add(const double a[3], const double b[3], double out[3]) { out[0]=a[0]+b[0]; out[1]=a[1]+b[1]; out[2]=a[2]+b[2]; }
-static void vec_scale(const double a[3], double s, double out[3]) { out[0]=a[0]*s; out[1]=a[1]*s; out[2]=a[2]*s; }
-static double vec_dot(const double a[3], const double b[3]) { return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]; }
-static void vec_sub(const double a[3], const double b[3], double out[3]) { out[0]=a[0]-b[0]; out[1]=a[1]-b[1]; out[2]=a[2]-b[2]; }
-static double vec_norm(const double a[3]) { return sqrt(vec_dot(a,a)); }
+/* ---- Элементарная векторная алгебра в R^3 (все векторы -- double[3]) ---- */
+static void vec_add(const double a[3], const double b[3], double out[3]) { out[0]=a[0]+b[0]; out[1]=a[1]+b[1]; out[2]=a[2]+b[2]; }   /* out = a + b */
+static void vec_scale(const double a[3], double s, double out[3]) { out[0]=a[0]*s; out[1]=a[1]*s; out[2]=a[2]*s; }   /* out = s*a (масштабирование) */
+static double vec_dot(const double a[3], const double b[3]) { return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]; }   /* скалярное произведение a.b */
+static void vec_sub(const double a[3], const double b[3], double out[3]) { out[0]=a[0]-b[0]; out[1]=a[1]-b[1]; out[2]=a[2]-b[2]; }   /* out = a - b */
+static double vec_norm(const double a[3]) { return sqrt(vec_dot(a,a)); }   /* длина |a| */
 static void vec_cross(const double a[3], const double b[3], double out[3]) {
     out[0]=a[1]*b[2]-a[2]*b[1]; out[1]=a[2]*b[0]-a[0]*b[2]; out[2]=a[0]*b[1]-a[1]*b[0];
 }
@@ -76,6 +91,9 @@ static DislField compute_field_from_element(const double field_pos[3], const Rin
     if (Rd < 1e-9) return out;
     double n[3]; vec_scale(Rvec, 1.0/Rd, n);
     double vdotn = vec_dot(vel, n);
+    /* R* = R (1 - v.n/c) -- "запаздывающий" радиус Лиенара-Вихерта.
+       Именно 1/R*^3 (а не 1/R^3) обеспечивает правильную релятивистскую
+       фокусировку поля движущегося источника. Защита от R*->0. */
     double Rstar = Rd*(1.0 - vdotn/c);
     if (Rstar < 1e-9) Rstar = 1e-9;
 
@@ -83,18 +101,28 @@ static DislField compute_field_from_element(const double field_pos[3], const Rin
     if (mode!=FERMI_NONE && a_eff_extra!=NULL) {
         a_eff[0]+=a_eff_extra[0]; a_eff[1]+=a_eff_extra[1]; a_eff[2]+=a_eff_extra[2];
     }
+    /* Фактор Ферми (1 + a.R/c^2): поправка к полю от искривления мировой
+       трубки ускоряющегося источника (вариация действия "типа B").
+       a_eff = собственное ускорение источника + (опц.) наклон плёнки от
+       других трубок (a_eff_extra) в режимах FILM_*. При FERMI_NONE = 1. */
     double fermi_factor = 1.0;
     if (mode!=FERMI_NONE) fermi_factor = 1.0 + vec_dot(a_eff, Rvec)/(c*c);
 
-    double v2c2 = vec_dot(vel,vel)/(c*c);
-    double Rn_a = vec_dot(Rvec, acc)/(c*c);
-    double common = 1.0/(Rstar*Rstar*Rstar);
+    double v2c2 = vec_dot(vel,vel)/(c*c);   /* (v/c)^2 -- релятивистское сжатие */
+    double Rn_a = vec_dot(Rvec, acc)/(c*c);  /* (R.a)/c^2 -- ускорительный вклад */
+    double common = 1.0/(Rstar*Rstar*Rstar); /* общий множитель 1/R*^3 */
+    /* bracket = фактор Ферми * (1 + R.a/c^2 - v^2/c^2):
+       скобка "скоростной" (велосити) части поля Лиенара-Вихерта. */
     double bracket = fermi_factor*(1.0 + Rn_a - v2c2);
+    /* term_central: "скоростная" часть ~ (R - (R/c) v) * bracket */
     double term_central[3];
     for (int i=0;i<3;i++) term_central[i] = bracket*Rvec[i] - bracket*Rd*vel[i]/c;
+    /* term_acc: "ускорительная" (радиационная) часть ~ a * R* R / c^2 */
     double term_acc[3];
     for (int i=0;i<3;i++) term_acc[i] = fermi_factor*acc[i]*Rstar*Rd/(c*c);
+    /* central (кулоно-аналог) = (1/R*^3)(скоростная - ускорительная) */
     for (int i=0;i<3;i++) out.central[i] = common*(term_central[i] - term_acc[i]);
+    /* vortex (аналог B) = n x central -- даёт силу Пича-Кёлера (q v x B)/c */
     double B_like[3]; vec_cross(n, out.central, B_like);
     vec_scale(B_like, 1.0, out.vortex);
     return out;
@@ -138,6 +166,7 @@ void compute_ring_dipole_force(const RingConfig *field_rings, int n_field_rings,
     out_force[0]=out_force[1]=out_force[2]=0.0;
     for (int fr=0; fr<n_field_rings; fr++) {
         const RingConfig *FR = &field_rings[fr];
+        /* заряд одного элемента поля = знак * (полный заряд / число элементов) */
         double q_field = FR->charge_sign * FR->total_charge / FR->n_elem;
         for (int fk=0; fk<FR->n_elem; fk++) {
             double fpos[3], fvel[3], facc[3];
@@ -158,7 +187,9 @@ void compute_ring_dipole_force(const RingConfig *field_rings, int n_field_rings,
                            версия, независимая от конуса прошлого */
                         film_effective_accel(fpos, t, source_rings, n_source_rings, sr, sk, c, a_extra);
                     }
+                    /* поле k-го элемента источника в точке fk-го элемента поля */
                     DislField fld = compute_field_from_element(fpos, SR, sk, t, c, a_extra, mode);
+                    /* сила = кулоновская (q_f q_s * central) + магнитная (q_f * v x B) */
                     double vxB[3]; vec_cross(fvel, fld.vortex, vxB);
                     for (int i=0;i<3;i++) out_force[i] += q_field*q_src*fld.central[i] + q_field*vxB[i];
                 }

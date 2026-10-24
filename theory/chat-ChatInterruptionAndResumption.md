@@ -1480,7 +1480,7 @@ $$\langle I(R,\Delta\phi)\rangle=\frac{\pi p^2}{R}\cos\Delta\phi,\qquad p=2q_ma$
 ### ASSISTANT
 ## LaTeX-файл с расчётами — готов
 
-[Drozdov_three_variants_calculation.tex](https://chat.dishtv.technology/download?key=agentcore-outputs%2Fc1d95c73%2FDrozdov_three_variants_calculation.tex)
+[Drozdov_three_variants_calculation.tex](Drozdov_three_variants_calculation.tex)
 
 Внутри — все три варианта из последнего расчёта, оформленные как научный документ:
 - Вариант 1 (линейная магнитостатика Пича–Кёлера) — точное сокращение монополя и диполя, квадрупольный хвост $R^{-3}$;

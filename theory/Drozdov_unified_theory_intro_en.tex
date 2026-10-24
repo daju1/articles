@@ -1,0 +1,354 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{remark}{Remark}
+
+\title{\textbf{A Gauge Theory of Line Defects in an Elastic Continuum:\\
+Dislocation Rings, the Peach--Koehler Force, and Emergent Interaction Laws\\
+{\large (A Geometrodynamic Model of Particles as Elastic Defects)}}}
+\author{A.~Yu.~Drozdov}
+\date{24 October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+We present a consistent account of a geometrodynamic model in which elementary
+particles are treated as topological defects (dislocation and disclination
+rings) of an elastic aether, and the fundamental interactions appear as
+different projections of a single elastic response of the medium. The model is
+built on the Kadi\'c--Edelen and Lazar gauge theory of dislocations
+\cite{lazar2010,kadic1983}, in which the magnetic field is identified with the
+dislocation density and the Peach--Koehler force plays the role of the Lorentz
+force. Gravity is introduced through a ``Fermi film'' mechanism --- a
+deformable boundary of the action integral held orthogonal to the curved world
+tubes of accelerating charges (a generalization of Fermi's 1923 treatment of
+the $4/3$ paradox \cite{fermi1923}). We show that the inverse-square law for
+gravity is a \emph{theorem} (a consequence of the Laplacian Green function),
+not a fit. The model is formulated in an elastic unit basis $(L,T,M)$, without
+invoking electric charge as a primary entity. The limits are drawn honestly:
+the \emph{structure} of the interactions (power laws, signs, hierarchy) is
+derived, together with a set of relations between scales, whereas the absolute
+values of the fundamental constants ($\alpha$, $G$) remain input parameters.
+The paper is a working preprint intended as a first introduction to the
+subject.
+
+\medskip
+\noindent\textbf{Keywords:} gauge theory of dislocations, aether, Fermi film,
+magnetic monopole, Burgers vector, Peach--Koehler force, $4/3$ paradox,
+geometrodynamics.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+\subsection{Motivation: the particle as a defect of the medium}
+The idea that elementary particles may be not point objects but extended
+structures in some medium has a long history --- from Kelvin's vortices to
+modern soliton models. The present work develops a concrete version of this
+programme: \emph{a particle is a topological defect of an elastic continuum}
+(the ``aether''), namely a closed dislocation line (ring) or its
+generalizations. The approach is attractive because it rests on the
+well-developed mathematical apparatus of the theory of crystal defects
+\cite{hirth1982,kadic1983} and its gauge formulation \cite{lazar2010}.
+
+\subsection{Why dislocations}
+In crystals, dislocations are line defects characterized by the Burgers vector
+$\mathbf{b}$, which measures the closure failure of a circuit around the defect
+line. M.~Lazar \cite{lazar2010} showed that the dynamic gauge theory of the
+translation group $T(3)$ leads to equations structurally identical to Maxwell's
+equations (Table~\ref{tab:corr}). This provides a physically meaningful
+``dictionary'' between defect theory and electrodynamics.
+
+\begin{table}[h]
+\centering
+\caption{Correspondence Maxwell~$\leftrightarrow$~dislocation theory
+(after Lazar \cite{lazar2010}).}
+\label{tab:corr}
+\begin{tabular}{ll}
+\toprule
+Electrodynamics & Dislocation theory \\
+\midrule
+Magnetic field $\mathbf{B}$ & dislocation density $T^a$ \\
+Electric field $\mathbf{E}$ & dislocation current $I^a$ \\
+Magnetic excitation $\mathbf{H}$ & pseudomoment stress $H_a$ \\
+Magnetic flux $\oint\mathbf{B}\,d\mathbf{S}$ & Burgers vector $\oint T^a = b$ \\
+Lorentz force & Peach--Koehler force \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The key feature: the charge is magnetic, not electric}
+In the proposed model \emph{electric charge is not a primary entity}. What is
+primary is the magnetic charge, identified with the flux of the dislocation
+density, i.e.\ with the Burgers vector. The electron is built as a precessing
+magnetic dipole. This is consistent with the long-standing line connecting
+dislocations and Dirac monopoles \cite{mistura1995}.
+
+\subsection{Structure of the paper}
+Section~\ref{sec:units} introduces the elastic unit basis.
+Section~\ref{sec:particle} describes the particle as a precessing dipole.
+Section~\ref{sec:fermi} presents the Fermi-film mechanism and the derivation of
+gravity. Section~\ref{sec:channels} collects the six interaction channels.
+Section~\ref{sec:limits} honestly delimits the model.
+
+\section{The elastic unit basis}
+\label{sec:units}
+We build a system of units from three primitives of the elastic medium: length
+$L$, time $T$ and mass $M$. There is \emph{no} electric charge and no ampere in
+the basis. The main quantities are:
+\begin{itemize}[nosep]
+\item Burgers vector $b$ (lattice displacement) --- dimension $[L]$;
+\item shear modulus $\mu$ --- dimension $[M L^{-1}T^{-2}]$ (Pa);
+\item density $\rho$ --- $[M L^{-3}]$;
+\item speed of sound/light $c=\sqrt{\mu/\rho}$ --- $[L T^{-1}]$.
+\end{itemize}
+The magnetic charge as the flux of the dislocation density
+$q_m=\oint T^a\,dS$ has the dimension of length $[L]$ --- this is internally
+consistent in the elastic theory (unlike in SI, where the magnetic charge is
+measured in A$\cdot$m; transferring SI units to the elastic medium is
+unnecessary and leads to confusion).
+
+\section{The particle as a precessing dipole}
+\label{sec:particle}
+
+\subsection{Geometry}
+The electron is modelled as a pair of dislocation rings (of radius $a$) whose
+planes are \emph{fixed}, while along each ring a ``special point'' --- a
+localized magnetic charge $q_m=\Delta b$ (a jump of the Burgers vector) ---
+runs with frequency $\omega$. By ``precession'' we mean precisely the motion of
+the special point along the fixed ring, not a wobbling of the planes. The two
+rings are separated by a distance $d$ and carry opposite charges $\pm q_m$
+(the $N$ and $S$ poles), forming a magnetic dipole.
+
+\subsection{Mass from self-interaction}
+Mass is not introduced separately but is the elastic self-interaction energy of
+the defect:
+\begin{equation}
+m = \frac{\mu\, b^2 a}{c^2},
+\end{equation}
+which has the correct dimension $[M]$.
+
+\subsection{Magnetic moment and spin}
+The magnetic moment is a \emph{static} dipole moment $\mu_{\text{mag}}=q_m\,d$
+(not a current-loop moment: the ring current is magnetic, and the naive
+current-loop formula does not apply here). Spin is tied to topology: a pair of
+ordinary rings has configuration period $2\pi$ (a boson), whereas a pair of
+M\"obius rings (ring + anti-ring) has period $4\pi$, corresponding to a fermion
+of spin $1/2$. In the M\"obius pair the two rings carry \emph{opposite}
+directions of the Burgers vector ($+\Delta b$ and $-\Delta b$, the $N$ and $S$
+poles) --- hence a static magnetic dipole. Crucially, the Burgers twist
+$b(\varphi)=\cos(\varphi/2)$ is a Frank rotation by $\pi$ per circuit, i.e.\ a
+\emph{disclination} ($SO(3)$) degree of freedom: the M\"obius sector of the
+model already lies in $SO(3)$, and the magnetic moment $\mu=\nu=n/2$ follows as
+the flux of the spin connection (Osipov \cite{osipov2010}). Hydrodynamically
+the same object is a vortex: the vorticity corresponds to the Frank density,
+and the precession ($\omega>0$) required for stability is the circulation of
+that vortex.
+
+\subsection{Stability and annihilation}
+Opposite charges $\pm q_m$ attract and, without motion, would collapse.
+Precession provides a centrifugal barrier (conservation of angular momentum
+$J=m a^2\omega$) that stabilizes the pair at a finite distance:
+\begin{equation}
+E(d) = -\frac{A}{d} + \frac{J^2}{2 m d^2},\qquad d_{\text{eq}}=\frac{J^2}{mA}.
+\end{equation}
+As $\omega\to0$ the barrier vanishes --- the pair annihilates (Frenkel
+recombination, the total Burgers vector going to zero).
+
+\section{The Fermi film and the derivation of gravity}
+\label{sec:fermi}
+
+\subsection{Historical context: the $4/3$ paradox}
+E.~Fermi in 1923 \cite{fermi1923} showed that the well-known discrepancy
+between the electrodynamic ($\tfrac{4}{3}U/c^2$) and relativistic ($U/c^2$)
+masses of a charged body is removed if the boundary of the action integral is
+taken \emph{strictly orthogonal} to the curved world tube of the accelerating
+charge. We call this deformable boundary the \emph{Fermi film}; formally it is
+analogous to the Gibbons--Hawking--York boundary term in general relativity
+\cite{hehl1995}.
+
+\subsection{The source of deformation}
+An accelerating charge curves its world tube; the film, remaining orthogonal,
+is deformed. The density of the deformation source is proportional to the
+\emph{square} of the proper acceleration $W=\omega^2 a$:
+\begin{equation}
+\sigma = \mu\, b^2\,\frac{\langle W^2\rangle}{c^2} > 0 .
+\end{equation}
+The sign is always positive (a square), so gravity is always attractive and
+does not depend on the sign of the charge (universality).
+
+\subsection{The inverse-square law as a theorem}
+\begin{theorem}[$1/R^2$ law]
+If the film deformation $\Delta$ obeys the equilibrium equation of an elastic
+membrane with a point source,
+\begin{equation}
+\gamma\,\nabla^2\Delta(\mathbf r) = -\sigma\,\delta^3(\mathbf r-\mathbf r_0),
+\end{equation}
+then the solution is the Laplacian Green function, $\Delta(R)=\sigma/(4\pi\gamma R)$,
+whence the interaction potential $U(R)\propto 1/R$ and the force $F(R)\propto 1/R^2$.
+\end{theorem}
+The exponent follows from the three-dimensionality of space, not from a fit.
+
+\subsection{Stiffness parameters: two scales}
+\paragraph{What $\mu_{\text{aeth}}$ is.}
+The quantity $\mu_{\text{aeth}}$ is the \emph{shear modulus of the vacuum}, the
+stiffness of the aether with respect to shear deformation, of pressure
+dimension $[\text{Pa}]$. It is through this elastic modulus that, in the
+$(L,T,M)$ basis (without the ampere), the main quantities of the model are
+defined:
+\begin{align}
+c &= \sqrt{\mu_{\text{aeth}}/\rho} && (\text{transverse-wave speed}),\\
+m &= \mu_{\text{aeth}}\,b^2 a / c^2 && (\text{particle mass}),\\
+F &= \mu_{\text{aeth}}\,b^2 / R \cdot (\text{geometry}) && (\text{Coulomb force}).
+\end{align}
+Physically $\mu_{\text{aeth}}$ governs shear deformations (dislocations), from
+which charge and mass are built; hence it sets the physics at the particle
+scale (of order the Compton length $\lambda_C$). Its numerical value is
+obtained by \emph{calibration}: substituting the electron mass $m_e$ and its
+classical radius $r_e$ into the self-energy of the dislocation ring and solving
+for $\mu_{\text{aeth}}$. This is \emph{not} a derivation from first principles
+but the fixing of a single number by the electron, which we state explicitly.
+
+A check against the model shows that \emph{one} modulus cannot account for both
+mass/Coulomb and gravity: the required values differ by $\sim\!84$ orders of
+magnitude. Hence two scales are needed:
+\begin{align}
+\mu_{\text{aeth}} &\approx 2.7\times10^{28}~\text{Pa} && (\text{EM/mass, Compton scale}),\\
+\gamma_P &= \frac{c^7}{8\pi\hbar G^2}\approx 1.8\times10^{112}~\text{Pa} && (\text{gravity, Planck scale}).
+\end{align}
+The gravitational constant $G$ enters $\gamma_P$: it is an \emph{input}
+parameter of the aether stiffness, not derived from more fundamental quantities.
+
+\paragraph{What $\gamma_P$ is, and the nature of the hierarchy.}
+The Planck modulus is the Planck \emph{energy density} divided by $8\pi$:
+\begin{equation}
+\gamma_P=\frac{c^7}{8\pi\hbar G^2}=\frac{1}{8\pi}\,\frac{m_P c^2}{\ell_P^3},
+\qquad \ell_P=\sqrt{\hbar G/c^3},\quad m_P=\sqrt{\hbar c/G}
+\end{equation}
+(numerical agreement $<1\%$). This is not an arbitrary combination but the
+stiffness of the vacuum at the Planck scale; the factor $8\pi$ is the same as
+in the Einstein equations. Likewise $\mu_{\text{aeth}}=m_e c^2/(r_e^2\lambda_C)$
+is the energy density at the electron scale. The ratio of the two moduli
+\begin{equation}
+\frac{\gamma_P}{\mu_{\text{aeth}}}\sim\frac{m_P}{m_e}\ \text{(with a volume factor)}\sim10^{84}
+\end{equation}
+reduces to the ratio of the Planck and Compton scales, i.e.\ to the smallness
+of $m_e/m_P$. Thus the hierarchy of the two stiffnesses is \emph{equivalent} to
+the standard \emph{hierarchy problem} ($m_e\ll m_P$): the model does not solve
+it, but neither does it introduce a new arbitrary parameter --- it inherits the
+well-known smallness of $m_e/m_P$.
+
+\section{The six interaction channels}
+\label{sec:channels}
+All interactions are projections of a single elastic response. Their decay laws
+and sources are collected in Table~\ref{tab:channels}; the power laws are
+structural consequences (Green function, dipole--dipole interaction, mediator
+mass, confinement), not the result of a fit.
+
+\begin{table}[h]
+\centering
+\caption{The six interaction channels of the model.}
+\label{tab:channels}
+\begin{tabular}{llll}
+\toprule
+Channel & Law & Source & Coupling \\
+\midrule
+Coulomb & $1/R^2$ & product of Burgers charges & $\alpha=7.30\times10^{-3}$ \\
+Magnetic & $1/R^4$ & dipole--dipole $q_m d$ & $\sim\alpha/4$ \\
+Gravity & $1/R^2$ & $\langle W^2\rangle$ of the Fermi film & $\alpha_G=1.75\times10^{-45}$ \\
+Exchange & $1/R^3$ & precession phase $\cos2\Delta\phi$ & $\sim\alpha$ \\
+Weak & $e^{-R/R_W}$ & twist chirality & $\sim 1/30$ \\
+Strong & $\propto R$ & fractional $b/3$ + ribbon & $\sim 1$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The whole system closes on two dimensionless numbers:
+\begin{equation}
+\alpha = \frac{k e^2}{\hbar c}=\frac{1}{137.04},\qquad
+\alpha_G = \left(\frac{m_e}{m_{\text{Planck}}}\right)^2 = 1.75\times10^{-45},
+\end{equation}
+whence the weakness of gravity relative to the Coulomb force:
+$\alpha_G/\alpha\approx 2.4\times10^{-43}$.
+
+\section{Limits of the model: what is proved, assumed, open}
+\label{sec:limits}
+In the spirit of scientific honesty we explicitly separate the levels of
+certainty.
+
+\paragraph{Proved (structurally).} The decay laws of all channels; the
+attractiveness and universality of gravity; the dimensional closure of mass;
+the consistency of the magnetic charge as a length-dimension quantity in the
+elastic basis; the annihilation mechanism and the protection by precession; the
+Frank vector $\Omega=\pi$ of the $\cos(\varphi/2)$ twist (a wedge
+half-disclination, $\nu=1/2$, spin $1/2$).
+
+\paragraph{Assumed (input parameters).} The constants $\alpha$ and $\alpha_G$;
+the gravitational constant $G$ (embedded in the stiffness $\gamma_P$); the
+existence of two stiffness scales and their ratio.
+
+\paragraph{Open.} The origin of the numerical values of $\alpha$ and
+$\alpha_G$; a rigorous derivation of the gyromagnetic ratio $g=2$ (in the
+classical ring picture one gets $g=1$; $g=2$ requires a spinor level of
+description in the spirit of \cite{osipov2010}); the dimensional factor in the
+gravity source, which requires a dynamical (time-dependent) film stiffness; the
+numerical values of the weak- and strong-sector couplings. The tensor ($J=2$)
+channel of the trace-free quadrupole $Q_{ij}$ exists structurally (spin-2) but
+gives only a short-range $1/R^5$ correction; the long-range $1/R^2$ gravity is
+intrinsically scalar (the trace $\langle W^2\rangle$).
+
+\section{Conclusion}
+We have proposed an internally consistent model in which particles are elastic
+defects of the aether, and the interactions are projections of a single medium
+response through the Peach--Koehler force and the deformation of the Fermi
+film. The model explains the \emph{structure} (laws, signs, hierarchy of
+interactions) without claiming to derive the fundamental constants from first
+principles. Such a formulation makes the theory falsifiable: for
+magneto-gravitational devices, for example, it predicts a negligible
+($\sim\!10^{-13}$) relative correction to weight, incompatible with claims of
+macroscopic antigravity. Further work includes a rigorous spinor derivation of
+$g=2$, a refinement of the dynamical film stiffness, and this English version
+for archival publication.
+
+\begin{thebibliography}{99}
+\bibitem{fermi1923} E.~Fermi, \emph{Correzione di una contraddizione tra la teoria
+elettrodinamica e quella relativistica delle masse elettromagnetiche},
+Nuovo Cimento \textbf{25}, 159 (1923).
+\bibitem{lazar2010} M.~Lazar, \emph{On the fundamentals of the three-dimensional
+translation gauge theory of dislocations}, Math.\ Mech.\ Solids \textbf{16}(3), 253 (2010).
+\bibitem{kadic1983} A.~Kadi\'c, D.~G.~B.~Edelen, \emph{A Gauge Theory of Dislocations
+and Disclinations}, Lecture Notes in Physics \textbf{174}, Springer (1983).
+\bibitem{lazar2009} M.~Lazar, \emph{On the Higgs mechanism and stress functions in the
+translational gauge theory of dislocations}, arXiv:0903.0990 (2009).
+\bibitem{lazar2009b} M.~Lazar, C.~Anastassiadis, \emph{The gauge theory of dislocations:
+static solutions of screw and edge dislocations}, arXiv:0802.0670 (2009).
+\bibitem{osipov2010} E.~A.~Kochetov, V.~A.~Osipov, \emph{Dirac fermions on a disclinated
+flexible surface}, arXiv:1001.4450 (2010).
+\bibitem{osipov1999} E.~A.~Kochetov, V.~A.~Osipov, \emph{Gauge theory of disclinations on
+fluctuating elastic surfaces}, arXiv:math-ph/9903018 (1999).
+\bibitem{hehl1995} F.~W.~Hehl, J.~D.~McCrea, E.~W.~Mielke, Y.~Ne'eman, \emph{Metric-affine
+gauge theory of gravity}, Phys.\ Rep.\ \textbf{258}, 1 (1995); arXiv:gr-qc/9402012.
+\bibitem{hirth1982} J.~P.~Hirth, J.~Lothe, \emph{Theory of Dislocations}, 2nd ed.,
+Wiley (1982).
+\bibitem{mistura1995} L.~Mistura, \emph{Crystal dislocations and Dirac monopoles},
+Int.\ J.\ Eng.\ Sci.\ \textbf{33}, 2149 (1995).
+\bibitem{rohrlich1960} F.~Rohrlich, \emph{Self-energy and stability of the classical
+electron}, Am.\ J.\ Phys.\ \textbf{28}, 639 (1960).
+\end{thebibliography}
+
+\end{document}

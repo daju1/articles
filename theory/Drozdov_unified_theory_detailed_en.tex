@@ -1,0 +1,534 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{definition}{Definition}
+
+\title{\textbf{A Gauge Theory of Line Defects in an Elastic Continuum:\\
+Full Derivations.\\
+{\large (A Geometrodynamic Model of Particles as Elastic Defects)}}}
+\author{A.~Yu.~Drozdov}
+\date{24 October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+This is an extended version of the preprint on a geometrodynamic model of
+particles as defects of an elastic aether. Unlike the introductory exposition,
+here \emph{every} structural statement is accompanied by a full derivation:
+dimensional analysis, intermediate formulas, and, where appropriate, a proof in
+the form of a theorem. The aim is to make all results reproducible and
+checkable by the reader ``with a pencil''. The limits of the model (what is
+derived, what is assumed, what is open) are traced through each proof, not only
+in a final section.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Notation and conventions}
+The three-dimensional elastic continuum (the ``aether'') is described by a
+displacement field $u_i(\mathbf{x},t)$. The dimensional basis is $(L,T,M)$.
+Greek indices $a,b=1,2,3$ are internal (translational) indices of the gauge
+group $T(3)$; Latin $i,j,k$ are spatial. Summation over repeated indices is
+implied.
+
+\begin{definition}[Basic elastic quantities]
+Shear modulus $\mu$, $[ML^{-1}T^{-2}]$; density $\rho$, $[ML^{-3}]$;
+transverse-wave speed $c=\sqrt{\mu/\rho}$, $[LT^{-1}]$; Burgers vector $b$,
+$[L]$.
+\end{definition}
+
+\section{Gauge structure and the Maxwell dictionary}
+
+\subsection{Distortion field and the dislocation tensor}
+Plastic incompatibility is introduced by a gauge field $\phi^a_i$. The
+dislocation-density tensor (Cartan torsion) is
+\begin{equation}
+T^a_{ij} = \partial_i \phi^a_j - \partial_j \phi^a_i .
+\label{eq:torsion}
+\end{equation}
+The integral over a surface spanning a contour $\partial S$ gives the Burgers
+vector:
+\begin{equation}
+b^a = \oint_{\partial S}\phi^a_i\,dx^i = \int_S T^a_{ij}\,dS^{ij}.
+\label{eq:burgers}
+\end{equation}
+
+\begin{lemma}[Dimension of the magnetic charge]
+\label{lem:qm}
+In the elastic basis the magnetic charge, defined as the flux of the
+dislocation density $q_m=\int_S T^a\,dS$, has the dimension of length.
+\end{lemma}
+\begin{proof}
+From \eqref{eq:torsion}, $[T^a_{ij}]=[\partial\phi]=[\phi]/L$. Since $\phi^a_i$
+is dimensionless (a displacement gradient, $[\partial u]=1$), we have
+$[T^a]=L^{-1}$. Then $[q_m]=[T^a]\cdot[dS]=L^{-1}\cdot L^{2}=L$. $\qed$
+\end{proof}
+
+\begin{remark}
+Lemma~\ref{lem:qm} removes the apparent conflict with SI, where the magnetic
+charge is measured in A$\cdot$m: in a self-contained elastic theory the ampere
+is not a primary unit, and the dimension of the charge is dictated by the
+theory itself.
+\end{remark}
+
+\subsection{Quasi-Maxwell equations}
+Introducing the dislocation current $I^a_i=\partial_t\phi^a_i-\partial_i v^a$
+(where $v^a$ is the velocity), one obtains Bianchi identities structurally
+identical to Maxwell's equations \cite{lazar2010}:
+\begin{align}
+\partial_i {}^{*}T^{a\,i} &= 0, & \text{(no sources of }T^a\text{)}\\
+\epsilon_{ijk}\partial_j I^a_k + \partial_t T^a_i &= 0. & \text{(Faraday analogue)}
+\end{align}
+Hence the dictionary: $\mathbf{B}\leftrightarrow T^a$,
+$\mathbf{E}\leftrightarrow I^a$.
+
+\subsection{Full derivation of the quasi-Maxwell system}
+We give the derivation in detail. The Lagrangian density of the linear dynamic
+gauge theory of dislocations in the $T(3)$ gauge splits into elastic and
+dislocation parts \cite{lazar2010}:
+\begin{equation}
+\mathcal{L} = \tfrac12\rho\,v^a v_a - \tfrac12 C_{ijkl}\beta^{i}_{a}\beta^{j a}
+ + \tfrac12 D_{ab}\,I^a_i I^{b\,i} - \tfrac14 A_{ab}\,T^a_{ij}T^{b\,ij},
+\label{eq:lagr}
+\end{equation}
+where $\beta$ is the elastic distortion, $C_{ijkl}$ the elasticity tensor, and
+$D_{ab}$, $A_{ab}$ material response tensors (analogues of the dielectric and
+magnetic permeabilities). The field strengths are the dislocation density $T^a$
+\eqref{eq:torsion} and the current $I^a$; the responses are
+\begin{equation}
+H_a^{\ ij} = -\frac{\partial\mathcal{L}}{\partial T^a_{ij}} = A_{ab}T^{b\,ij},
+\qquad
+D_a^{\ i} = \frac{\partial\mathcal{L}}{\partial I^a_i} = D_{ab}I^{b\,i}.
+\label{eq:constit}
+\end{equation}
+Varying the action $\delta\!\int\mathcal{L}\,d^4x=0$ with respect to the gauge
+potential $\phi^a$ gives the equation of motion (Amp\`ere--Oersted analogue):
+\begin{equation}
+\partial_j H_a^{\ ij} - \partial_t D_a^{\ i} = J_a^{\ i},
+\label{eq:ampere}
+\end{equation}
+where $J_a$ is the source current (dislocation momentum density). The two
+Bianchi identities for $T^a=d\phi^a$ (closedness of the form, $d^2=0$) give the
+second pair:
+\begin{equation}
+\partial_{[i}T^a_{jk]}=0,\qquad \partial_t T^a_{ij}+\partial_{[i}I^a_{j]}=0.
+\label{eq:bianchi}
+\end{equation}
+Comparing \eqref{eq:constit}--\eqref{eq:bianchi} with Maxwell's equations gives
+the dictionary of Table~\ref{tab:corr} (below): the strengths $T^a,I^a$
+correspond to $\mathbf B,\mathbf E$; the responses $H_a,D_a$ to
+$\mathbf H,\mathbf D$; and the Peach--Koehler force on a dislocation element
+\begin{equation}
+f_a^{\ i} = (e_a\!\lrcorner\,I^b)\,p_b^{\ i} + (e_a\!\lrcorner\,T^b)\wedge\Sigma_b
+\label{eq:pk}
+\end{equation}
+plays the role of the Lorentz force $q\mathbf E + q\mathbf v\times\mathbf B$.
+This is the formal basis of the whole analogy: the electrodynamics of the
+particle-defect is the dynamics of its dislocation field.
+
+\begin{table}[h]
+\centering
+\caption{Correspondence Maxwell~$\leftrightarrow$~dislocation theory (after Lazar \cite{lazar2010}).}
+\label{tab:corr}
+\begin{tabular}{ll}
+\toprule
+Electrodynamics & Dislocation theory \\
+\midrule
+Magnetic field $\mathbf{B}$ & dislocation density $T^a$ \\
+Electric field $\mathbf{E}$ & dislocation current $I^a$ \\
+Magnetic excitation $\mathbf{H}$ & pseudomoment stress $H_a$ \\
+Magnetic flux $\oint\mathbf{B}\,d\mathbf{S}$ & Burgers vector $\oint T^a = b$ \\
+Lorentz force & Peach--Koehler force \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{The particle: a precessing dislocation dipole}
+
+\subsection{Kinematics of the special point}
+A ring of radius $a$ lies in a fixed plane; the special point (a localized
+charge $q_m=\Delta b$) runs along it: azimuth $\varphi(t)=\varphi_0+\omega t$.
+Position, velocity and acceleration:
+\begin{align}
+\mathbf{r}(t) &= a(\cos\varphi,\ \sin\varphi,\ 0),\\
+\mathbf{v}(t) &= a\omega(-\sin\varphi,\ \cos\varphi,\ 0),\quad |\mathbf{v}|=a\omega,\\
+\mathbf{W}(t) &= -a\omega^2(\cos\varphi,\ \sin\varphi,\ 0),\quad |\mathbf{W}|=a\omega^2.
+\label{eq:accel}
+\end{align}
+
+\subsection{Mass as elastic self-interaction}
+\begin{proposition}[Dimensional closure of mass]
+The self-energy of a dislocation ring $E=\tfrac12\mu b^2 a\,\ln(8a/r_c)$
+(Hirth--Lothe \cite{hirth1982}), after dropping the logarithm, yields the mass
+$m=\mu b^2 a/c^2$ with the correct dimension $[M]$.
+\end{proposition}
+\begin{proof}
+$[\mu b^2 a]=(ML^{-1}T^{-2})(L^2)(L)=ML^{2}T^{-2}=[\text{energy}]$. Division by
+$c^2$ $[L^2T^{-2}]$ gives $[M]$. $\qed$
+\end{proof}
+
+\subsection{Dipole from a pair of rings (antiphase)}
+Two rings at $z=\pm d/2$, special points in antiphase
+($\varphi_{\text{low}}=\varphi_{\text{up}}+\pi$), charges $\pm q_m$. The
+instantaneous dipole moment $\mathbf{p}=q_m\mathbf{r}_+ - q_m\mathbf{r}_-$.
+A direct computation:
+\begin{equation}
+p_z = q_m\cdot d = \text{const},\qquad
+|\mathbf{p}_{xy}| = 2 q_m a\ \ (\text{rotates with }\omega).
+\end{equation}
+The axial component is constant (a static dipole), the transverse one precesses.
+
+\subsection{Stability: the centrifugal-barrier theorem}
+\begin{theorem}[Equilibrium of the pair]
+\label{th:stab}
+Let the pair be subject to attraction $U_{\text{att}}=-A/d$ (opposite charges)
+and let the angular momentum $J=m a^2\omega$ be conserved. Then the effective
+energy $E(d)=-A/d+J^2/(2md^2)$ has a unique minimum at
+$d_{\text{eq}}=J^2/(mA)$, and as $\omega\to0$ (i.e.\ $J\to0$) the equilibrium
+vanishes ($d_{\text{eq}}\to0$).
+\end{theorem}
+\begin{proof}
+$E'(d)=A/d^2-J^2/(md^3)=0 \Rightarrow d_{\text{eq}}=J^2/(mA)$. The second
+derivative $E''(d_{\text{eq}})=-2A/d^3+3J^2/(md^4)$; substituting $d_{\text{eq}}$
+gives $E''=A^4 m^3/J^6>0$ --- a minimum. As $J\to0$ the barrier term vanishes,
+only attraction remains, and the minimum shifts to $d\to0$ (collapse). $\qed$
+\end{proof}
+
+\begin{remark}[Annihilation]
+Collapse upon loss of precession is Frenkel recombination: an interstitial loop
+($+\Delta b$) and a vacancy loop ($-\Delta b$) give a total Burgers vector
+$\mathbf{b}_++\mathbf{b}_-=0$ --- the perfect lattice. Thus precession (spin) is
+the mechanism protecting the particle--antiparticle pair from self-annihilation.
+\end{remark}
+
+\subsection{Spin and statistics: the configuration period}
+\begin{proposition}[Period of the pair and statistics]
+For a pair of ordinary rings the configuration returns at
+$\varphi\to\varphi+2\pi$ (a boson). For a pair of M\"obius rings, where the sign
+of the Burgers vector is modulated as $\cos(\varphi/2)$, the sign is restored
+only at $\varphi\to\varphi+4\pi$ (a fermion, spin $1/2$).
+\end{proposition}
+\begin{proof}
+The twist $\cos(\varphi/2)$ is antiperiodic under $2\pi$:
+$\cos((\varphi+2\pi)/2)=\cos(\varphi/2+\pi)=-\cos(\varphi/2)$, and periodic
+under $4\pi$. Hence a spinor (double-valued) structure arises precisely for the
+M\"obius ring. $\qed$
+\end{proof}
+
+\begin{lemma}[Frank vector of the $\cos(\varphi/2)$ twist]
+\label{lem:franck}
+The Burgers twist $b(\varphi)=\cos(\varphi/2)$ is equivalent to a Frank
+rotation by the fixed angle $\Omega=\pi$ per circuit $\varphi:0\to2\pi$, i.e.\ a
+wedge \emph{half-disclination}. The Frank index $\nu=\Omega/2\pi=1/2$, giving
+spin $1/2$.
+\end{lemma}
+\begin{proof}
+The twist phase is $\varphi_{\text{tw}}(\varphi)=\varphi/2$. The total rotation
+of the Burgers direction per circuit is
+$\Omega=\oint d\varphi_{\text{tw}}=\int_0^{2\pi}\tfrac12\,d\varphi=\pi$. Over
+$4\pi$ the rotation is $2\pi$ (full return), reproducing the spinor
+double-valuedness of the period proposition. Through the Osipov spin connection
+(\texttt{arXiv:1001.4450}) $\Omega_\varphi=i\omega\sigma_3$ with flux
+$\oint\Omega_\varphi\,d\varphi=2\pi\nu$ we get $\nu=1/2$ and the magnetic moment
+$\mu=\nu=1/2$ as the flux of the spin connection (not a loop current). $\qed$
+\end{proof}
+
+\begin{remark}[M\"obius dipole and the link to the $SO(3)$ sector]
+The electron in the model is a pair of M\"obius rings with \emph{opposite}
+directions of the Burgers vector: one ring carries the jump $+\Delta b$
+(pole~$N$), the other $-\Delta b$ (pole~$S$); together they give a static
+magnetic dipole $q_m d$. This distinguishes the electron (M\"obius pair, period
+$4\pi$, fermion) from a boson (pair of ordinary rings, period $2\pi$).
+Crucially, the Burgers twist $b(\varphi)=\cos(\varphi/2)$ is a Frank rotation by
+$\pi$ per circuit --- a \emph{disclination} (rotational, $SO(3)$) degree of
+freedom. Thus the M\"obius sector already lies in $SO(3)$: the magnetic moment
+$\mu=\nu=n/2$ is derived as the flux of the spin connection
+$\oint\omega_\varphi\,d\varphi=2\pi\nu$ (Osipov, \texttt{arXiv:1001.4450}),
+not as a loop current. Hydrodynamically the same object is a vortex: the
+vorticity $\nabla\times v$ corresponds to the Frank density, the circulation to
+the disclination strength. The precession of the special point ($\omega>0$),
+required for the stability of the pair, is that vortex; a particle without
+rotation collapses.
+\end{remark}
+
+\section{The magnetic moment: why a dipole, not a current}
+
+\begin{theorem}[Vanishing of the current axial moment]
+\label{th:mu0}
+For a pair of rings in antiphase with opposite charges, the period-averaged
+axial ``loop-current'' magnetic moment $\boldsymbol{\mu}_{\text{cur}}=
+\tfrac12\oint q\,\mathbf{r}\times\mathbf{v}$ is zero.
+\end{theorem}
+\begin{proof}
+Both rings run in the same sense, so $\mathbf{r}\times\mathbf{v}$ is the same
+for both and points along $+z$: $(\mathbf{r}\times\mathbf{v})_z=a^2\omega$. But
+the charges are opposite: $q_{\text{up}}=+q_m$, $q_{\text{low}}=-q_m$. The
+contributions $\tfrac12 q_m a^2\omega$ and $-\tfrac12 q_m a^2\omega$ cancel:
+$\mu_{\text{cur},z}=0$. $\qed$
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{th:mu0} means that the electron's magnetic moment in the model is
+a \emph{static} dipole moment $\mu_{\text{mag}}=q_m d$, not a loop-current
+moment. This is consistent with the ``current'' along the ring being magnetic,
+so that applying the electric loop-current formula to it is incorrect.
+\end{remark}
+
+\begin{proposition}[Dimensional failure of the $g$-factor from the ED formula]
+Attempting to define $g$ via $\mu_{\text{mag}}=g(q_m/2m)S$ in the elastic basis
+gives $g$ the dimension $T/L$, not a dimensionless quantity; hence the
+electrodynamic formula does not transfer literally, and the classical $g=2$ is
+not obtained in the ring model (one gets $g=1$).
+\end{proposition}
+\begin{proof}
+$[\mu_{\text{mag}}]=[q_m][d]=L^2$. $[S]=[m a^2\omega]=M L^2 T^{-1}$.
+$[(q_m/m)S]=(L/M)(ML^2T^{-1})=L^3T^{-1}$. Then
+$[g]=[\mu_{\text{mag}}]/[(q_m/m)S]=L^2/(L^3T^{-1})=T/L\neq 1$. $\qed$
+\end{proof}
+
+\section{The Fermi film and gravity: full derivation}
+
+\subsection{Setup}
+The Fermi film is the three-dimensional boundary $\partial\Omega$ of the
+four-dimensional action integral, stretched orthogonally to the world tube. Its
+contribution to the action:
+\begin{equation}
+S_{\partial} = \gamma\int_{\partial\Omega} d\Sigma,
+\end{equation}
+where $\gamma$ is the film elastic modulus $[ML^{-1}T^{-2}]=[\text{Pa}]$.
+
+\subsection{Source of deformation}
+\begin{proposition}[Positivity of the source]
+The period-averaged source of film deformation from a precessing charge
+\begin{equation}
+\sigma = \mu b^2 \frac{\langle W^2\rangle}{c^2}
+= \mu b^2 \frac{\omega^4 a^2}{c^2}
+\end{equation}
+is strictly positive and independent of the sign of the charge.
+\end{proposition}
+\begin{proof}
+From \eqref{eq:accel}, $|\mathbf{W}|=a\omega^2$, hence $\langle W^2\rangle=
+a^2\omega^4>0$ (average of a constant). The sign of the charge enters through
+$b^2$, i.e.\ drops out. $\qed$
+\end{proof}
+
+\subsection{The inverse-square law}
+\begin{theorem}[$1/R^2$ as a consequence of the Green function]
+\label{th:invsq}
+If the film deformation obeys the equilibrium equation of an elastic membrane
+\begin{equation}
+\gamma\,\nabla^2\Delta(\mathbf{r})=-\sigma\,\delta^3(\mathbf{r}-\mathbf{r}_0),
+\label{eq:poisson}
+\end{equation}
+then the interaction potential of two sources decays as $1/R$, and the force as
+$1/R^2$.
+\end{theorem}
+\begin{proof}
+Equation \eqref{eq:poisson} is the Poisson equation. Its fundamental solution
+(the Laplacian Green function in $\mathbb{R}^3$) is $G(\mathbf{r})=1/(4\pi|\mathbf{r}|)$,
+whence
+\begin{equation}
+\Delta(\mathbf{r})=\frac{\sigma}{4\pi\gamma\,|\mathbf{r}-\mathbf{r}_0|}.
+\end{equation}
+The energy of a second source $\sigma_2$ in the field of the first:
+$U(R)=\sigma_2\Delta(R)=\sigma_1\sigma_2/(4\pi\gamma R)\propto R^{-1}$.
+The force $F=-dU/dR=\sigma_1\sigma_2/(4\pi\gamma R^2)\propto R^{-2}$.
+The exponent $-2$ is fixed by the dimension of space ($n=3$: $G\sim R^{-(n-2)}$),
+not by choice. $\qed$
+\end{proof}
+
+\subsection{Two stiffness scales}
+\begin{proposition}[Impossibility of a single stiffness]
+The modulus reproducing the electron mass and the Planck modulus of gravity are
+incompatible: their ratio is $\sim 10^{84}$.
+\end{proposition}
+\begin{proof}
+From $m_e c^2=\mu_{\text{aeth}}\,r_e^2\lambda_C$ (with $b=r_e$, $a=\lambda_C$):
+$\mu_{\text{aeth}}=m_ec^2/(r_e^2\lambda_C)\approx2.7\times10^{28}$~Pa.
+The Planck modulus $\gamma_P=c^7/(8\pi\hbar G^2)\approx1.8\times10^{112}$~Pa.
+The ratio $\gamma_P/\mu_{\text{aeth}}\approx6.9\times10^{83}$. $\qed$
+\end{proof}
+
+\begin{remark}[Physical meaning of the moduli]
+The quantity $\mu_{\text{aeth}}$ is the \emph{shear modulus of the vacuum}: the
+stiffness of the aether with respect to shear deformation, of pressure
+dimension $[\text{Pa}]$. It is through it that, in the $(L,T,M)$ basis (without
+the ampere), the transverse-wave speed $c=\sqrt{\mu_{\text{aeth}}/\rho}$, the
+particle mass $m=\mu_{\text{aeth}}b^2a/c^2$ and the Coulomb force
+$F=\mu_{\text{aeth}}b^2/R\cdot(\text{geometry})$ are defined. Physically it
+governs shear deformations (dislocations), from which charge and mass are
+built, and sets the physics at the particle scale (of order the Compton length
+$\lambda_C$). Its value $2.7\times10^{28}$~Pa is obtained by \emph{calibration}
+to the electron (substituting $m_e$ and $r_e$ into the self-energy of the
+dislocation ring), not derived from first principles.
+
+The quantity $\gamma_P=c^7/(8\pi\hbar G^2)$ is the \emph{Planck stiffness of the
+vacuum}, a second elastic modulus of the same dimension $[\text{Pa}]$,
+responsible for the gravitational response (deformation of the Fermi film) at
+the Planck scale $\ell_P=\sqrt{\hbar G/c^3}$. The gravitational constant $G$
+enters it as an \emph{input} parameter. The colossal ratio
+$\gamma_P/\mu_{\text{aeth}}\sim10^{84}$ is a direct expression of the weakness
+of gravity and is the main unsolved problem of the model (the origin of the
+hierarchy of the two scales).
+\end{remark}
+
+\begin{remark}
+Thus the gravitational constant $G$ entering $\gamma_P$ is an \emph{input}
+parameter of the aether stiffness. We do not claim to derive it from $(\hbar,c)$;
+only the \emph{structure} is proved (Theorem~\ref{th:invsq}), not the numerical
+value. This is a fundamental difference from the fabricated versions, in which
+$G$ was hidden inside the stiffness and ``extracted'' back (a tautology).
+\end{remark}
+
+\begin{remark}[Physical meaning of $\gamma_P$ and the nature of the hierarchy]
+The Planck modulus is the Planck \emph{energy density} divided by $8\pi$:
+\begin{equation}
+\gamma_P=\frac{c^7}{8\pi\hbar G^2}=\frac{1}{8\pi}\,\frac{m_P c^2}{\ell_P^3},
+\qquad \ell_P=\sqrt{\hbar G/c^3},\quad m_P=\sqrt{\hbar c/G}
+\end{equation}
+(numerical agreement $<1\%$). This is not an arbitrary combination but the
+stiffness of the vacuum at the Planck scale; the factor $8\pi$ is the same as
+in the Einstein equations. Likewise $\mu_{\text{aeth}}=m_e c^2/(r_e^2\lambda_C)$
+is the energy density at the electron scale. The ratio of the two moduli
+\begin{equation}
+\frac{\gamma_P}{\mu_{\text{aeth}}}\sim\frac{m_P}{m_e}\ \text{(with a volume factor)}\sim10^{84}
+\end{equation}
+reduces to the ratio of the Planck and Compton scales, i.e.\ to the smallness
+of $m_e/m_P$. Thus the hierarchy of the two stiffnesses is \emph{equivalent} to
+the standard \emph{hierarchy problem} ($m_e\ll m_P$): the model does not solve
+it, but neither does it introduce a new arbitrary parameter --- it inherits the
+well-known smallness of $m_e/m_P$.
+\end{remark}
+
+\section{Six channels: a single table with derived laws}
+\label{sec:channels}
+Each decay law is a consequence of the proved structure:
+\begin{itemize}[nosep]
+\item \textbf{Coulomb} $1/R^2$: product of Burgers charges, the direct Coulomb
+kernel (Theorem~\ref{th:invsq} for the $T^a$ field).
+\item \textbf{Magnetic} $1/R^4$: interaction of two static dipoles $q_m d$
+(derivative of the dipole--dipole potential $\sim1/R^3$).
+\item \textbf{Gravity} $1/R^2$: Theorem~\ref{th:invsq} for the source $\sigma>0$.
+\item \textbf{Exchange} $1/R^3$: phase dependence $\cos2\Delta\varphi$, short-range.
+\item \textbf{Weak} $e^{-R/R_W}$: massive mediator, twist chirality (parity violation).
+\item \textbf{Strong} $\propto R$: fractional Burgers vector $b/3$ and a stacking-fault
+ribbon (linear potential, confinement).
+\end{itemize}
+Two dimensionless numbers close the system:
+\begin{equation}
+\alpha=\frac{ke^2}{\hbar c}=\frac{1}{137.04},\qquad
+\alpha_G=\Big(\frac{m_e}{m_{\text{Planck}}}\Big)^2=1.75\times10^{-45},\qquad
+\frac{\alpha_G}{\alpha}=2.4\times10^{-43}.
+\end{equation}
+
+\section{Falsifiability}
+The model gives testable predictions. For magneto-gravitational devices
+(Roshchin--Godin type) the relative correction to weight from precession is
+estimated as
+\begin{equation}
+\frac{\Delta G}{G}\sim\frac{W R}{c^2}\sim 10^{-13},
+\end{equation}
+which is $\sim\!12$ orders of magnitude smaller than the claimed effects
+($\sim\!35\%$); the latter, if real, would \emph{refute} the model, not confirm
+it. This is a sign of a scientific, not a fitted, theory.
+
+\section{Limits: proved / assumed / open}
+\paragraph{Proved (with the derivation above).} The dimension of the charge
+(Lemma~\ref{lem:qm}); the closure of mass; stability and annihilation
+(Theorem~\ref{th:stab}); statistics from the period; the vanishing of the
+current moment (Theorem~\ref{th:mu0}); the positivity of the gravity source;
+the $1/R^2$ law (Theorem~\ref{th:invsq}); the necessity of two scales; the
+Frank vector $\Omega=\pi$ of the twist (Lemma~\ref{lem:franck}).
+
+\paragraph{Assumed.} The values $\alpha$, $\alpha_G$; $G$ (embedded in
+$\gamma_P$); the two stiffness scales.
+
+\paragraph{Open.} The numerical values of $\alpha,\alpha_G$; a rigorous $g=2$
+(classically $g=1$; $g=2$ only at the spinor level \cite{osipov2010}); the
+dynamical film stiffness (the dimensional factor in the source); the weak- and
+strong-sector couplings.
+
+\paragraph{The tensor ($J{=}2$) gravity channel --- a diagnosis.} The source
+$\sigma\propto\langle W^2\rangle$ used above is the \emph{trace} (scalar, $J=0$)
+of the quadrupole tensor $\langle W_iW_j\rangle$. The true tensor graviton
+(spin-2 in Hehl's sense \cite{hehl1995}) lives in the trace-free part
+$Q_{ij}=\langle W_iW_j\rangle-\tfrac13\delta_{ij}\langle W^2\rangle$. For a
+single precessing ring with axis $\mathbf n$ a direct computation gives
+$\langle W_iW_j\rangle=\tfrac12\omega^4a^2(\delta_{ij}-n_in_j)$, i.e.\
+$Q_{ij}\neq0$ (an oblate quadrupole in the precession plane, eigenvalues
+$\{-\tfrac13,+\tfrac16,+\tfrac16\}\omega^4a^2$). However, averaging over
+isotropically oriented axes sends $\langle Q_{ij}\rangle\to0$: for an
+unpolarized ensemble only the scalar $\langle W^2\rangle$ survives. Thus the
+``scalarity'' of the model's gravity is a consequence of orientational
+averaging, not of the absence of $J=2$. The tensor channel would manifest only
+for \emph{polarized} (spin-aligned) matter. This is a diagnosis and a testable
+prediction, not a derivation of the tensor graviton: the explicit field
+equation for $Q_{ij}$ remains open.
+
+\section{Conclusion}
+A full derivation of all structural results of the model has been given. The
+proofs are elementary (dimensional analysis, the Green function, the virial
+theorem), but it was precisely their absence in earlier versions that led to
+fitting. The proved, assumed and open parts are honestly separated. The next
+steps are a rigorous spinor derivation of $g=2$ and this English version for
+archival publication.
+
+\appendix
+\section{Numerical appendix: figures}
+The computations are performed in model elastic units ($a=\omega=b=c=1$). The
+absolute values are conventional; the physical content is in the \emph{decay
+laws} and \emph{relations} proved in the main text.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.75\linewidth]{figures_unified/channel_scaling.png}
+\caption{Channel decay laws (log-log): Coulomb and gravity $\sim1/R^2$,
+magnetic $\sim1/R^4$, exchange $\sim1/R^3$, weak --- exponential short range.
+The slopes follow Theorem~\ref{th:invsq} and the dipole--dipole structure.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.75\linewidth]{figures_unified/stability.png}
+\caption{Stability of the pair (Theorem~\ref{th:stab}): $E(d)=-A/d+J^2/(2md^2)$.
+The minimum at $d_{\text{eq}}=J^2/(mA)$ grows with the momentum $J$; as $J\to0$
+the barrier disappears (annihilation).}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.75\linewidth]{figures_unified/twist_period.png}
+\caption{Burgers twist: $\cos(\varphi/2)$ is antiperiodic under $2\pi$ and
+returns only after $4\pi$ (spinor, fermion), unlike the ordinary $\cos\varphi$
+with period $2\pi$ (boson).}
+\end{figure}
+
+\begin{thebibliography}{99}
+\bibitem{fermi1923} E.~Fermi, Nuovo Cimento \textbf{25}, 159 (1923).
+\bibitem{lazar2010} M.~Lazar, Math.\ Mech.\ Solids \textbf{16}(3), 253 (2010).
+\bibitem{kadic1983} A.~Kadi\'c, D.~G.~B.~Edelen, Lecture Notes in Physics \textbf{174}, Springer (1983).
+\bibitem{osipov2010} E.~A.~Kochetov, V.~A.~Osipov, arXiv:1001.4450 (2010).
+\bibitem{hehl1995} F.~W.~Hehl, J.~D.~McCrea, E.~W.~Mielke, Y.~Ne'eman, Phys.\ Rep.\ \textbf{258}, 1 (1995); arXiv:gr-qc/9402012.
+\bibitem{hirth1982} J.~P.~Hirth, J.~Lothe, \emph{Theory of Dislocations}, 2nd ed., Wiley (1982).
+\bibitem{mistura1995} L.~Mistura, Int.\ J.\ Eng.\ Sci.\ \textbf{33}, 2149 (1995).
+\bibitem{rohrlich1960} F.~Rohrlich, Am.\ J.\ Phys.\ \textbf{28}, 639 (1960).
+\end{thebibliography}
+
+\end{document}

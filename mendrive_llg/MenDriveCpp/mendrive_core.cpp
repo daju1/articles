@@ -357,7 +357,8 @@ struct MenDriveSim {
     int N;
     long double a, h_l, h_r, dx, dt;
     int ferrite_model;   // 0='JA', 1='LLG', 2='Hybrid', 3='Preisach'
-    int excitation_mode; // 0='magnetic_right', 1='electric_left'
+    int excitation_mode; // 0 ='magnetic_right', - MenDrive_qnm-mode3_jm_z_TE.ipynb
+                         // 1 ='electric_left'   - MenDrive_qnm-mode2_je_z_TM.ipynb
     int n_newton;
 
     std::vector<long double> xA, xB;
@@ -443,6 +444,7 @@ struct MenDriveSim {
     }
 
     void reset_state() {
+        // TODO: switch TE or TM depending on excitation_mode
         Ey.assign(N+1, 0.0); Ez.assign(N+1, 0.0); Hy.assign(N, 0.0); Hz.assign(N, 0.0); t = 0.0;
         p_mag_dynamics = 0.0;
         if (ferrite_model == JA) { M_irr.assign(n_fer, 0.0); M_field.assign(n_fer, 0.0); }

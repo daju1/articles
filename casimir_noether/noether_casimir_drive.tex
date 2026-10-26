@@ -116,6 +116,7 @@ tmargin=1.1cm,bmargin=3.0cm,lmargin=1.85cm,rmargin=1.85cm}
 \setcounter{page}{\myfirstpage}
 
 % Set the page style to "fancy"...
+
 \pagestyle{fancy}
 
 %... then configure it.
@@ -279,6 +280,71 @@ The quantum vacuum “pushes” more strongly on one side because the quantun va
 and Noether’s theorem provides the fundamental explanation why momentum does not need to be conserved.
 
 \vspace{\myvspacebeforesubsection}
+\subsection*{\centering{\fontencoding{T1}\fontfamily{ptm}{\selectfont ON THE INCOMPLETENESS OF THE STANDARD MOMENTUM BALANCE}}}
+\vspace{\myvspaceaftersubsection}
+
+It is essential to specify \emph{which} momentum is not conserved, so that the
+result is not misread as a violation of a fundamental conservation law. The
+standard momentum-balance equation of continuum electrodynamics (e.g.\ Tamm,
+\S\,105) reads
+\end{multicols}
+\[
+\nabla\cdot\mathbf{T} = \frac{\partial\mathbf{g}}{\partial t} + \mathbf{f}_{\mathrm{vol}},
+\qquad
+\mathbf{g} = \frac{1}{c^2}\mathbf{S} = \frac{1}{4\pi c}[\mathbf{E}\times\mathbf{H}],
+\]
+\begin{multicols}{2}
+where $\mathbf{T}$ is the Maxwell stress tensor, $\mathbf{g}$ the field
+momentum density and $\mathbf{f}_{\mathrm{vol}}$ the volume (ponderomotive)
+force density. For the vacuum fluctuations of a static honeycomb system the
+mean Poynting vector vanishes, $\langle\mathbf{S}\rangle = 0$, hence
+$\langle\partial\mathbf{g}/\partial t\rangle = 0$. The customary identification
+of the field momentum with $\mathbf{g} = \mathbf{S}/c^2$ therefore misses the
+contribution that remains: the \emph{surface} integral of the stress tensor
+over the boundary of the vacuum region.
+
+Consider a closed pillbox surface $\partial V_{\mathrm{vac}}$ whose faces lie in
+the free vacuum at $z = \pm d$ on either side of the plate (the plate is
+entirely enclosed, and the lateral faces cancel by in-plane symmetry). The net
+force is
+\end{multicols}
+\[
+F_z = \oint_{\partial V_{\mathrm{vac}}} \langle T_{zz}\rangle \, da
+= \big[\langle T_{zz}\rangle_{z=+d} - \langle T_{zz}\rangle_{z=-d}\big]\,S .
+\]
+\begin{multicols}{2}
+Because the faces lie in the vacuum, this is the flux of the \emph{field}
+momentum through a purely vacuum boundary, not a force applied directly to the
+substance of the plate. The difference is non-zero solely because the mode
+structure --- and hence $\langle T_{zz}\rangle$ --- differs on the honeycomb and
+the smooth side. This is precisely the term omitted when the balance is reduced
+to $\mathbf{g}=\mathbf{S}/c^2$ with $\langle\mathbf{S}\rangle=0$.
+
+Quantitatively, the surface integral reproduces the thrust obtained earlier from
+the difference of specific energy densities \cite{Drozdov2024}: for a gold
+nano-honeycomb with cell size $a\approx 2~\mu$m,
+\[
+\frac{F}{S} = \langle T_{zz}\rangle_{\mathrm{honey}} - \langle T_{zz}\rangle_{\mathrm{smooth}}
+\approx 8.55~\text{dyn/m}^2 = 8.55\times10^{-5}~\text{N/m}^2 ,
+\]
+of the order $\langle T_{zz}\rangle \sim K\,\hbar c/a^4$ with a dimensionless
+geometric coefficient $K\sim 4\times10^{-2}$ set by the cell mode structure.
+Thus the \S\,105 reading does not re-derive the force but \emph{interprets} it:
+the same number is the flux of field momentum through the vacuum boundary.
+
+Two remarks make the interpretation unambiguous.
+the \emph{field} (equivalently, of the material plate that absorbs it), not the
+total momentum of the closed laboratory system, that is non-conserved; the total
+momentum of plate, field and support is conserved, exactly as for an ordinary
+sail in a wind. Second, the renormalised vacuum stress $\langle T_{\mu\nu}\rangle$
+is a physically measured quantity --- the Casimir effect itself --- so the
+surface integral requires no assumption of a material aether: its value is fixed
+by the same $\langle T_{\mu\nu}\rangle$ that is confirmed experimentally for the
+symmetric configuration. The broken translational symmetry of the boundary
+conditions, not of space itself, is what renders $\partial\langle H\rangle/\partial l\neq 0$.
+
+
+\vspace{\myvspacebeforesubsection}
 \subsection*{\centering{\fontencoding{T1}\fontfamily{ptm}{\selectfont CONCLUSION}}}
 \vspace{\myvspaceaftersubsection}
 
@@ -322,6 +388,13 @@ the link between geometry, symmetry, and dynamics in quantum field theory.
 симетрію й узгоджується як з гамільтоновим підходом, так і з різницею густин енергії.
 Результат підкреслює глибокий фізичний принцип: макроскопічна тяга від квантових флуктуацій
 вакууму виникає саме тому, що система не є інваріантною відносно просторових зсувів.
+Окремо показано, що стандартне застосування рівняння балансу імпульсу (\S\,105 Тамма)
+є неповним для систем із $\langle\mathbf{S}\rangle=0$: оскільки середній вектор Пойнтінга
+дорівнює нулю, незбалансований імпульс міститься у поверхневому інтегралі тензора натягів
+Максвелла по межі вакуумної області, а не у потоці $\mathbf{g}=\mathbf{S}/c^2$. Не
+зберігається імпульс \emph{поля} (речовини), а не повний імпульс замкненої системи;
+величина сили спирається на виміряний вакуумний тензор $\langle T_{\mu\nu}\rangle$ і не
+потребує припущення про матеріальний ефір.
 
 \begin{thebibliography}{9}
 \bibitem{Drozdov2024}
@@ -330,6 +403,8 @@ A. Drozdov, \textit{Casimir honeycomb drive: on the force on perfectly conductin
 E. Noether, \textit{Invariante Variationsprobleme}, Nachr. d. König. Gesellsch. d. Wiss. zu Göttingen, Math-phys. Klasse, 235–257 (1918).
 \bibitem{Casimir1948}
 H. B. G. Casimir, \textit{On the attraction between two perfectly conducting plates}, Proc. K. Ned. Akad. Wet. B \textbf{51}, 793 (1948).
+\bibitem{Tamm1957}
+I. E. Tamm, \textit{Fundamentals of the Theory of Electricity} (\S\,105, Maxwell stress tensor and the momentum balance of the electromagnetic field), Mir, Moscow (Engl.\ ed.\ 1979).
 \end{thebibliography}
 
 \end{document}

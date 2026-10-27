@@ -1,0 +1,476 @@
+\documentclass[twoside, 10pt]{article}
+
+% Русский перевод статьи noether_casimir_drive.tex (рабочий вариант для осмысления).
+% Оригинал для подачи — noether_casimir_drive.tex (английский).
+
+\usepackage[T1, T2A]{fontenc}   % Standard package for selecting font encodings
+\usepackage[utf8]{inputenc} % Accept different input encodings
+\usepackage[english, ukrainian, russian]{babel}
+
+\usepackage{mathptmx}
+
+\usepackage{indentfirst}    % Indent first paragraph after section header
+
+\usepackage{sectsty}        % Control sectional headers
+
+\sectionfont{\normalfont\Large\textbf}
+\subsectionfont{\normalfont\large\textbf}
+
+\usepackage{multicol}       % Intermix single and multiple columns
+\usepackage{orcidlink}      % Insert hyperlinked ORCiD logo
+\usepackage{fancyhdr}       % Extensive control of page headers and footers
+
+\usepackage{filecontents}
+\usepackage{hyperref, doi}
+\usepackage[numbers]{natbib}
+
+\bibliographystyle{myunsrtnat}
+
+% --- METADATA ---
+\def\myfirstpage{1}
+\def\mylastpage{15}
+\def\mypages{\myfirstpage-\mylastpage}
+\def\myfilename{noether_casimir_drive_ru}
+\def\myname{А. Дроздов}
+\def\mynameukr{А. Дроздов}
+\def\mytitle{Теорема Нётер и сотовый двигатель Казимира: о несохранении импульса в асимметричных вакуумных системах}
+\def\mytitleukr{Теорема Нетер та стільниковий рушій Казимира: про незбереження імпульсу в асиметричних вакуумних системах}
+\def\myissn{2222-5617}
+\def\mydoi{10.26565/2222-5617-2026-XX-XX} % ← placeholder, замените при подаче
+\def\myemail{alexey.drozdov.07@gmail.com}
+\def\ukrvisnyk{Вісник Харківського національного університету імені В.~Н.~Каразіна, серія «Фізика», вип. XX, \mypages~(2026)}
+\def\ruvisnyk{Вестник Харьковского национального университета имени В.~Н.~Каразина, серия «Физика», вып. XX, \mypages~(2026)}
+\def\myworkplace{Харьковский национальный университет имени В.~Н.~Каразина, пл. Свободы, 4, 61022 Харьков, Украина}
+\def\myworkplaceukr{Харківський національний університет імені В.~Н.~Каразіна, майдан Свободи, 4, 61022 Харків, Україна}
+\def\myorcidlink{0009-0004-1386-4534}
+
+\def\myreceived{Поступила в редакцию 9 января 2026 г.}
+\def\myaccepted{Принята к печати 9 января 2026 г.}
+\def\myreceivedukr{Надійшла до редакції 9 січня 2026 р.}
+\def\myacceptedukr{Прийнято до друку 9 січня 2026 р.}
+
+\def\licenseref{http://creativecommons.org/licenses/by/4.0/}
+
+\def\myvspacebeforesubsection{-2.0mm}
+\def\myvspaceaftersubsection{-2.5mm}
+
+\def\collontitulasfontcode{lmss}
+
+\newcommand{\MyTitle}{\expandafter\MakeUppercase\expandafter{\mytitle}}
+\newcommand{\MyTitleUkr}{\expandafter\MakeUppercase\expandafter{\mytitleukr}}
+
+\fancypagestyle{firstpagestyle}{
+\renewcommand{\headrulewidth}{0.6pt}
+\fancyhead[C]{\ukrvisnyk \\ \ruvisnyk}
+\renewcommand{\footrulewidth}{0.6pt}
+\fancyfoot[L]{${}^{\copyright}$ \myname}
+\fancyfoot[R]{~ \\ \fontencoding{T1}\fontfamily{\collontitulasfontcode}{\selectfont \textit{Open Access. This article is licensed under a Creative Commons Attribution 4.0}} \\
+\href{\licenseref}{\fontencoding{T1}\fontfamily{\collontitulasfontcode}{\selectfont \textit{\licenseref}}}}
+}
+
+\usepackage{graphicx}
+\usepackage{caption}
+\DeclareCaptionFormat{nocaption}{}
+\captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+\usepackage{float}
+\floatplacement{figure}{H}
+\usepackage{xcolor}
+\usepackage{enumerate}
+\usepackage{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{textcomp}
+\usepackage{upquote}
+\usepackage{ucs}
+\usepackage{grffile}
+\usepackage[Export]{adjustbox}
+\adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+\usepackage{longtable, booktabs, enumitem, ulem, wrapfig, sidecap}
+
+\providecommand{\keywords}[1]{\textbf{\textit{Ключевые слова:}} #1}
+\providecommand{\keywordsukr}[1]{\textbf{Ключові слова:} #1}
+
+\author{\myname \,\orcidlink{\myorcidlink}}
+\title{\textbf{\MyTitle.}}
+\date{}
+
+\definecolor{urlcolor}{rgb}{0,.145,.698}
+\definecolor{linkcolor}{rgb}{0,0,0}
+\definecolor{citecolor}{rgb}{0,0,0}
+
+\providecommand{\doi}[1]{DOI: \href{https://doi.org/#1}{#1}}
+
+\geometry{verbose,includehead,
+nomarginpar,
+tmargin=1.1cm,bmargin=3.0cm,lmargin=1.85cm,rmargin=1.85cm}
+
+\setlength{\columnsep}{0.5cm}
+
+% forbid word transfer
+\hyphenpenalty=10000
+
+\begin{document}
+
+\fontencoding{T2A}\fontfamily{ptm}\selectfont
+
+\setcounter{page}{\myfirstpage}
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[CE]{\fontencoding{T2A}\fontfamily{ptm}{\selectfont \textit{\mytitle.}}}
+\fancyhead[CO]{\fontencoding{T2A}\fontfamily{ptm}{\selectfont \textit{\myname}}}
+\renewcommand{\headrulewidth}{0.6pt}
+\fancyfoot{}
+\fancyfoot[LE,RO]{\thepage}
+\fancyfoot[LO,RE]{{~} \\ {\fontencoding{T2A}\fontfamily{ptm}{\selectfont \ruvisnyk}} \\ {\fontencoding{T2A}\fontfamily{\collontitulasfontcode}{\selectfont \ukrvisnyk}}}
+\fancyfoot[CO,CE]{}
+
+$\,$
+
+\thispagestyle{firstpagestyle}
+
+\vspace{-9.4mm}
+
+\begin{tabular}{lcr}
+\doi{\mydoi}
+& \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\, \,\,\,\,\,\,\,\,\,\,\,\,\,\,
+& ISSN \myissn (Print)
+\end{tabular}
+
+\vspace{9mm}
+
+\begin{tabular}{l}
+Оригинальная статья \\
+Статья в печати \\
+\href{https://doi.org/\mydoi}{https://doi.org/\mydoi} \\
+УДК 53.09, 621.3, 629.7 \\
+PACS: 11.10.Ef, 03.70.+k, 42.50.Lc \\
+\end{tabular}
+
+\section*{\centering {\fontencoding{T2A}\fontfamily{ptm}{\selectfont \MyTitle}}}
+
+\vspace{7mm}
+\centerline{\Large{\myname \,\orcidlink{\myorcidlink} }}
+\vspace{7.5mm}
+\centerline{\textit{\myworkplace}}
+\centerline{\textit{E-mail: \href{mailto:\myemail}{\myemail}}}
+
+\vspace{5mm}
+\centerline{\myreceived}
+\centerline{\myaccepted}
+
+\vspace{5mm}
+
+В работе сотовый двигатель Казимира анализируется с помощью теоремы Нётер.
+Рассматриваемая система — идеально проводящая пластина с наноразмерной сотовой структурой
+на одной стороне — не обладает трансляционной симметрией вдоль оси, нормальной к пластине,
+из-за геометрической асимметрии вакуумных мод по её сторонам.
+Вследствие этого вакуумный гамильтониан явно зависит
+от координаты \(l\) (эффективной длины резонатора), и по теореме Нётер
+соответствующая компонента импульса не сохраняется.
+Это несохранение проявляется как результирующая сила квантового вакуума (тяга Казимира).
+Показано, что полученное выражение для силы на единицу площади непосредственно отражает это нарушение симметрии
+и согласуется как с гамильтоновым подходом, так и с разностью плотностей энергии.
+Результат подчёркивает глубокий физический принцип: макроскопическая тяга от квантовых флуктуаций вакуума
+возникает потому, что система не инвариантна относительно пространственных трансляций.
+
+\vspace{5mm}
+
+\noindent
+\begin{keywords}
+\textit{теорема Нётер, эффект Казимира, квантовый вакуум, несохранение импульса, наносоты, тяга Казимира}
+\end{keywords}
+
+\vspace{5mm}
+
+\noindent
+\textbf{Як цитувати}: \textit{\mynameukr}. \textit{\mytitleukr}. {\ukrvisnyk}. \href{https://doi.org/\mydoi} {https://doi.org/\mydoi}.
+
+\vspace{5mm}
+
+\noindent
+\textbf{Как цитировать}: \textit{\myname}. \textit{\mytitle}. {\ruvisnyk}. \href{https://doi.org/\mydoi} {https://doi.org/\mydoi}.
+
+\vspace{5mm}
+
+\newpage
+
+\begin{multicols}{2}
+
+\vspace{\myvspacebeforesubsection}
+\subsection*{\centering{\fontencoding{T2A}\fontfamily{ptm}{\selectfont ВВЕДЕНИЕ}}}
+\vspace{\myvspaceaftersubsection}
+
+Теорема Нётер устанавливает глубокое соответствие между непрерывными симметриями физической
+системы и сохраняющимися величинами. В частности, инвариантность относительно пространственных трансляций влечёт сохранение импульса.
+В классической конфигурации Казимира с двумя пластинами система остаётся симметричной относительно трансляций вдоль плоскости пластин,
+поэтому поперечный импульс сохраняется; граничные условия влияют только на нормальную компоненту.
+
+Напротив, \textit{однотельный} сотовый двигатель Казимира явно нарушает трансляционную симметрию вдоль оси \(z\)
+из-за различных граничных условий на разных сторонах одной пластины: одна сторона гладкая,
+а другая покрыта проводящими нанорезонаторами. Эта асимметрия делает вакуумный гамильтониан
+\(\langle 0|\hat{\mathcal{H}}|0\rangle\) функцией геометрического параметра \(l\) — эффективной
+длины нанорезонаторов.
+
+\vspace{\myvspacebeforesubsection}
+\subsection*{\centering{\fontencoding{T2A}\fontfamily{ptm}{\selectfont ТЕОРЕМА НЁТЕР И НЕСОХРАНЕНИЕ ИМПУЛЬСА}}}
+\vspace{\myvspaceaftersubsection}
+
+Рассмотрим вакуумный гамильтониан на единицу площади, полученный для сотовой системы:
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.42\textwidth]{honeycomb_box_H.png}
+\caption{}{\centering{\textbf{Рис.1.} Кубический резонатор с пластиной, покрытой сотами.}}
+\end{center}
+\label{fig:honeycomb_box_H}
+\end{figure}
+
+\end{multicols}
+
+\[
+\frac{\langle 0|\hat{\mathcal{H}}|0\rangle}{S} = \frac{\hbar c}{a^2\pi} \Bigg\{
+l \sum_{n_x=(0)1}^{\infty}\sum_{n_y=(0)1}^{\infty}
+\int_0^{\infty} \sqrt{ \frac{\pi^2}{a^2}(n_x^2 + n_y^2) + k_z^2 } \, dk_z
++ (L - l) \int_0^{\infty}\!\!\int_0^{\infty}
+\int_0^{\infty} \sqrt{k_x^2 + k_y^2 + k_z^2} \, dk_z \, \frac{a}{\pi}dk_x \frac{a}{\pi}dk_y
+\Bigg\}.
+\]
+
+\begin{multicols}{2}
+
+Это выражение явно зависит от \(l\). Следовательно, система \textbf{не инвариантна} относительно бесконечно малых трансляций \(z \to z + \delta z\).
+
+Согласно теореме Нётер, генератор пространственных трансляций — компонента импульса \(P_z\) — сохраняется
+\textbf{тогда и только тогда}, когда гамильтониан не зависит от \(z\).
+Поскольку \(\partial \langle H \rangle / \partial l \neq 0\), симметрия нарушена,
+и \(P_z\) не сохраняется.
+
+Результирующая сила равна
+\end{multicols}
+
+\[
+\frac{F}{S} = \frac{\partial}{\partial l} \frac{\langle 0|\hat{\mathcal{H}}|0\rangle}{S}
+= \frac{\hbar c}{a^2\pi} \left\{
+\sum_{n_x=(0)1}^{\infty}\sum_{n_y=(0)1}^{\infty}
+\int_0^{\infty} \sqrt{ \frac{\pi^2}{a^2}(n_x^2 + n_y^2) + k_z^2 } \, dk_z
+- \int_0^{\infty}\!\!\int_0^{\infty}
+\int_0^{\infty} \sqrt{k_x^2 + k_y^2 + k_z^2} \, dk_z \, dn_x dn_y
+\right\},
+\]
+
+\begin{multicols}{2}
+что совпадает с формулой тяги Казимира, полученной ранее через разность плотностей энергии.
+
+Таким образом, появление результирующей тяги не является неожиданным — это следствие нарушенной трансляционной симметрии.
+Квантовый вакуум «давит» сильнее с одной стороны, потому что структура мод квантовых вакуумных колебаний различна,
+а теорема Нётер даёт фундаментальное объяснение того, почему импульс не обязан сохраняться.
+
+\vspace{\myvspacebeforesubsection}
+\subsection*{\centering{\fontencoding{T2A}\fontfamily{ptm}{\selectfont О НЕПОЛНОТЕ СТАНДАРТНОГО БАЛАНСА ИМПУЛЬСА}}}
+\vspace{\myvspaceaftersubsection}
+
+Необходимо уточнить, \emph{какой} именно импульс не сохраняется, чтобы
+результат не был прочитан как нарушение фундаментального закона сохранения.
+Стандартное уравнение баланса импульса электродинамики сплошных сред
+(Тамм, \S\,105) имеет вид
+\end{multicols}
+\[
+\nabla\cdot\mathbf{T} = \frac{\partial\mathbf{g}}{\partial t} + \mathbf{f}_{\mathrm{vol}},
+\qquad
+\mathbf{g} = \frac{1}{c^2}\mathbf{S} = \frac{1}{4\pi c}[\mathbf{E}\times\mathbf{H}],
+\]
+\begin{multicols}{2}
+где $\mathbf{T}$ --- тензор натяжений Максвелла, $\mathbf{g}$ --- плотность импульса
+поля, $\mathbf{f}_{\mathrm{vol}}$ --- плотность объёмной (пондеромоторной) силы.
+Для вакуумных флуктуаций статической сотовой системы средний вектор Пойнтинга
+равен нулю, $\langle\mathbf{S}\rangle = 0$, следовательно,
+$\langle\partial\mathbf{g}/\partial t\rangle = 0$.
+
+ Поэтому привычное
+отождествление импульса поля с $\mathbf{g} = \mathbf{S}/c^2$ упускает
+остающийся вклад — \emph{поверхностный} интеграл тензора натяжений
+по границе вакуумной области.
+
+Рассмотрим замкнутую поверхность-«коробочку» $\partial V_{\mathrm{vac}}$, грани которой лежат
+в свободном вакууме при $z = \pm L/2$ по обе стороны от пластины (пластина
+целиком заключена внутри, а вклады боковых граней сокращаются в силу симметрии в плоскости).
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.42\textwidth]{honeycomb_box_L.png}
+\caption{}{\centering{\textbf{Рис.2.} Кубический резонатор с пластиной, покрытой сотами.}}
+\end{center}
+\label{fig:honeycomb_box_L}
+\end{figure}
+
+Результирующая
+сила равна
+\end{multicols}
+\[
+F_z = \oint_{\partial V_{\mathrm{vac}}} \langle T_{zz}\rangle \, da
+= \big[\langle T_{zz}\rangle_{z=+L/2} - \langle T_{zz}\rangle_{z=-L/2}\big]\,S .
+\]
+\begin{multicols}{2}
+
+\vspace{\myvspacebeforesubsection}
+\subsection*{\centering{\fontencoding{T2A}\fontfamily{ptm}{\selectfont Где стандартный вывод неполон.}}}
+\vspace{\myvspaceaftersubsection}
+
+Переход от объёмных сил к натяжениям опирается на теорему Гаусса, которую Тамм
+применяет (\S\,33, ф.~33.7) при явном условии \emph{непрерывности} компонент
+тензора натяжений внутри объёма; поверхности разрыва там исключены, а позже
+(\S\,34, ф.~34.8) рассматриваются лишь их поверхностные \emph{заряды}. Граница
+вакуум--металл резонатора может не нести поверхностного заряда и всё же давать
+конечный скачок тензора натяжений: тензор, вычисленный по полям со стороны вакуума,
+отличается от тензора, вычисленного по полям внутри стенки. Тогда на противоположные
+стороны такого элемента поверхности действуют \emph{не} равные и не противоположные
+натяжения. Этот случай не рассмотрен ни в \S\,33, ни где-либо в книге Тамма,
+включая \S\,105. Для объёма $V$, содержащего внутренние поверхности разрыва $S_j$,
+теорему Гаусса нужно записывать в виде
+\end{multicols}
+\[
+\int_V \frac{\partial T_{ik}}{\partial x_k}\,dV
+= \oint_{\partial V_{\mathrm{ext}}} T_{ik}\,n_k\,dS
+\;-\; \sum_j \int_{S_j} [\![\,T_{ik}\,]\!]\,n_k\,dS_j ,
+\]
+\begin{multicols}{2}
+
+Поскольку грани лежат в вакууме, это поток импульса \emph{поля} через
+чисто вакуумную границу, а не сила, приложенная непосредственно к веществу
+пластины. Разность отлична от нуля лишь потому, что структура мод —
+а значит, и $\langle T_{zz}\rangle$ — различна на сотовой и на
+гладкой стороне. Именно этот член теряется, когда баланс сводится
+к $\mathbf{g}=\mathbf{S}/c^2$ при $\langle\mathbf{S}\rangle=0$.
+
+Количественно поверхностный интеграл воспроизводит тягу, полученную ранее из
+разности удельных плотностей энергии \cite{Drozdov2024}: для золотых
+наносот с размером ячейки $a\approx 2~$мкм
+\[
+\frac{F}{S} = \langle T_{zz}\rangle_{\mathrm{honey}} - \langle T_{zz}\rangle_{\mathrm{smooth}}
+\approx 8{,}55~\text{дин/м}^2 = 8{,}55\times10^{-5}~\text{Н/м}^2 ,
+\]
+что имеет порядок $\langle T_{zz}\rangle \sim K\,\hbar c/a^4$ с безразмерным
+геометрическим коэффициентом $K\sim 4\times10^{-2}$, определяемым структурой мод ячейки.
+Таким образом, прочтение через \S\,105 не выводит силу заново, а \emph{интерпретирует} её:
+то же самое число есть поток импульса поля через вакуумную границу.
+
+где $[\![\cdot]\!]$ --- скачок величины при переходе через $S_j$. Привычное
+отождествление импульса поля с $\mathbf{g}=\mathbf{S}/c^2$ сохраняет лишь внешний
+поверхностный интеграл и теряет скачковые члены.
+
+\textbf{Скачок на сотовой пластине.}
+
+У пластины две такие внутренние границы: дно ячеек на структурированной стороне и
+гладкая грань на другой. Натяжение на каждой из них --- это электромагнитное давление
+вакуумных мод. В приложении~B работы \cite{Drozdov2024} это давление на грань $xy$
+прямоугольного резонатора $a\times b\times h$, $f_z/S=\int(H_x^2+H_y^2)\,dS/(8\pi S)$,
+вычислено помодово и сопоставлено с плотностью энергии моды $E/V$. Для волны,
+распространяющейся вдоль $z$,
+\end{multicols}
+\[
+\frac{f_z/S}{E/V}=1 \quad\text{(электрическая мода, } H_z=0\text{)},
+\qquad
+\frac{f_z/S}{E/V}=\frac{a^2k_z^2}{a^2k_z^2+\pi^2(n_x^2+n_y^2)} \quad\text{(магнитная мода, } E_z=0\text{)},
+\]
+\begin{multicols}{2}
+и для мод любого типа $\lim_{k_z\to\infty}(f_z/S)/(E/V)=1$. После суммирования по
+модам нулевых колебаний скачок $\langle T_{zz}\rangle$ на каждой границе
+определяется, таким образом, плотностью энергии вакуума прилегающей полости, а
+разность двух скачков даёт
+\[
+\frac{F}{S}=[\![\langle T_{zz}\rangle]\!]_{\mathrm{honey}}-[\![\langle T_{zz}\rangle]\!]_{\mathrm{smooth}}
+\;\ge\;\delta\frac{E}{V}=\hbar c\,\pi\frac{R}{a^4},
+\]
+то есть неравенство из \cite{Drozdov2024} (приложение~B). Оно совпадает с
+гамильтоновым результатом $\partial\langle H\rangle/\partial l$ предыдущего раздела.
+Для золотых наносот с ячейкой $a\approx 2~$мкм это даёт
+$F/S\approx 8{,}55~\text{дин/м}^2 = 8{,}55\times10^{-5}~\text{Н/м}^2$.
+Таким образом, прочтение \S\,105, дополненное скачковыми членами, не выводит силу
+заново, а \emph{указывает её место}: несбалансированный импульс находится в скачке
+вакуумного тензора натяжений на внутренних границах, который теряется при сведении
+к $\mathbf{g}=\mathbf{S}/c^2$.
+
+\textbf{Эквивалентная форма через «коробочку».}
+Если охватить всю пластину поверхностью-«коробочкой» $\partial V_{\mathrm{vac}}$ с
+гранями в свободном вакууме при $z=\pm d$ (боковые грани сокращаются в силу симметрии
+в плоскости), сумма скачков превращается во внешний поток,
+$F_z=\oint_{\partial V_{\mathrm{vac}}}\langle T_{zz}\rangle\,da
+=\big[\langle T_{zz}\rangle_{z=+d}-\langle T_{zz}\rangle_{z=-d}\big]S$.
+Это поток импульса \emph{поля} через чисто вакуумную границу; он отличен от нуля лишь
+потому, что структура мод, а значит и $\langle T_{zz}\rangle$, различна на сотовой и
+на гладкой стороне.
+
+Два замечания делают интерпретацию однозначной.
+Во-первых, не сохраняется импульс именно \emph{поля} (или, что то же, материальной
+пластины, которая его поглощает), а не полный импульс замкнутой лабораторной системы;
+полный импульс пластины, поля и опоры сохраняется --- точно так же, как у обычного
+паруса на ветру. Во-вторых, перенормированное вакуумное натяжение
+$\langle T_{\mu\nu}\rangle$ является физически измеряемой величиной --- это и есть
+сам эффект Казимира, --- поэтому скачковые члены не требуют предположения о
+материальном эфире: их значение задаётся тем же $\langle T_{\mu\nu}\rangle$, которое
+подтверждено экспериментально для симметричной конфигурации. Именно нарушенная
+трансляционная симметрия граничных условий, а не самого пространства, делает
+$\partial\langle H\rangle/\partial l\neq 0$.
+
+
+\vspace{\myvspacebeforesubsection}
+\subsection*{\centering{\fontencoding{T2A}\fontfamily{ptm}{\selectfont ЗАКЛЮЧЕНИЕ}}}
+\vspace{\myvspaceaftersubsection}
+
+Сотовый двигатель Казимира является примером физической системы, в которой теорема Нётер непосредственно
+объясняет происхождение макроскопической силы: \textbf{отсутствие пространственной однородности приводит
+к несохранению импульса}, а следовательно, к появлению тяги. Это показывает, что квантовые
+вакуумные эффекты — не просто математические артефакты, а проявления глубоких принципов симметрии.
+Экспериментальная проверка может не только подтвердить реальность виртуальных фотонов, но и
+подтвердить связь между геометрией, симметрией и динамикой в квантовой теории поля.
+
+\end{multicols}
+
+\newpage
+
+\fontencoding{T2A}\fontfamily{ptm}\selectfont
+
+\section*{\centering {\fontencoding{T2A}\fontfamily{ptm}{\selectfont \uppercase{\MyTitleUkr}}}}
+
+\centerline{\Large{\mynameukr \,\orcidlink{\myorcidlink} }}
+\vspace{3mm}
+\centerline{\textit{\myworkplaceukr}}
+\centerline{\textit{E-mail: \href{mailto:\myemail}{\myemail}}}
+
+\vspace{3mm}
+\centerline{\myreceivedukr}
+\centerline{\myacceptedukr}
+
+\vspace{3.5mm}
+
+У цій роботі аналізується стільниковий рушій Казимира через призму теореми Нетер.
+Розглянута система — ідеально провідна пластина з нанорозмірною стільниковою структурою
+з одного боку — не має трансляційної симетрії вздовж осі, нормальної до пластини,
+через геометричну асиметрію вакуумних мод з двох її сторін. Як наслідок,
+гамільтоніан вакууму явно залежить від координати \(l\) (ефективної довжини резонатора),
+і, згідно з теоремою Нетер, відповідна компонента імпульсу не зберігається.
+Це незбереження проявляється як результуюча сила квантового вакууму (тяга Казимира).
+Показано, що отриманий вираз для сили на одиницю площі безпосередньо відображає цю порушену
+симетрію й узгоджується як з гамільтоновим підходом, так і з різницею густин енергії.
+Результат підкреслює глибокий фізичний принцип: макроскопічна тяга від квантових флуктуацій
+вакууму виникає саме тому, що система не є інваріантною відносно просторових зсувів.
+Окремо показано, що стандартне застосування рівняння балансу імпульсу (\S\,105 Тамма)
+є неповним для систем із $\langle\mathbf{S}\rangle=0$: оскільки середній вектор Пойнтінга
+дорівнює нулю, незбалансований імпульс міститься у поверхневому інтегралі тензора натягів
+Максвелла по межі вакуумної області, а не у потоці $\mathbf{g}=\mathbf{S}/c^2$. Не
+зберігається імпульс \emph{поля} (речовини), а не повний імпульс замкненої системи;
+величина сили спирається на виміряний вакуумний тензор $\langle T_{\mu\nu}\rangle$ і не
+потребує припущення про матеріальний ефір.
+
+\begin{thebibliography}{9}
+\bibitem{Drozdov2024}
+А. Дроздов, \textit{Сотовый двигатель Казимира: о силе, действующей на идеально проводящие соты на пластине}, Вестник Харьковского национального университета имени В.~Н.~Каразина, серия «Физика», вып. 41, 28--41 (2024). \url{https://doi.org/10.26565/2222-5617-2024-41-04}
+\bibitem{Noether1918}
+E. Noether, \textit{Invariante Variationsprobleme}, Nachr. d. König. Gesellsch. d. Wiss. zu Göttingen, Math-phys. Klasse, 235–257 (1918).
+\bibitem{Casimir1948}
+H. B. G. Casimir, \textit{On the attraction between two perfectly conducting plates}, Proc. K. Ned. Akad. Wet. B \textbf{51}, 793 (1948).
+\bibitem{Tamm1957}
+И. Е. Тамм, \textit{Основы теории электричества} (\S\,105, тензор натяжений Максвелла и баланс импульса электромагнитного поля), Наука, Москва.
+\end{thebibliography}
+
+\end{document}

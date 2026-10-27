@@ -239,6 +239,14 @@ length of the nanocavities.
 
 Let us consider the vacuum Hamiltonian per unit area derived for the honeycomb system:
 
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.42\textwidth]{honeycomb_box_H.png}
+\caption{}{\centering{\textbf{Fig.1.} Cubic cavity with a plate covered by honeycomb.}}
+\end{center}
+\label{fig:honeycomb_box_H}
+\end{figure}
+
 \end{multicols}
 
 \[
@@ -285,7 +293,7 @@ and Noether’s theorem provides the fundamental explanation why momentum does n
 
 It is essential to specify \emph{which} momentum is not conserved, so that the
 result is not misread as a violation of a fundamental conservation law. The
-standard momentum-balance equation of continuum electrodynamics (e.g.\ Tamm,
+standard momentum-balance equation of continuum electrodynamics (Tamm,
 \S\,105) reads
 \end{multicols}
 \[
@@ -298,19 +306,33 @@ where $\mathbf{T}$ is the Maxwell stress tensor, $\mathbf{g}$ the field
 momentum density and $\mathbf{f}_{\mathrm{vol}}$ the volume (ponderomotive)
 force density. For the vacuum fluctuations of a static honeycomb system the
 mean Poynting vector vanishes, $\langle\mathbf{S}\rangle = 0$, hence
-$\langle\partial\mathbf{g}/\partial t\rangle = 0$. The customary identification
+$\langle\partial\mathbf{g}/\partial t\rangle = 0$.
+
+ The customary identification
 of the field momentum with $\mathbf{g} = \mathbf{S}/c^2$ therefore misses the
 contribution that remains: the \emph{surface} integral of the stress tensor
 over the boundary of the vacuum region.
 
 Consider a closed pillbox surface $\partial V_{\mathrm{vac}}$ whose faces lie in
-the free vacuum at $z = \pm d$ on either side of the plate (the plate is
-entirely enclosed, and the lateral faces cancel by in-plane symmetry). The net
+the free vacuum at $z = \pm L/2$ on either side of the plate (the plate is
+entirely enclosed, and the lateral faces cancel by in-plane symmetry). 
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.42\textwidth]{honeycomb_box_L.png}
+\caption{}{\centering{\textbf{Fig.2.} Cubic cavity with a plate covered by honeycomb.}}
+\end{center}
+\label{fig:honeycomb_box_L}
+\end{figure}
+
+
+The net
 force is
 \end{multicols}
 \[
 F_z = \oint_{\partial V_{\mathrm{vac}}} \langle T_{zz}\rangle \, da
-= \big[\langle T_{zz}\rangle_{z=+d} - \langle T_{zz}\rangle_{z=-d}\big]\,S .
+= \big[\langle T_{zz}\rangle_{z=+L/2} - \langle T_{zz}\rangle_{z=-L/2}\big]\,S .
 \]
 \begin{multicols}{2}
 Because the faces lie in the vacuum, this is the flux of the \emph{field}
@@ -332,15 +354,80 @@ geometric coefficient $K\sim 4\times10^{-2}$ set by the cell mode structure.
 Thus the \S\,105 reading does not re-derive the force but \emph{interprets} it:
 the same number is the flux of field momentum through the vacuum boundary.
 
+\textbf{Where the standard derivation is incomplete.}
+
+The passage from volume forces to stresses rests on the Gauss theorem, which
+Tamm applies (\S\,33, eq.~33.7) under the explicit condition that the
+components of the stress tensor are \emph{continuous} inside the volume; surfaces
+of discontinuity are excluded there, and only their surface \emph{charges} are
+treated later (\S\,34, eq.~34.8). A vacuum--metal boundary of a resonator can carry
+zero surface charge and still produce a finite jump of the stress tensor: the tensor
+evaluated with the fields on the vacuum side differs from the one evaluated with the
+fields inside the wall. On the two sides of such a surface element the stresses are
+then \emph{not} equal and opposite. This case is not considered in \S\,33, nor
+anywhere in Tamm's book, including \S\,105. For a volume $V$ that contains internal
+discontinuity surfaces $S_j$ the Gauss theorem has to be written as
+\end{multicols}
+\[
+\int_V \frac{\partial T_{ik}}{\partial x_k}\,dV
+= \oint_{\partial V_{\mathrm{ext}}} T_{ik}\,n_k\,dS
+\;-\; \sum_j \int_{S_j} [\![\,T_{ik}\,]\!]\,n_k\,dS_j ,
+\]
+\begin{multicols}{2}
+where $[\![\cdot]\!]$ is the jump across $S_j$. The customary identification of the
+field momentum with $\mathbf{g}=\mathbf{S}/c^2$ keeps only the external surface
+integral and drops the jump terms.
+
+\textbf{The jump on a honeycomb plate.}
+The plate has two such internal boundaries: the bottoms of the cells on the
+structured side and the smooth face on the other side. The stress on each of them is
+the electromagnetic pressure of the vacuum modes. Appendix~B of \cite{Drozdov2024}
+computes this pressure on the $xy$ face of an $a\times b\times h$ rectangular
+resonator, $f_z/S=\int(H_x^2+H_y^2)\,dS/(8\pi S)$, mode by mode, and relates it
+to the mode energy density $E/V$. For a wave propagating along $z$
+\end{multicols}
+\[
+\frac{f_z/S}{E/V}=1 \quad\text{(electric mode, } H_z=0\text{)},
+\qquad
+\frac{f_z/S}{E/V}=\frac{a^2k_z^2}{a^2k_z^2+\pi^2(n_x^2+n_y^2)} \quad\text{(magnetic mode, } E_z=0\text{)},
+\]
+\begin{multicols}{2}
+and for every mode type $\lim_{k_z\to\infty}(f_z/S)/(E/V)=1$. Summed over the
+zero-point modes, the jump of $\langle T_{zz}\rangle$ across each boundary is
+therefore fixed by the vacuum energy density of the adjacent cavity, and the
+difference of the two jumps gives
+\[
+\frac{F}{S}=[\![\langle T_{zz}\rangle]\!]_{\mathrm{honey}}-[\![\langle T_{zz}\rangle]\!]_{\mathrm{smooth}}
+\;\ge\;\delta\frac{E}{V}=\hbar c\,\pi\frac{R}{a^4},
+\]
+the inequality of \cite{Drozdov2024} (Appendix~B). It coincides with the
+Hamiltonian result $\partial\langle H\rangle/\partial l$ of the previous section.
+For a gold nano-honeycomb with cell size $a\approx 2~\mu$m this gives
+$F/S\approx 8.55~\text{dyn/m}^2 = 8.55\times10^{-5}~\text{N/m}^2$.
+The \S\,105 reading, completed by the jump terms, therefore does not re-derive the
+force but \emph{locates} it: the unbalanced momentum sits in the jump of the vacuum
+stress tensor on the internal boundaries, which the reduction to
+$\mathbf{g}=\mathbf{S}/c^2$ drops.
+
+\textbf{Equivalent pillbox form.}
+Enclosing the whole plate by a pillbox $\partial V_{\mathrm{vac}}$ with faces in the
+free vacuum at $z=\pm d$ (lateral faces cancel by in-plane symmetry) turns the sum of
+the jumps into an external flux,
+$F_z=\oint_{\partial V_{\mathrm{vac}}}\langle T_{zz}\rangle\,da
+=\big[\langle T_{zz}\rangle_{z=+d}-\langle T_{zz}\rangle_{z=-d}\big]S$.
+This is the flux of \emph{field} momentum through a purely vacuum boundary, non-zero
+solely because the mode structure, and hence $\langle T_{zz}\rangle$, differs on the
+honeycomb and on the smooth side.
+
 Two remarks make the interpretation unambiguous.
-the \emph{field} (equivalently, of the material plate that absorbs it), not the
-total momentum of the closed laboratory system, that is non-conserved; the total
-momentum of plate, field and support is conserved, exactly as for an ordinary
-sail in a wind. Second, the renormalised vacuum stress $\langle T_{\mu\nu}\rangle$
-is a physically measured quantity --- the Casimir effect itself --- so the
-surface integral requires no assumption of a material aether: its value is fixed
-by the same $\langle T_{\mu\nu}\rangle$ that is confirmed experimentally for the
-symmetric configuration. The broken translational symmetry of the boundary
+First, it is the momentum of the \emph{field} (equivalently, of the material plate that
+absorbs it), not the total momentum of the closed laboratory system, that is not
+conserved; the total momentum of plate, field and support is conserved, exactly as for
+an ordinary sail in a wind. Second, the renormalised vacuum stress
+$\langle T_{\mu\nu}\rangle$ is a physically measured quantity --- the Casimir effect
+itself --- so the jump terms require no assumption of a material aether: their value
+is fixed by the same $\langle T_{\mu\nu}\rangle$ that is confirmed experimentally for
+the symmetric configuration. The broken translational symmetry of the boundary
 conditions, not of space itself, is what renders $\partial\langle H\rangle/\partial l\neq 0$.
 
 

@@ -287,6 +287,99 @@ Thus, the appearance of net thrust is not unexpected - it is the consequence of 
 The quantum vacuum “pushes” more strongly on one side because the quantun vacuum oscillation mode structure differs,
 and Noether’s theorem provides the fundamental explanation why momentum does not need to be conserved.
 
+
+
+\vspace{\myvspacebeforesubsection}
+\subsection*{\centering{\fontencoding{T1}\fontfamily{ptm}{\selectfont THE STRESS TENSOR FROM THE ZERO-POINT MODE SUM}}}
+\vspace{\myvspaceaftersubsection}
+
+In \cite{Drozdov2024} the force was obtained from the zero-point energy
+$\frac12\sum\hbar\omega$ evaluated with the two-dimensional Euler--Maclaurin
+formula; the Maxwell stress tensor itself was not derived there. It follows from
+the same mode sum.
+
+\textbf{One mode.} For a plane wave with wave vector $\mathbf{k}$ and energy
+density $u$ the momentum flux is $\Pi_{ij}=u\,k_ik_j/k^2$ (Tamm's tension is
+$T_{ij}=-\Pi_{ij}$). A standing wave is the sum of the waves with $\pm k_z$ and has
+the same $\Pi_{zz}$. A zero-point mode in a cavity of volume $V$ has
+$u=\hbar\omega/2V$, hence
+\[
+\langle\Pi_{zz}\rangle=\frac{\hbar c}{2V}\sum_{n_x,n_y,n_z}\frac{k_z^2}{k}.
+\]
+This differs from the energy sum, eq.~(1) of \cite{Drozdov2024},
+$E = \frac{1}{2}\sum\,\hbar\omega = \hbar\,c\frac{1}{2}\sum\limits_{n_x}^{}\sum\limits_{n_y}^{}\sum\limits_{n_z}^{}k$,
+only by the
+summand: $k_z^2/k$ instead of $k$.
+
+\textbf{Link to the Hamiltonian.} With $k_z=\pi n_z/l$ one has
+$\partial k/\partial l=-k_z^2/(k\,l)$, so for every mode separately
+\[
+-\frac{\partial}{\partial l}\,\frac{\hbar c\,k}{2}=\frac{\hbar c}{2\,l}\,\frac{k_z^2}{k}
+= S\,\Pi_{zz}^{\mathrm{(mode)}},\qquad V=S\,l .
+\]
+Thus $-\partial E/\partial l=S\,\Pi_{zz}$ holds mode by mode (the Hellmann--Feynman
+theorem \cite{Feynman1939}; equivalently, conservation of the adiabatic invariant
+$E/\omega$ of each mode under a slow displacement of the wall). The Hamiltonian
+force $\partial\langle H\rangle/\partial l$ of the preceding sections and the
+stress-tensor force therefore coincide already before regularization.
+
+\textbf{Regularization.} The cutoff function $f(k/k_m)$ and the Euler--Maclaurin
+procedure of \cite{Drozdov2024} apply unchanged, with the function $G$ built from
+$k_z^2/k$. At finite $k_m$ the two expressions may differ by terms containing
+$f'(k/k_m)$, because $f$ depends on $|\mathbf{k}|$. Whether these terms are the
+origin of the material dependence $R(ak_m)$ remains to be checked by calculation.
+
+\textbf{Symmetry check.} The renormalized $\langle T_{\mu\nu}\rangle$ of the
+electromagnetic field is traceless. Between two parallel plates the boundary
+conditions are invariant under boosts along the plates; together with the trace
+condition this gives $\langle\Pi_{zz}\rangle=3\langle u\rangle$ (Brown and Maclay
+\cite{BrownMaclay1969}), which is the factor $F/S=-3\,\delta(E/V)$ found for
+Casimir's configuration in \cite{Drozdov2024}. A honeycomb cell is a waveguide
+along $z$: away from its ends its boundary conditions are invariant under boosts
+along $z$, so in the $(t,z)$ block $\langle T_{\mu\nu}\rangle\propto\eta_{\mu\nu}$
+and $\langle\Pi_{zz}\rangle=-\langle u\rangle$. This reproduces
+$|F/S|=\delta(E/V)$ of Appendices~B and~C of \cite{Drozdov2024}. The argument is
+exact for a perfect conductor in the limit $ak_m\to\infty$ and up to end
+corrections of order $a/l$; the material cutoff breaks the boost invariance, and its
+corrections require the mode sum above.
+
+The same flux can be computed without a mode cutoff by the method of
+Dzyaloshinskii, Lifshitz and Pitaevskii \cite{DLP1961}, who obtain the stress in a
+vacuum gap from the Green function of the field, the material entering through
+$\varepsilon(\omega)$. For a honeycomb cell this requires the Green function of a
+rectangular waveguide and is left for future work.
+
+\vspace{\myvspacebeforesubsection}
+\subsection*{\centering{\fontencoding{T1}\fontfamily{ptm}{\selectfont ON THE AUXILIARY CAVITY AND THE POSITION OF THE PILLBOX}}}
+\vspace{\myvspaceaftersubsection}
+
+The perfectly conducting walls of the cube $L^3$ (Fig.~2) are, as in Casimir's
+paper, an auxiliary boundary condition without a physical counterpart, in the same
+way as the periodic boundary conditions used in textbooks of quantum mechanics to
+normalize plane waves. The procedure is legitimate because the result is taken in
+the limit $L\to\infty$. By Weyl's theorem \cite{Weyl1912} the leading term of the
+number of modes, $N(k)\simeq Vk^3/3\pi^2$, does not depend on the boundary
+conditions on the outer faces, which affect only surface corrections, and the
+contribution of the remote walls to the force on the plate vanishes as
+$L\to\infty$. The finite box makes the wave numbers discrete; it does not make the
+space discrete. The cutoff $k_m$ is a separate, physical ingredient: it is set by
+the transparency of the plate material for short waves. (If the vacuum were
+regarded as a discrete medium with lattice step $b$, its Brillouin zone would add a
+cutoff $|\mathbf{k}|\le\pi/b$; for the force on the plate, however, the relevant
+cutoff is that of the plate material.)
+
+\textbf{Position of the pillbox faces.} Take the faces at $z=\pm d$,
+$0<d<L/2$, strictly inside the two cavities. There is no matter inside a cavity,
+so $\partial_k\langle T_{zk}\rangle=0$. Integrated over the cross-section of a
+cell, the flux through the side walls vanishes: on a perfect conductor $E_z=0$
+(tangential) and $H_n=0$ (normal), so $T_{zn}=(E_zE_n+H_zH_n)/4\pi=0$. Hence
+$\int\langle T_{zz}\rangle\,dx\,dy$ does not depend on $z$, and $F_z$ does not
+depend on $d$. The faces at $z=\pm L/2$ used above are to be understood as the
+limit $d\to L/2$ taken from inside the cavities; at $z=\pm L/2$ themselves stand
+the auxiliary conducting walls. On the honeycomb side the face crosses the cell
+walls; for perfectly conducting walls of zero thickness these do not contribute to
+the integral.
+
 \vspace{\myvspacebeforesubsection}
 \subsection*{\centering{\fontencoding{T1}\fontfamily{ptm}{\selectfont ON THE INCOMPLETENESS OF THE STANDARD MOMENTUM BALANCE}}}
 \vspace{\myvspaceaftersubsection}
@@ -353,6 +446,10 @@ of the order $\langle T_{zz}\rangle \sim K\,\hbar c/a^4$ with a dimensionless
 geometric coefficient $K\sim 4\times10^{-2}$ set by the cell mode structure.
 Thus the \S\,105 reading does not re-derive the force but \emph{interprets} it:
 the same number is the flux of field momentum through the vacuum boundary.
+
+
+
+
 
 \textbf{Where the standard derivation is incomplete.}
 
@@ -492,6 +589,14 @@ E. Noether, \textit{Invariante Variationsprobleme}, Nachr. d. König. Gesellsch.
 H. B. G. Casimir, \textit{On the attraction between two perfectly conducting plates}, Proc. K. Ned. Akad. Wet. B \textbf{51}, 793 (1948).
 \bibitem{Tamm1957}
 I. E. Tamm, \textit{Fundamentals of the Theory of Electricity} (\S\,105, Maxwell stress tensor and the momentum balance of the electromagnetic field), Mir, Moscow (Engl.\ ed.\ 1979).
+\bibitem{Feynman1939}
+R. P. Feynman, \textit{Forces in molecules}, Phys. Rev. \textbf{56}, 340 (1939).
+\bibitem{BrownMaclay1969}
+L. S. Brown, G. J. Maclay, \textit{Vacuum stress between conducting plates: an image solution}, Phys. Rev. \textbf{184}, 1272 (1969).
+\bibitem{Weyl1912}
+H. Weyl, \textit{Das asymptotische Verteilungsgesetz der Eigenwerte linearer partieller Differentialgleichungen}, Math. Ann. \textbf{71}, 441 (1912).
+\bibitem{DLP1961}
+I. E. Dzyaloshinskii, E. M. Lifshitz, L. P. Pitaevskii, \textit{The general theory of van der Waals forces}, Sov. Phys. Usp. \textbf{4}, 153 (1961).
 \end{thebibliography}
 
 \end{document}

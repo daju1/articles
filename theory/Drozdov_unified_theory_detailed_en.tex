@@ -23,6 +23,7 @@ Full Derivations.\\
 \author{A.~Yu.~Drozdov}
 \date{24 October 2026}
 
+\providecommand{\lambdabar}{{\mkern0.75mu\mathchar'26\mkern-9.75mu\lambda}}
 \begin{document}
 \maketitle
 
@@ -350,6 +351,21 @@ gives $E''=A^4 m^3/J^6>0$ --- a minimum. As $J\to0$ the barrier term vanishes,
 only attraction remains, and the minimum shifts to $d\to0$ (collapse). $\qed$
 \end{proof}
 
+\begin{remark}[Which coordinate is stabilized (correction)]
+\label{rem:stab_axis}
+The centrifugal term $J^2/(2md^2)$ refers to the \emph{radial} coordinate in the
+plane of rotation: it arises from $J=m\rho^2\omega$ with $\rho$ the distance to
+the axis. The axial distance $d$ between the ring planes does not enter $J$, so
+Theorem~\ref{th:stab} applies literally only if $d$ is read as a radial distance,
+i.e.\ the orbit radius of the special point. In the previous version of this paper
+$d_{\text{eq}}$ was identified with the axial gap of the pair, which was incorrect.
+Check: for $J=\hbar/2$, $A=e^2$ the theorem gives
+$d_{\text{eq}}=\lambdabar_C/(4\alpha)=a_0/4$, an atomic scale rather than the size
+of the particle. The axial gap $d$ is set by the elastic interaction of the two
+rings and is not computed in the present work
+(see Section~\ref{sec:spin_subluminal}).
+\end{remark}
+
 \begin{remark}[Annihilation]
 Collapse upon loss of precession is Frenkel recombination: an interstitial loop
 ($+\Delta b$) and a vacancy loop ($-\Delta b$) give a total Burgers vector
@@ -441,6 +457,85 @@ $[\mu_{\text{mag}}]=[q_m][d]=L^2$. $[S]=[m a^2\omega]=M L^2 T^{-1}$.
 $[(q_m/m)S]=(L/M)(ML^2T^{-1})=L^3T^{-1}$. Then
 $[g]=[\mu_{\text{mag}}]/[(q_m/m)S]=L^2/(L^3T^{-1})=T/L\neq 1$. $\qed$
 \end{proof}
+
+
+\noindent\textit{Remark.} This statement concerns expressing $g$ through $q_m$ in elastic units. In Section~\ref{sec:spin_subluminal} $g$ is defined through the observed charge $e$, and no dimensional difficulty arises.
+
+\section{A subluminal classical model of spin and the gyromagnetic ratio}
+\label{sec:spin_subluminal}
+
+\paragraph{The difficulty in classical electrodynamics.} If the electron is a
+charged sphere of radius $R=r_e/2$ (field energy $e^2/2R=m_ec^2$) and the Bohr
+magneton is produced by its rotation, $\mu_B=e\omega R^2/3c$, the equatorial speed is
+\begin{equation}
+\frac{v}{c}=\frac{3\mu_B}{eR}=\frac{3}{\alpha}\approx411 .
+\label{eq:v_classical}
+\end{equation}
+This is not an accidental number but an exact factor $1/\alpha$. It arises because
+the magnetic moment $\mu$ and the mechanical moment $S$ are produced by \emph{the same}
+moving charge and therefore sit on the same lever arm. Hence $\mu/S=e/(2mc)$, and
+the value $\mu_B$ at a radius of order $r_e$ requires superluminal rotation (Abraham;
+the difficulty was noted by Uhlenbeck and Goudsmit in 1925).
+
+\paragraph{Separate carriers in the model.} In the ring pair the two moments are of
+different nature.
+\begin{enumerate}[nosep]
+\item The \emph{mechanical moment} is produced by the motion of the special point
+along a ring of radius $a$: $S=mav$. Its value $S=\hbar/2$ is fixed by the topology of
+the twist, Frank vector $\Omega=\pi$, $\nu=\tfrac12$ (Lemma~\ref{lem:franck}), not
+by fitting a speed.
+\item The \emph{magnetic moment} is the static dipole of the two Burgers jumps
+$\pm\Delta b=\pm q_m$ separated by the axial gap $d$: $\mu=q_md$. No rotation is
+needed for it; the current contribution of the pair vanishes
+(Theorem~\ref{th:mu0}).
+\end{enumerate}
+
+\begin{proposition}[Subluminal spin]
+\label{prop:subluminal}
+For $a=\lambdabar_C$ and $S=\hbar/2$ the speed of the special point is $v=c/2$.
+\end{proposition}
+\begin{proof}
+$v=S/(ma)=(\hbar/2)/(m\lambdabar_C)=(\hbar/2)\,c/\hbar=c/2$. $\qed$
+\end{proof}
+The factor $1/\alpha$ of \eqref{eq:v_classical} does not appear in the model: $S$ sits
+on the arm $a=\lambdabar_C$, not on $r_e=\alpha\lambdabar_C$. Were $S$ also carried on
+$r_e$, one would get $v=c/(2\alpha)\approx68c$, the same difficulty.
+\emph{Status: proved} under the calibration $a=\lambdabar_C$; the choice of $a$ is an
+assumed calibration, not a derivation.
+
+\paragraph{The gyromagnetic ratio.} Compare $\mu=q_md$ with the observed moment. In
+the Coulomb channel of the model the pole strength $q_m$ appears as the observed
+charge $e$ (in the Gaussian calibration $q_m\to e$). Then
+\begin{equation}
+g\equiv\frac{\mu}{(e/2mc)\,S}=\frac{e\,d}{e\hbar/(4mc)}=\frac{4d}{\lambdabar_C},
+\qquad
+g=2\iff d=\tfrac12\lambdabar_C=\tfrac12a .
+\label{eq:g_geometry}
+\end{equation}
+Thus in the model $g$ is not postulated but reduces to a single geometric ratio: the
+axial gap of the pair relative to its radius. The classical ``rotating charge''
+formula gives $g=1$ because there $d$ and $a$ coincide with one radius. In the model
+they are independent.
+
+\paragraph{What is not proved.}
+\begin{enumerate}[nosep]
+\item \emph{The value $d/a=\tfrac12$ is not derived.} It requires the elastic
+equilibrium of two coaxial rings of opposite sign in the axial coordinate: the
+attraction of the poles against the elastic repulsion of the rings with the moduli
+\eqref{eq:constit}. The centrifugal Theorem~\ref{th:stab} does not give this quantity
+(Remark~\ref{rem:stab_axis}). We also checked the radial equilibrium of a single
+ring: the line tension $T$ against the centrifugal term $S^2/(2ma^2)$ with
+$m=\kappa Ta/c^2$ gives $a/\lambdabar_C=\tfrac12\sqrt{3\kappa/4\pi}$. It depends on
+the unknown coefficient $\kappa$ and fixes neither $a=\lambdabar_C$ nor $d$.
+\item \emph{Identifying $\mu=q_md$ with the measured moment.} If magnetic charges
+are primary, the observed ``magnetic moment'' is the quantity dual to an electric
+dipole moment. The substitution $q_m\to e$ in \eqref{eq:g_geometry} is a duality
+convention that needs separate justification.
+\item The \emph{anomalous part} $g-2=\alpha/\pi+\dots$ is not addressed in the model.
+\end{enumerate}
+Result: the model gives a \emph{subluminal} classical picture of spin (proved) and
+reduces $g=2$ to the condition $d=a/2$ on the geometry of the pair (formulation).
+Deriving this condition from elastic equilibrium is an open problem.
 
 \section{The Fermi film and gravity: full derivation}
 
@@ -599,8 +694,9 @@ Frank vector $\Omega=\pi$ of the twist (Lemma~\ref{lem:franck}).
 \paragraph{Assumed.} The values $\alpha$, $\alpha_G$; $G$ (embedded in
 $\gamma_P$); the two stiffness scales.
 
-\paragraph{Open.} The numerical values of $\alpha,\alpha_G$; a rigorous $g=2$
-(classically $g=1$; $g=2$ only at the spinor level \cite{osipov2010}); the
+\paragraph{Open.} The numerical values of $\alpha,\alpha_G$; the derivation of the condition $d=a/2$ that gives $g=2$
+(Section~\ref{sec:spin_subluminal}; subluminal spin is proved, but the pair geometry
+that fixes $g$ has not yet been derived from elastic equilibrium); the
 dynamical film stiffness (the dimensional factor in the source); the weak- and
 strong-sector couplings.
 

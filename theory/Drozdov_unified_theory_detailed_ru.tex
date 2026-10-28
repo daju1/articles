@@ -94,36 +94,120 @@ $[T^a]=L^{-1}$. Тогда $[q_m]=[T^a]\cdot[dS]=L^{-1}\cdot L^{2}=L$. $\qed$
 Отсюда словарь: $\mathbf{B}\leftrightarrow T^a$, $\mathbf{E}\leftrightarrow I^a$.
 
 \subsection{Полный вывод квази-максвелловской системы}
-Приведём вывод подробно. Лагранжева плотность линейной динамической теории
-дислокаций в калибровке $T(3)$ бьётся на упругую и дислокационную части
-\cite{lazar2010}:
+Приведём вывод подробно, следуя линейной изотропной теории Лазара в индексной
+записи \cite{lazar2010pla} (форма с дифференциальными формами и нелинейный случай
+--- в \cite{lazar2010}). В этом подразделе все индексы латинские и пространственные,
+$i,j,k,l=1,2,3$; суммирование по повторяющимся индексам подразумевается.
+
+\paragraph{Кинематика.} Основные поля --- упругая дисторсия $\beta_{ij}$
+(безразмерна) и физическая скорость $v_i$ $[LT^{-1}]$; оба поля несовместны.
+Плотность дислокаций и ток дислокаций определяются как \cite[ур.~(1)]{lazar2010pla}
 \begin{equation}
-\mathcal{L} = \tfrac12\rho\,v^a v_a - \tfrac12 C_{ijkl}\beta^{i}_{a}\beta^{j a}
- + \tfrac12 D_{ab}\,I^a_i I^{b\,i} - \tfrac14 A_{ab}\,T^a_{ij}T^{b\,ij},
+T_{ijk}=\beta_{ik,j}-\beta_{ij,k},\qquad I_{ij}=-v_{i,j}+\dot\beta_{ij},
+\label{eq:TI_lazar}
+\end{equation}
+где $\beta_{ij,k}\equiv\partial_k\beta_{ij}$, $\dot\beta_{ij}\equiv\partial_t\beta_{ij}$;
+$[T_{ijk}]=L^{-1}$, $[I_{ij}]=T^{-1}$. Связь с обозначениями \eqref{eq:torsion}:
+первый индекс Лазара --- это трансляционный индекс $a$, $T_{ijk}=T^{a}_{\ jk}$ при
+$a\equiv i$. Поскольку $\beta$ --- упругая (а не пластическая) дисторсия,
+$\beta=\partial u-\phi$, знак $T$ в \eqref{eq:TI_lazar} противоположен знаку в
+\eqref{eq:torsion}, а порядок индексов $j,k$ другой. Это соглашение о знаке и на
+физику не влияет, но его нужно держать в уме при сравнении формул.
+
+\paragraph{Лагранжиан.} Лагранжева плотность имеет билинейную форму
+\cite[ур.~(3)]{lazar2010pla}
+\begin{equation}
+\mathcal{L}=T-W=\tfrac12\,p_iv_i+\tfrac12\,D_{ij}I_{ij}-\tfrac12\,\sigma_{ij}\beta_{ij}
+-\tfrac14\,H_{ijk}T_{ijk}.
 \label{eq:lagr}
 \end{equation}
-где $\beta$ --- упругая дисторсия, $C_{ijkl}$ --- тензор упругости, а $D_{ab}$,
-$A_{ab}$ --- материальные тензоры откликов (аналоги диэлектрической и магнитной
-проницаемостей). Полевые напряжённости --- плотность дислокаций $T^a$
-\eqref{eq:torsion} и ток $I^a$; отклики определяются как
+\textit{Скалярность.} В каждом слагаемом свёрнуты все индексы: один в первом, два во
+втором и третьем, три в четвёртом. Свободных индексов нет, и $\mathcal L$ --- скаляр.
+Размерность каждого слагаемого --- плотность энергии $[ML^{-1}T^{-2}]$:
+$[p_iv_i]=\frac{M}{L^2T}\cdot\frac LT$, $[D_{ij}I_{ij}]=\frac M{LT}\cdot\frac1T$,
+$[\sigma_{ij}\beta_{ij}]=\frac M{LT^2}$, $[H_{ijk}T_{ijk}]=\frac M{T^2}\cdot\frac1L$.
+
+\paragraph{Отклики.} Канонически сопряжённые величины \cite[ур.~(4)]{lazar2010pla}:
 \begin{equation}
-H_a^{\ ij} = -\frac{\partial\mathcal{L}}{\partial T^a_{ij}} = A_{ab}T^{b\,ij},
-\qquad
-D_a^{\ i} = \frac{\partial\mathcal{L}}{\partial I^a_i} = D_{ab}I^{b\,i}.
+p_i=\frac{\partial\mathcal L}{\partial v_i},\quad
+\sigma_{ij}=-\frac{\partial\mathcal L}{\partial\beta_{ij}},\quad
+D_{ij}=\frac{\partial\mathcal L}{\partial I_{ij}},\quad
+H_{ijk}=-2\frac{\partial\mathcal L}{\partial T_{ijk}}.
+\label{eq:responses}
+\end{equation}
+Это импульс, напряжение, поток импульса дислокаций и псевдомоментное напряжение.
+Множитель $2$ у $H$ компенсирует коэффициент $\tfrac14$ и антисимметрию
+$T_{ijk}=-T_{ikj}$.
+
+\paragraph{Определяющие соотношения.} Для линейной изотропной среды
+\cite[ур.~(10)--(13)]{lazar2010pla}
+\begin{equation}
+\begin{aligned}
+p_i&=\rho\,v_i,\\
+\sigma_{ij}&=\lambda\,\delta_{ij}\beta_{kk}+\mu(\beta_{ij}+\beta_{ji})+\gamma(\beta_{ij}-\beta_{ji}),\\
+D_{ij}&=d_1\,\delta_{ij}I_{kk}+d_2(I_{ij}+I_{ji})+d_3(I_{ij}-I_{ji}),\\
+H_{ijk}&=c_1\,T_{ijk}+c_2(T_{jki}-T_{kji})+c_3(\delta_{ij}T_{llk}-\delta_{ik}T_{llj}).
+\end{aligned}
 \label{eq:constit}
 \end{equation}
-Варьирование действия $\delta\!\int\mathcal{L}\,d^4x=0$ по калибровочному
-потенциалу $\phi^a$ даёт уравнение движения (аналог закона Ампера--Эрстеда):
+Это десять постоянных: $\rho$ и девять модулей, $[\lambda,\mu,\gamma]=ML^{-1}T^{-2}$,
+$[d_{1,2,3}]=ML^{-1}$, $[c_{1,2,3}]=MLT^{-2}$. Неотрицательность энергии
+$T+W\ge0$ даёт \cite[ур.~(14)]{lazar2010pla}: $\rho,\mu,\gamma\ge0$,
+$3\lambda+2\mu\ge0$; $d_2,d_3\ge0$, $3d_1+2d_2\ge0$; $c_1-c_2\ge0$,
+$c_1+2c_2\ge0$, $c_1-c_2+2c_3\ge0$.
+
+\textit{Связь с тензором упругости.} Упругая часть
+$W_{\text{упр}}=\tfrac12\sigma_{ij}\beta_{ij}=\tfrac12 C_{ijkl}\beta_{ij}\beta_{kl}$, где
+\[
+C_{ijkl}=\lambda\,\delta_{ij}\delta_{kl}+(\mu+\gamma)\,\delta_{ik}\delta_{jl}+(\mu-\gamma)\,\delta_{il}\delta_{jk}.
+\]
+Здесь каждый из четырёх индексов $C$ свёрнут с индексом одной из двух дисторсий.
+При $\gamma=0$ это обычный изотропный тензор Ламе. Постоянная $\gamma$ задаёт
+энергию антисимметричной (поворотной) части $\beta_{[ij]}$; её не бывает в
+классической теории упругости, где дисторсия --- градиент смещения, а поворот
+энергии не несёт.
+
+\textit{Замечание о прежней записи.} В предыдущей версии статьи упругое слагаемое
+было записано как $\tfrac12C_{ijkl}\beta^i_{\ a}\beta^{ja}$. В нём индексы $k,l$
+не свёрнуты, и выражение не скаляр; кроме того, $D_{ab}I^a_iI^{bi}$ и
+$A_{ab}T^a_{ij}T^{bij}$ содержали лишь по одной постоянной вместо трёх. Настоящая
+форма \eqref{eq:lagr}--\eqref{eq:constit} исправляет обе неточности. Прежняя
+упрощённая форма --- частный случай $d_1=0$, $d_2=d_3$ и $c_2=c_3=0$. Поскольку
+выводы следующих разделов используют только структуру уравнений, а не конкретные
+значения $d_i,c_i$, эти выводы исправление не затрагивает.
+
+\paragraph{Уравнения движения.} Уравнения Эйлера--Лагранжа по $v_i$ и по
+$\beta_{ij}$ \cite[ур.~(5)--(6)]{lazar2010pla}, с внешними источниками $p^0_i$,
+$\sigma^0_{ij}$ (нуль-лагранжиан $\sigma^0_{ij}\beta_{ij}-p^0_iv_i$, причём
+$\dot p^0_i-\sigma^0_{ij,j}=0$), записанные через отклики \eqref{eq:responses},
+дают \cite[ур.~(7)--(8)]{lazar2010pla}
+\begin{align}
+D_{ij,j}+p_i&=p^0_i, &&\text{(баланс импульса дислокаций; аналог закона Гаусса)}\label{eq:gauss}\\
+\dot D_{ij}+H_{ijk,k}+\sigma_{ij}&=\sigma^0_{ij}. &&\text{(баланс напряжений; аналог закона Ампера--Максвелла)}\label{eq:ampere}
+\end{align}
+Если продифференцировать \eqref{eq:ampere} по $x_j$, а \eqref{eq:gauss} по $t$ и
+вычесть, получится условие интегрируемости $\dot p_i-\sigma_{ij,j}=0$: обычный
+закон движения упругой среды \cite[ур.~(9)]{lazar2010pla}. Члены $D_{ij,j}$ и
+$H_{ijk,k}$ сокращаются в силу симметрии.
+
+\textit{Как эта пара соответствует уравнениям Максвелла.} В \eqref{eq:ampere} член
+$\dot D$ соответствует току смещения $-\frac1c\dot{\mathbf D}$, а $H_{ijk,k}$ ---
+ротору $\nabla\times\mathbf H$ (дивергенция антисимметричного по $jk$ тензора
+эквивалентна ротору вектора $\tfrac12\epsilon_{jkl}H_{ijk}$). Напряжение $\sigma_{ij}$
+играет роль тока, $p_i$ в \eqref{eq:gauss} --- роль плотности заряда. Поэтому
+источники дислокационного поля --- импульс и напряжения упругой среды.
+
+\paragraph{Тождества Бьянки.} Из определений \eqref{eq:TI_lazar} тождественно
+следует \cite[ур.~(2)]{lazar2010pla}
 \begin{equation}
-\partial_j H_a^{\ ij} - \partial_t D_a^{\ i} = J_a^{\ i},
-\label{eq:ampere}
-\end{equation}
-где $J_a$ --- ток источника (плотность импульса дислокаций). Два тождества
-Бьянки для $T^a=d\phi^a$ (замкнутость формы, $d^2=0$) дают вторую пару:
-\begin{equation}
-\partial_{[i}T^a_{jk]}=0,\qquad \partial_t T^a_{ij}+\partial_{[i}I^a_{j]}=0.
+\epsilon_{jkl}\,T_{ijk,l}=0,\qquad \dot T_{ijk}+I_{ij,k}-I_{ik,j}=0.
 \label{eq:bianchi}
 \end{equation}
+Первое из них --- аналог $\nabla\cdot\mathbf B=0$ (нет источников плотности
+дислокаций: линия дислокации не обрывается внутри среды). Второе --- аналог закона
+Фарадея. Проверка второго: $\dot T_{ijk}=\dot\beta_{ik,j}-\dot\beta_{ij,k}$ и
+$I_{ij,k}-I_{ik,j}=-v_{i,jk}+\dot\beta_{ij,k}+v_{i,kj}-\dot\beta_{ik,j}$; сумма равна
+нулю, поскольку $v_{i,jk}=v_{i,kj}$.
 Сопоставляя \eqref{eq:constit}--\eqref{eq:bianchi} с уравнениями Максвелла,
 получаем словарь таблицы~\ref{tab:corr}: напряжённости $T^a,I^a$ отвечают
 $\mathbf B,\mathbf E$; отклики $H_a,D_a$ --- $\mathbf H,\mathbf D$; а сила
@@ -496,6 +580,7 @@ $\cos\varphi$ с периодом $2\pi$ (бозон).}
 \begin{thebibliography}{99}
 \bibitem{fermi1923} E.~Fermi, Nuovo Cimento \textbf{25}, 159 (1923).
 \bibitem{lazar2010} M.~Lazar, Math.\ Mech.\ Solids \textbf{16}(3), 253 (2010).
+\bibitem{lazar2010pla} M.~Lazar, Phys.\ Lett.\ A \textbf{374}, 3092 (2010), doi:10.1016/j.physleta.2010.05.044.
 \bibitem{kadic1983} A.~Kadi\'c, D.~G.~B.~Edelen, Lecture Notes in Physics \textbf{174}, Springer (1983).
 \bibitem{osipov2010} E.~A.~Kochetov, V.~A.~Osipov, arXiv:1001.4450 (2010).
 \bibitem{hehl1995} F.~W.~Hehl et al., Phys.\ Rep.\ \textbf{258}, 1 (1995).

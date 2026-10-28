@@ -100,37 +100,123 @@ Hence the dictionary: $\mathbf{B}\leftrightarrow T^a$,
 $\mathbf{E}\leftrightarrow I^a$.
 
 \subsection{Full derivation of the quasi-Maxwell system}
-We give the derivation in detail. The Lagrangian density of the linear dynamic
-gauge theory of dislocations in the $T(3)$ gauge splits into elastic and
-dislocation parts \cite{lazar2010}:
+We give the derivation in detail, following Lazar's linear isotropic theory in
+index notation \cite{lazar2010pla} (the differential-form version and the nonlinear
+case are in \cite{lazar2010}). In this subsection all indices are Latin and spatial,
+$i,j,k,l=1,2,3$; summation over repeated indices is implied.
+
+\paragraph{Kinematics.} The basic fields are the elastic distortion $\beta_{ij}$
+(dimensionless) and the physical velocity $v_i$ $[LT^{-1}]$; both are incompatible.
+The dislocation density and the dislocation current are \cite[eq.~(1)]{lazar2010pla}
 \begin{equation}
-\mathcal{L} = \tfrac12\rho\,v^a v_a - \tfrac12 C_{ijkl}\beta^{i}_{a}\beta^{j a}
- + \tfrac12 D_{ab}\,I^a_i I^{b\,i} - \tfrac14 A_{ab}\,T^a_{ij}T^{b\,ij},
+T_{ijk}=\beta_{ik,j}-\beta_{ij,k},\qquad I_{ij}=-v_{i,j}+\dot\beta_{ij},
+\label{eq:TI_lazar}
+\end{equation}
+with $\beta_{ij,k}\equiv\partial_k\beta_{ij}$, $\dot\beta_{ij}\equiv\partial_t\beta_{ij}$;
+$[T_{ijk}]=L^{-1}$, $[I_{ij}]=T^{-1}$. Relation to the notation of \eqref{eq:torsion}:
+Lazar's first index is the translational index $a$, $T_{ijk}=T^{a}_{\ jk}$ with
+$a\equiv i$. Since $\beta$ is the elastic (not the plastic) distortion,
+$\beta=\partial u-\phi$, the sign of $T$ in \eqref{eq:TI_lazar} is opposite to that
+in \eqref{eq:torsion} and the order of $j,k$ differs. This is a sign convention and
+does not affect the physics, but it must be kept in mind when comparing formulas.
+
+\paragraph{Lagrangian.} The Lagrangian density has the bilinear form
+\cite[eq.~(3)]{lazar2010pla}
+\begin{equation}
+\mathcal{L}=T-W=\tfrac12\,p_iv_i+\tfrac12\,D_{ij}I_{ij}-\tfrac12\,\sigma_{ij}\beta_{ij}
+-\tfrac14\,H_{ijk}T_{ijk}.
 \label{eq:lagr}
 \end{equation}
-where $\beta$ is the elastic distortion, $C_{ijkl}$ the elasticity tensor, and
-$D_{ab}$, $A_{ab}$ material response tensors (analogues of the dielectric and
-magnetic permeabilities). The field strengths are the dislocation density $T^a$
-\eqref{eq:torsion} and the current $I^a$; the responses are
+\textit{Scalar character.} All indices are contracted in each term: one in the first,
+two in the second and third, three in the fourth. No index is free, and $\mathcal L$ is
+a scalar. Each term has the dimension of an energy density $[ML^{-1}T^{-2}]$:
+$[p_iv_i]=\frac{M}{L^2T}\cdot\frac LT$, $[D_{ij}I_{ij}]=\frac M{LT}\cdot\frac1T$,
+$[\sigma_{ij}\beta_{ij}]=\frac M{LT^2}$, $[H_{ijk}T_{ijk}]=\frac M{T^2}\cdot\frac1L$.
+
+\paragraph{Responses.} The canonically conjugate quantities are
+\cite[eq.~(4)]{lazar2010pla}
 \begin{equation}
-H_a^{\ ij} = -\frac{\partial\mathcal{L}}{\partial T^a_{ij}} = A_{ab}T^{b\,ij},
-\qquad
-D_a^{\ i} = \frac{\partial\mathcal{L}}{\partial I^a_i} = D_{ab}I^{b\,i}.
+p_i=\frac{\partial\mathcal L}{\partial v_i},\quad
+\sigma_{ij}=-\frac{\partial\mathcal L}{\partial\beta_{ij}},\quad
+D_{ij}=\frac{\partial\mathcal L}{\partial I_{ij}},\quad
+H_{ijk}=-2\frac{\partial\mathcal L}{\partial T_{ijk}}:
+\label{eq:responses}
+\end{equation}
+the momentum, the force stress, the dislocation momentum flux and the pseudomoment
+stress. The factor $2$ in $H$ compensates the coefficient $\tfrac14$ and the
+antisymmetry $T_{ijk}=-T_{ikj}$.
+
+\paragraph{Constitutive relations.} For a linear isotropic medium
+\cite[eqs.~(10)--(13)]{lazar2010pla}
+\begin{equation}
+\begin{aligned}
+p_i&=\rho\,v_i,\\
+\sigma_{ij}&=\lambda\,\delta_{ij}\beta_{kk}+\mu(\beta_{ij}+\beta_{ji})+\gamma(\beta_{ij}-\beta_{ji}),\\
+D_{ij}&=d_1\,\delta_{ij}I_{kk}+d_2(I_{ij}+I_{ji})+d_3(I_{ij}-I_{ji}),\\
+H_{ijk}&=c_1\,T_{ijk}+c_2(T_{jki}-T_{kji})+c_3(\delta_{ij}T_{llk}-\delta_{ik}T_{llj}).
+\end{aligned}
 \label{eq:constit}
 \end{equation}
-Varying the action $\delta\!\int\mathcal{L}\,d^4x=0$ with respect to the gauge
-potential $\phi^a$ gives the equation of motion (Amp\`ere--Oersted analogue):
+These are ten constants: $\rho$ and nine moduli, $[\lambda,\mu,\gamma]=ML^{-1}T^{-2}$,
+$[d_{1,2,3}]=ML^{-1}$, $[c_{1,2,3}]=MLT^{-2}$. Non-negativity of the energy
+$T+W\ge0$ requires \cite[eq.~(14)]{lazar2010pla}: $\rho,\mu,\gamma\ge0$,
+$3\lambda+2\mu\ge0$; $d_2,d_3\ge0$, $3d_1+2d_2\ge0$; $c_1-c_2\ge0$,
+$c_1+2c_2\ge0$, $c_1-c_2+2c_3\ge0$.
+
+\textit{Relation to the elasticity tensor.} The elastic part is
+$W_{\text{el}}=\tfrac12\sigma_{ij}\beta_{ij}=\tfrac12 C_{ijkl}\beta_{ij}\beta_{kl}$ with
+\[
+C_{ijkl}=\lambda\,\delta_{ij}\delta_{kl}+(\mu+\gamma)\,\delta_{ik}\delta_{jl}+(\mu-\gamma)\,\delta_{il}\delta_{jk}.
+\]
+Each of the four indices of $C$ is contracted with an index of one of the two
+distortions. For $\gamma=0$ this is the usual isotropic Lam\'e tensor. The constant
+$\gamma$ assigns energy to the antisymmetric (rotational) part $\beta_{[ij]}$; it is
+absent in classical elasticity, where the distortion is a displacement gradient and
+a rotation carries no energy.
+
+\textit{Remark on the earlier form.} In the previous version of this paper the elastic
+term was written as $\tfrac12C_{ijkl}\beta^i_{\ a}\beta^{ja}$. There the indices $k,l$
+are not contracted, so the expression is not a scalar; moreover,
+$D_{ab}I^a_iI^{bi}$ and $A_{ab}T^a_{ij}T^{bij}$ had one constant each instead of three.
+The present form \eqref{eq:lagr}--\eqref{eq:constit} corrects both points. The earlier
+simplified form is the special case $d_1=0$, $d_2=d_3$ and $c_2=c_3=0$. Since the
+results of the following sections use only the structure of the equations and not
+the specific values of $d_i,c_i$, they are not affected by this correction.
+
+\paragraph{Equations of motion.} The Euler--Lagrange equations with respect to $v_i$
+and $\beta_{ij}$ \cite[eqs.~(5)--(6)]{lazar2010pla}, with external sources $p^0_i$,
+$\sigma^0_{ij}$ (null Lagrangian $\sigma^0_{ij}\beta_{ij}-p^0_iv_i$, with
+$\dot p^0_i-\sigma^0_{ij,j}=0$), take in terms of the responses \eqref{eq:responses}
+the form \cite[eqs.~(7)--(8)]{lazar2010pla}
+\begin{align}
+D_{ij,j}+p_i&=p^0_i, &&\text{(dislocation momentum balance; Gauss-law analogue)}\label{eq:gauss}\\
+\dot D_{ij}+H_{ijk,k}+\sigma_{ij}&=\sigma^0_{ij}. &&\text{(stress balance; Amp\`ere--Maxwell analogue)}\label{eq:ampere}
+\end{align}
+Differentiating \eqref{eq:ampere} with respect to $x_j$ and \eqref{eq:gauss} with
+respect to $t$ and subtracting gives the integrability condition
+$\dot p_i-\sigma_{ij,j}=0$, the ordinary equation of motion of the elastic medium
+\cite[eq.~(9)]{lazar2010pla}. The terms $D_{ij,j}$ and $H_{ijk,k}$ cancel by symmetry.
+
+\textit{How this pair corresponds to Maxwell's equations.} In \eqref{eq:ampere} the term
+$\dot D$ corresponds to the displacement current $-\frac1c\dot{\mathbf D}$, and
+$H_{ijk,k}$ to the curl $\nabla\times\mathbf H$ (the divergence of a tensor
+antisymmetric in $jk$ is equivalent to the curl of the vector
+$\tfrac12\epsilon_{jkl}H_{ijk}$). The stress $\sigma_{ij}$ plays the role of the
+current, and $p_i$ in \eqref{eq:gauss} the role of the charge density. Thus the
+sources of the dislocation field are the momentum and the stresses of the elastic
+medium.
+
+\paragraph{Bianchi identities.} The definitions \eqref{eq:TI_lazar} imply
+identically \cite[eq.~(2)]{lazar2010pla}
 \begin{equation}
-\partial_j H_a^{\ ij} - \partial_t D_a^{\ i} = J_a^{\ i},
-\label{eq:ampere}
-\end{equation}
-where $J_a$ is the source current (dislocation momentum density). The two
-Bianchi identities for $T^a=d\phi^a$ (closedness of the form, $d^2=0$) give the
-second pair:
-\begin{equation}
-\partial_{[i}T^a_{jk]}=0,\qquad \partial_t T^a_{ij}+\partial_{[i}I^a_{j]}=0.
+\epsilon_{jkl}\,T_{ijk,l}=0,\qquad \dot T_{ijk}+I_{ij,k}-I_{ik,j}=0.
 \label{eq:bianchi}
 \end{equation}
+The first is the analogue of $\nabla\cdot\mathbf B=0$ (no sources of dislocation
+density: a dislocation line cannot end inside the medium). The second is the analogue
+of Faraday's law. Check of the second: $\dot T_{ijk}=\dot\beta_{ik,j}-\dot\beta_{ij,k}$
+and $I_{ij,k}-I_{ik,j}=-v_{i,jk}+\dot\beta_{ij,k}+v_{i,kj}-\dot\beta_{ik,j}$; the sum
+vanishes because $v_{i,jk}=v_{i,kj}$.
 Comparing \eqref{eq:constit}--\eqref{eq:bianchi} with Maxwell's equations gives
 the dictionary of Table~\ref{tab:corr} (below): the strengths $T^a,I^a$
 correspond to $\mathbf B,\mathbf E$; the responses $H_a,D_a$ to
@@ -523,6 +609,7 @@ with period $2\pi$ (boson).}
 \begin{thebibliography}{99}
 \bibitem{fermi1923} E.~Fermi, Nuovo Cimento \textbf{25}, 159 (1923).
 \bibitem{lazar2010} M.~Lazar, Math.\ Mech.\ Solids \textbf{16}(3), 253 (2010).
+\bibitem{lazar2010pla} M.~Lazar, Phys.\ Lett.\ A \textbf{374}, 3092 (2010), doi:10.1016/j.physleta.2010.05.044.
 \bibitem{kadic1983} A.~Kadi\'c, D.~G.~B.~Edelen, Lecture Notes in Physics \textbf{174}, Springer (1983).
 \bibitem{osipov2010} E.~A.~Kochetov, V.~A.~Osipov, arXiv:1001.4450 (2010).
 \bibitem{hehl1995} F.~W.~Hehl, J.~D.~McCrea, E.~W.~Mielke, Y.~Ne'eman, Phys.\ Rep.\ \textbf{258}, 1 (1995); arXiv:gr-qc/9402012.

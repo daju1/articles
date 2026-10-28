@@ -290,6 +290,250 @@ and Noether’s theorem provides the fundamental explanation why momentum does n
 
 
 \vspace{\myvspacebeforesubsection}
+\subsection*{\centering{\fontencoding{T1}\fontfamily{ptm}{\selectfont THE STRESS TENSOR FROM THE CAVITY MODE FIELDS: SURFACE INTEGRALS AND THE JUMP AT THE METAL}}}
+\vspace{\myvspaceaftersubsection}
+
+In this section the Maxwell stress tensor is computed directly from the fields of
+the cavity eigenmodes, without assuming the momentum flux of a plane wave.
+Gaussian units and Tamm's notation are used.
+
+\textbf{1. Geometry.} A plate of zero thickness lies in the plane $z=0$ inside a cube
+$L^3$ with perfectly conducting walls. On the side $z>0$ the plate carries perfectly
+conducting cells of cross-section $a\times a$ whose walls reach the cube face $z=l$
+(in \cite{Drozdov2024} $l=L/2$). On the side $z<0$ there is the smooth face of the
+plate and the large cavity $L\times L\times(L-l)$. Each cavity is a rectangular
+resonator $a\times b\times h$: for a cell $a=b$, $h=l$; for the large cavity
+$a=b=L$, $h=L-l$. In the formulas below $z$ is measured from the resonator face
+that coincides with the plate (for the large cavity this is $-z$).
+
+\textbf{2. Mode fields.} Let $k_x=\pi n_x/a$, $k_y=\pi n_y/b$, $k_z=\pi n_z/h$,
+$K^2=k_x^2+k_y^2$, $k^2=K^2+k_z^2$, $\omega=ck$. TM mode ($H_z=0$,
+$n_x,n_y\ge1$, $n_z\ge0$):
+\end{multicols}
+\[
+\begin{aligned}
+E_z&=A\sin k_xx\,\sin k_yy\,\cos k_zz\,\cos\omega t, &
+H_z&=0,\\
+E_x&=-A\frac{k_xk_z}{K^2}\cos k_xx\,\sin k_yy\,\sin k_zz\,\cos\omega t, &
+H_x&=-A\frac{k\,k_y}{K^2}\sin k_xx\,\cos k_yy\,\cos k_zz\,\sin\omega t,\\
+E_y&=-A\frac{k_yk_z}{K^2}\sin k_xx\,\cos k_yy\,\sin k_zz\,\cos\omega t, &
+H_y&=A\frac{k\,k_x}{K^2}\cos k_xx\,\sin k_yy\,\cos k_zz\,\sin\omega t.
+\end{aligned}
+\]
+TE mode ($E_z=0$, $n_z\ge1$, $(n_x,n_y)\ne(0,0)$):
+\[
+\begin{aligned}
+H_z&=A\cos k_xx\,\cos k_yy\,\sin k_zz\,\cos\omega t, &
+E_z&=0,\\
+H_x&=-A\frac{k_xk_z}{K^2}\sin k_xx\,\cos k_yy\,\cos k_zz\,\cos\omega t, &
+E_x&=-A\frac{k\,k_y}{K^2}\cos k_xx\,\sin k_yy\,\sin k_zz\,\sin\omega t,\\
+H_y&=-A\frac{k_yk_z}{K^2}\cos k_xx\,\sin k_yy\,\cos k_zz\,\cos\omega t, &
+E_y&=A\frac{k\,k_x}{K^2}\sin k_xx\,\cos k_yy\,\sin k_zz\,\sin\omega t.
+\end{aligned}
+\]
+\begin{multicols}{2}
+
+\textbf{3. Check of the fields.} By substitution,
+$\nabla\cdot\mathbf E=\nabla\cdot\mathbf H=0$,
+$\nabla\times\mathbf E=-\frac1c\partial_t\mathbf H$,
+$\nabla\times\mathbf H=\frac1c\partial_t\mathbf E$ for $\omega=ck$, and the
+perfect-conductor boundary conditions hold: tangential $\mathbf E$ and normal
+$\mathbf H$ vanish on all six faces (at $x=0,a$: $E_y=E_z=0$, $H_x=0$; at $y=0,b$:
+$E_x=E_z=0$, $H_y=0$; at $z=0,h$: $E_x=E_y=0$, $H_z=0$). These relations were also
+checked numerically for the modes $(2,1,3)$ with $a:b:h=1:1.3:2.7$ (residual of
+order $10^{-9}$).
+
+\textbf{4. The tensor component.} Following Tamm,
+$T_{ik}=\frac1{4\pi}(E_iE_k+H_iH_k)-\frac{\delta_{ik}}{8\pi}(E^2+H^2)$, and the force on
+the bodies inside a closed surface is $\oint T_{ik}n_k\,dS$ (outward normal). Hence
+\[
+T_{zz}=\frac1{8\pi}\left(E_z^2+H_z^2-E_x^2-E_y^2-H_x^2-H_y^2\right).
+\]
+The momentum flux is $\Pi_{ik}=-T_{ik}$; the pressure on a horizontal element is
+denoted $p\equiv-\langle T_{zz}\rangle$.
+
+\textbf{5. Averaging over the cross-section and the period.} We average over the area
+$S=ab$ and over the period $2\pi/\omega$. For $n_x,n_y\ge1$ each factor $\sin^2$ or
+$\cos^2$ in $x$, in $y$ and in $t$ gives $\tfrac12$. For the TM mode:
+\end{multicols}
+\[
+\langle E_z^2\rangle=\frac{A^2}{8}\cos^2k_zz,\qquad
+\langle E_x^2+E_y^2\rangle=\frac{A^2}{8}\frac{k_x^2+k_y^2}{K^4}k_z^2\sin^2k_zz=\frac{A^2}{8}\frac{k_z^2}{K^2}\sin^2k_zz,\qquad
+\langle H_x^2+H_y^2\rangle=\frac{A^2}{8}\frac{k^2}{K^2}\cos^2k_zz .
+\]
+\[
+8\pi\langle T_{zz}\rangle=\frac{A^2}{8}\left[\cos^2k_zz\left(1-\frac{k^2}{K^2}\right)-\frac{k_z^2}{K^2}\sin^2k_zz\right]
+=-\frac{A^2}{8}\frac{k_z^2}{K^2}\left(\cos^2k_zz+\sin^2k_zz\right)=-\frac{A^2}{8}\frac{k_z^2}{K^2},
+\]
+\begin{multicols}{2}
+\noindent where $1-k^2/K^2=-k_z^2/K^2$ was used. The energy density
+$w=(E^2+H^2)/8\pi$ of the same mode is
+$8\pi\langle w\rangle(z)=\frac{A^2}{8}\left[\cos^2k_zz+\frac{k_z^2}{K^2}\sin^2k_zz+\frac{k^2}{K^2}\cos^2k_zz\right]$;
+averaging also over $z$ (for $n_z\ge1$) gives
+$8\pi\overline w=\frac{A^2}{16}\cdot\frac{K^2+k_z^2+k^2}{K^2}=\frac{A^2}{8}\frac{k^2}{K^2}$.
+Therefore
+\[
+p=-\langle T_{zz}\rangle=\overline w\,\frac{k_z^2}{k^2}.
+\]
+For the TE mode the same steps give
+$\langle H_z^2\rangle=\frac{A^2}{8}\sin^2k_zz$,
+$\langle H_x^2+H_y^2\rangle=\frac{A^2}{8}\frac{k_z^2}{K^2}\cos^2k_zz$,
+$\langle E_x^2+E_y^2\rangle=\frac{A^2}{8}\frac{k^2}{K^2}\sin^2k_zz$, hence
+$8\pi\langle T_{zz}\rangle=-\frac{A^2}{8}\frac{k_z^2}{K^2}$ and the same result
+$p=\overline w\,k_z^2/k^2$. If one transverse index is zero (possible only for TE),
+the corresponding $\cos^2$ equals $1$ instead of $\tfrac12$; the common factor doubles
+both in the pressure and in the energy, and the ratio is unchanged. The TM mode
+with $n_z=0$ has $k_z=0$ and exerts no pressure.
+
+\textbf{6. Independence of $z$.} In item~5 the $z$-dependence dropped out
+($\cos^2+\sin^2=1$). The general reason: in vacuum
+$\partial T_{zk}/\partial x_k=\frac1{4\pi c}\,\partial_t[\mathbf E\times\mathbf H]_z$,
+and the period average of a time derivative vanishes. Integrating over the
+cross-section leaves the fluxes through the side walls:
+$T_{zx}=\frac1{4\pi}(E_zE_x+H_zH_x)$, and on the walls $x=0,a$ we have $E_z=0$
+(tangential field) and $H_x=0$ (normal field), so $T_{zx}=0$; likewise for $T_{zy}$
+at $y=0,b$. Hence $\frac{d}{dz}\int\langle T_{zz}\rangle\,dx\,dy=0$. Note that only the
+cross-section integral is independent of $z$; at a given point $(x,y)$, $T_{zz}$ does
+vary with $z$. The force involves the integral.
+
+\textbf{7. Zero-point oscillations.} Each mode is an oscillator; in the ground state
+its energy is $\hbar\omega/2$, with equal electric and magnetic parts
+$\hbar\omega/4$. This is exactly the distribution given by the classical period
+average of item~5 if the amplitude is chosen so that $\overline w\,V=\hbar\omega/2$.
+The contribution of a mode to the pressure is therefore
+$p_{\text{mode}}=\frac{\hbar\omega}{2V}\frac{k_z^2}{k^2}$, and the pressure in a cavity is
+\[
+p=\frac{\hbar c}{2V}\sum_{\text{modes}}\frac{k_z^2}{k},
+\]
+the sum running over TM and TE modes with the index ranges of item~2. It differs
+from the energy sum, eq.~(1) of \cite{Drozdov2024}, only by the summand: $k_z^2/k$
+instead of $k$.
+
+\textit{Identity with the Hamiltonian approach.} For $k_z=\pi n_z/h$,
+$\partial k/\partial h=-k_z^2/(kh)$, and for each mode
+\[
+-\frac{\partial}{\partial h}\frac{\hbar ck}{2}=\frac{\hbar c}{2h}\frac{k_z^2}{k}=S\,p_{\text{mode}},\qquad V=Sh .
+\]
+The force obtained from the stress tensor coincides with $-\partial E/\partial h$
+mode by mode, before any regularization.
+
+\textbf{8. Surfaces $z=\mathrm{const}$ for the honeycomb plate.} From items~5--7:
+\begin{itemize}
+\item $z\to0^+$ (vacuum at the cell bottom), $z=d$ with $0<d<l$, $z\to l^-$ (at the
+auxiliary cube wall): $-\langle T_{zz}\rangle=p_{\text{cell}}=\frac{\hbar c}{2a^2l}\sum_{\text{cell}}\frac{k_z^2}{k}$;
+\item $z\to0^-$ (vacuum at the smooth face), $z=-d'$ with $0<d'<L-l$, $z\to-(L-l)^+$:
+$-\langle T_{zz}\rangle=p_{\text{big}}=\frac{\hbar c}{2L^2(L-l)}\sum_{\text{large}}\frac{k_z^2}{k}$;
+\item inside the metal of the plate and of the walls: $T_{ik}=0$.
+\end{itemize}
+The plane $z=d$ in the cell region crosses the cell walls; for walls of zero
+thickness they do not contribute to the integral, and the cells cover the whole
+plate area.
+
+\textbf{9. The jump at the metal surface.} At the face $z=0$ (vacuum outside, metal
+inside with zero fields) the boundary conditions require continuity of tangential
+$\mathbf E$ and normal $\mathbf H$; on the vacuum side they vanish: $E_x=E_y=0$,
+$H_z=0$. Normal $\mathbf E$ and tangential $\mathbf H$ jump by $4\pi\sigma$ and
+$\frac{4\pi}{c}\mathbf i$ respectively and are non-zero on the vacuum side. Hence
+\[
+T_{zz}\big|_{\text{vacuum}}=\frac1{8\pi}\left(E_z^2-H_x^2-H_y^2\right),\qquad
+T_{zz}\big|_{\text{metal}}=0 .
+\]
+Explicitly, for the TM mode at $z=0$: $\langle E_z^2\rangle=\frac{A^2}{8}$,
+$\langle H_x^2+H_y^2\rangle=\frac{A^2}{8}\frac{k^2}{K^2}$, so
+$-\langle T_{zz}\rangle(0^+)=\frac{A^2}{64\pi}\left(\frac{k^2}{K^2}-1\right)=\frac{A^2}{64\pi}\frac{k_z^2}{K^2}=\overline w\,\frac{k_z^2}{k^2}$,
+the same value as in the bulk of the cavity (item~6). For the TE mode at $z=0$,
+$E_z=0$ and $-\langle T_{zz}\rangle(0^+)=\frac1{8\pi}\langle H_x^2+H_y^2\rangle=\overline w\,k_z^2/k^2$.
+The jump $[\![T_{zz}]\!]=T_{zz}|_{\text{metal}}-T_{zz}|_{\text{vacuum}}=p$ is the surface
+force per unit area acting on the surface charges $\sigma=E_n/4\pi$ in the field
+$E_n$ and on the surface currents $\mathbf i=\frac{c}{4\pi}[\mathbf n\times\mathbf H]$ in
+the field $\mathbf H_t$:
+\[
+\frac{f_z}{S}=\frac1{8\pi}\left(\langle H_t^2\rangle-\langle E_n^2\rangle\right).
+\]
+In the vacuum state $\langle\sigma\rangle=0$ and $\langle\mathbf i\rangle=0$, but the
+correlations $\langle\sigma E_n\rangle$ and $\langle\mathbf i\times\mathbf H\rangle$ do not
+vanish: the force is quadratic in the fields. For TE modes there is no surface
+charge at all on the $xy$ faces ($E_n=E_z=0$), and the tensor jump is produced by the
+surface currents alone. This is an explicit example of the case pointed out in the
+remark on Tamm's \S\,33: a jump of the stress tensor at a surface that carries no
+charge. For TM modes the fluctuating charges reduce the pressure by
+$\langle E_n^2\rangle/8\pi$.
+
+\textbf{10. The force on the plate.} Take a closed surface made of the faces $z=z_1$
+($0<z_1\le l$) and $z=-z_2$ ($0<z_2\le L-l$) spanning the whole cross-section
+$L\times L$; its lateral faces lie on the cube walls, where $T_{zx}=T_{zy}=0$
+(item~6). Then
+\[
+F_z=\left[\langle T_{zz}\rangle(z_1)-\langle T_{zz}\rangle(-z_2)\right]L^2=(p_{\text{big}}-p_{\text{cell}})\,L^2,
+\]
+independent of $z_1$, $z_2$. For $z_1,z_2\to0$ this is the sum of the two jumps at
+the faces of the plate (the force is applied to the metal surfaces); for $z_1=l$,
+$z_2=L-l$ these are the faces at the auxiliary cube walls (for $l=L/2$, the faces
+$z=\pm L/2$ above); intermediate positions give the same. $F_z>0$ (a push towards
+the cells) when $p_{\text{big}}>p_{\text{cell}}$.
+
+\textbf{11. Check on Casimir's two plates.} Plates at $z=0$ and $z=a$, outer cavities
+up to $z=\pm L/2$. In the gap $k_z=\pi n/a$ and the transverse spectrum is
+continuous; per unit area (two polarizations)
+\[
+p_{\text{in}}=\frac{\hbar c}{a}\sum_{n\ge1}\int\frac{d^2k_\parallel}{(2\pi)^2}\frac{k_z^2}{k}
+\]
+(the $n=0$ mode has $k_z=0$ and gives no pressure), and outside the sum over $n$ is
+replaced by $\frac a\pi\int dk_z$. By item~6, $p_{\text{in}}$ is the same at the centre
+of the gap and at the inner surface of each plate, and $p_{\text{out}}$ is the same at
+the outer surface of each plate and at the faces $z=\pm L/2$ (for $L\to\infty$ it is
+the free-vacuum value). With the cutoff $e^{-k/k_m}$ the difference
+$p_{\text{in}}-p_{\text{out}}$ equals $-0.041043$, $-0.041110$, $-0.041120$ in units of
+$\hbar c/a^4$ for $k_ma=20$, $50$, $100$ and tends to $-\pi^2/240=-0.041123$. The sign
+means attraction; with the Casimir energy density $u=-\pi^2\hbar c/720a^4$ this is
+$p=3u$ \cite{BrownMaclay1969}.
+
+\textbf{12. Limitations and self-critical remarks.}
+
+(a) \textit{Appendix B of \cite{Drozdov2024}.} There the pressure on the $xy$ face was
+computed as $\langle H_x^2+H_y^2\rangle/8\pi$. For electric (TM) modes the term
+$-\langle E_z^2\rangle/8\pi$ is missing. With it the ratio of pressure to energy
+density is $k_z^2/k^2$ for both mode types, not $1$ for the electric mode (numerically
+for the mode $(2,1,3)$: $0.2119$ instead of $1.0000$). Therefore the value $1$ for the
+electric mode, and the inequality $F/S\ge\delta(E/V)$ based on it, in the section
+``On the incompleteness of the standard momentum balance'' must be revised. The
+Hamiltonian derivation of Appendix C is not affected: by item~7 it coincides with
+the tensor result mode by mode.
+
+(b) \textit{Regularization.} With a cutoff $f(k/k_m)$ the derivative of the mode
+energy is
+$-\partial_h\!\left[\frac{\hbar ck}{2}f\right]=\frac{\hbar c}{2h}\frac{k_z^2}{k}\left[f+\frac{k}{k_m}f'\right]$,
+whereas the regularized tensor sum $\sum(k_z^2/k)f$ lacks the second term. For two
+plates the difference disappears as $k_ma\to\infty$ (item~11). For the honeycomb at
+finite $ak_m$ this has not been computed; this term may be related to the
+dependence $R(ak_m)$. Which of the two regularized quantities is physical cannot be
+decided within the perfect-conductor model with a mode cutoff; a real
+$\varepsilon(\omega)$, as in \cite{DLP1961}, is needed.
+
+(c) \textit{Cell height.} The calculation assumes that the cell walls reach the cube
+face, so that each cell is a closed resonator. For real cells of height $h\ll L$ the
+cell is open into the large cavity, the modes do not separate, and this calculation
+does not describe that case.
+
+(d) \textit{Perfect conductor.} The jump is a property of the perfect conductor. In a
+real metal $T_{zz}$ decays to zero over the skin depth, and the integral of the force
+over the layer equals the jump as long as the current in the metal is consistent
+with the field: $\mathbf j=\frac c{4\pi}\nabla\times\mathbf H$.
+
+(e) \textit{Wall thickness.} Cell walls of finite thickness carry no $z$-force
+($T_{zx}=0$ on them) but reduce the fraction of the plate area occupied by the
+cavities.
+
+(f) \textit{Quantum average.} The equality of electric and magnetic parts of the mode
+energy in the ground state (item~7) is used as a standard oscillator result and is
+not derived here.
+
+(g) \textit{What has been checked.} The fields and averages were checked numerically
+for individual modes, and the limiting value for two plates. The sum $\sum k_z^2/k$
+for the honeycomb plate, regularized with the Euler--Maclaurin formula of
+\cite{Drozdov2024}, has not yet been evaluated.
+
+\vspace{\myvspacebeforesubsection}
 \subsection*{\centering{\fontencoding{T1}\fontfamily{ptm}{\selectfont THE STRESS TENSOR FROM THE ZERO-POINT MODE SUM}}}
 \vspace{\myvspaceaftersubsection}
 

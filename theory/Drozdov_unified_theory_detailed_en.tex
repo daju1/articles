@@ -56,48 +56,62 @@ $[L]$.
 
 \section{Gauge structure and the Maxwell dictionary}
 
-\subsection{Distortion field and the dislocation tensor}
-Plastic incompatibility is introduced by a gauge field $\phi^a_i$. The
-dislocation-density tensor (Cartan torsion) is
+\subsection{Distortion field and dislocation tensor}
+We follow Lazar's notation \cite{lazar2010pla}; all indices are Latin,
+$i,j,k,l=1,2,3$. Let $u_i$ be the displacement. Incompatibility is introduced by
+the plastic distortion $\phi_{ij}$, the translational gauge field, whose first index
+is translational. The elastic distortion is
 \begin{equation}
-T^a_{ij} = \partial_i \phi^a_j - \partial_j \phi^a_i .
+\beta_{ij}=\partial_ju_i-\phi_{ij}.
+\label{eq:beta}
+\end{equation}
+The dislocation-density tensor (torsion) is
+\begin{equation}
+T_{ijk}=\beta_{ik,j}-\beta_{ij,k}=-\left(\phi_{ik,j}-\phi_{ij,k}\right),
 \label{eq:torsion}
 \end{equation}
-The integral over a surface spanning a contour $\partial S$ gives the Burgers
-vector:
+the second equality holding because $u_{i,kj}=u_{i,jk}$. Thus $T$ is determined by
+the plastic part alone and is antisymmetric in its last pair of indices,
+$T_{ijk}=-T_{ikj}$. The Burgers vector of a contour $\partial S$ follows from
+Stokes' theorem ($\oint A_j\,dx_j=\int_S\epsilon_{klj}\partial_lA_j\,dS_k$):
 \begin{equation}
-b^a = \oint_{\partial S}\phi^a_i\,dx^i = \int_S T^a_{ij}\,dS^{ij}.
+b_i=\oint_{\partial S}\beta_{ij}\,dx_j=\int_S\alpha_{ik}\,dS_k,\qquad
+\alpha_{ik}\equiv\epsilon_{klj}\beta_{ij,l}=\tfrac12\epsilon_{klj}T_{ilj}.
 \label{eq:burgers}
 \end{equation}
+Here $\alpha_{ik}$ is Nye's tensor. The last equality holds because only the part of
+$\epsilon_{klj}\beta_{ij,l}$ antisymmetric in $(l,j)$ survives, and
+$\tfrac12(\beta_{ij,l}-\beta_{il,j})=\tfrac12T_{ilj}$. The sign of $b$ is a convention;
+the classical literature \cite{hirth1982} often uses the opposite one.
 
 \begin{lemma}[Dimension of the magnetic charge]
 \label{lem:qm}
-In the elastic basis the magnetic charge, defined as the flux of the
-dislocation density $q_m=\int_S T^a\,dS$, has the dimension of length.
+In the elastic basis the magnetic charge, defined as the flux of the dislocation
+density $q_m=\int_S\alpha_{ik}\,dS_k$ \eqref{eq:burgers}, has the dimension of length.
 \end{lemma}
 \begin{proof}
-From \eqref{eq:torsion}, $[T^a_{ij}]=[\partial\phi]=[\phi]/L$. Since $\phi^a_i$
-is dimensionless (a displacement gradient, $[\partial u]=1$), we have
-$[T^a]=L^{-1}$. Then $[q_m]=[T^a]\cdot[dS]=L^{-1}\cdot L^{2}=L$. $\qed$
+The distortion $\beta_{ij}$ is dimensionless (a displacement gradient minus the
+dimensionless $\phi$). From \eqref{eq:torsion}, $[T_{ijk}]=[\alpha_{ik}]=L^{-1}$, so
+$[q_m]=L^{-1}\cdot L^{2}=L$. $\qed$
 \end{proof}
 
 \begin{remark}
-Lemma~\ref{lem:qm} removes the apparent conflict with SI, where the magnetic
-charge is measured in A$\cdot$m: in a self-contained elastic theory the ampere
-is not a primary unit, and the dimension of the charge is dictated by the
-theory itself.
+Lemma~\ref{lem:qm} removes the apparent conflict with SI, where magnetic charge is
+measured in $\text{A}\cdot\text{m}$: in a consistent elastic theory the ampere is
+not a primary unit, and the dimension of the charge is dictated by the theory itself.
 \end{remark}
 
-\subsection{Quasi-Maxwell equations}
-Introducing the dislocation current $I^a_i=\partial_t\phi^a_i-\partial_i v^a$
-(where $v^a$ is the velocity), one obtains Bianchi identities structurally
-identical to Maxwell's equations \cite{lazar2010}:
-\begin{align}
-\partial_i {}^{*}T^{a\,i} &= 0, & \text{(no sources of }T^a\text{)}\\
-\epsilon_{ijk}\partial_j I^a_k + \partial_t T^a_i &= 0. & \text{(Faraday analogue)}
-\end{align}
-Hence the dictionary: $\mathbf{B}\leftrightarrow T^a$,
-$\mathbf{E}\leftrightarrow I^a$.
+\subsection{Dislocation current}
+Let $v_i$ be the physical (in general incompatible) velocity of the medium. The
+dislocation current is \cite[eq.~(1)]{lazar2010pla}
+\begin{equation}
+I_{ij}=-v_{i,j}+\dot\beta_{ij},\qquad [I_{ij}]=T^{-1}.
+\label{eq:current}
+\end{equation}
+The density $T$ and the current $I$ are kinematically related by the Bianchi
+identities derived below, \eqref{eq:bianchi}. In form these are the homogeneous
+Maxwell equations, whence the dictionary $\mathbf B\leftrightarrow T$ (more precisely
+$\alpha$), $\mathbf E\leftrightarrow I$ (Table~\ref{tab:corr}).
 
 \subsection{Full derivation of the quasi-Maxwell system}
 We give the derivation in detail, following Lazar's linear isotropic theory in
@@ -113,12 +127,8 @@ T_{ijk}=\beta_{ik,j}-\beta_{ij,k},\qquad I_{ij}=-v_{i,j}+\dot\beta_{ij},
 \label{eq:TI_lazar}
 \end{equation}
 with $\beta_{ij,k}\equiv\partial_k\beta_{ij}$, $\dot\beta_{ij}\equiv\partial_t\beta_{ij}$;
-$[T_{ijk}]=L^{-1}$, $[I_{ij}]=T^{-1}$. Relation to the notation of \eqref{eq:torsion}:
-Lazar's first index is the translational index $a$, $T_{ijk}=T^{a}_{\ jk}$ with
-$a\equiv i$. Since $\beta$ is the elastic (not the plastic) distortion,
-$\beta=\partial u-\phi$, the sign of $T$ in \eqref{eq:TI_lazar} is opposite to that
-in \eqref{eq:torsion} and the order of $j,k$ differs. This is a sign convention and
-does not affect the physics, but it must be kept in mind when comparing formulas.
+$[T_{ijk}]=L^{-1}$, $[I_{ij}]=T^{-1}$. These are the same definitions as \eqref{eq:torsion} and \eqref{eq:current}; the
+first index is translational.
 
 \paragraph{Lagrangian.} The Lagrangian density has the bilinear form
 \cite[eq.~(3)]{lazar2010pla}
@@ -218,30 +228,73 @@ of Faraday's law. Check of the second: $\dot T_{ijk}=\dot\beta_{ik,j}-\dot\beta_
 and $I_{ij,k}-I_{ik,j}=-v_{i,jk}+\dot\beta_{ij,k}+v_{i,kj}-\dot\beta_{ik,j}$; the sum
 vanishes because $v_{i,jk}=v_{i,kj}$.
 Comparing \eqref{eq:constit}--\eqref{eq:bianchi} with Maxwell's equations gives
-the dictionary of Table~\ref{tab:corr} (below): the strengths $T^a,I^a$
-correspond to $\mathbf B,\mathbf E$; the responses $H_a,D_a$ to
-$\mathbf H,\mathbf D$; and the Peach--Koehler force on a dislocation element
+the dictionary of Table~\ref{tab:corr} (below): the strengths $T,I$ correspond to
+$\mathbf B,\mathbf E$, and the responses $H,D$ to $\mathbf H,\mathbf D$.
+
+\paragraph{Peach--Koehler force.} In index notation the force density acting on the
+dislocations is
 \begin{equation}
-f_a^{\ i} = (e_a\!\lrcorner\,I^b)\,p_b^{\ i} + (e_a\!\lrcorner\,T^b)\wedge\Sigma_b
+f_k=\sigma_{ij}T_{ijk}-p_iI_{ik},
 \label{eq:pk}
 \end{equation}
-plays the role of the Lorentz force $q\mathbf E + q\mathbf v\times\mathbf B$.
-This is the formal basis of the whole analogy: the electrodynamics of the
-particle-defect is the dynamics of its dislocation field.
+which is the component form of eq.~(31) of \cite{lazar2010},
+$f^a=(e_a\lrcorner I^b)p_b+(e_a\lrcorner T^b)\wedge\Sigma_b$. The derivation of
+\eqref{eq:pk} is ours and is not taken from \cite{lazar2010pla}. Substituting
+\eqref{eq:torsion} and \eqref{eq:current}:
+\[
+f_k=\sigma_{ij}\beta_{ik,j}-p_i\dot\beta_{ik}-\sigma_{ij}\beta_{ij,k}+p_iv_{i,k}.
+\]
+Using the elastic equation of motion $\dot p_i=\sigma_{ij,j}$ (the integrability
+condition of \eqref{eq:gauss}--\eqref{eq:ampere}), the first two terms combine:
+$\sigma_{ij}\beta_{ik,j}-p_i\dot\beta_{ik}=\partial_j(\sigma_{ij}\beta_{ik})-\partial_t(p_i\beta_{ik})-\beta_{ik}(\sigma_{ij,j}-\dot p_i)=\partial_j(\sigma_{ij}\beta_{ik})-\partial_t(p_i\beta_{ik})$.
+For a homogeneous linear medium $C_{ijlm}=C_{lmij}$, so
+$\sigma_{ij}\beta_{ij,k}=\partial_kW$, and $p_iv_{i,k}=\rho v_iv_{i,k}=\partial_kT$.
+Hence
+\begin{equation}
+f_k=-\partial_t\!\left(p_i\beta_{ik}\right)+\partial_j\!\left(\sigma_{ij}\beta_{ik}-\delta_{jk}(W-T)\right).
+\label{eq:pk_balance}
+\end{equation}
+The force density is the divergence of a four-dimensional Eshelby-type tensor.
+Therefore $f_k$ is the configurational force on the defects, and $\int f_k\,dV$ over a
+region containing a defect reduces to a flux through its boundary. Here $W-T=-\mathcal L$ appears, i.e.
+\eqref{eq:pk_balance} is the Eshelby tensor $\mathcal L\delta_{jk}+\sigma_{ij}\beta_{ik}$
+of dynamic elasticity. The minus sign in front of $p_iI_{ik}$ in \eqref{eq:pk} is fixed
+precisely by requiring this identity. We checked it numerically on random smooth
+fields: with this sign the residual $-\beta_{ik}(\sigma_{ij,j}-\dot p_i)$ vanishes on
+the equations of motion, and with a plus sign it does not. The sign has not been
+checked against an index form of Lazar's eq.~(31); in \cite{lazar2010} it depends on
+his conventions for forms.
+
+\textit{Straight-dislocation limit.} For a dislocation line with tangent $\xi_l$ and
+Burgers vector $b_i$ we have $\alpha_{ik}=b_i\xi_k\delta^{(2)}$, and inverting
+\eqref{eq:burgers}, $T_{ijk}=\epsilon_{jkl}\alpha_{il}$. For a line at rest ($I=0$)
+the force per unit length is
+$f_k=\sigma_{ij}b_i\epsilon_{jkl}\xi_l=[\boldsymbol\xi\times(\sigma\mathbf b)]_k$.
+This is the classical Peach--Koehler force $(\sigma\mathbf b)\times\boldsymbol\xi$
+with the opposite sign, which reflects the sign convention of \eqref{eq:burgers}.
+
+\textit{Analogy with the Lorentz force.} The term $-p_iI_{ik}$ corresponds to
+$\rho\mathbf E$ (up to the sign convention) ($p\leftrightarrow\rho$, $I\leftrightarrow\mathbf E$), and the term
+$\sigma_{ij}T_{ijk}$ to $\frac1c\mathbf j\times\mathbf B$ ($\sigma\leftrightarrow\mathbf j$,
+$T\leftrightarrow\mathbf B$). This is the formal basis of the whole analogy: the
+electrodynamics of the particle-defect is the dynamics of its dislocation field.
 
 \begin{table}[h]
 \centering
-\caption{Correspondence Maxwell~$\leftrightarrow$~dislocation theory (after Lazar \cite{lazar2010}).}
+\caption{Correspondence Maxwell~$\leftrightarrow$~dislocation theory (after Lazar \cite{lazar2010,lazar2010pla}).}
 \label{tab:corr}
 \begin{tabular}{ll}
 \toprule
 Electrodynamics & Dislocation theory \\
 \midrule
-Magnetic field $\mathbf{B}$ & dislocation density $T^a$ \\
-Electric field $\mathbf{E}$ & dislocation current $I^a$ \\
-Magnetic excitation $\mathbf{H}$ & pseudomoment stress $H_a$ \\
-Magnetic flux $\oint\mathbf{B}\,d\mathbf{S}$ & Burgers vector $\oint T^a = b$ \\
-Lorentz force & Peach--Koehler force \\
+Magnetic field $\mathbf{B}$ & dislocation density $T_{ijk}$ (Nye tensor $\alpha_{ik}$) \\
+Electric field $\mathbf{E}$ & dislocation current $I_{ij}$ \\
+Magnetic excitation $\mathbf{H}$ & pseudomoment stress $H_{ijk}$ \\
+Electric excitation $\mathbf{D}$ & dislocation momentum flux $D_{ij}$ \\
+Charge density $\rho_e$ & momentum $p_i$ \\
+Current density $\mathbf j$ & force stress $\sigma_{ij}$ \\
+Magnetic flux $\int\mathbf{B}\,d\mathbf{S}$ & Burgers vector $b_i=\int\alpha_{ik}dS_k$ \\
+Lorentz force & Peach--Koehler force \eqref{eq:pk} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -508,7 +561,7 @@ well-known smallness of $m_e/m_P$.
 Each decay law is a consequence of the proved structure:
 \begin{itemize}[nosep]
 \item \textbf{Coulomb} $1/R^2$: product of Burgers charges, the direct Coulomb
-kernel (Theorem~\ref{th:invsq} for the $T^a$ field).
+kernel (Theorem~\ref{th:invsq} for the field $T_{ijk}$).
 \item \textbf{Magnetic} $1/R^4$: interaction of two static dipoles $q_m d$
 (derivative of the dipole--dipole potential $\sim1/R^3$).
 \item \textbf{Gravity} $1/R^2$: Theorem~\ref{th:invsq} for the source $\sigma>0$.

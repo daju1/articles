@@ -54,27 +54,42 @@
 \section{Калибровочная структура и словарь Максвелла}
 
 \subsection{Поле дисторсии и тензор дислокаций}
-Пластическая несовместность вводится калибровочным полем $\phi^a_i$. Тензор
-плотности дислокаций (кручение Картана) определяется как
+Обозначения следуют Лазару \cite{lazar2010pla}. Все индексы латинские, $i,j,k,l=1,2,3$.
+Пусть $u_i$ --- смещение. Несовместность вводится пластической дисторсией
+$\phi_{ij}$; это трансляционное калибровочное поле, его первый индекс трансляционный.
+Упругая дисторсия равна
 \begin{equation}
-T^a_{ij} = \partial_i \phi^a_j - \partial_j \phi^a_i .
+\beta_{ij}=\partial_ju_i-\phi_{ij}.
+\label{eq:beta}
+\end{equation}
+Тензор плотности дислокаций (кручение) определяется как
+\begin{equation}
+T_{ijk}=\beta_{ik,j}-\beta_{ij,k}=-\left(\phi_{ik,j}-\phi_{ij,k}\right),
 \label{eq:torsion}
 \end{equation}
-Интеграл по поверхности, натянутой на контур $\partial S$, даёт вектор Бюргерса:
+второе равенство верно потому, что $u_{i,kj}=u_{i,jk}$. Таким образом, $T$ определяется
+только пластической частью и антисимметричен по последней паре индексов,
+$T_{ijk}=-T_{ikj}$. Вектор Бюргерса контура $\partial S$ по теореме Стокса
+($\oint A_j\,dx_j=\int_S\epsilon_{klj}\partial_lA_j\,dS_k$):
 \begin{equation}
-b^a = \oint_{\partial S}\phi^a_i\,dx^i = \int_S T^a_{ij}\,dS^{ij}.
+b_i=\oint_{\partial S}\beta_{ij}\,dx_j=\int_S\alpha_{ik}\,dS_k,\qquad
+\alpha_{ik}\equiv\epsilon_{klj}\beta_{ij,l}=\tfrac12\epsilon_{klj}T_{ilj}.
 \label{eq:burgers}
 \end{equation}
+Здесь $\alpha_{ik}$ --- тензор Ная. Последнее равенство: в
+$\epsilon_{klj}\beta_{ij,l}$ работает только часть, антисимметричная по $(l,j)$, а
+$\tfrac12(\beta_{ij,l}-\beta_{il,j})=\tfrac12T_{ilj}$. Знак $b$ --- соглашение;
+в классической литературе \cite{hirth1982} часто используют противоположный.
 
 \begin{lemma}[Размерность магнитного заряда]
 \label{lem:qm}
 В упругом базисе магнитный заряд, определённый как поток плотности дислокаций
-$q_m=\int_S T^a\,dS$, имеет размерность длины.
+$q_m=\int_S\alpha_{ik}\,dS_k$ \eqref{eq:burgers}, имеет размерность длины.
 \end{lemma}
 \begin{proof}
-Из \eqref{eq:torsion} следует $[T^a_{ij}]=[\partial\phi]=[\phi]/L$. Поскольку
-$\phi^a_i$ безразмерно (градиент смещения, $[\partial u]=1$), имеем
-$[T^a]=L^{-1}$. Тогда $[q_m]=[T^a]\cdot[dS]=L^{-1}\cdot L^{2}=L$. $\qed$
+Дисторсия $\beta_{ij}$ безразмерна (это градиент смещения минус безразмерное
+$\phi$). Из \eqref{eq:torsion} $[T_{ijk}]=[\alpha_{ik}]=L^{-1}$, и
+$[q_m]=L^{-1}\cdot L^{2}=L$. $\qed$
 \end{proof}
 
 \begin{remark}
@@ -83,15 +98,17 @@ $[T^a]=L^{-1}$. Тогда $[q_m]=[T^a]\cdot[dS]=L^{-1}\cdot L^{2}=L$. $\qed$
 является первичной единицей, и размерность заряда диктуется самой теорией.
 \end{remark}
 
-\subsection{Квази-максвелловские уравнения}
-Вводя ток дислокаций $I^a_i=\partial_t\phi^a_i-\partial_i v^a$ (где $v^a$ ---
-скорость), получаем тождества Бьянки, структурно совпадающие с уравнениями
-Максвелла \cite{lazar2010}:
-\begin{align}
-\partial_i {}^{*}T^{a\,i} &= 0, & \text{(нет истоков у }T^a\text{)}\\
-\epsilon_{ijk}\partial_j I^a_k + \partial_t T^a_i &= 0. & \text{(аналог закона Фарадея)}
-\end{align}
-Отсюда словарь: $\mathbf{B}\leftrightarrow T^a$, $\mathbf{E}\leftrightarrow I^a$.
+\subsection{Ток дислокаций}
+Пусть $v_i$ --- физическая (вообще говоря, несовместная) скорость среды. Ток
+дислокаций определяется как \cite[ур.~(1)]{lazar2010pla}
+\begin{equation}
+I_{ij}=-v_{i,j}+\dot\beta_{ij},\qquad [I_{ij}]=T^{-1}.
+\label{eq:current}
+\end{equation}
+Плотность $T$ и ток $I$ кинематически связаны тождествами Бьянки, которые
+выводятся ниже, в \eqref{eq:bianchi}. По форме это однородные уравнения Максвелла,
+отсюда словарь $\mathbf B\leftrightarrow T$ (точнее, $\alpha$), $\mathbf E\leftrightarrow I$
+(табл.~\ref{tab:corr}).
 
 \subsection{Полный вывод квази-максвелловской системы}
 Приведём вывод подробно, следуя линейной изотропной теории Лазара в индексной
@@ -107,12 +124,8 @@ T_{ijk}=\beta_{ik,j}-\beta_{ij,k},\qquad I_{ij}=-v_{i,j}+\dot\beta_{ij},
 \label{eq:TI_lazar}
 \end{equation}
 где $\beta_{ij,k}\equiv\partial_k\beta_{ij}$, $\dot\beta_{ij}\equiv\partial_t\beta_{ij}$;
-$[T_{ijk}]=L^{-1}$, $[I_{ij}]=T^{-1}$. Связь с обозначениями \eqref{eq:torsion}:
-первый индекс Лазара --- это трансляционный индекс $a$, $T_{ijk}=T^{a}_{\ jk}$ при
-$a\equiv i$. Поскольку $\beta$ --- упругая (а не пластическая) дисторсия,
-$\beta=\partial u-\phi$, знак $T$ в \eqref{eq:TI_lazar} противоположен знаку в
-\eqref{eq:torsion}, а порядок индексов $j,k$ другой. Это соглашение о знаке и на
-физику не влияет, но его нужно держать в уме при сравнении формул.
+$[T_{ijk}]=L^{-1}$, $[I_{ij}]=T^{-1}$. Это те же определения, что \eqref{eq:torsion} и \eqref{eq:current}; первый индекс
+трансляционный.
 
 \paragraph{Лагранжиан.} Лагранжева плотность имеет билинейную форму
 \cite[ур.~(3)]{lazar2010pla}
@@ -209,16 +222,78 @@ $\dot D$ соответствует току смещения $-\frac1c\dot{\mat
 $I_{ij,k}-I_{ik,j}=-v_{i,jk}+\dot\beta_{ij,k}+v_{i,kj}-\dot\beta_{ik,j}$; сумма равна
 нулю, поскольку $v_{i,jk}=v_{i,kj}$.
 Сопоставляя \eqref{eq:constit}--\eqref{eq:bianchi} с уравнениями Максвелла,
-получаем словарь таблицы~\ref{tab:corr}: напряжённости $T^a,I^a$ отвечают
-$\mathbf B,\mathbf E$; отклики $H_a,D_a$ --- $\mathbf H,\mathbf D$; а сила
-Пича--Кёлера на элемент дислокации
+получаем словарь таблицы~\ref{tab:corr}: напряжённости $T,I$ отвечают
+$\mathbf B,\mathbf E$; отклики $H,D$ --- $\mathbf H,\mathbf D$.
+
+\paragraph{Сила Пича--Кёлера.} В индексной записи плотность силы, действующей на
+дислокации, равна
 \begin{equation}
-f_a^{\ i} = (e_a\!\lrcorner\,I^b)\,p_b^{\ i} + (e_a\!\lrcorner\,T^b)\wedge\Sigma_b
+f_k=\sigma_{ij}T_{ijk}-p_iI_{ik},
 \label{eq:pk}
 \end{equation}
-играет роль силы Лоренца $q\mathbf E + q\mathbf v\times\mathbf B$. Это и есть
-формальное основание всей аналогии: электродинамика частицы-дефекта есть
-динамика его дислокационного поля.
+это компонентная форма ур.~(31) работы \cite{lazar2010}
+($f^a=(e_a\lrcorner I^b)p_b+(e_a\lrcorner T^b)\wedge\Sigma_b$). Вывод \eqref{eq:pk}
+выполнен нами, а не взят из \cite{lazar2010pla}. Подставим \eqref{eq:torsion} и
+\eqref{eq:current}:
+\[
+f_k=\sigma_{ij}\beta_{ik,j}-p_i\dot\beta_{ik}-\sigma_{ij}\beta_{ij,k}+p_iv_{i,k}.
+\]
+Используя упругое уравнение движения $\dot p_i=\sigma_{ij,j}$ (условие
+интегрируемости из \eqref{eq:gauss}--\eqref{eq:ampere}), объединяем первые два
+члена:
+$\sigma_{ij}\beta_{ik,j}-p_i\dot\beta_{ik}=\partial_j(\sigma_{ij}\beta_{ik})-\partial_t(p_i\beta_{ik})-\beta_{ik}(\sigma_{ij,j}-\dot p_i)=\partial_j(\sigma_{ij}\beta_{ik})-\partial_t(p_i\beta_{ik})$.
+Для однородной линейной среды $C_{ijlm}=C_{lmij}$, поэтому
+$\sigma_{ij}\beta_{ij,k}=\partial_k W$, а $p_iv_{i,k}=\rho v_iv_{i,k}=\partial_k T$.
+Итак,
+\begin{equation}
+f_k=-\partial_t\!\left(p_i\beta_{ik}\right)+\partial_j\!\left(\sigma_{ij}\beta_{ik}-\delta_{jk}(W-T)\right).
+\label{eq:pk_balance}
+\end{equation}
+Плотность силы есть дивергенция четырёхмерного тензора типа Эшелби. Поэтому $f_k$ ---
+это конфигурационная сила на дефекты, а интеграл $\int f_k\,dV$ по области, содержащей
+дефект, сводится к потоку через её границу. Здесь стоит $W-T=-\mathcal L$, то есть
+\eqref{eq:pk_balance} --- это тензор Эшелби $\mathcal L\delta_{jk}+\sigma_{ij}\beta_{ik}$
+динамической упругости. Знак минус перед $p_iI_{ik}$ в \eqref{eq:pk} выбран именно
+так, чтобы это тождество выполнялось. Мы проверили его численно на случайных
+гладких полях: с этим знаком остаточный член $-\beta_{ik}(\sigma_{ij,j}-\dot p_i)$
+обращается в нуль на уравнениях движения, а со знаком плюс не обращается. С
+индексной записью ур.~(31) Лазара этот знак не сверен: в \cite{lazar2010} он зависит
+от его соглашений о формах.
+
+\textit{Предел прямой дислокации.} Для дислокационной линии с касательной $\xi_l$ и
+вектором Бюргерса $b_i$ имеем $\alpha_{ik}=b_i\xi_k\delta^{(2)}$, и, обращая
+\eqref{eq:burgers}, $T_{ijk}=\epsilon_{jkl}\alpha_{il}$. Для покоящейся линии
+($I=0$) сила на единицу длины равна
+$f_k=\sigma_{ij}b_i\epsilon_{jkl}\xi_l=[\boldsymbol\xi\times(\sigma\mathbf b)]_k$.
+Это классическая сила Пича--Кёлера $(\sigma\mathbf b)\times\boldsymbol\xi$ с
+противоположным знаком, что отражает знаковое соглашение \eqref{eq:burgers}.
+
+\textit{Аналогия с силой Лоренца.} Член $-p_iI_{ik}$ соответствует $\rho\mathbf E$ (с точностью до знакового соглашения)
+($p\leftrightarrow\rho$, $I\leftrightarrow\mathbf E$), член $\sigma_{ij}T_{ijk}$ ---
+$\frac1c\mathbf j\times\mathbf B$ ($\sigma\leftrightarrow\mathbf j$,
+$T\leftrightarrow\mathbf B$). Это и есть формальное основание всей аналогии:
+электродинамика частицы-дефекта есть динамика его дислокационного поля.
+
+\begin{table}[h]
+\centering
+\caption{Соответствие Максвелл~$\leftrightarrow$~теория дислокаций (по Лазару \cite{lazar2010,lazar2010pla}).}
+\label{tab:corr}
+\begin{tabular}{ll}
+\toprule
+Электродинамика & Теория дислокаций \\
+\midrule
+Магнитное поле $\mathbf{B}$ & плотность дислокаций $T_{ijk}$ (тензор Ная $\alpha_{ik}$) \\
+Электрическое поле $\mathbf{E}$ & ток дислокаций $I_{ij}$ \\
+Магнитное возбуждение $\mathbf{H}$ & псевдомоментное напряжение $H_{ijk}$ \\
+Электрическое возбуждение $\mathbf{D}$ & поток импульса дислокаций $D_{ij}$ \\
+Плотность заряда $\rho_e$ & импульс $p_i$ \\
+Плотность тока $\mathbf j$ & напряжение $\sigma_{ij}$ \\
+Магнитный поток $\int\mathbf{B}\,d\mathbf{S}$ & вектор Бюргерса $b_i=\int\alpha_{ik}dS_k$ \\
+Сила Лоренца & сила Пича--Кёлера \eqref{eq:pk} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 
 \section{Частица: прецессирующий дислокационный диполь}
 
@@ -479,7 +554,7 @@ $\gamma_P/\mu_{\text{эфир}}\sim10^{84}$ есть прямое выражен
 Каждый закон спадания --- следствие доказанной структуры:
 \begin{itemize}[nosep]
 \item \textbf{Кулон} $1/R^2$: произведение зарядов-Бюргерсов, прямое кулоновское
-ядро (теорема~\ref{th:invsq} для $T^a$-поля).
+ядро (теорема~\ref{th:invsq} для поля $T_{ijk}$).
 \item \textbf{Магнитное} $1/R^4$: взаимодействие двух статических диполей
 $q_m d$ (производная диполь-дипольного потенциала $\sim1/R^3$).
 \item \textbf{Гравитация} $1/R^2$: теорема~\ref{th:invsq} для источника $\sigma>0$.

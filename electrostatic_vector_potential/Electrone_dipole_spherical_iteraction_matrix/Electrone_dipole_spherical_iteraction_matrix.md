@@ -42,11 +42,11 @@ def displ(tex):
 
 если $\left( r_q < r_a} \right)$ то
 
-$A_{\varphi} = \frac{\mu \, I}{4 \pi}\,r_q \, sin \theta_q \,\frac{1}{{{r}_{a}}}\sum\limits_{l=0}^{\infty }{{{\left( \frac{{{r}_{q}}}{{{r}_{a}}} \right)}^{l}}{\frac{4\pi }{2l+1}\sum\limits_{m=-l}^{l}{Y_{l,m}^{*}\left( {{\theta }_{a}},{{\varphi }_{a}} \right)}\, \int\limits_{\varphi_q}^{} cos\,{\varphi_q } \, {{Y}_{l,m}}\left( {{\theta }_{q}},{{\varphi }_{q}} \right)}} \, d \varphi_q$
+$A_{\varphi} = \frac{\mu \, I}{4 \pi}\,r_q \, sin \theta_q \,\frac{1}{r_a}\sum\limits_{l=0}^{\infty }{{{\left( \frac{r_q}{r_a} \right)}^{l}}{\frac{4\pi }{2l+1}\sum\limits_{m=-l}^{l}{Y_{l,m}^{*}\left( {{\theta }_{a}},{{\varphi }_{a}} \right)}\, \int\limits_{\varphi_q}^{} cos\,{\varphi_q } \, {{Y}_{l,m}}\left( {{\theta }_{q}},{{\varphi }_{q}} \right)}} \, d \varphi_q$
 
-и если $\left( {{r}_{a}}<{{r}_{q}} \right)$ то
+и если $\left( r_a<r_q \right)$ то
 
-$A_{\varphi} = \frac{\mu \, I}{4 \pi}\,r_q \, sin \theta_q \, \frac{1}{{{r}_{q}}}\sum\limits_{l=0}^{\infty }{{{\left( \frac{{{r}_{a}}}{{{r}_{q}}} \right)}^{l}}{\frac{4\pi }{2l+1}\sum\limits_{m=-l}^{l}{Y_{l,m}^{*}\left( {{\theta }_{a}},{{\varphi }_{a}} \right)}\,\int\limits_{\varphi_q}^{} cos\,{\varphi_q } \, {{Y}_{l,m}}\left( {{\theta }_{q}},{{\varphi }_{q}} \right)}} \, d \varphi_q$
+$A_{\varphi} = \frac{\mu \, I}{4 \pi}\,r_q \, sin \theta_q \, \frac{1}{r_q}\sum\limits_{l=0}^{\infty }{{{\left( \frac{r_a}{r_q} \right)}^{l}}{\frac{4\pi }{2l+1}\sum\limits_{m=-l}^{l}{Y_{l,m}^{*}\left( {{\theta }_{a}},{{\varphi }_{a}} \right)}\,\int\limits_{\varphi_q}^{} cos\,{\varphi_q } \, {{Y}_{l,m}}\left( {{\theta }_{q}},{{\varphi }_{q}} \right)}} \, d \varphi_q$
 
 # Векторный потенциал электростатического поля точечного заряда
 
@@ -108,29 +108,29 @@ $r_m$, $\theta_m$, $\varphi_m$ - координаты интегрировани
 
 Итак, в исходном интегральном уравнении
 
-$-\frac{сtg \, \theta_a}{r_a} = \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{\infty}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{cos\,{\varphi_m } }{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{{{r}_{a}}} \right|}\, d \varphi_m\right)d r_m \, d \theta_m$
+$-\frac{сtg \, \theta_a}{r_a} = \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{\infty}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{cos\,{\varphi_m } }{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{r_a} \right|}\, d \varphi_m\right)d r_m \, d \theta_m$
 
 в правой части уравнения второй интеграл по координате $r_m$ разбиваем на два интеграла от нуля до $r_a$ и от $r_a$ до бесконечности
 
-$-\frac{сtg \, \theta_a}{r_a} = \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{r_a}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{cos\,{\varphi_m } }{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{{{r}_{a}}} \right|}\, d \varphi_m\right)d r_m \, d \theta_m + \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=r_a}^{\infty}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{cos\,{\varphi_m } }{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{{{r}_{a}}} \right|}\, d \varphi_m\right)d r_m \, d \theta_m$
+$-\frac{сtg \, \theta_a}{r_a} = \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{r_a}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{cos\,{\varphi_m } }{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{r_a} \right|}\, d \varphi_m\right)d r_m \, d \theta_m + \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=r_a}^{\infty}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{cos\,{\varphi_m } }{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{r_a} \right|}\, d \varphi_m\right)d r_m \, d \theta_m$
 
 Далее принимая во внимание, что
 
-если $\left( {{r}_{m}}<{{r}_{a}} \right)$ то
+если $\left( {{r}_{m}}<r_a \right)$ то
 
-$\frac{1}{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{{{r}_{a}}} \right|}=\frac{1}{{{r}_{a}}}\sum\limits_{l=0}^{\infty }{{{\left( \frac{{{r}_{m}}}{{{r}_{a}}} \right)}^{l}}{{P}_{l}} \cos \left( \gamma  \right)}$
+$\frac{1}{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{r_a} \right|}=\frac{1}{r_a}\sum\limits_{l=0}^{\infty }{{{\left( \frac{{{r}_{m}}}{r_a} \right)}^{l}}{{P}_{l}} \cos \left( \gamma  \right)}$
 
-и если $\left( {{r}_{a}}<{{r}_{m}} \right)$ то
+и если $\left( r_a<{{r}_{m}} \right)$ то
 
-$\frac{1}{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{{{r}_{a}}} \right|}=\frac{1}{{{r}_{q}}}\sum\limits_{l=0}^{\infty }{{{\left( \frac{{{r}_{a}}}{{{r}_{m}}} \right)}^{l}}{{P}_{l}} \cos \left( \gamma  \right)}$
+$\frac{1}{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{r_a} \right|}=\frac{1}{r_q}\sum\limits_{l=0}^{\infty }{{{\left( \frac{r_a}{{{r}_{m}}} \right)}^{l}}{{P}_{l}} \cos \left( \gamma  \right)}$
 
 делаем соотвествующие подстановки обратного расстояния между координатами заряда и точки наблюдения $\frac{1}{{R}}=\frac{1}{\left|\overrightarrow{r_{q}} - \overrightarrow{r_{a}}\right|}$
 
 \begin{equation}
 \begin{array}{c}
 -\frac{сtg \, \theta_a}{r_a} = 
-\int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{r_a}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\,\frac{cos\,{\varphi_m } }{{{r}_{a}}}\sum\limits_{l=0}^{\infty }{{\left( \frac{{{r}_{m}}}{{{r}_{a}}} \right)}^{l}}{{P}_{l}} \cos \left( \gamma  \right)\, d \varphi_m\right)d r_m \, d \theta_m \\ +
-\int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=r_a}^{\infty}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\,\frac{cos\,{\varphi_m }}{{{r}_{m}}}\sum\limits_{l=0}^{\infty }{{\left( \frac{{{r}_{a}}}{{{r}_{m}}} \right)}^{l}}{{P}_{l}} \cos \left( \gamma  \right)\, d \varphi_m\right)d r_m \, d \theta_m
+\int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{r_a}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\,\frac{cos\,{\varphi_m } }{r_a}\sum\limits_{l=0}^{\infty }{{\left( \frac{{{r}_{m}}}{r_a} \right)}^{l}}{{P}_{l}} \cos \left( \gamma  \right)\, d \varphi_m\right)d r_m \, d \theta_m \\ +
+\int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=r_a}^{\infty}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\,\frac{cos\,{\varphi_m }}{{{r}_{m}}}\sum\limits_{l=0}^{\infty }{{\left( \frac{r_a}{{{r}_{m}}} \right)}^{l}}{{P}_{l}} \cos \left( \gamma  \right)\, d \varphi_m\right)d r_m \, d \theta_m
 \end{array}
 \end{equation}
 
@@ -139,8 +139,8 @@ $\frac{1}{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{{{r}_{a}}} \right|}=
 \begin{equation}
 \begin{array}{c}
 -\frac{сtg \, \theta_a}{r_a} = 
-\int\limits_{r_m=0}^{r_a}\,\int\limits_{\theta_m=0}^{\pi}\,\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \sum\limits_{l=0}^{\infty }{{\left( \frac{{{r}_{m}}}{{{r}_{a}}} \right)}^{l}}\left(\int\limits_{\varphi_m=0}^{2\pi}\,\frac{cos\,{\varphi_m } }{{{r}_{a}}}{{P}_{l}} \cos \left( \gamma  \right)\, d \varphi_m\right) \, d \theta_m \,d r_m  \\ +
-\int\limits_{r_m=r_a}^{\infty}\,\int\limits_{\theta_m=0}^{\pi}\,\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \sum\limits_{l=0}^{\infty }{{\left( \frac{{{r}_{a}}}{{{r}_{m}}} \right)}^{l}}\left(\int\limits_{\varphi_m=0}^{2\pi}\,\frac{cos\,{\varphi_m }}{{{r}_{m}}}{{P}_{l}} \cos \left( \gamma  \right)\, d \varphi_m\right) \, d \theta_m \,d r_m
+\int\limits_{r_m=0}^{r_a}\,\int\limits_{\theta_m=0}^{\pi}\,\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \sum\limits_{l=0}^{\infty }{{\left( \frac{{{r}_{m}}}{r_a} \right)}^{l}}\left(\int\limits_{\varphi_m=0}^{2\pi}\,\frac{cos\,{\varphi_m } }{r_a}{{P}_{l}} \cos \left( \gamma  \right)\, d \varphi_m\right) \, d \theta_m \,d r_m  \\ +
+\int\limits_{r_m=r_a}^{\infty}\,\int\limits_{\theta_m=0}^{\pi}\,\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \sum\limits_{l=0}^{\infty }{{\left( \frac{r_a}{{{r}_{m}}} \right)}^{l}}\left(\int\limits_{\varphi_m=0}^{2\pi}\,\frac{cos\,{\varphi_m }}{{{r}_{m}}}{{P}_{l}} \cos \left( \gamma  \right)\, d \varphi_m\right) \, d \theta_m \,d r_m
 \end{array}
 \end{equation}
 
@@ -154,7 +154,7 @@ $\frac{1}{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{{{r}_{a}}} \right|}=
 \end{array}
 \end{equation}
 
-В данной формуле ${{P}_{l}} \cos \left( \gamma  \right)$ это полиномы Лежандра аргумент которых $\gamma$ есть угол между векторами ${{r}_{q}}$  и ${{r}_{a}}$. Применяя формулу, известную как теорему сложения
+В данной формуле ${{P}_{l}} \cos \left( \gamma  \right)$ это полиномы Лежандра аргумент которых $\gamma$ есть угол между векторами $r_q$  и $r_a$. Применяя формулу, известную как теорему сложения
 
 ${{P}_{l}}\cos \left( \gamma  \right)=\frac{4\pi }{2l+1}\sum\limits_{m=-l}^{l}{Y_{l,m}^{*}\left( {{\theta }_{a}},{{\varphi }_{a}} \right)}\ {{Y}_{l,m}}\left( {{\theta}_{m}},{{\varphi }_{m}} \right)$
 
@@ -1005,20 +1005,20 @@ M_l\left(j_{\theta}, \theta_a\right)
 
 Рассмотрим формулу векторного потенциала для системы распределённых кольцевых магнитных токов
 
-$A_q = \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{\infty}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{cos\,{\varphi_m } }{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{{{r}_{a}}} \right|}\, d \varphi_m\right)d r_m \, d \theta_m$
+$A_q = \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{\infty}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{cos\,{\varphi_m } }{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{r_a} \right|}\, d \varphi_m\right)d r_m \, d \theta_m$
 
 в правой части уравнения второй интеграл по координате $r_m$ разбиваем на два интеграла от нуля до $r_a$ и от $r_a$ до бесконечности
 
-$A_q = \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{r_a}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{cos\,{\varphi_m } }{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{{{r}_{a}}} \right|}\, d \varphi_m\right)d r_m \, d \theta_m + \\
-\int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=r_a}^{\infty}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{cos\,{\varphi_m } }{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{{{r}_{a}}} \right|}\, d \varphi_m\right)d r_m \, d \theta_m$
+$A_q = \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{r_a}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{cos\,{\varphi_m } }{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{r_a} \right|}\, d \varphi_m\right)d r_m \, d \theta_m + \\
+\int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=r_a}^{\infty}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{cos\,{\varphi_m } }{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{r_a} \right|}\, d \varphi_m\right)d r_m \, d \theta_m$
 
 делаем соотвествующие подстановки обратного расстояния между координатами заряда и точки наблюдения $\frac{1}{{R}}=\frac{1}{\left|\overrightarrow{r_{q}} - \overrightarrow{r_{a}}\right|}$
 
 \begin{equation}
 \begin{array}{c}
 A_q = 
-\int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{r_a}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\,\frac{cos\,{\varphi_m } }{{{r}_{a}}}\sum\limits_{l=0}^{\infty }{{\left( \frac{{{r}_{m}}}{{{r}_{a}}} \right)}^{l}}{{P}_{l}} \cos \left( \gamma  \right)\, d \varphi_m\right)d r_m \, d \theta_m \\ +
-\int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=r_a}^{\infty}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\,\frac{cos\,{\varphi_m }}{{{r}_{m}}}\sum\limits_{l=0}^{\infty }{{\left( \frac{{{r}_{a}}}{{{r}_{m}}} \right)}^{l}}{{P}_{l}} \cos \left( \gamma  \right)\, d \varphi_m\right)d r_m \, d \theta_m
+\int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{r_a}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\,\frac{cos\,{\varphi_m } }{r_a}\sum\limits_{l=0}^{\infty }{{\left( \frac{{{r}_{m}}}{r_a} \right)}^{l}}{{P}_{l}} \cos \left( \gamma  \right)\, d \varphi_m\right)d r_m \, d \theta_m \\ +
+\int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=r_a}^{\infty}\frac{j_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\,\frac{cos\,{\varphi_m }}{{{r}_{m}}}\sum\limits_{l=0}^{\infty }{{\left( \frac{r_a}{{{r}_{m}}} \right)}^{l}}{{P}_{l}} \cos \left( \gamma  \right)\, d \varphi_m\right)d r_m \, d \theta_m
 \end{array}
 \end{equation}
 
@@ -1175,11 +1175,11 @@ $j_m(r_m, \theta_m) = j_r(r_m) \, j_{\theta}(\theta_m) = \rho_r(r_m) \, \rho_{\t
 
 Итак, в исходном уравнении для скалярного потенциала
 
-$\phi_m = \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{\infty}\frac{\rho_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{1}{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{{{r}_{a}}} \right|}\, d \varphi_m\right)d r_m \, d \theta_m$
+$\phi_m = \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{\infty}\frac{\rho_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{1}{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{r_a} \right|}\, d \varphi_m\right)d r_m \, d \theta_m$
 
 в правой части уравнения второй интеграл по координате $r_m$ разбиваем на два интеграла от нуля до $r_a$ и от $r_a$ до бесконечности
 
-$\phi_m = \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{r_a}\frac{\rho_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{1}{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{{{r}_{a}}} \right|}\, d \varphi_m\right)d r_m \, d \theta_m + \\ \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=r_a}^{\infty}\frac{\rho_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{1}{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{{{r}_{a}}} \right|}\, d \varphi_m\right)d r_m \, d \theta_m$
+$\phi_m = \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=0}^{r_a}\frac{\rho_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{1}{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{r_a} \right|}\, d \varphi_m\right)d r_m \, d \theta_m + \\ \int\limits_{\theta_m=0}^{\pi}\,\,\int\limits_{r_m=r_a}^{\infty}\frac{\rho_m(r_m, \theta_m) \,\sin \theta_m\, r_m^2}{c} \left(\int\limits_{\varphi_m=0}^{2\pi}\frac{1}{\left| \overrightarrow{{{r}_{m}}}-\overrightarrow{r_a} \right|}\, d \varphi_m\right)d r_m \, d \theta_m$
 
 делаем соотвествующие подстановки обратного расстояния между координатами заряда и точки наблюдения $\frac{1}{{R}}=\frac{1}{\left|\overrightarrow{r_{q}} - \overrightarrow{r_{a}}\right|}$
 

@@ -40,7 +40,7 @@ def displ(tex):
     display(Math(tex))
 ```
 
-если $\left( {{r}_{q}}<{{r}_{a}} \right)$ то
+если $\left( r_q < r_a} \right)$ то
 
 $A_{\varphi} = \frac{\mu \, I}{4 \pi}\,r_q \, sin \theta_q \,\frac{1}{{{r}_{a}}}\sum\limits_{l=0}^{\infty }{{{\left( \frac{{{r}_{q}}}{{{r}_{a}}} \right)}^{l}}{\frac{4\pi }{2l+1}\sum\limits_{m=-l}^{l}{Y_{l,m}^{*}\left( {{\theta }_{a}},{{\varphi }_{a}} \right)}\, \int\limits_{\varphi_q}^{} cos\,{\varphi_q } \, {{Y}_{l,m}}\left( {{\theta }_{q}},{{\varphi }_{q}} \right)}} \, d \varphi_q$
 

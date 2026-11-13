@@ -269,6 +269,7 @@ l \sum_{n_x=(0)1}^{\infty}\sum_{n_y=(0)1}^{\infty}
 
 \vspace{\myvspacebeforesubsection}
 \subsection*{\centering{\fontencoding{T2A}\fontfamily{ptm}{\selectfont ТЕНЗОР НАТЯЖЕНИЙ ИЗ ПОЛЕЙ МОД РЕЗОНАТОРА: ПОВЕРХНОСТНЫЕ ИНТЕГРАЛЫ И СКАЧОК НА МЕТАЛЛЕ}}}
+% [проверка: theory/verification/verification_unified_theory.ipynb, §10]
 \vspace{\myvspaceaftersubsection}
 
 В этом разделе тензор натяжений Максвелла вычисляется непосредственно из полей
@@ -565,6 +566,15 @@ $\langle T_{\mu\nu}\rangle\propto\eta_{\mu\nu}$ и $\langle\Pi_{zz}\rangle=-\lan
 \subsection*{\centering{\fontencoding{T2A}\fontfamily{ptm}{\selectfont О ВСПОМОГАТЕЛЬНОМ РЕЗОНАТОРЕ И ПОЛОЖЕНИИ ГРАНЕЙ КОРОБОЧКИ}}}
 \vspace{\myvspaceaftersubsection}
 
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.42\textwidth]{honeycomb_box_L_d.png}
+\caption{}{\centering{\textbf{Рис.2.} Кубический резонатор с пластиной, покрытой сотами.}}
+\end{center}
+\label{fig:honeycomb_box_L_d}
+\end{figure}
+
 Идеально проводящие стенки куба $L^3$ (рис.~2), как и у Казимира, --- вспомогательное
 граничное условие, не имеющее физического прообраза, подобно периодическим граничным
 условиям, которыми в учебниках квантовой механики нормируют плоские волны. Процедура
@@ -577,6 +587,7 @@ $\langle T_{\mu\nu}\rangle\propto\eta_{\mu\nu}$ и $\langle\Pi_{zz}\rangle=-\lan
 (Если считать вакуум дискретной средой с шагом решётки $b$, её зона Бриллюэна дала бы
 ещё обрезание $|\mathbf{k}|\le\pi/b$; однако для силы на пластину существенно обрезание
 материала пластины.)
+
 
 \textbf{Положение граней коробочки.} Поставим грани при $z=\pm d$, $0<d<L/2$, строго
 внутри двух полостей. Вещества в полости нет, поэтому $\partial_k\langle T_{zk}\rangle=0$.
@@ -619,13 +630,6 @@ $\langle\partial\mathbf{g}/\partial t\rangle = 0$.
 в свободном вакууме при $z = \pm L/2$ по обе стороны от пластины (пластина
 целиком заключена внутри, а вклады боковых граней сокращаются в силу симметрии в плоскости).
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=0.42\textwidth]{honeycomb_box_L.png}
-\caption{}{\centering{\textbf{Рис.2.} Кубический резонатор с пластиной, покрытой сотами.}}
-\end{center}
-\label{fig:honeycomb_box_L}
-\end{figure}
 
 Результирующая
 сила равна

@@ -186,7 +186,7 @@ The Casimir honeycomb drive \cite{Drozdov2024} --- a perfectly conducting plate 
 nanoscale honeycomb structure on one side --- is examined from the standpoint of symmetries.
 Because the vacuum modes on the two sides of the plate differ, the system is not invariant under
 translations along the normal: the vacuum Hamiltonian depends explicitly on the coordinate \(l\),
-and by Noether's theorem the momentum along this axis is not conserved. The thrust equals
+and by Noether's theorem the momentum of the plate along this axis is not conserved. The thrust equals
 \(\partial\langle H\rangle/\partial l\). The same force is then computed independently, from the
 Maxwell stress tensor built out of the fields of the cavity eigenmodes. Mode by mode the two
 derivations coincide identically (Hellmann--Feynman theorem); after regularization they coincide
@@ -196,8 +196,7 @@ unity. The stress-tensor calculation shows where the force acts: it is the jump 
 \(\langle T_{zz}\rangle\) at the metal surface, which is why the momentum flux through any closed
 vacuum surface enclosing the plate is independent of the position of its faces. Finally, it is
 shown that the standard momentum balance (Tamm, \S\,105) with \(\langle\mathbf S\rangle=0\) loses
-exactly these jump terms. What is not conserved is the momentum of the field (and of the plate);
-the total momentum of the system \emph{plate\,+\,field\,+\,support} is conserved.
+exactly these jump terms. What is not conserved is the momentum of the vacuum field (and of the plate); the total momentum of the system \emph{plate\,+\,vacuum field} is conserved.
 
 \vspace{5mm}
 
@@ -246,14 +245,12 @@ and opposite, and the question does not arise. Here there is no second body.
 The present paper answers this question in three steps.
 
 \textit{The first step is symmetry.} Noether's theorem \cite{Noether1918} links momentum
-conservation to translational invariance. The honeycomb plate breaks this invariance, so the field
-momentum need not be conserved, and the force equals the derivative of the vacuum Hamiltonian with
+conservation to translational invariance. The honeycomb plate breaks the translational invariance of the field of vacuum oscillators, so the momentum of the plate need not be conserved, and the force equals the derivative of the vacuum Hamiltonian with
 respect to the plate position. This result coincides with the force of \cite{Drozdov2024}.
 
 \textit{The second step is an independent check.} If the force is real, the Maxwell stress tensor
 must give it as well. We build the tensor directly from the fields of the cavity eigenmodes and show
-that for every mode the stress-tensor and Hamiltonian derivations coincide. This check revealed an
-error in Appendix~B of \cite{Drozdov2024}, which we correct; it does not affect the Hamiltonian
+that for every mode the stress-tensor and Hamiltonian derivations coincide. This check revealed an inaccuracy in Appendix~B of \cite{Drozdov2024}, which we correct; it does not affect the Hamiltonian
 result.
 
 \textit{The third step is where the force acts and where the momentum goes.} The stress-tensor
@@ -325,8 +322,7 @@ infinitesimal translations of the plate \(z\to z+\delta z\).
 
 By Noether's theorem the generator of spatial translations, the momentum component \(P_z\), is
 conserved \textbf{if and only if} the Hamiltonian does not depend on \(z\). Since
-\(\partial\langle H\rangle/\partial l\neq0\), the symmetry is broken, and \(P_z\) of the field is
-not conserved. The net force is
+\(\partial\langle H\rangle/\partial l\neq0\), the symmetry is broken, and \(P_z\) of the plate is not conserved. The net force is
 
 \end{multicols}
 
@@ -349,9 +345,7 @@ takes the form \(F/S=\delta(E/V)=R(ak_m)\,\hbar c\,\pi/a^4\).
 Thus the appearance of thrust is not unexpected: it is a direct consequence of the broken
 translational symmetry. The quantum vacuum ``presses'' harder on one side because the mode spectra
 on the two sides of the plate differ. Let us state at once which momentum is meant: it is the
-translational symmetry of the \emph{boundary conditions}, not of space, that is broken. Therefore it
-is the momentum of the field --- or, equivalently, of the plate that absorbs it --- that is not
-conserved; the total momentum of the system \emph{plate\,+\,field\,+\,support} is conserved, just as
+translational symmetry of the \emph{boundary conditions of the vacuum oscillators}, not of space, that is broken. Therefore it is the momentum of the vacuum field --- or, equivalently, of the plate that absorbs it --- that is not conserved; the total momentum of the system \emph{plate\,+\,vacuum field} is conserved, just as
 for an ordinary sail in the wind. Where exactly the field transfers momentum to the plate will be
 shown by the stress tensor.
 
@@ -490,7 +484,7 @@ jump equals the pressure of the adjacent cavity,
 \(L\times L\) (Fig.~2); the side faces lie on the cube walls, where \(T_{zx}=T_{zy}=0\). Then
 \[
 \begin{aligned}
-F_z&=\oint_{\partial V_{\mathrm{vac}}}\langle T_{zz}\rangle\,da
+F_z&=\oint_{\partial V_{\mathrm{vac}}}\langle T_{zz}\rangle\,dx\,dy
 =\left[\langle T_{zz}\rangle(d)-\langle T_{zz}\rangle(-d')\right]L^2\\
 &=(p_{\text{big}}-p_{\text{cell}})\,L^2 .
 \end{aligned}
@@ -522,8 +516,7 @@ The standard momentum balance equation of the electrodynamics of continuous medi
 \]
 \begin{multicols}{2}
 
-where \(\mathbf{g}\) is the field momentum density and \(\mathbf{f}_{\mathrm{vol}}\) the density of
-the volume ponderomotive force. For vacuum fluctuations of a static honeycomb system
+where \(\mathbf{g}\) is the field momentum density and \(\mathbf{f}_{\mathrm{vol}}\) the density of the volume ponderomotive force. We stress that here and below ``field momentum'' is meant in the customary sense of \S\,105, i.e. as \(\mathbf g=\mathbf S/c^2\), and that this is \emph{not} the same as the momentum of the vacuum field whose non-conservation was discussed above. The customary field momentum is fixed by the Poynting vector and vanishes for \(\langle\mathbf S\rangle=0\); the momentum of the vacuum field is transferred to the plate through the stress \(\langle T_{ik}\rangle\) and does not vanish for \(\langle\mathbf S\rangle=0\). For vacuum fluctuations of a static honeycomb system
 \(\langle\mathbf{S}\rangle=0\), hence \(\langle\partial\mathbf{g}/\partial t\rangle=0\). If the field
 momentum is identified with \(\mathbf g\), then with \(\langle\mathbf S\rangle=0\) there is no
 momentum transport either --- and a one-body force seems impossible.
@@ -544,13 +537,10 @@ internal surfaces of discontinuity \(S_j\), Gauss's theorem must be written as
 \]
 \begin{multicols}{2}
 
-where \([\![\cdot]\!]\) is the jump of a quantity across \(S_j\). The customary identification of
-the field momentum with \(\mathbf{g}=\mathbf{S}/c^2\) keeps only the outer surface integral and loses
-the jump terms. For the honeycomb plate it is precisely these terms that make up the whole force: the
+where \([\![\cdot]\!]\) is the jump of a quantity across \(S_j\). The customary identification of the field momentum with \(\mathbf{g}=\mathbf{S}/c^2\) keeps only the outer surface integral and loses the jump terms, i.e. precisely the momentum of the vacuum field. For the honeycomb plate it is precisely these terms that make up the whole force: the
 sum of the two jumps at the plate faces equals the flux through the pillbox.
 
-Two remarks make the interpretation unambiguous. First, as already stated, it is the momentum of the
-\emph{field} (and of the plate absorbing it) that is not conserved, not the total momentum of a
+Two remarks make the interpretation unambiguous. First, as already stated, it is the momentum of the \emph{vacuum field} (and of the plate absorbing it) that is not conserved, not the total momentum of a
 closed laboratory system. Second, the renormalized vacuum stress \(\langle T_{\mu\nu}\rangle\) is a
 physically measurable quantity --- it is the Casimir effect itself --- so the jump terms do not
 require the assumption of a material ether: their value is fixed by the same
@@ -631,13 +621,13 @@ the ground state is used as a standard result for the oscillator and is not deri
 
 The Casimir honeycomb drive is an example of a physical system in which Noether's theorem directly
 explains the origin of a macroscopic force: \textbf{the absence of spatial homogeneity leads to
-non-conservation of the field momentum}, and hence to thrust. An independent calculation through the
+non-conservation of the vacuum field momentum}, and hence to thrust. An independent calculation through the
 Maxwell stress tensor built from the mode fields reproduces the same force --- identically mode by
 mode and, after regularization, in the limit \(ak_m\to\infty\) --- and corrects an error in
 Appendix~B of \cite{Drozdov2024}. The stress-tensor calculation shows that the force acts on the
 metal surfaces as a jump of \(\langle T_{zz}\rangle\), while the standard momentum balance of Tamm's
 \S\,105, reduced to \(\mathbf g=\mathbf S/c^2\), does not contain these jump terms. The total
-momentum of the system \emph{plate\,+\,field\,+\,support} is conserved. An experimental test of the
+momentum of the system \emph{plate\,+\,vacuum field} is conserved. An experimental test of the
 effect could confirm the link between the geometry of boundary conditions, symmetry and the dynamics
 of the quantum vacuum.
 
@@ -706,8 +696,7 @@ For a TE mode, averaging over the cross-section and the period gives
 Стільниковий рушій Казимира \cite{Drozdov2024} --- ідеально провідна пластина з нанорозмірною
 стільниковою структурою з одного боку --- розглядається з погляду симетрій. Через асиметрію
 вакуумних мод з двох боків пластини система не є інваріантною відносно трансляцій уздовж нормалі:
-вакуумний гамільтоніан явно залежить від координати \(l\), і за теоремою Нетер імпульс поля вздовж
-цієї осі не зберігається. Сила тяги дорівнює \(\partial\langle H\rangle/\partial l\). Потім ту саму
+вакуумний гамільтоніан явно залежить від координати \(l\), і за теоремою Нетер імпульс пластини вздовж цієї осі не зберігається. Сила тяги дорівнює \(\partial\langle H\rangle/\partial l\). Потім ту саму
 силу обчислено незалежно --- через тензор натягів Максвелла, побудований з полів власних мод
 резонатора. Помодово обидва виведення збігаються тотожно (теорема Гельмана--Фейнмана), а після
 регуляризації --- у границі \(ak_m\to\infty\). Попутно знайдено й виправлено помилку в додатку~B
@@ -715,8 +704,7 @@ For a TE mode, averaging over the cross-section and the period gives
 а не одиниці. Тензорний розрахунок показує, де прикладена сила: це стрибок \(\langle T_{zz}\rangle\)
 на поверхні металу, і тому потік імпульсу через будь-яку замкнену вакуумну поверхню, що охоплює
 пластину, не залежить від положення її граней. Нарешті, показано, що стандартний баланс імпульсу
-(\S\,105 Тамма) при \(\langle\mathbf S\rangle=0\) втрачає саме ці стрибкові члени. Не зберігається
-імпульс поля (і пластини); повний імпульс системи \emph{пластина\,+\,поле\,+\,опора} зберігається.
+(\S\,105 Тамма) при \(\langle\mathbf S\rangle=0\) втрачає саме ці стрибкові члени. Не зберігається імпульс вакуумного поля (і пластини); повний імпульс системи \emph{пластина\,+\,вакуумне поле} зберігається.
 
 \vspace{3mm}
 

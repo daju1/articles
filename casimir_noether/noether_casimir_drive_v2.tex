@@ -289,11 +289,7 @@ large cavity \(a=b=L\), \(h=L-l\). The wave numbers are \(k_x=\pi n_x/a\), \(k_y
 
 The perfectly conducting walls of the cube, as in Casimir's work, are an auxiliary boundary
 condition without a physical counterpart, similar to the periodic boundary conditions used in
-quantum mechanics textbooks to normalize plane waves. The procedure is legitimate because the
-result is taken in the limit \(L\to\infty\): by Weyl's theorem \cite{Weyl1912} the leading term of
-the mode count, \(N(k)\simeq Vk^3/3\pi^2\), does not depend on the boundary conditions on the outer
-faces, only surface corrections do, and the contribution of the remote walls to the force on the
-plate vanishes. The cutoff \(k_m\) is a separate, physical element: it is set by the transparency of
+quantum mechanics textbooks to normalize plane waves. By Weyl's theorem \cite{Weyl1912} the leading term of the mode count, \(N(k)\simeq Vk^3/3\pi^2\), does not depend on the boundary conditions on the outer faces; only surface corrections do. Hence in the limit \(L\to\infty\) the cube does not affect the vacuum energy density in the bulk. Weyl's theorem, however, concerns the number of modes, not the force on the walls themselves; as shown below, the force on the auxiliary walls of the cube does not vanish as \(L\to\infty\). The cutoff \(k_m\) is a separate, physical element: it is set by the transparency of
 the plate material to short waves.
 
 \vspace{\myvspacebeforesubsection}
@@ -500,6 +496,12 @@ The flux through \(\partial V_{\mathrm{vac}}\) is the momentum flux of the \emph
 purely vacuum boundary, not a force applied directly to matter. It is non-zero only because the mode
 spectrum, and hence \(\langle T_{zz}\rangle\), differs on the honeycomb side and on the smooth side.
 
+\textbf{Force on the cube walls.} The independence of the cross-section integral of \(z\) holds all the way to the cavity walls: it follows only from the equation \(\partial_kT_{zk}=\partial_tg_z\) in the bulk, from \(\langle\partial_tg_z\rangle=0\) and from the boundary conditions on the \emph{side} walls (\(E_z=H_n=0\), hence \(T_{zx}=T_{zy}=0\)). No perfect-conductor condition is required on the plane \(z=d\) itself: the fields there are the same mode fields, solutions of Maxwell's equations in the bulk. Move the face \(z=+d\) up to the cube lid \(z=l\) that closes the cells, and the face \(z=-d'\) down to the far wall \(z=-(L-l)\). On each of them, as on the plate faces, \(E_t=H_n=0\), \(T_{ik}=0\) in the metal, and the jump equals the pressure of the adjacent cavity. Hence the lid experiences \(+p_{\text{cell}}L^2\), the far wall \(-p_{\text{big}}L^2\), and their sum with the force on the plate vanishes:
+\[
+F_z^{\text{plate}}+F_z^{\text{lid}}+F_z^{\text{far}}=(p_{\text{big}}-p_{\text{cell}})L^2+p_{\text{cell}}L^2-p_{\text{big}}L^2=0 .
+\]
+The stress of the vacuum field is transferred from the plate to the cube walls without attenuation. After renormalization the large cavity becomes free vacuum as \(L\to\infty\), and its contribution at the far wall disappears; but the lid over the cells is attached to their walls, and the renormalized cell pressure \(p_{\text{cell}}\) on it does not depend on \(L\). In the closed model considered here the plate is therefore pushed away from the cube lid, and the closed system \emph{plate\,+\,cube} experiences no one-body thrust. The values \(p_{\text{cell}}\) and \(p_{\text{big}}\) diverge separately; only their regularized difference \(D_T\), found numerically (section ``Checks and estimates''), is finite.
+
 \vspace{\myvspacebeforesubsection}
 \subsection*{\centering{\fontencoding{T1}\fontfamily{ptm}{\selectfont WHY THE STANDARD MOMENTUM BALANCE DOES NOT SEE THIS}}}
 \vspace{\myvspaceaftersubsection}
@@ -539,6 +541,8 @@ internal surfaces of discontinuity \(S_j\), Gauss's theorem must be written as
 
 where \([\![\cdot]\!]\) is the jump of a quantity across \(S_j\). The customary identification of the field momentum with \(\mathbf{g}=\mathbf{S}/c^2\) keeps only the outer surface integral and loses the jump terms, i.e. precisely the momentum of the vacuum field. For the honeycomb plate it is precisely these terms that make up the whole force: the
 sum of the two jumps at the plate faces equals the flux through the pillbox.
+
+Note that in \S\,105 Tamm \emph{assumes} that the stress on a remote closed surface vanishes. In the model with a perfectly conducting cube it does not: as shown above, it is transferred to the cube walls without attenuation, and the total force on the closed system is zero. Whether the stress on a remote surface vanishes for open cells, without a lid, is a question the present work does not settle (see ``Limitations'', item~(a)).
 
 Two remarks make the interpretation unambiguous. First, as already stated, it is the momentum of the \emph{vacuum field} (and of the plate absorbing it) that is not conserved, not the total momentum of a
 closed laboratory system. Second, the renormalized vacuum stress \(\langle T_{\mu\nu}\rangle\) is a
@@ -592,9 +596,7 @@ applicability to satellite orbit correction are unchanged.
 \vspace{\myvspaceaftersubsection}
 
 
-(a) \textit{Cell height.} The calculation assumes that the cell walls reach the cube face and the
-cell is a closed resonator. For real cells of height \(h\ll L\) the cell is open into the large
-cavity, the modes do not separate, and this calculation does not describe such a case.
+(a) \textit{Open cells --- the main open question.} The calculation assumes that the cell walls reach the cube face and the cell is a closed resonator. As shown in section ``Where the force acts'', in such a model the force on the plate is exactly balanced by the force on the cube lid, and there is no one-body thrust. One-body thrust is possible only if the cell has no lid: a cell of height \(h\ll L\) is open into the large cavity, its modes are coupled to the cavity modes and do not separate, \(T_{zx}\neq0\) above the cell openings, and the integral \(\int\langle T_{zz}\rangle\,dx\,dy\) begins to depend on \(z\). What then reaches a remote surface cannot be established by a mode calculation with closed resonators. This requires an open-waveguide calculation --- for instance, via the Green's function of a semi-infinite rectangular waveguide opening into a half-space, by the method of Dzyaloshinskii, Lifshitz and Pitaevskii \cite{DLP1961}, in which the stress is found from the Green's function without enumerating modes and the cutoff is set by the permittivity \(\varepsilon(\omega)\).
 
 (b) \textit{Perfect conductor.} The jump is a property of a perfect conductor. In a real metal
 \(T_{zz}\) decays to zero over the skin depth, and the integral of the force over the layer equals

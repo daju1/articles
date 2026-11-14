@@ -587,10 +587,14 @@ with the boost argument.
 \textbf{Thrust estimate.} With \(\hbar c\,\pi/a^4=0.9932/a_\mu^4\)~dyn/cm\(^2\) (\(a_\mu\) is the
 cell side in microns) the value \(R=0.0138\) from Table~1 of \cite{Drozdov2024} gives, for gold
 honeycomb with \(a\approx2\)~\(\mu\)m, \(F/S\approx8.55\)~dyn/m\(^2\)
-\(=8.55\times10^{-5}\)~N/m\(^2\). A repeated calculation of the same quantity with explicit control
-of convergence in the summation domain reproduces Table~1 for \(ak_m\lesssim3\), but for
-\(ak_m\gtrsim4\) gives smaller absolute values; the limit \(|R|\approx0.0121\) corresponds to
-\(F/S\approx7.5\)~dyn/m\(^2\). The order of magnitude and the conclusion about practical
+\(=8.55\times10^{-5}\)~N/m\(^2\). However, in \cite{Drozdov2024} the series over shells \(j\) was stopped as soon
+as the current term fell below a threshold \(\epsilon\) (columns \(\epsilon\) and \(j_{max}\) of
+Table~1). The tail terms are positive and decay as \(j^{-3}\), so the discarded remainder
+\(\epsilon\,j_{max}^3\,\zeta(3,j_{max}+1)\approx\epsilon\,j_{max}/2\) is negligible at small \(ak_m\)
+but reaches \(15\%\) at \(ak_m=9\) (\(j_{max}=99\)). With this correction Table~1 agrees with an
+independent recalculation (closed form of the \(u\) integral, extrapolation in the size of the
+summation domain) to within \(0.13\%\) in every row. The corrected limit \(|R|\approx0.0121\)
+corresponds to \(F/S\approx7.5\)~dyn/m\(^2\). The order of magnitude and the conclusion about practical
 applicability to satellite orbit correction are unchanged.
 
 \vspace{\myvspacebeforesubsection}

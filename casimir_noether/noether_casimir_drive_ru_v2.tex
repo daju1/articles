@@ -42,6 +42,11 @@
 \def\ruvisnyk{Вестник Харьковского национального университета имени В.~Н.~Каразина, серия «Физика», вып. XX, \mypages~(2026)}
 \def\myworkplace{Харьковский национальный университет имени В.~Н.~Каразина, пл. Свободы, 4, 61022 Харьков, Украина}
 \def\myworkplaceukr{Харківський національний університет імені В.~Н.~Каразіна, майдан Свободи, 4, 61022 Харків, Україна}
+\def\mynameen{A. Drozdov}
+\def\mytitleen{Noether's theorem and the Casimir honeycomb drive: on non-conservation of momentum in asymmetric vacuum systems}
+\def\myworkplaceen{V.~N.~Karazin Kharkiv National University, 61022, 4 Svoboda Sq., Kharkiv, Ukraine}
+\def\myreceiveden{Received on January 9, 2026.}
+\def\myaccepteden{Accepted for publication on January 9, 2026.}
 \def\myorcidlink{0009-0004-1386-4534}
 
 \def\myreceived{Поступила в редакцию 9 января 2026 г.}
@@ -63,9 +68,9 @@
 \renewcommand{\headrulewidth}{0.6pt}
 \fancyhead[C]{\ukrvisnyk \\ \ruvisnyk}
 \renewcommand{\footrulewidth}{0.6pt}
-\fancyfoot[L]{${}^{\copyright}$ \myname}
-\fancyfoot[R]{~ \\ \fontencoding{T1}\fontfamily{\collontitulasfontcode}{\selectfont \textit{Open Access. This article is licensed under a Creative Commons Attribution 4.0}} \\
-\href{\licenseref}{\fontencoding{T1}\fontfamily{\collontitulasfontcode}{\selectfont \textit{\licenseref}}}}
+\fancyfoot[L]{\footbox{${}^{\copyright}$ \myname}}
+\fancyfoot[R]{\footbox[r]{\fontencoding{T1}\fontfamily{\collontitulasfontcode}\selectfont \textit{Open Access. This article is licensed under a Creative Commons Attribution 4.0} \\
+\href{\licenseref}{\textit{\licenseref}}}}
 }
 
 \usepackage{graphicx}
@@ -99,9 +104,14 @@
 
 \providecommand{\doi}[1]{DOI: \href{https://doi.org/#1}{#1}}
 
-\geometry{verbose,includehead,
+\geometry{verbose,a4paper,includehead,includefoot,
 nomarginpar,
-tmargin=1.1cm,bmargin=3.0cm,lmargin=1.85cm,rmargin=1.85cm}
+headheight=26pt,footskip=58pt,
+tmargin=1.1cm,bmargin=1.0cm,lmargin=1.85cm,rmargin=1.85cm}
+% Многострочные колонтитулы: \footbox выравнивает блок по нижней строке, поэтому он растёт
+% вверх от базовой линии footskip и не уходит за край листа; footskip (58pt) больше высоты
+% четырёх строк \scriptsize, поэтому текст на колонтитул не наезжает.
+\newcommand{\footbox}[2][l]{\parbox[b]{0.88\linewidth}{\scriptsize\if#1r\raggedleft\else\raggedright\fi #2}}
 
 \setlength{\columnsep}{0.5cm}
 
@@ -121,7 +131,8 @@ tmargin=1.1cm,bmargin=3.0cm,lmargin=1.85cm,rmargin=1.85cm}
 \renewcommand{\headrulewidth}{0.6pt}
 \fancyfoot{}
 \fancyfoot[LE,RO]{\thepage}
-\fancyfoot[LO,RE]{{~} \\ {\fontencoding{T2A}\fontfamily{ptm}{\selectfont \ruvisnyk}} \\ {\fontencoding{T2A}\fontfamily{\collontitulasfontcode}{\selectfont \ukrvisnyk}}}
+\fancyfoot[LO]{\footbox{{\fontencoding{T2A}\fontfamily{ptm}\selectfont \ruvisnyk} \\ {\fontencoding{T2A}\fontfamily{\collontitulasfontcode}\selectfont \ukrvisnyk}}}
+\fancyfoot[RE]{\footbox[r]{{\fontencoding{T2A}\fontfamily{ptm}\selectfont \ruvisnyk} \\ {\fontencoding{T2A}\fontfamily{\collontitulasfontcode}\selectfont \ukrvisnyk}}}
 \fancyfoot[CO,CE]{}
 
 $\,$
@@ -234,8 +245,7 @@ PACS: 11.10.Ef, 03.70.+k, 42.50.Lc \\
 векторе Пойнтинга это и создаёт видимость парадокса. Мы указываем недостающий член и
 формулируем, какой именно импульс не сохраняется.
 
-Все численные утверждения статьи проверены в сопровождающем Jupyter-ноутбуке
-\texttt{noether\_casimir\_verification.ipynb}.
+Все численные утверждения статьи проверены в сопровождающем Jupyter-ноутбуке \cite{VerifNotebook}.
 
 \vspace{\myvspacebeforesubsection}
 \subsection*{\centering{\fontencoding{T2A}\fontfamily{ptm}{\selectfont ПОСТАНОВКА ЗАДАЧИ}}}
@@ -456,8 +466,11 @@ T_{zz}\big|_{\text{металл}}=0 .
 гранями \(z=+d\) и \(z=-d'\) (\(0<d\le l\), \(0<d'\le L-l\)) на всё сечение \(L\times L\) (рис.~2);
 боковые грани лежат на стенках куба, где \(T_{zx}=T_{zy}=0\). Тогда
 \[
-F_z=\oint_{\partial V_{\mathrm{vac}}}\langle T_{zz}\rangle\,da
-=\left[\langle T_{zz}\rangle(d)-\langle T_{zz}\rangle(-d')\right]L^2=(p_{\text{big}}-p_{\text{cell}})\,L^2 .
+\begin{aligned}
+F_z&=\oint_{\partial V_{\mathrm{vac}}}\langle T_{zz}\rangle\,da
+=\left[\langle T_{zz}\rangle(d)-\langle T_{zz}\rangle(-d')\right]L^2\\
+&=(p_{\text{big}}-p_{\text{cell}})\,L^2 .
+\end{aligned}
 \]
 По доказанной независимости от \(z\) результат не зависит от \(d\), \(d'\). При \(d,d'\to0\) это
 сумма двух скачков на гранях пластины --- сила приложена к поверхностям металла; при \(d=l\),
@@ -647,39 +660,44 @@ E_y&=A\frac{k\,k_x}{K^2}\sin k_xx\,\cos k_yy\,\sin k_zz\,\sin\omega t.
 
 \newpage
 
-\fontencoding{T2A}\fontfamily{ptm}\selectfont
+\fontencoding{T1}\fontfamily{ptm}\selectfont
 
-\section*{\centering {\fontencoding{T2A}\fontfamily{ptm}{\selectfont \uppercase{\MyTitleUkr}}}}
+\section*{\centering {\fontencoding{T1}\fontfamily{ptm}{\selectfont \uppercase{\mytitleen}}}}
 
-\centerline{\Large{\mynameukr \,\orcidlink{\myorcidlink} }}
+\centerline{\Large{\mynameen \,\orcidlink{\myorcidlink} }}
 \vspace{3mm}
-\centerline{\textit{\myworkplaceukr}}
+\centerline{\textit{\myworkplaceen}}
 \centerline{\textit{E-mail: \href{mailto:\myemail}{\myemail}}}
 
 \vspace{3mm}
-\centerline{\myreceivedukr}
-\centerline{\myacceptedukr}
+\centerline{\myreceiveden}
+\centerline{\myaccepteden}
 
 \vspace{3.5mm}
 
-У цій роботі аналізується стільниковий рушій Казимира через призму теореми Нетер.
-Розглянута система — ідеально провідна пластина з нанорозмірною стільниковою структурою
-з одного боку — не має трансляційної симетрії вздовж осі, нормальної до пластини,
-через геометричну асиметрію вакуумних мод з двох її сторін. Як наслідок,
-гамільтоніан вакууму явно залежить від координати \(l\) (ефективної довжини резонатора),
-і, згідно з теоремою Нетер, відповідна компонента імпульсу не зберігається.
-Це незбереження проявляється як результуюча сила квантового вакууму (тяга Казимира).
-Показано, що отриманий вираз для сили на одиницю площі безпосередньо відображає цю порушену
-симетрію й узгоджується як з гамільтоновим підходом, так і з різницею густин енергії.
-Результат підкреслює глибокий фізичний принцип: макроскопічна тяга від квантових флуктуацій
-вакууму виникає саме тому, що система не є інваріантною відносно просторових зсувів.
-Окремо показано, що стандартне застосування рівняння балансу імпульсу (\S\,105 Тамма)
-є неповним для систем із $\langle\mathbf{S}\rangle=0$: оскільки середній вектор Пойнтінга
-дорівнює нулю, незбалансований імпульс міститься у поверхневому інтегралі тензора натягів
-Максвелла по межі вакуумної області, а не у потоці $\mathbf{g}=\mathbf{S}/c^2$. Не
-зберігається імпульс \emph{поля} (речовини), а не повний імпульс замкненої системи;
-величина сили спирається на виміряний вакуумний тензор $\langle T_{\mu\nu}\rangle$ і не
-потребує припущення про матеріальний ефір.
+The Casimir honeycomb drive \cite{Drozdov2024} --- a perfectly conducting plate with a
+nanoscale honeycomb structure on one side --- is examined from the standpoint of symmetries.
+Because the vacuum modes on the two sides of the plate differ, the system is not invariant under
+translations along the normal: the vacuum Hamiltonian depends explicitly on the coordinate \(l\),
+and by Noether's theorem the field momentum along this axis is not conserved. The thrust equals
+\(\partial\langle H\rangle/\partial l\). The same force is then computed independently, from the
+Maxwell stress tensor built out of the fields of the cavity eigenmodes. Mode by mode the two
+derivations coincide identically (Hellmann--Feynman theorem); after regularization they coincide
+in the limit \(ak_m\to\infty\). Along the way an error in Appendix~B of \cite{Drozdov2024} is
+found and corrected: for TM modes the ratio of pressure to energy density is \(k_z^2/k^2\), not
+unity. The stress-tensor calculation shows where the force acts: it is the jump of
+\(\langle T_{zz}\rangle\) at the metal surface, which is why the momentum flux through any closed
+vacuum surface enclosing the plate is independent of the position of its faces. Finally, it is
+shown that the standard momentum balance (Tamm, \S\,105) with \(\langle\mathbf S\rangle=0\) loses
+exactly these jump terms. What is not conserved is the momentum of the field (and of the plate);
+the total momentum of the system \emph{plate\,+\,field\,+\,support} is conserved.
+
+\vspace{3mm}
+
+\noindent
+\textbf{\textit{Keywords:}} \textit{Noether's theorem, Casimir effect, quantum vacuum, momentum non-conservation, Maxwell stress tensor, nanohoneycomb, Casimir thrust}
+
+\fontencoding{T2A}\fontfamily{ptm}\selectfont
 
 \begin{thebibliography}{9}
 \bibitem{Drozdov2024}
@@ -698,6 +716,8 @@ L. S. Brown, G. J. Maclay, \textit{Vacuum stress between conducting plates: an i
 H. Weyl, \textit{Das asymptotische Verteilungsgesetz der Eigenwerte linearer partieller Differentialgleichungen}, Math. Ann. \textbf{71}, 441 (1912).
 \bibitem{DLP1961}
 И. Е. Дзялошинский, Е. М. Лифшиц, Л. П. Питаевский, \textit{Общая теория ван-дер-ваальсовых сил}, УФН \textbf{73}, 381 (1961).
+\bibitem{VerifNotebook}
+А. Дроздов, \textit{Проверочные расчёты к статье «Теорема Нётер и сотовый двигатель Казимира»}, Jupyter-ноутбук (SageMath 9.6), GitHub (2026). \url{https://github.com/daju1/articles/blob/master/casimir_noether/noether_casimir_verification.ipynb}
 \end{thebibliography}
 
 \end{document}

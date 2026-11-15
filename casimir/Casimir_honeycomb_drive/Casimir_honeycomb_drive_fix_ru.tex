@@ -30,7 +30,7 @@
 \def\mylastpage{41}
 \def\mypages{\myfirstpage-\mylastpage}
 
-\def\myfilename{Casimir_honeycomb_drive_ru}
+\def\myfilename{Casimir_honeycomb_drive_fix_ru}
 \def\myname{А. Дроздов}
 \def\mynameukr{А. Дроздов}
 \def\mytitle{Сотовый двигатель Казимира: о силе, действующей на идеально проводящие соты на пластине}
@@ -1307,53 +1307,28 @@ n^{2} = \frac{n_{\mathit{xy}}^{2} t^{2}}{t^{2} - 1}, \,\,\,\,\,\,\,\,\, n = n_{\
 
 \begin{equation}\frac{E}{V} = \frac{{A_{x}^{2} + A_{y}^{2} + A_{z}^{2}}}{32 \, \pi}.\end{equation}
 
-    Электромагнитное давление
-\(\left({\int \frac {H_x^2+H_y^2}{8 \pi} dS}\right)\big/{S}\) на пластину \(xy\) равно
+    Электромагнитное давление на пластину \(xy\) определяется компонентой тензора натяжений Максвелла
+\(T_{zz}=\frac1{8\pi}\left(E_z^2+H_z^2-E_x^2-E_y^2-H_x^2-H_y^2\right)\). На проводящей грани
+\(E_x=E_y=H_z=0\), поэтому давление равно
+\(\left(\int \frac{H_x^2+H_y^2-E_z^2}{8\pi}\,dS\right)\big/S\).\footnote{В опубликованной версии 2024~г. член \(-E_z^2\) был пропущен.} Для электрической моды
 
 \end{multicols}
 
-% \renewcommand{\theequation}{B.\arabic{equation}}
-
-\begin{equation}\frac{f_z}{S} = -\frac{2 \, \pi A_{x} A_{z} a b^{2} k_{z} n_{x} - \pi^{2} A_{z}^{2} b^{2} n_{x}^{2} + 2 \, \pi A_{y} A_{z} a^{2} b k_{z} n_{y} - \pi^{2} A_{z}^{2} a^{2} n_{y}^{2} - {\left(A_{x}^{2} + A_{y}^{2}\right)} a^{2} b^{2} k_{z}^{2}}{32 \, {\left(\pi a^{2} b^{2} k_{z}^{2} + \pi^{3} b^{2} n_{x}^{2} + \pi^{3} a^{2} n_{y}^{2}\right)}}.\end{equation}
-
-    Их отношение \(\frac{f_z/S}{E/V}\) равно
-
-\begin{equation}\frac{f_z/S}{E/V} = \frac{A_{x}^{2} a^{2} b^{2} k_{z}^{2} + A_{y}^{2} a^{2} b^{2} k_{z}^{2} - 2 \, \pi A_{x} A_{z} a b^{2} k_{z} n_{x} + \pi^{2} A_{z}^{2} b^{2} n_{x}^{2} - 2 \, \pi A_{y} A_{z} a^{2} b k_{z} n_{y} + \pi^{2} A_{z}^{2} a^{2} n_{y}^{2}}{{\left(a^{2} b^{2} k_{z}^{2} + \pi^{2} b^{2} n_{x}^{2} + \pi^{2} a^{2} n_{y}^{2}\right)} {\left(A_{x}^{2} + A_{y}^{2} + A_{z}^{2}\right)}}.\end{equation}
+\begin{equation}\frac{f_z}{S} = \frac{1}{32\pi}\left[\frac{\left(A_{x} k_{z} - \frac{\pi A_{z} n_{x}}{a}\right)^{2} + \left(A_{y} k_{z} - \frac{\pi A_{z} n_{y}}{b}\right)^{2}}{k_{z}^{2} + \frac{\pi^{2} n_{x}^{2}}{a^{2}} + \frac{\pi^{2} n_{y}^{2}}{b^{2}}} - A_{z}^{2}\right].\end{equation}
 
 \begin{multicols}{2}
 
-    Рассматривая решение с распространением волны вдоль \(z\) имеем
-\(H_z = 0\) что даёт
+С учётом условия \(div\,\vec{E}=0\) выражение в квадратных скобках равно
+\(\frac{k_z^2}{k^2}\left(A_x^2+A_y^2+A_z^2\right)\), где \(k^2=k_z^2+\frac{\pi^2n_x^2}{a^2}+\frac{\pi^2n_y^2}{b^2}\),
+и отношение давления к плотности энергии
 
-    \[\pi A_{y} b n_{x} - \pi A_{x} a n_{y} = 0\]
+\begin{equation}\frac{f_z/S}{E/V} = \frac{k_{z}^{2}}{k_{z}^{2} + \frac{\pi^{2} n_{x}^{2}}{a^{2}} + \frac{\pi^{2} n_{y}^{2}}{b^{2}}}\end{equation}
 
-    и
-\[A_{x} = -\frac{A_{z} a b^{2} k_{z} n_{x}}{\pi b^{2} n_{x}^{2} + \pi a^{2} n_{y}^{2}},
-A_{y} = -\frac{A_{z} a^{2} b k_{z} n_{y}}{\pi b^{2} n_{x}^{2} + \pi a^{2} n_{y}^{2}}.\]
+не зависит от амплитуд \(A_x\), \(A_y\), \(A_z\). Поэтому отдельное рассмотрение решений с
+распространением волны вдоль \(z\), \(x\) или \(y\) не требуется: во всех случаях получается одно
+и то же отношение.
 
-    В этом случае отношение электромагнитного давления к плотности энергии поля равно \(1\),
-
-\begin{equation}\frac{f_z/S}{E/V} = 1.\end{equation}
-
-    Рассматривая решение с распространением волны вдоль \(x\) имеем
-\(H_x = 0\) что даёт
-
-    \[A_{y} = -\frac{\pi^{2} A_{x} b n_{x} n_{y}}{a b^{2} k_{z}^{2} + \pi^{2} a n_{y}^{2}},
-A_{z} = -\frac{\pi A_{x} b^{2} k_{z} n_{x}}{a b^{2} k_{z}^{2} + \pi^{2} a n_{y}^{2}}.\]
-
-    В этом случае отношение электромагнитного давления к плотности энергии поля равно
-
-\begin{equation}\frac{f_z/S}{E/V} = \frac{b^{2} k_{z}^{2}}{b^{2} k_{z}^{2} + \pi^{2} n_{y}^{2}}.\end{equation}
-
-    Рассматривая решение с распространением волны вдоль \(y\),
-\(H_y = 0\), как и для \(x\)
-
-\[A_{x} = -\frac{\pi^{2} A_{y} a n_{x} n_{y}}{a^{2} b k_{z}^{2} + \pi^{2} b n_{x}^{2}},
-A_{z} = -\frac{\pi A_{y} a^{2} k_{z} n_{y}}{a^{2} b k_{z}^{2} + \pi^{2} b n_{x}^{2}},\]
-
-\begin{equation}\frac{f_z/S}{E/V} = \frac{a^{2} k_{z}^{2}}{a^{2} k_{z}^{2} + \pi^{2} n_{x}^{2}}.\end{equation}
-
-    \textbf{Для магнитной моды}
+\textbf{Для магнитной моды}
 
 \begin{equation}\nabla\,\vec{H} + \frac{\omega^2}{c^2}\,\vec{H} = 0\end{equation}, имеем следующее решение
 
@@ -1383,53 +1358,32 @@ A_{z} = -\frac{\pi A_{y} a^{2} k_{z} n_{y}}{a^{2} b k_{z}^{2} + \pi^{2} b n_{x}^
 
 \begin{equation}\frac{E}{V} = \frac{{B_{1}^{2} + B_{2}^{2} + B_{3}^{2}}}{32 \, \pi}.\end{equation}
 
-    Электромагнитное давление
-\(\left({\int \frac {H_x^2+H_y^2}{8 \pi} dS}\right)\big/{S}\) на пластину \(xy\) равно
+    Электромагнитное давление на пластину \(xy\)
+\(\left(\int \frac{H_x^2+H_y^2-E_z^2}{8\pi}\,dS\right)\big/S\) для магнитной моды равно
 
-\begin{equation}\frac{f_z}{S}=\frac{{B_{1}^{2} + B_{2}^{2}}}{32 \, \pi}.\end{equation}
+\begin{equation}\begin{aligned}\frac{f_z}{S}=\frac{1}{32\pi}\Bigg[&B_{1}^{2} + B_{2}^{2}\\
+&- \frac{\left(\frac{\pi B_{2} n_{x}}{a} - \frac{\pi B_{1} n_{y}}{b}\right)^{2}}{k_{z}^{2} + \frac{\pi^{2} n_{x}^{2}}{a^{2}} + \frac{\pi^{2} n_{y}^{2}}{b^{2}}}\Bigg].\end{aligned}\end{equation}
 
-Их отношение \(\frac{f_z/S}{E/V}\) равно
+С учётом \(div\,\vec{H}=0\) выражение в квадратных скобках равно
+\(\frac{k_z^2}{k^2}\left(B_1^2+B_2^2+B_3^2\right)\), и снова
 
-\begin{equation}\frac{f_z/S}{E/V} = \frac{{B_{1}^{2} + B_{2}^{2}}}{B_{1}^{2} + B_{2}^{2} + B_{3}^{2}}.\end{equation}
+\begin{equation}\frac{f_z/S}{E/V} = \frac{k_{z}^{2}}{k_{z}^{2} + \frac{\pi^{2} n_{x}^{2}}{a^{2}} + \frac{\pi^{2} n_{y}^{2}}{b^{2}}}.\end{equation}
 
-Рассматривая решение с распространением волны вдоль \(z\), имеем
-\(E_z = 0\) что даёт
+Член \(-E_z^2\) обращается в нуль только для магнитной моды с распространением вдоль \(z\)
+(\(E_z=0\)).\footnote{Именно в этом случае формула опубликованной версии 2024~г., записанная без члена \(-E_z^2\), давала верный результат.}
 
-\[\frac{\pi B_{2} n_{x}}{a} - \frac{\pi B_{1} n_{y}}{a} = 0\]
-
-и
-\[B_1 = -\frac{B_{3} a k_{z} n_{x}}{\pi n_{x}^{2} + \pi n_{y}^{2}},
-B_2 = -\frac{B_{3} a k_{z} n_{y}}{\pi n_{x}^{2} + \pi n_{y}^{2}}.\]
-
-В этом случае отношение электромагнитного давления к плотности энергии поля равно
-
-\begin{equation}\frac{f_z/S}{E/V} = \frac{a^{2} k_{z}^{2}}{a^{2} k_{z}^{2} + \pi^{2} n_{x}^{2} + \pi^{2} n_{y}^{2}}.\end{equation}
-
-    Рассматривая решение с распространением волны вдоль \(x\), имеем
-\(E_x = 0\) что даёт
-
-\[B_2 = -\frac{\pi^{2} B_{1} n_{x} n_{y}}{a^{2} k_{z}^{2} + \pi^{2} n_{y}^{2}},
-B_3 = -\frac{\pi B_{1} a k_{z} n_{x}}{a^{2} k_{z}^{2} + \pi^{2} n_{y}^{2}}.\]
-
-В этом случае отношение электромагнитного давления к плотности энергии поля равно
-
-\[\frac{f_z/S}{E/V} = \frac{a^{2} b^{4} k_{z}^{4} + 2 \, \pi^{2} a^{2} b^{2} k_{z}^{2} n_{y}^{2} + \pi^{4} b^{2} n_{x}^{2} n_{y}^{2} + \pi^{4} a^{2} n_{y}^{4}}{{\left(a^{2} b^{2} k_{z}^{2} + \pi^{2} b^{2} n_{x}^{2} + \pi^{2} a^{2} n_{y}^{2}\right)} {\left(b^{2} k_{z}^{2} + \pi^{2} n_{y}^{2}\right)}}.\]
-
-Рассматривая решение с распространением волны вдоль \(y\)
-\(E_y = 0\) как и для \(x\)
-
-    \[B_1 = -\frac{\pi^{2} B_{2} n_{x} n_{y}}{a^{2} k_{z}^{2} + \pi^{2} n_{x}^{2}},
-      B_3 = -\frac{\pi B_{2} a k_{z} n_{y}}{a^{2} k_{z}^{2} + \pi^{2} n_{x}^{2}},\]
-
-\[\frac{f_z/S}{E/V} = \frac{a^{4} b^{2} k_{z}^{4} + 2 \, \pi^{2} a^{2} b^{2} k_{z}^{2} n_{x}^{2} + \pi^{4} b^{2} n_{x}^{4} + \pi^{4} a^{2} n_{x}^{2} n_{y}^{2}}{{\left(a^{2} b^{2} k_{z}^{2} + \pi^{2} b^{2} n_{x}^{2} + \pi^{2} a^{2} n_{y}^{2}\right)} {\left(a^{2} k_{z}^{2} + \pi^{2} n_{x}^{2}\right)}}.\]
-
-    Итак, задача расчёта электромагнитной силы в конфигурации наносот оказывается достаточно простой, поскольку
+Итак, для мод обоих типов отношение давления к плотности энергии равно \(k_z^2/k^2\), и
 
 \begin{equation}\lim_{k_z \to \infty}\frac{f_z/S}{E/V} = 1.\end{equation}
 
-Видно, что при уменьшении \(a\) отношение \(\frac{f_z/S}{E/V}\) также уменьшается, что приводит к
+Для моды с \(k_z=\pi n_z/h\) имеем
+\(-\partial_h(\hbar ck/2)=\frac{\hbar c}{2h}\frac{k_z^2}{k}\), то есть давление, найденное через
+тензор натяжений, помодово совпадает с производной энергии по длине резонатора. Поэтому (в пределе
+\(ak_m\to\infty\), с точностью до членов с производной регуляризующей функции \(f'\))
 
-\begin{equation}\frac{F}{S} \geq \delta\,\frac{E}{V} = \hbar\,c\, \pi\frac{R}{a^4}.\end{equation}
+\begin{equation}\frac{F}{S} = \delta\,\frac{E}{V} = \hbar\,c\, \pi\frac{R}{a^4}.\end{equation}
+
+Подробный вывод и численная проверка приведены в \cite{Drozdov2026Noether, VerifNotebook}.\footnote{В опубликованной версии 2024~г. вместо этого равенства стояло неравенство \(F/S\ge\delta(E/V)\), полученное без члена \(-E_z^2\).}
 
 С другой стороны, тот же результат можно показать с помощью гамильтоновой механики.
 
@@ -1828,6 +1782,22 @@ E = \frac{1}{2}\sum\,\hbar\omega = \hbar\,c\frac{1}{2}\sum\limits_{n_x}^{}\sum\l
     abstract = {In 1948, Hendrik Casimir predicted that a generalized version of van der Waals forces would arise between two metal plates due to quantum fluctuations of the electromagnetic field. These forces become significant in micromechanical systems at submicrometre scales, such as in the adhesion between movable parts. The Casimir force, through a close connection to classical photonics, can depend strongly on the shapes and compositions of the objects, stimulating a decades-long search for geometries in which the force behaves very differently from the monotonic attractive force first predicted by Casimir. Recent theoretical and experimental developments have led to a new understanding of the force in complex microstructured geometries, including through recent theoretical predictions of Casimir repulsion between vacuum-separated metals, the stable suspension of objects and unusual non-additive and temperature effects, as well as experimental observations of repulsion in fluids, non-additive forces in nanotrench surfaces and the influence of new material choices.},
     % pages = {211-221},
     % doi = {10.1038/nphoton.2011.39},
+}
+
+@misc{Drozdov2026Noether,
+    Author = {А. Дроздов},
+    Title = {Теорема Нётер и сотовый двигатель Казимира: о несохранении импульса в асимметричных вакуумных системах},
+    Year = {2026},
+    howpublished = {Рукопись},
+    url = {https://github.com/daju1/articles/tree/master/casimir_noether},
+}
+
+@misc{VerifNotebook,
+    Author = {А. Дроздов},
+    Title = {Проверочные расчёты к статье «Теорема Нётер и сотовый двигатель Казимира»},
+    Year = {2026},
+    howpublished = {Jupyter-ноутбук (SageMath 9.6), GitHub},
+    url = {https://github.com/daju1/articles/blob/master/casimir_noether/noether_casimir_verification.ipynb},
 }
 
 %\end{thebibliography}

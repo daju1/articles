@@ -79,6 +79,7 @@ Stokes' theorem ($\oint A_j\,dx_j=\int_S\epsilon_{klj}\partial_lA_j\,dS_k$):
 b_i=\oint_{\partial S}\beta_{ij}\,dx_j=\int_S\alpha_{ik}\,dS_k,\qquad
 \alpha_{ik}\equiv\epsilon_{klj}\beta_{ij,l}=\tfrac12\epsilon_{klj}T_{ilj}.
 \label{eq:burgers}
+% [проверка: theory/verification/verification_unified_theory.ipynb, §2]
 \end{equation}
 Here $\alpha_{ik}$ is Nye's tensor. The last equality holds because only the part of
 $\epsilon_{klj}\beta_{ij,l}$ antisymmetric in $(l,j)$ survives, and
@@ -137,6 +138,7 @@ first index is translational.
 \mathcal{L}=T-W=\tfrac12\,p_iv_i+\tfrac12\,D_{ij}I_{ij}-\tfrac12\,\sigma_{ij}\beta_{ij}
 -\tfrac14\,H_{ijk}T_{ijk}.
 \label{eq:lagr}
+% [проверка: theory/verification/verification_unified_theory.ipynb, §1]
 \end{equation}
 \textit{Scalar character.} All indices are contracted in each term: one in the first,
 two in the second and third, three in the fourth. No index is free, and $\mathcal L$ is
@@ -167,6 +169,7 @@ D_{ij}&=d_1\,\delta_{ij}I_{kk}+d_2(I_{ij}+I_{ji})+d_3(I_{ij}-I_{ji}),\\
 H_{ijk}&=c_1\,T_{ijk}+c_2(T_{jki}-T_{kji})+c_3(\delta_{ij}T_{llk}-\delta_{ik}T_{llj}).
 \end{aligned}
 \label{eq:constit}
+% [проверка: theory/verification/verification_unified_theory.ipynb, §1]
 \end{equation}
 These are ten constants: $\rho$ and nine moduli, $[\lambda,\mu,\gamma]=ML^{-1}T^{-2}$,
 $[d_{1,2,3}]=ML^{-1}$, $[c_{1,2,3}]=MLT^{-2}$. Non-negativity of the energy
@@ -222,6 +225,7 @@ identically \cite[eq.~(2)]{lazar2010pla}
 \begin{equation}
 \epsilon_{jkl}\,T_{ijk,l}=0,\qquad \dot T_{ijk}+I_{ij,k}-I_{ik,j}=0.
 \label{eq:bianchi}
+% [проверка: theory/verification/verification_unified_theory.ipynb, §2]
 \end{equation}
 The first is the analogue of $\nabla\cdot\mathbf B=0$ (no sources of dislocation
 density: a dislocation line cannot end inside the medium). The second is the analogue
@@ -237,6 +241,7 @@ dislocations is
 \begin{equation}
 f_k=\sigma_{ij}T_{ijk}-p_iI_{ik},
 \label{eq:pk}
+% [проверка: theory/verification/verification_unified_theory.ipynb, §3]
 \end{equation}
 which is the component form of eq.~(31) of \cite{lazar2010},
 $f^a=(e_a\lrcorner I^b)p_b+(e_a\lrcorner T^b)\wedge\Sigma_b$. The derivation of
@@ -254,6 +259,7 @@ Hence
 \begin{equation}
 f_k=-\partial_t\!\left(p_i\beta_{ik}\right)+\partial_j\!\left(\sigma_{ij}\beta_{ik}-\delta_{jk}(W-T)\right).
 \label{eq:pk_balance}
+% [проверка: theory/verification/verification_unified_theory.ipynb, §3]
 \end{equation}
 The force density is the divergence of a four-dimensional Eshelby-type tensor.
 Therefore $f_k$ is the configurational force on the defects, and $\int f_k\,dV$ over a
@@ -353,6 +359,7 @@ only attraction remains, and the minimum shifts to $d\to0$ (collapse). $\qed$
 
 \begin{remark}[Which coordinate is stabilized (correction)]
 \label{rem:stab_axis}
+% [проверка: theory/verification/verification_unified_theory.ipynb, §5]
 The centrifugal term $J^2/(2md^2)$ refers to the \emph{radial} coordinate in the
 plane of rotation: it arises from $J=m\rho^2\omega$ with $\rho$ the distance to
 the axis. The axial distance $d$ between the ring planes does not enter $J$, so
@@ -423,6 +430,43 @@ required for the stability of the pair, is that vortex; a particle without
 rotation collapses.
 \end{remark}
 
+\begin{remark}[Status of the M\"obius ring and neutrality of the pair (3 Nov 2026)]
+\label{rem:mobius_status}
+(i)~The law ``$b$ rotates by $\pi$ per circuit at $|b|=\mathrm{const}$'' is \emph{not} a Volterra
+defect of linear theory: by deWit (1973, eq.~5.5) the jump across the defect surface,
+$[u]=b+\Omega\times(x-x^0)$, is linear in position. The M\"obius ring is admissible only in a nonlinear
+theory of finite rotations: in the $SO(3)\ltimes T(3)$ gauge theory it is a loop linked with a finite
+$\pi$-disclination (holonomy $R(\pi)$; a wedge disclination when $b$ rotates in the ring plane, a twist
+disclination for the $(r,z)$ and $(z,\tau)$ planes). For a finite rotation $F=R(\psi)$ the linear strain
+equals $1-\cos\psi$ (i.e.~$2$ at $\psi=\pi$), while the Almansi tensor $e=\tfrac12(I-F^{-T}F^{-1})\equiv0$:
+rotating the frame costs no strain only in the Eulerian nonlinear theory.
+(ii)~With the poles in antiphase, the total Burgers vector of the pair over a circuit enclosing both
+rings is $\max|b_N+b_S|=2b_0\max(|\cos\tfrac{\Delta}{4}|,|\sin\tfrac{\Delta}{4}|)=\sqrt2\,b_0$ at
+$\Delta=\pi$; it is cancelled neither by a choice of the twist law, nor by a single Volterra line, nor by
+smooth parallel transport of the frame. A neutral configuration with a rotating transverse dipole exists
+for four nested rings of radii $R$ and $\rho R$ (two pairs): $\sum b=0$, $p_\perp=2(1-\rho)R$, period
+$4\pi$; dipole radiation is suppressed by a factor $(1-\rho)^{-2}$ but not eliminated.
+(iii)~A static Eulerian solution for a straight $\pi$-disclination with Hooke's law on the Almansi
+tensor was not found by shooting (loss of ellipticity is likely; see the next remark).
+Checks: \texttt{electron\_structure\_rings/verification/verification\_mobius\_dynamics.ipynb}.
+\end{remark}
+
+\begin{remark}[Nonlinear constitutive law and the four-ring particle (3 Nov 2026)]
+(i)~A straight $\pi$-disclination (the holonomy axis of the M\"obius ring) has no static solution
+with Hooke's law written on the Almansi tensor, whereas the polyconvex neo-Hookean law
+$W=\tfrac\mu2(\lambda_r^2+\lambda_\theta^2-2-2\ln J)+\tfrac\lambda2(\ln J)^2$ gives a solution up to
+$\Omega=\pm\pi$, with $E(+\pi)=1.06\,E_{lin}$ and $E(-\pi)=0.85\,E_{lin}$. The Eulerian kinematics
+is kept, but the constitutive law for finite rotations must be polyconvex; for a longitudinal wave
+neo-Hooke gives $\beta=(\mu+\tfrac32\lambda)/(\lambda+2\mu)$ instead of $\tfrac32$
+(i.e.\ $A+3B+C=-2\mu$ in Landau--Lifshitz notation).
+(ii)~Four nested M\"obius rings (radii $R$, $\rho R$) are Burgers-neutral and carry a transverse
+dipole $2(1-\rho)R$, but the static energy (Blin's formula) grows linearly with $\rho$,
+$E\approx E_0+A\rho$: without rotation the inner rings collapse. If the inner pair conserves its
+angular momentum, $E_{\rm eff}=E_0+A\rho+B/\rho^3$ has a stable minimum $\rho^*=(3B/A)^{1/4}$ for
+$B<A/3$ (assumptions: mass $\propto$ length, $\omega$ independent of $\rho$).
+Checks: \texttt{electron\_structure\_rings/verification/}, sections~14--17.
+\end{remark}
+
 \section{The magnetic moment: why a dipole, not a current}
 
 \begin{theorem}[Vanishing of the current axial moment]
@@ -470,6 +514,7 @@ magneton is produced by its rotation, $\mu_B=e\omega R^2/3c$, the equatorial spe
 \begin{equation}
 \frac{v}{c}=\frac{3\mu_B}{eR}=\frac{3}{\alpha}\approx411 .
 \label{eq:v_classical}
+% [проверка: theory/verification/verification_unified_theory.ipynb, §5]
 \end{equation}
 This is not an accidental number but an exact factor $1/\alpha$. It arises because
 the magnetic moment $\mu$ and the mechanical moment $S$ are produced by \emph{the same}
@@ -492,6 +537,7 @@ needed for it; the current contribution of the pair vanishes
 
 \begin{proposition}[Subluminal spin]
 \label{prop:subluminal}
+% [проверка: theory/verification/verification_unified_theory.ipynb, §5]
 For $a=\lambdabar_C$ and $S=\hbar/2$ the speed of the special point is $v=c/2$.
 \end{proposition}
 \begin{proof}
@@ -511,6 +557,7 @@ g\equiv\frac{\mu}{(e/2mc)\,S}=\frac{e\,d}{e\hbar/(4mc)}=\frac{4d}{\lambdabar_C},
 \qquad
 g=2\iff d=\tfrac12\lambdabar_C=\tfrac12a .
 \label{eq:g_geometry}
+% [проверка: theory/verification/verification_unified_theory.ipynb, §5]
 \end{equation}
 Thus in the model $g$ is not postulated but reduces to a single geometric ratio: the
 axial gap of the pair relative to its radius. The classical ``rotating charge''

@@ -11,8 +11,13 @@
   2) НОВОЕ ядро standalone/mendrive_core.cpp (libmendrive_new.*) через тот же
      старый extern "C" API -- поэлементное сравнение всех массивов записи;
   3) автономная программа ./mendrive (потоковые средние) -- сравнение итоговых
-     чисел из out_dir/summary.txt.
+     чисел из out_dir/summary.txt;
+  4) MODE: НОВЫЙ конструктор mendrive_create_mode (polarization=auto, т.е. обновляется только
+     нужная пара TE/TM) -- для старых режимов обязан давать ТЕ ЖЕ массивы, что исходное ядро
+     (допуск 0 / 1e-12), а новые имена jm_z_right / je_y_left в ./mendrive -- те же итоги,
+     что magnetic_right / electric_left.
 Нужен только numpy. Python здесь используется лишь для проверки.
+Новые режимы (je_z_left, jm_y_right, ...) и экспорт полей проверяет tests/test_fields_linear.py.
 """
 import ctypes
 import os
@@ -63,11 +68,21 @@ def load(path):
         ctypes.c_double, ctypes.c_double, ctypes.c_int,
         DBLP, DBLP, DBLP, DBLP, DBLP, DBLP, DBLP, DBLP, DBLP, DBLP, ctypes.POINTER(ctypes.c_int)]
     lib.mendrive_run.restype = ctypes.c_int
+    if hasattr(lib, 'mendrive_create_mode'):   # MODE: только в новом ядре
+        lib.mendrive_create_mode.restype = ctypes.c_void_p
+        lib.mendrive_create_mode.argtypes = list(lib.mendrive_create.argtypes) + [
+            ctypes.c_int, ctypes.c_int,                         # pr2d_algo, n_threads
+            ctypes.c_int, ctypes.c_double, ctypes.c_int,        # polarization, src_k_phase, src_sigma_fix
+            ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]  # eps_left, eps_ferrite, mu_yy, mu_zz
+        lib.mendrive_get_polarization.argtypes = [ctypes.c_void_p]
+        lib.mendrive_get_polarization.restype = ctypes.c_int
     return lib
 
 
-def run_ctypes(lib, p, omega0, n_periods, record_from_period, amp, ramp_periods=2.0, probe_idx=0):
-    """Точная копия MenDriveCpp.__init__ + MenDriveCpp.run из mendrive_ctypes.py."""
+def run_ctypes(lib, p, omega0, n_periods, record_from_period, amp, ramp_periods=2.0, probe_idx=0,
+               create_mode=False, polarization=0):
+    """Точная копия MenDriveCpp.__init__ + MenDriveCpp.run из mendrive_ctypes.py.
+    create_mode=True -- MODE: тот же прогон через новый mendrive_create_mode (polarization: 0 auto, 1 TE, 2 TM, 3 both)."""
     args = []
     for k in ORDER:
         v = p[k]
@@ -75,7 +90,10 @@ def run_ctypes(lib, p, omega0, n_periods, record_from_period, amp, ramp_periods=
         elif k == 'ferrite_model': v = FERRITE_CODE[v]
         elif k == 'bias_orientation': v = BIAS_CODE[v]
         args.append(v)
-    h = lib.mendrive_create(*args)
+    if create_mode:
+        h = lib.mendrive_create_mode(*args, 0, 1, polarization, 0.0, 0, 1.0, 1.0, 1.0, 1.0)
+    else:
+        h = lib.mendrive_create(*args)
     assert h, 'mendrive_create вернул NULL'
     dt = lib.mendrive_get_dt(h)
     T = 2*np.pi/omega0
@@ -174,6 +192,23 @@ def main():
             print(f'   {k:22s} ноутбук={m_ref[k]: .12e}  mendrive={s[k]: .12e}  отн.разн.={d:.2e}  {flag}')
         print(f'   P_src_avg={s["P_src_avg"]:.6e}  P_num={s["P_num_residual"]:.6e}  '
               f'rel(P_src+P_num, Pdiss)={s["rel_dif_src_plus_num"]:.3e}  пик RSS={s["peak_rss_mb"]:.1f} МБ')
+        # MODE: новый конструктор с polarization=auto (обновляется только нужная пара) -- те же массивы
+        if hasattr(new, 'mendrive_create_mode'):
+            r_mode = run_ctypes(new, p, w, nper, rec, amp, create_mode=True, polarization=0)
+            dm = max(float(np.max(np.abs(r_ref[k] - r_mode[k]))) if len(r_ref[k]) else 0.0
+                     for k in ('t', 'dTxx', 'Hn', 'P', 'Mx', 'My', 'Mz', 'Pdiss'))
+            okm = dm <= 1e-12 * max(1.0, float(np.max(np.abs(r_ref['P']))) if len(r_ref['P']) else 1.0)
+            print(f'   MODE: mendrive_create_mode(polarization=auto): max|исходное - новое| = {dm:.3e}  '
+                  f'{"OK" if okm else "РАСХОЖДЕНИЕ"}')
+            ok &= okm
+        # MODE: новые имена режимов в ./mendrive -> те же итоги
+        alias = {'magnetic_right': 'jm_z_right', 'electric_left': 'je_y_left'}[p['excitation_mode']]
+        p2 = dict(p); p2['excitation_mode'] = alias
+        s2 = run_standalone(p2, w, nper, rec, amp, out_dir + '_alias', algo)
+        da = max(reldiff(s[k], s2[k]) for k in ('dTxx_avg', 'P_avg', 'Pdiss_avg', 'P_src_avg'))
+        print(f'   MODE: excitation_mode={alias} vs {p["excitation_mode"]}: макс. отн. разн. итогов = {da:.2e}  '
+              f'{"OK" if da == 0 else "РАСХОЖДЕНИЕ"}')
+        ok &= (da == 0)
         ok_all &= ok
     print('\nИТОГ:', 'все совпадения в пределах допуска' if ok_all else 'ЕСТЬ РАСХОЖДЕНИЯ')
     return 0 if ok_all else 1

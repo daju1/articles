@@ -6,7 +6,11 @@
 //   // FIX:  -- исправление ошибки (память, индексация, переполнение, UB);
 //   // PERF: -- оптимизация БЕЗ изменения арифметики (те же значения);
 //   // DIAG: -- новая диагностика (на динамику не влияет);
-//   // NOTE: -- замечание к оригинальному коду, оставленному без изменений.
+//   // NOTE: -- замечание к оригинальному коду, оставленному без изменений;
+//   // MODE: -- выбор поляризации (TE/TM) и расширенный набор режимов возбуждения
+//                (соответствие driving_mode ноутбуков MenDrive_qnm*.ipynb), феррит 'Linear',
+//                eps/mu стенок, фаза источника. При параметрах по умолчанию старые режимы
+//                считают ТЕ ЖЕ числа (бит-в-бит), что исходное ядро.
 //
 // Этот файл можно:
 //   (а) включить в main.cpp (#include "mendrive_core.cpp") -- автономная программа;
@@ -45,7 +49,54 @@ enum {
     Hybrid     = 2,
     Preisach   = 3,
     Preisach2D = 4,
+    Linear     = 5,   // MODE: линейный феррит B = mu*H (mu_yy_lin, mu_zz_lin), sigma_m = sigma_m_leak;
+                      //       эталон для сверки с линейными моделями MenDrive_qnm*.ipynb
 } FERRITE_CODE;
+
+// ----------------------------------------------------------------------------
+// MODE: режимы возбуждения и поляризации.
+//
+// 1D-модель: поля зависят только от x (k_y = k_z = 0), поэтому уравнения Максвелла
+// распадаются на ДВЕ независимые пары (в линейной среде без гиротропии):
+//   TE = (Ey, Hz):  dEy/dt = -dHz/dx - 4 pi je_y,   dBz/dt = -dEy/dx - 4 pi jm_z
+//   TM = (Ez, Hy):  dEz/dt = +dHy/dx - 4 pi je_z,   dBy/dt = +dEz/dx - 4 pi jm_y
+// (c = 1; Гауссова система; rot H = dD/dt + 4 pi j_e, rot E = -dB/dt - 4 pi j_m --
+// как в ячейке 74 ноутбуков). Названия TE/TM -- как в ноутбуках MenDrive_qnm*: TE означает
+// Hz != 0, Ez = 0 (is_TE), TM -- Ez != 0, Hz = 0 (is_TM).
+//   je_y, jm_z -> TE;   je_z, jm_y -> TM.
+// Коды 0 и 1 -- прежние 'magnetic_right' и 'electric_left' (значения не менялись).
+// NOTE: прежний комментарий «1 = electric_left - MenDrive_qnm-mode2_je_z_TM.ipynb» был
+//       неточен: код 1 всегда возбуждал je_y -> Ey (TE, = driving_mode_1 ноутбука
+//       MenDrive_qnm.ipynb), а не je_z (TM, mode2). Для je_z теперь есть EXC_JE_Z_LEFT.
+// ----------------------------------------------------------------------------
+enum {
+    EXC_JM_Z_RIGHT = 0,  // 'magnetic_right' / 'jm_z_right': TE, driving_mode_3/_4 ('jm_z, TE'), mode3-ноутбук
+    EXC_JE_Y_LEFT  = 1,  // 'electric_left'  / 'je_y_left' : TE, driving_mode_1 ('je_y, k_y=0, TE'), MenDrive_qnm.ipynb
+    EXC_JE_Z_LEFT  = 2,  // 'je_z_left'  : TM, driving_mode_0/_2 ('je_z, TM'), mode2-ноутбук
+    EXC_JM_Y_RIGHT = 3,  // 'jm_y_right' : TM, driving_mode_5 ('jm_y, k_y=0, TM')
+    EXC_JE_Y_RIGHT = 4,  // 'je_y_right' : TE (в ноутбуках нет)
+    EXC_JE_Z_RIGHT = 5,  // 'je_z_right' : TM (в ноутбуках нет)
+    EXC_JM_Z_LEFT  = 6,  // 'jm_z_left'  : TE (в ноутбуках нет)
+    EXC_JM_Y_LEFT  = 7,  // 'jm_y_left'  : TM (в ноутбуках нет)
+    EXC_COUNT      = 8
+};
+enum { POL_AUTO = 0, POL_TE = 1, POL_TM = 2, POL_BOTH = 3 };
+
+static inline bool exc_is_magnetic(int e) { return e == EXC_JM_Z_RIGHT || e == EXC_JM_Y_RIGHT || e == EXC_JM_Z_LEFT || e == EXC_JM_Y_LEFT; }
+static inline bool exc_is_z(int e)        { return e == EXC_JM_Z_RIGHT || e == EXC_JE_Z_LEFT || e == EXC_JE_Z_RIGHT || e == EXC_JM_Z_LEFT; }
+static inline bool exc_is_right(int e)    { return e == EXC_JM_Z_RIGHT || e == EXC_JM_Y_RIGHT || e == EXC_JE_Y_RIGHT || e == EXC_JE_Z_RIGHT; }
+// je_y, jm_z -> TE; je_z, jm_y -> TM
+static inline int exc_polarization(int e) { return (exc_is_magnetic(e) == exc_is_z(e)) ? POL_TE : POL_TM; }
+
+// MODE: дополнительные параметры (по умолчанию -- поведение исходного ядра).
+struct ModeOptions {
+    int polarization = POL_BOTH;      // POL_BOTH = как в исходном ядре (обновляются все 4 компоненты)
+    long double src_k_phase = 0.0;    // Re K источника: j = amp*ramp*exp(-xi/delta)*sin(w t - k xi)
+    int src_sigma_fix = 0;            // 1: источник je делится на (eps + 2 pi sigma dt) (согласованная полунеявная схема)
+    long double eps_left = 1.0, eps_ferrite = 1.0;   // диэлектрическая проницаемость стенок
+    long double mu_yy_lin = 1.0;      // mu для Hy в феррите (JA/Preisach/Preisach2D/Linear; в LLG/Hybrid Hy через dMy/dt)
+    long double mu_zz_lin = 1.0;      // mu для Hz в феррите (только Linear)
+};
 
 // FIX: алгоритм хранения состояния Preisach2D.
 //   PR2D_BITS -- бит-упакованное состояние (1 бит на пару вместо int8, память /8),
@@ -589,8 +640,9 @@ struct MenDriveSim {
     int N;
     long double a, h_l, h_r, dx, dt;
     int ferrite_model;   // 0='JA', 1='LLG', 2='Hybrid', 3='Preisach', 4='Preisach2D'
-    int excitation_mode; // 0 ='magnetic_right', - MenDrive_qnm-mode3_jm_z_TE.ipynb
-                         // 1 ='electric_left'   - MenDrive_qnm-mode2_je_z_TM.ipynb
+    int excitation_mode; // 0 ='magnetic_right' (jm_z_right, TE) - MenDrive_qnm-mode3_jm_z_TE.ipynb
+                         // 1 ='electric_left'  (je_y_left,  TE) - MenDrive_qnm.ipynb (driving_mode_1)
+                         // MODE: 2..7 -- новые режимы (см. enum EXC_*), напр. 2 = je_z_left (TM, mode2)
     int n_newton;
 
     std::vector<long double> xA, xB;
@@ -627,6 +679,21 @@ struct MenDriveSim {
     int n_threads;
     std::unique_ptr<ParallelPool> pool;
 
+    // MODE: поляризация и обобщённые источники
+    ModeOptions mo;
+    int polarization;            // фактическая: POL_TE / POL_TM / POL_BOTH
+    bool upd_TE, upd_TM;         // какие пары (Ey,Hz) / (Ez,Hy) обновляются в step_once
+    bool has_jey, has_jez, has_jmy, has_jmz;   // какой ток возбуждается
+    bool hy_custom;              // Hy обновляется с mu_yy/sigma_m/jm_y (иначе -- исходная формула)
+    bool energy_weighted;        // DIAG: field_energy учитывает eps/mu стенок
+    long double sigma_m_lin;     // Linear: магнитная проводимость феррита (= sigma_m_leak)
+    std::string mode_note;       // MODE: пояснения/предупреждения для печати в main.cpp
+    std::vector<long double> src_A_c, src_A_s, src_B_c, src_B_s;  // огибающая*cos/sin(k xi) на A/B-сетке
+    std::vector<long double> Cj_e;                                  // коэффициент при je в обновлении E
+    std::vector<long double> Chy_a, Chy_b, Chz_a, Chz_b;            // Hy: все ячейки; Hz: Linear-феррит
+    std::vector<long double> j_e_z_A, j_m_y_B;                      // новые компоненты токов
+    std::vector<long double> mu_yy_B, mu_zz_B, eps_A;               // DIAG/FIELDS: проницаемости на сетках
+
     // bias_orientation: 0='none', 1='x', 2='y', 3='z', 4='parallel'
     MenDriveSim(int N_, long double a_, long double h_l_, long double h_r_, long double dt_frac,
                 int excitation_mode_, int ferrite_model_, int bias_orientation, long double H0_bias,
@@ -635,14 +702,22 @@ struct MenDriveSim {
                 int n_sub, int n_fp, int n_newton_,
                 long double Ms_llg, long double gamma_llg, long double alpha_llg, long double skin_depth,
                 int n_hyst_pr, long double Hc_mean_pr, long double Hc_sigma_pr, long double Hb_sigma_pr,
-                long double sigma_m_leak_pr_, int pr2d_algo_ = PR2D_BITS, int n_threads_ = 1)
+                long double sigma_m_leak_pr_, int pr2d_algo_ = PR2D_BITS, int n_threads_ = 1,
+                const ModeOptions& mo_ = ModeOptions())
         : N(N_), a(a_), h_l(h_l_), h_r(h_r_),
           ferrite_model(ferrite_model_), excitation_mode(excitation_mode_), n_newton(n_newton_),
-          pr2d_algo(pr2d_algo_), sigma_m_leak_pr(sigma_m_leak_pr_), n_threads(std::max(1, n_threads_))
+          pr2d_algo(pr2d_algo_), sigma_m_leak_pr(sigma_m_leak_pr_), n_threads(std::max(1, n_threads_)),
+          mo(mo_)
     {
         // FIX: проверка входа (N<2 -> выход за границы в step_once).
         if (N < 2) throw std::invalid_argument("N должно быть >= 2");
-        if (ferrite_model < JA || ferrite_model > Preisach2D) throw std::invalid_argument("неизвестный ferrite_model");
+        if (ferrite_model < JA || ferrite_model > Linear) throw std::invalid_argument("неизвестный ferrite_model");
+        // MODE: проверка новых параметров
+        if (excitation_mode < 0 || excitation_mode >= EXC_COUNT) throw std::invalid_argument("неизвестный excitation_mode");
+        if (mo.polarization < POL_AUTO || mo.polarization > POL_BOTH) throw std::invalid_argument("неизвестная polarization");
+        if (!(mo.eps_left > 0) || !(mo.eps_ferrite > 0) || !(mo.mu_yy_lin > 0) || !(mo.mu_zz_lin > 0))
+            throw std::invalid_argument("eps_left, eps_ferrite, mu_yy_lin, mu_zz_lin должны быть > 0");
+        if (!(skin_depth > 0)) throw std::invalid_argument("skin_depth должна быть > 0");
         if (pr2d_algo != PR2D_BITS && pr2d_algo != PR2D_ROWS) throw std::invalid_argument("неизвестный pr2d_algo");
 
         long double x_min = -(a + h_l), x_max = (a + h_r);
@@ -681,19 +756,84 @@ struct MenDriveSim {
             // n_hyst_pr=2001 (типичное значение для 1D Preisach) даёт 4 004 001 пар.
             pr2d.reset(new PreisachEngine2D(Ms, Hc_mean_pr, Hc_sigma_pr, Hb_sigma_pr, n_hyst_pr));
         }
+        // MODE: Linear -- без движка, B = mu*H, магнитная проводимость sigma_m_leak
+        sigma_m_lin = (ferrite_model == Linear) ? sigma_m_leak : 0.0;
 
         Ca_e.resize(N+1); Cb_e.resize(N+1); sigma_e_profile.resize(N+1);
+        Cj_e.resize(N+1); eps_A.resize(N+1);
         for (int i = 0; i <= N; ++i) {
             long double sig = leftA[i] ? sigma_e_left : (rightA[i] ? sigma_e_ferrite : 0.0);
-            Ca_e[i] = (1 - 2*M_PI*sig*dt) / (1 + 2*M_PI*sig*dt);
-            Cb_e[i] = (dt/dx) / (1 + 2*M_PI*sig*dt);
+            // MODE: eps стенок (по умолчанию 1 -> те же выражения, что в исходном ядре)
+            long double ep = leftA[i] ? mo.eps_left : (rightA[i] ? mo.eps_ferrite : (long double)1.0);
+            Ca_e[i] = (ep - 2*M_PI*sig*dt) / (ep + 2*M_PI*sig*dt);
+            Cb_e[i] = (dt/dx) / (ep + 2*M_PI*sig*dt);
+            Cj_e[i] = mo.src_sigma_fix ? dt*4*M_PI / (ep + 2*M_PI*sig*dt) : dt*4*M_PI;
             sigma_e_profile[i] = sig;
+            eps_A[i] = ep;
         }
         src_mag_B.resize(N); src_el_A.resize(N+1);
         for (int i = 0; i < N; ++i) src_mag_B[i] = rightB[i] ? std::exp(-(xB[i]-a)/skin_depth) : 0.0;
         for (int i = 0; i <= N; ++i) src_el_A[i] = leftA[i] ? std::exp(-(-a-xA[i])/skin_depth) : 0.0;
 
+        // MODE: обобщённый источник. Огибающая exp(-xi/delta) в той стенке, где задан ток;
+        // xi = x - a (правая) или xi = -a - x (левая) -- те же выражения, что src_mag_B/src_el_A.
+        // Электрический ток живёт на A-сетке (узлы E), магнитный -- на B-сетке (узлы H).
+        // С фазой: j(x,t) = amp*ramp*exp(-xi/delta)*sin(w t - k xi); комплексная амплитуда
+        // (конвенция ноутбуков exp(-i w t)) j~ = i*amp*exp(i K xi), K = k + i/delta, т.е.
+        // exp(+iK(x-a)) справа и exp(-iK(x+a)) слева -- анзацы ячеек 47/48 ноутбуков.
+        has_jey = !exc_is_magnetic(excitation_mode) && !exc_is_z(excitation_mode);
+        has_jez = !exc_is_magnetic(excitation_mode) &&  exc_is_z(excitation_mode);
+        has_jmy =  exc_is_magnetic(excitation_mode) && !exc_is_z(excitation_mode);
+        has_jmz =  exc_is_magnetic(excitation_mode) &&  exc_is_z(excitation_mode);
+        {
+            const bool right = exc_is_right(excitation_mode);
+            src_A_c.assign(N+1, 0.0); src_A_s.assign(N+1, 0.0); src_B_c.assign(N, 0.0); src_B_s.assign(N, 0.0);
+            for (int i = 0; i <= N; ++i) {
+                bool in = right ? (bool)rightA[i] : (bool)leftA[i];
+                if (!in) continue;
+                long double xi = right ? (xA[i]-a) : (-a-xA[i]);
+                long double env = right ? std::exp(-(xA[i]-a)/skin_depth) : std::exp(-(-a-xA[i])/skin_depth);
+                src_A_c[i] = (mo.src_k_phase != 0) ? env*std::cos(mo.src_k_phase*xi) : env;
+                src_A_s[i] = (mo.src_k_phase != 0) ? env*std::sin(mo.src_k_phase*xi) : 0.0;
+            }
+            for (int i = 0; i < N; ++i) {
+                bool in = right ? (bool)rightB[i] : (bool)leftB[i];
+                if (!in) continue;
+                long double xi = right ? (xB[i]-a) : (-a-xB[i]);
+                long double env = right ? std::exp(-(xB[i]-a)/skin_depth) : std::exp(-(-a-xB[i])/skin_depth);
+                src_B_c[i] = (mo.src_k_phase != 0) ? env*std::cos(mo.src_k_phase*xi) : env;
+                src_B_s[i] = (mo.src_k_phase != 0) ? env*std::sin(mo.src_k_phase*xi) : 0.0;
+            }
+        }
+        // MODE: коэффициенты H. Hy: вне феррита mu=1; в феррите mu_yy_lin для моделей без
+        // динамики My (JA/Preisach/Preisach2D/Linear) и sigma_m для Linear. Полунеявная схема
+        //   mu (H^{n+1}-H^n)/dt = rot - 2 pi sigma_m (H^{n+1}+H^n) - 4 pi j_m.
+        // Hz: Linear-феррит (mu_zz_lin, sigma_m); для остальных моделей Hz в феррите -- движки.
+        Chy_a.assign(N, 1.0); Chy_b.assign(N, dt); Chz_a.assign(N, 1.0); Chz_b.assign(N, dt);
+        mu_yy_B.assign(N, 1.0); mu_zz_B.assign(N, 1.0);
+        const bool fer_has_My = (ferrite_model == LLG || ferrite_model == Hybrid);
+        for (int i = 0; i < N; ++i) {
+            if (!rightB[i]) continue;
+            long double sm = sigma_m_lin;
+            if (!fer_has_My) {
+                long double mu = mo.mu_yy_lin;
+                Chy_a[i] = (mu - 2*M_PI*sm*dt) / (mu + 2*M_PI*sm*dt);
+                Chy_b[i] = dt / (mu + 2*M_PI*sm*dt);
+                mu_yy_B[i] = mu;
+            }
+            if (ferrite_model == Linear) {
+                long double mu = mo.mu_zz_lin;
+                Chz_a[i] = (mu - 2*M_PI*sm*dt) / (mu + 2*M_PI*sm*dt);
+                Chz_b[i] = dt / (mu + 2*M_PI*sm*dt);
+                mu_zz_B[i] = mu;
+            }
+        }
+        hy_custom = has_jmy || (!fer_has_My && (mo.mu_yy_lin != 1 || sigma_m_lin != 0));
+        energy_weighted = (mo.eps_left != 1 || mo.eps_ferrite != 1 || (!fer_has_My && mo.mu_yy_lin != 1)
+                           || (ferrite_model == Linear && mo.mu_zz_lin != 1));
+
         j_e_y_A.assign(N+1, 0.0); j_m_z_B.assign(N, 0.0);
+        j_e_z_A.assign(N+1, 0.0); j_m_y_B.assign(N, 0.0);
         Ey_new.assign(N+1, 0.0); Ez_new.assign(N+1, 0.0); rotE_z.assign(N, 0.0);
         Hz_new.assign(N, 0.0); Hy_new.assign(N, 0.0);
         p_cell.assign(n_fer, 0.0); pnum_cell.assign(n_fer, 0.0);
@@ -701,9 +841,56 @@ struct MenDriveSim {
         reset_state();
     }
 
+    // MODE: выбор активной пары компонент (бывший TODO в reset_state).
+    //   POL_AUTO: пара, которую возбуждает excitation_mode (je_y/jm_z -> TE, je_z/jm_y -> TM);
+    //   LLG/Hybrid: ВСЕГДА обе пары -- намагниченность M (Rodrigues + Гильберт) связывает Hy и Hz
+    //   (гиротропия mu_yz, mu_zy; при bias x связь линейная, при bias y/z -- через нелинейность),
+    //   поэтому выключать вторую пару нельзя; при явном TE/TM печатается предупреждение.
+    //   JA/Preisach/Preisach2D/Linear действуют только на Hz (скалярная модель по z), Hy в
+    //   феррите линеен (mu_yy_lin) -> пары независимы, неактивная пара тождественно 0, её
+    //   обновление пропускается (экономия ~половины операций с полями; для TM и JA/Preisach
+    //   пропускается и весь (дорогой) неявный шаг феррита -- он действует только на Hz).
+    void configure_polarization() {
+        const int pol_exc = exc_polarization(excitation_mode);
+        int pol = (mo.polarization == POL_AUTO) ? pol_exc : mo.polarization;
+        mode_note.clear();
+        const bool gyro = (ferrite_model == LLG || ferrite_model == Hybrid);
+        if (gyro && pol != POL_BOTH) {
+            if (mo.polarization != POL_AUTO)
+                mode_note += "ВНИМАНИЕ: ferrite_model=LLG/Hybrid связывает Hy и Hz через M -> обновляются обе пары "
+                             "(TE и TM), запрошенная поляризация проигнорирована. ";
+            else
+                mode_note += "LLG/Hybrid: гиротропный феррит связывает TE и TM -> обновляются обе пары. ";
+            pol = POL_BOTH;
+        }
+        if (pol != POL_BOTH && pol != pol_exc)
+            mode_note += "ВНИМАНИЕ: polarization не совпадает с парой, которую возбуждает excitation_mode -> "
+                         "источник не действует (поля останутся нулевыми). ";
+        if (ferrite_model == Linear && mo.mu_zz_lin < 1)
+            mode_note += "ВНИМАНИЕ: mu_zz_lin < 1 -> проверьте условие Куранта (dt_frac). ";
+        if (mo.mu_yy_lin < 1 && ferrite_model != LLG && ferrite_model != Hybrid)
+            mode_note += "ВНИМАНИЕ: mu_yy_lin < 1 -> проверьте условие Куранта (dt_frac). ";
+        if (gyro && mo.mu_yy_lin != 1)
+            mode_note += "mu_yy_lin игнорируется для LLG/Hybrid (Hy в феррите через dMy/dt). ";
+        if (!gyro && ferrite_model != Linear && upd_TM_would(pol))
+            mode_note += "JA/Preisach действуют только на Hz: Hy в феррите линеен с mu_yy_lin. ";
+        polarization = pol;
+        upd_TE = (pol == POL_TE || pol == POL_BOTH);
+        upd_TM = (pol == POL_TM || pol == POL_BOTH);
+    }
+    static bool upd_TM_would(int pol) { return pol == POL_TM || pol == POL_BOTH; }
+
     void reset_state() {
-        // TODO: switch TE or TM depending on excitation_mode
+        // MODE: (был TODO «switch TE or TM depending on excitation_mode») -- активная пара
+        // выбирается в configure_polarization(); все 4 массива по-прежнему выделены и обнулены
+        // (их читают диагностика Txx/энергия и формат чекпойнта, который не менялся), но
+        // step_once обновляет только активную пару: неактивная остаётся тождественно нулевой.
+        configure_polarization();
         Ey.assign(N+1, 0.0); Ez.assign(N+1, 0.0); Hy.assign(N, 0.0); Hz.assign(N, 0.0); t = 0.0;
+        // MODE: буферы *_new тоже обнуляются: после swap они хранят поле предыдущего полушага
+        // (используется для центрирования H по времени при экспорте снимков).
+        Ey_new.assign(N+1, 0.0); Ez_new.assign(N+1, 0.0); Hy_new.assign(N, 0.0); Hz_new.assign(N, 0.0);
+        j_e_y_A.assign(N+1, 0.0); j_e_z_A.assign(N+1, 0.0); j_m_y_B.assign(N, 0.0); j_m_z_B.assign(N, 0.0);
         p_mag_dynamics = 0.0; p_num_residual = 0.0;
         if (ferrite_model == JA) { M_irr.assign(n_fer, 0.0); M_field.assign(n_fer, 0.0); }
         else if (ferrite_model == LLG) { Vec3 M0 = llg->initial_M(); M_llg.assign(n_fer, M0); }
@@ -760,31 +947,71 @@ struct MenDriveSim {
     long double step_once(long double omega0, long double amp, long double ramp_periods, long double T) {
         long double ramp = std::min((long double)1.0, t / (ramp_periods * T));
         long double s = amp * ramp * std::sin(omega0 * t);
-        // PERF: буферы переиспользуются; обнуление эквивалентно созданию vector(N, 0.0)
-        std::fill(j_e_y_A.begin(), j_e_y_A.end(), (long double)0.0);
-        std::fill(j_m_z_B.begin(), j_m_z_B.end(), (long double)0.0);
-        if (excitation_mode == 0) { for (int i = 0; i < N; ++i) j_m_z_B[i] = s * src_mag_B[i]; }
-        else { for (int i = 0; i <= N; ++i) j_e_y_A[i] = s * src_el_A[i]; }
-
-        std::fill(Ey_new.begin(), Ey_new.end(), (long double)0.0);
-        std::fill(Ez_new.begin(), Ez_new.end(), (long double)0.0);
-        for (int i = 1; i < N; ++i) {
-            Ey_new[i] = Ca_e[i]*Ey[i] - Cb_e[i]*(Hz[i]-Hz[i-1]) - dt*4*M_PI*j_e_y_A[i];
-            Ez_new[i] = Ca_e[i]*Ez[i] + Cb_e[i]*(Hy[i]-Hy[i-1]);
+        // MODE: источник пишется только в «свой» массив тока (остальные три тождественно 0 с
+        // reset_state). Каждый шаг активный массив перезаписывается ЦЕЛИКОМ (вне стенки
+        // огибающая = 0), поэтому прежнее std::fill не нужно (PERF; значения те же).
+        // При src_k_phase = 0 -- в точности прежняя формула j = s*src (бит-в-бит).
+        {
+            std::vector<long double>& jt = has_jmz ? j_m_z_B : has_jmy ? j_m_y_B : has_jez ? j_e_z_A : j_e_y_A;
+            const std::vector<long double>& sc = exc_is_magnetic(excitation_mode) ? src_B_c : src_A_c;
+            const std::vector<long double>& ss = exc_is_magnetic(excitation_mode) ? src_B_s : src_A_s;
+            const int nj = (int)jt.size();
+            if (mo.src_k_phase == 0) { for (int i = 0; i < nj; ++i) jt[i] = s * sc[i]; }
+            else {
+                const long double sa = amp * ramp, sw = std::sin(omega0 * t), cw = std::cos(omega0 * t);
+                for (int i = 0; i < nj; ++i) jt[i] = sa * (sw * sc[i] - cw * ss[i]);   // sin(w t - k xi)*env
+            }
         }
-        Ey_new[0]=Ey_new[N]=0.0; Ez_new[0]=Ez_new[N]=0.0;
+
         long double P_e = 0.0;
-        for (int i = 0; i <= N; ++i) P_e -= j_e_y_A[i] * 0.5*(Ey[i]+Ey_new[i]) * dx;
-        Ey.swap(Ey_new); Ez.swap(Ez_new);   // PERF: вместо копирования Ey = Ey_new
+        // MODE: обновляется только активная пара. Формулы для Ey и Ez (без je_z) -- исходные.
+        if (upd_TE) {
+            for (int i = 1; i < N; ++i)
+                Ey_new[i] = Ca_e[i]*Ey[i] - Cb_e[i]*(Hz[i]-Hz[i-1])
+                          - (mo.src_sigma_fix ? Cj_e[i]*j_e_y_A[i] : dt*4*M_PI*j_e_y_A[i]);
+            Ey_new[0] = Ey_new[N] = 0.0;
+            if (has_jey) for (int i = 0; i <= N; ++i) P_e -= j_e_y_A[i] * 0.5*(Ey[i]+Ey_new[i]) * dx;
+            Ey.swap(Ey_new);   // PERF: вместо копирования Ey = Ey_new
+        }
+        if (upd_TM) {
+            if (has_jez) {   // MODE: dEz/dt = dHy/dx - 4 pi je_z
+                for (int i = 1; i < N; ++i)
+                    Ez_new[i] = Ca_e[i]*Ez[i] + Cb_e[i]*(Hy[i]-Hy[i-1]) - Cj_e[i]*j_e_z_A[i];
+            } else {
+                for (int i = 1; i < N; ++i) Ez_new[i] = Ca_e[i]*Ez[i] + Cb_e[i]*(Hy[i]-Hy[i-1]);
+            }
+            Ez_new[0] = Ez_new[N] = 0.0;
+            if (has_jez) for (int i = 0; i <= N; ++i) P_e -= j_e_z_A[i] * 0.5*(Ez[i]+Ez_new[i]) * dx;
+            Ez.swap(Ez_new);
+        }
 
-        for (int i = 0; i < N; ++i) rotE_z[i] = (Ey[i+1]-Ey[i]) / dx;
+        if (upd_TE) for (int i = 0; i < N; ++i) rotE_z[i] = (Ey[i+1]-Ey[i]) / dx;
 
-        std::fill(Hz_new.begin(), Hz_new.end(), (long double)0.0);
-        std::fill(Hy_new.begin(), Hy_new.end(), (long double)0.0);
-        for (int i = 0; i < N; ++i) Hy_new[i] = Hy[i] + (dt/dx)*(Ez[i+1]-Ez[i]);
-        for (int i = 0; i < N; ++i) { if (!rightB[i]) Hz_new[i] = Hz[i] - dt*rotE_z[i] - dt*4*M_PI*j_m_z_B[i]; }
+        if (upd_TM) {
+            std::fill(Hy_new.begin(), Hy_new.end(), (long double)0.0);
+            if (!hy_custom) { for (int i = 0; i < N; ++i) Hy_new[i] = Hy[i] + (dt/dx)*(Ez[i+1]-Ez[i]); }
+            else {   // MODE: mu dHy/dt = dEz/dx - 4 pi sigma_m Hy - 4 pi jm_y
+                for (int i = 0; i < N; ++i)
+                    Hy_new[i] = Chy_a[i]*Hy[i] + Chy_b[i]*((Ez[i+1]-Ez[i])/dx - 4*M_PI*j_m_y_B[i]);
+            }
+        }
+        if (upd_TE) {
+            std::fill(Hz_new.begin(), Hz_new.end(), (long double)0.0);
+            for (int i = 0; i < N; ++i) { if (!rightB[i]) Hz_new[i] = Hz[i] - dt*rotE_z[i] - dt*4*M_PI*j_m_z_B[i]; }
+        }
 
-        if (ferrite_model == JA) {
+        if (!upd_TE && ferrite_model != LLG && ferrite_model != Hybrid) {
+            // MODE: TM без гиротропии: скалярные модели (JA/Preisach/Linear) действуют только на Hz,
+            // который тождественно 0 -> неявный шаг феррита пропускается целиком.
+            p_mag_dynamics = 0.0; p_num_residual = 0.0;
+        } else if (ferrite_model == Linear) {
+            // MODE: линейный феррит, mu_zz dHz/dt = -dEy/dx - 4 pi sigma_m Hz - 4 pi jm_z
+            for (int fi = 0; fi < n_fer; ++fi) {
+                int i = fer_cells[fi];
+                Hz_new[i] = Chz_a[i]*Hz[i] - Chz_b[i]*(rotE_z[i] + 4*M_PI*j_m_z_B[i]);
+            }
+            p_mag_dynamics = 0.0; p_num_residual = 0.0;
+        } else if (ferrite_model == JA) {
             const long double leak_coef = 4*M_PI*ja->sigma_m_leak*dt;  // DIAG (тот же leak, что в newton_branch)
             for_each_fer([&](int fi) {
                 int i = fer_cells[fi];
@@ -810,6 +1037,7 @@ struct MenDriveSim {
                 p_mag_acc += (Hy[i]*dMy_dt + Hz[i]*dMz_dt) * dx;
                 M_llg[fi] = M_new;
                 Hy_new[i] = Hy[i] + (dt/dx)*(Ez[i+1]-Ez[i]) - dt*4*M_PI*dMy_dt;
+                if (has_jmy) Hy_new[i] -= dt*4*M_PI*j_m_y_B[i];   // MODE: jm_y в ферритовой стенке
                 Hz_new[i] = Hz[i] - dt*rotE_z[i] - dt*4*M_PI*j_m_z_B[i] - dt*4*M_PI*dMz_dt;
                 fi++;
             }
@@ -830,6 +1058,7 @@ struct MenDriveSim {
                 p_mag_acc += (Hy[i]*dMy_dt + Hz_after_JA*dMz_dt) * dx;
                 hyb_M[fi] = M_new;
                 Hy_new[i] = Hy[i] + (dt/dx)*(Ez[i+1]-Ez[i]) - dt*4*M_PI*dMy_dt;
+                if (has_jmy) Hy_new[i] -= dt*4*M_PI*j_m_y_B[i];   // MODE: jm_y в ферритовой стенке
                 Hz_new[i] = Hz_after_JA - dt*4*M_PI*dMz_dt;
                 fi++;
             }
@@ -860,8 +1089,12 @@ struct MenDriveSim {
         }
 
         long double P_m = 0.0;
-        for (int i = 0; i < N; ++i) P_m -= j_m_z_B[i] * 0.5*(Hz[i]+Hz_new[i]) * dx;
-        Hy.swap(Hy_new); Hz.swap(Hz_new); t += dt;   // PERF: вместо копирования
+        if (has_jmz) for (int i = 0; i < N; ++i) P_m -= j_m_z_B[i] * 0.5*(Hz[i]+Hz_new[i]) * dx;
+        if (has_jmy) for (int i = 0; i < N; ++i) P_m -= j_m_y_B[i] * 0.5*(Hy[i]+Hy_new[i]) * dx;   // MODE
+        // MODE: swap только активных пар; после swap *_new хранит H предыдущего полушага.
+        if (upd_TM) Hy.swap(Hy_new);
+        if (upd_TE) Hz.swap(Hz_new);
+        t += dt;   // PERF: вместо копирования
         // NOTE: возвращается МОЩНОСТЬ источника -j.E (или -j_m.H), проинтегрированная
         // по x (энергия / время / площадь). Множителя dt здесь нет -- см. mendrive_run.
         return P_e + P_m;
@@ -883,6 +1116,7 @@ struct MenDriveSim {
         long double sigma_m_wall = 0.0;
         if (ferrite_model == JA || ferrite_model == Hybrid) sigma_m_wall = ja->sigma_m_leak;
         else if (ferrite_model == Preisach || ferrite_model == Preisach2D) sigma_m_wall = sigma_m_leak_pr;
+        else if (ferrite_model == Linear) sigma_m_wall = sigma_m_lin;   // MODE
         if (sigma_m_wall != 0.0) {
             for (int i = 0; i < N; ++i) {
                 if (!rightB[i]) continue;
@@ -900,6 +1134,7 @@ struct MenDriveSim {
         long double sigma_m_wall = 0.0;
         if (ferrite_model == JA || ferrite_model == Hybrid) sigma_m_wall = ja->sigma_m_leak;
         else if (ferrite_model == Preisach || ferrite_model == Preisach2D) sigma_m_wall = sigma_m_leak_pr;
+        else if (ferrite_model == Linear) sigma_m_wall = sigma_m_lin;   // MODE
         p_m_wall = 0.0;
         if (sigma_m_wall != 0.0)
             for (int i = 0; i < N; ++i) if (rightB[i]) p_m_wall += sigma_m_wall * (Hy[i]*Hy[i] + Hz[i]*Hz[i]) * dx;
@@ -909,9 +1144,44 @@ struct MenDriveSim {
     // DIAG: полная энергия ЭМ поля (E^2+H^2)/(8 pi) на единицу площади.
     long double field_energy() const {
         long double W = 0.0;
+        if (energy_weighted) {   // MODE: eps E^2 + mu H^2 при eps/mu стенок != 1
+            for (int i = 0; i <= N; ++i) W += eps_A[i] * (Ey[i]*Ey[i] + Ez[i]*Ez[i]) * dx;
+            for (int i = 0; i < N; ++i) W += (mu_yy_B[i]*Hy[i]*Hy[i] + mu_zz_B[i]*Hz[i]*Hz[i]) * dx;
+            return W / (8*M_PI);
+        }
         for (int i = 0; i <= N; ++i) W += (Ey[i]*Ey[i] + Ez[i]*Ez[i]) * dx;
         for (int i = 0; i < N; ++i) W += (Hy[i]*Hy[i] + Hz[i]*Hz[i]) * dx;
         return W / (8*M_PI);
+    }
+
+    // FIELDS: намагниченность на B-сетке (длина N, 0 вне феррита). Время -- как у H после шага
+    // (t + dt/2). JA/Preisach/Preisach2D: скаляр вдоль z (действует на Hz) -> Mz;
+    // LLG: вектор M; Hybrid: M_LLG + z-составляющая JA; Linear (и Hy при mu_yy_lin != 1):
+    // M = (mu - 1) H / (4 pi), так что B = H + 4 pi M = mu H.
+    void magnetization_B(std::vector<long double>& Mx, std::vector<long double>& My,
+                         std::vector<long double>& Mz) const {
+        Mx.assign(N, 0.0); My.assign(N, 0.0); Mz.assign(N, 0.0);
+        for (int fi = 0; fi < n_fer; ++fi) {
+            const int i = fer_cells[fi];
+            if (ferrite_model == JA) Mz[i] = M_field[fi];
+            else if (ferrite_model == Preisach || ferrite_model == Preisach2D) Mz[i] = pr_M[fi];
+            else if (ferrite_model == LLG) { Mx[i] = M_llg[fi].x; My[i] = M_llg[fi].y; Mz[i] = M_llg[fi].z; }
+            else if (ferrite_model == Hybrid) { Mx[i] = hyb_M[fi].x; My[i] = hyb_M[fi].y; Mz[i] = hyb_M[fi].z + hyb_M_field[fi]; }
+            else if (ferrite_model == Linear) Mz[i] = (mu_zz_B[i] - 1) * Hz[i] / (4*M_PI);
+            if (ferrite_model != LLG && ferrite_model != Hybrid) My[i] = (mu_yy_B[i] - 1) * Hy[i] / (4*M_PI);
+        }
+    }
+
+    // MODE: краткое описание выбранного режима (печать в main.cpp и через C API).
+    std::string mode_info() const {
+        static const char* exc_names[EXC_COUNT] = {"jm_z_right (magnetic_right)", "je_y_left (electric_left)",
+            "je_z_left", "jm_y_right", "je_y_right", "je_z_right", "jm_z_left", "jm_y_left"};
+        static const char* pol_names[4] = {"auto", "TE", "TM", "both"};
+        std::string sres = std::string("excitation=") + exc_names[excitation_mode] + " ("
+            + (exc_polarization(excitation_mode) == POL_TE ? "TE: Ey,Hz" : "TM: Ez,Hy") + "), polarization="
+            + pol_names[polarization] + " (обновляются: " + (upd_TE ? "Ey,Hz " : "") + (upd_TM ? "Ez,Hy" : "") + ")";
+        if (!mode_note.empty()) sres += "; " + mode_note;
+        return sres;
     }
 
     // Глобальный индекс B-ячейки пробы (fi-я ячейка феррита) или -1.
@@ -985,7 +1255,11 @@ void* mendrive_create(int N, double a, double h_l, double h_r, double dt_frac,
     // не должно пересекать границу extern "C" -- иначе std::terminate и падение
     // процесса Python/ядра Jupyter. Возвращаем nullptr и печатаем причину.
     try {
-        return new MenDriveSim(N, a, h_l, h_r, dt_frac, excitation_mode, ferrite_model,
+        // MODE: как в исходном ядре: 0 -> magnetic_right, любое другое -> electric_left;
+        // поляризация POL_BOTH (обновляются все 4 компоненты) -- в точности прежнее поведение.
+        const int exc = (excitation_mode == 0) ? EXC_JM_Z_RIGHT : EXC_JE_Y_LEFT;
+        if (ferrite_model > Preisach2D) throw std::invalid_argument("старый API: ferrite_model 0..4 (Linear -- через mendrive_create_mode)");
+        return new MenDriveSim(N, a, h_l, h_r, dt_frac, exc, ferrite_model,
                                 bias_orientation, H0_bias, sigma_m_leak, sigma_e_left, sigma_e_ferrite,
                                 Ms, a_JA, alpha_JA, k_JA, c_JA, n_sub, n_fp, n_newton,
                                 Ms_llg, gamma_llg, alpha_llg, skin_depth,
@@ -1006,7 +1280,9 @@ void* mendrive_create_ex(int N, double a, double h_l, double h_r, double dt_frac
                        int n_hyst_pr, double Hc_mean_pr, double Hc_sigma_pr, double Hb_sigma_pr,
                        double sigma_m_leak_pr, int pr2d_algo, int n_threads) {
     try {
-        return new MenDriveSim(N, a, h_l, h_r, dt_frac, excitation_mode, ferrite_model,
+        const int exc = (excitation_mode == 0) ? EXC_JM_Z_RIGHT : EXC_JE_Y_LEFT;   // MODE: как в исходном ядре
+        if (ferrite_model > Preisach2D) throw std::invalid_argument("старый API: ferrite_model 0..4 (Linear -- через mendrive_create_mode)");
+        return new MenDriveSim(N, a, h_l, h_r, dt_frac, exc, ferrite_model,
                                 bias_orientation, H0_bias, sigma_m_leak, sigma_e_left, sigma_e_ferrite,
                                 Ms, a_JA, alpha_JA, k_JA, c_JA, n_sub, n_fp, n_newton,
                                 Ms_llg, gamma_llg, alpha_llg, skin_depth,
@@ -1016,6 +1292,62 @@ void* mendrive_create_ex(int N, double a, double h_l, double h_r, double dt_frac
         fprintf(stderr, "mendrive_create_ex: %s\n", e.what());
         return nullptr;
     }
+}
+
+// MODE: НОВЫЙ конструктор (новое имя; старые mendrive_create/_ex не менялись).
+//   excitation_mode: 0..7 (EXC_*: 0 jm_z_right, 1 je_y_left, 2 je_z_left, 3 jm_y_right,
+//                    4 je_y_right, 5 je_z_right, 6 jm_z_left, 7 jm_y_left);
+//   ferrite_model:   0..5 (5 = Linear);
+//   polarization:    0 auto, 1 TE, 2 TM, 3 both (LLG/Hybrid -> всегда both).
+void* mendrive_create_mode(int N, double a, double h_l, double h_r, double dt_frac,
+                       int excitation_mode, int ferrite_model, int bias_orientation, double H0_bias,
+                       double sigma_m_leak, double sigma_e_left, double sigma_e_ferrite,
+                       double Ms, double a_JA, double alpha_JA, double k_JA, double c_JA,
+                       int n_sub, int n_fp, int n_newton,
+                       double Ms_llg, double gamma_llg, double alpha_llg, double skin_depth,
+                       int n_hyst_pr, double Hc_mean_pr, double Hc_sigma_pr, double Hb_sigma_pr,
+                       double sigma_m_leak_pr, int pr2d_algo, int n_threads,
+                       int polarization, double src_k_phase, int src_sigma_fix,
+                       double eps_left, double eps_ferrite, double mu_yy_lin, double mu_zz_lin) {
+    try {
+        ModeOptions mo;
+        mo.polarization = polarization; mo.src_k_phase = src_k_phase; mo.src_sigma_fix = src_sigma_fix;
+        mo.eps_left = eps_left; mo.eps_ferrite = eps_ferrite; mo.mu_yy_lin = mu_yy_lin; mo.mu_zz_lin = mu_zz_lin;
+        return new MenDriveSim(N, a, h_l, h_r, dt_frac, excitation_mode, ferrite_model,
+                                bias_orientation, H0_bias, sigma_m_leak, sigma_e_left, sigma_e_ferrite,
+                                Ms, a_JA, alpha_JA, k_JA, c_JA, n_sub, n_fp, n_newton,
+                                Ms_llg, gamma_llg, alpha_llg, skin_depth,
+                                n_hyst_pr, Hc_mean_pr, Hc_sigma_pr, Hb_sigma_pr, sigma_m_leak_pr,
+                                pr2d_algo, n_threads, mo);
+    } catch (const std::exception& e) {
+        fprintf(stderr, "mendrive_create_mode: %s\n", e.what());
+        return nullptr;
+    }
+}
+// MODE: фактическая поляризация (1 TE, 2 TM, 3 both) и текст пояснения (буфер вызывающего).
+int mendrive_get_polarization(void* handle) { return handle ? static_cast<MenDriveSim*>(handle)->polarization : 0; }
+int mendrive_get_mode_info(void* handle, char* buf, int buflen) {
+    if (!handle || !buf || buflen <= 0) return 0;
+    std::string sres = static_cast<MenDriveSim*>(handle)->mode_info();
+    int n = (int)std::min<size_t>(sres.size(), (size_t)buflen - 1);
+    std::memcpy(buf, sres.data(), (size_t)n); buf[n] = 0;
+    return n;
+}
+int mendrive_get_N(void* handle) { return handle ? static_cast<MenDriveSim*>(handle)->N : 0; }
+// FIELDS: один шаг (возвращает P_src = -<j.E> за шаг, БЕЗ деления на dt) и снимок полей:
+// Ey, Ez -- длина N+1 (узлы xA, время t), Hy, Hz -- длина N (узлы xB, время t + dt/2).
+double mendrive_step(void* handle, double omega0, double amp, double ramp_periods) {
+    if (!handle) return 0.0;
+    MenDriveSim* sim = static_cast<MenDriveSim*>(handle);
+    return (double)sim->step_once(omega0, amp, ramp_periods, 2*M_PI/omega0);
+}
+int mendrive_get_fields(void* handle, double* Ey, double* Ez, double* Hy, double* Hz, double* t_out) {
+    if (!handle) return 0;
+    MenDriveSim* sim = static_cast<MenDriveSim*>(handle);
+    for (int i = 0; i <= sim->N; ++i) { if (Ey) Ey[i] = (double)sim->Ey[i]; if (Ez) Ez[i] = (double)sim->Ez[i]; }
+    for (int i = 0; i < sim->N; ++i) { if (Hy) Hy[i] = (double)sim->Hy[i]; if (Hz) Hz[i] = (double)sim->Hz[i]; }
+    if (t_out) *t_out = (double)sim->t;
+    return sim->N;
 }
 void mendrive_destroy(void* handle) { delete static_cast<MenDriveSim*>(handle); }
 int mendrive_get_n_fer(void* handle) { return handle ? static_cast<MenDriveSim*>(handle)->n_fer : 0; }
@@ -1073,6 +1405,9 @@ int mendrive_run(void* handle, double omega0, int nsteps, int record_start,
                 out_Mx[rec_count] = M.x; out_My[rec_count] = M.y; out_Mz[rec_count] = M.z;
                 out_HzJA[rec_count] = sim->last_HzJA[probe_idx];
                 out_MzJA[rec_count] = sim->hyb_M_field[probe_idx];
+            } else if (sim->ferrite_model == Linear) {   // MODE: у Linear нет состояния M
+                out_Mx[rec_count] = 0.0; out_My[rec_count] = 0.0; out_Mz[rec_count] = 0.0;
+                out_HzJA[rec_count] = 0.0; out_MzJA[rec_count] = 0.0;
             } else { // Preisach Preisach2D
                 out_My[rec_count] = (double)sim->pr_M[probe_idx];
                 out_Mx[rec_count] = 0.0; out_Mz[rec_count] = 0.0;

@@ -4,7 +4,8 @@
 #   make omp        -> ./mendrive_omp      (OpenMP; на macOS нужен brew install libomp)
 #   make lib        -> libmendrive_new.*   (новое ядро для старой ctypes-обёртки)
 #   make reflib     -> libmendrive_ref.*   (ИСХОДНОЕ ../mendrive_core.cpp -- для сравнения)
-#   make test       -> сравнение с исходным ctypes-путём (нужны python3 + numpy)
+#   make test       -> сравнение с исходным ctypes-путём + проверка новых мод и экспорта полей (python3 + numpy)
+#   make test-fields-> только новые моды (MODE) и экспорт полей (FIELDS): tests/test_fields_linear.py
 #   make smoke      -> smoke-тест Preisach2D, замер памяти, проверка --resume
 #   make clean
 
@@ -33,7 +34,7 @@ else
   OMPLIBS   = -fopenmp
 endif
 
-.PHONY: all omp lib reflib test smoke clean
+.PHONY: all omp lib reflib test test-fields smoke clean
 
 all: mendrive
 
@@ -53,6 +54,10 @@ libmendrive_ref.$(SHLIB_EXT): ../mendrive_core.cpp
 
 test: mendrive lib reflib
 	python3 tests/compare_ctypes.py
+	python3 tests/test_fields_linear.py
+
+test-fields: mendrive
+	python3 tests/test_fields_linear.py
 
 smoke: mendrive
 	sh tests/smoke.sh

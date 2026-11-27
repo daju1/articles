@@ -12,6 +12,11 @@
 | `tests/compare_ctypes.py` | сравнение с исходным ctypes-путём (старое ядро против нового ядра против `./mendrive`) |
 | `tests/smoke.sh` | smoke-тест Preisach2D, замер пиковой памяти, проверка `--resume` |
 | `plot.py` | необязательные графики по готовым CSV (только чтение) |
+| `linear1d.py` | **MODE/FIELDS:** точное линейное 1D-решение (эталон), чтение/запись CSV профилей, экспорт из ноутбуков `MenDrive_qnm*` (`export_sage_profiles`), CLI `python3 linear1d.py out_dir` |
+| `fdtd1d_ref.py` | numpy-копия линейной части нового `step_once` и накопления гармоник (проверка C++ без компилятора) |
+| `compare_linear_vs_cpp.ipynb` | ноутбук-помощник: проверки «формулы → OK/FAIL», графики в стиле `MenDrive_qnm*`, сверка с C++ |
+| `tests/test_fields_linear.py` | проверка новых мод TE/TM и экспорта полей (`make test-fields`) |
+| `backup_before_modes/` | версии файлов до этих изменений |
 
 > **Важно о проверке.** На этом Mac (M1 Pro, 16 ГБ) сейчас нет компилятора: `/usr/bin/c++`
 > отвечает `xcode-select: note: No developer tools were found`. В облачной песочнице, где я
@@ -396,3 +401,217 @@ $P_{src}$, $P_{diss}$, $P_{num}$, $\min/\max H_n$ и энергию поля, т
 Пока эти проверки не пройдены, `force_per_kW` из magnetic_right (от 57 238 до 605 «Н/кВт» в
 код-единицах) **нельзя интерпретировать как диссипативную тягу**. Эта величина делит не
 связанное с накачкой смещение $\langle dT_{xx}\rangle$ на мощность, завышенную в $1/\Delta t$ раз.
+
+
+---
+
+## 8. Моды и поляризации (`// MODE:`), соответствие ноутбукам `MenDrive_qnm*.ipynb`
+
+### 8.1. Две независимые пары компонент
+
+Модель одномерна: поля зависят только от $x$ ($k_y=k_z=0$). Уравнения Максвелла в Гауссовой системе
+($c=1$, время в коде $\tau=ct$), записанные так же, как в ячейке 74 ноутбуков
+($\mathrm{rot}\,\vec H=\partial_\tau\vec D+4\pi\vec j_e$, $\mathrm{rot}\,\vec E=-\partial_\tau\vec B-4\pi\vec j_m$),
+распадаются на две пары:
+
+$$\text{TE}=(E_y,H_z):\qquad \partial_\tau D_y=-\partial_x H_z-4\pi j_{e,y},\qquad \partial_\tau B_z=-\partial_x E_y-4\pi j_{m,z},$$
+
+$$\text{TM}=(E_z,H_y):\qquad \partial_\tau D_z=+\partial_x H_y-4\pi j_{e,z},\qquad \partial_\tau B_y=+\partial_x E_z-4\pi j_{m,y}.$$
+
+Названия TE/TM взяты из ноутбуков (`is_TE`: $H_z\ne0,\ E_z=0$; `is_TM`: $E_z\ne0,\ H_z=0$, ячейки 45, 78).
+Тангенциальные к стенкам компоненты: $E_y,E_z,H_y,H_z$. Отсюда правило:
+
+* $j_{e,y}$ и $j_{m,z}$ возбуждают **TE** $(E_y,H_z)$;
+* $j_{e,z}$ и $j_{m,y}$ возбуждают **TM** $(E_z,H_y)$.
+
+### 8.2. Таблица соответствия `driving_mode` ↔ `excitation_mode`
+
+Сведена по всем трём ноутбукам `MenDrive_qnm.ipynb`, `MenDrive_qnm-mode2_je_z_TM.ipynb`,
+`MenDrive_qnm-mode3_jm_z_TE.ipynb`. Набор `driving_mode_0..5` во всех трёх одинаков (ячейка 20).
+
+| `driving_mode` ноутбука | ток | компонента | стенка | пара | $k_y$ (`use_phase_y`) | $K$ в профиле | где активен | `excitation_mode` C++ |
+|---|---|---|---|---|---|---|---|---|
+| `_0 'je_z, k_y=0, TM'` | $j_e$ | $z$ | левая (металл) | TM $(E_z,H_y)$ | 0 (`False`) | `sign_K_E_l*K_E_left_conductor` | профиль только в mode3 (новая строка), к уравнениям не подключён | `je_z_left` (новый) |
+| `_1 'je_y, k_y=0, TE'` | $j_e$ | $y$ | левая | TE $(E_y,H_z)$ | 0 | `sign_K_H_l*K_H_left_conductor` | **`MenDrive_qnm.ipynb`** (активный) | `je_y_left` = `electric_left` |
+| `_2 'je_z, TM'` | $j_e$ | $z$ | левая | TM | $\ne0$ (`True`) | `sign_K_E_l*K_E_left_conductor` | **`…mode2_je_z_TM.ipynb`** (активный) | `je_z_left` (в 1D $k_y=0$) |
+| `_3 'jm_z, TE'` | $j_m$ | $z$ | правая (феррит) | TE | $\ne0$ | `sign_K_H_r*K_H_right_conductor` | **`…mode3_jm_z_TE.ipynb`** (активный) | `jm_z_right` = `magnetic_right` |
+| `_4 'jm_z, k_y=0, TE'` | $j_m$ | $z$ | правая | TE | 0 | `sign_K_H_r*K_H_right_conductor` | только mode3, новая строка, не подключён | `jm_z_right` |
+| `_5 'jm_y, k_y=0, TM'` | $j_m$ | $y$ | правая | TM | 0 | `sign_K_E_r*K_E_right_conductor` | только mode3, новая строка, не подключён | `jm_y_right` (новый) |
+| — | $j_e$ | $y$ / $z$ | правая | TE / TM | — | — | нет | `je_y_right` / `je_z_right` |
+| — | $j_m$ | $z$ / $y$ | левая | TE / TM | — | — | нет | `jm_z_left` / `jm_y_left` |
+
+**Важно.** В исходном коде комментарий к `excitation_mode=1` («electric_left — MenDrive_qnm-mode2_je_z_TM»)
+неточен: этот режим всегда возбуждал $j_{e,y}\to E_y$, то есть TE (`driving_mode_1` из `MenDrive_qnm.ipynb`),
+а не $j_{e,z}$ (TM, mode2). Источника $j_{e,z}$ и $j_{m,y}$ в ядре не было. Теперь они есть: `je_z_left`,
+`jm_y_right` и т. д. Старые имена и коды 0/1 сохранены и считают те же числа.
+
+Строго сравнимы с 1D-FDTD моды с $k_y=0$ (`_0`, `_1`, `_4`, `_5`) при $k_z^2\ll\omega^2/c^2$. В ноутбуках
+$k_z=\pi/L_z$ (`resonator_type="half"`, $L_z=100$ см), в 1D $k_z=0$. Для `_2`, `_3`
+($k_y=(2m+1)\pi/(2b)\ne0$, `phase_y`) профиль по $x$ сравним при фиксированном $y=y_0$ только приближённо,
+потому что $K_{vac}=\sqrt{\omega^2/c^2-k_y^2-k_z^2}$ отличается от $\omega/c$.
+
+### 8.3. Параметр `polarization` (реализация TODO в `reset_state()`)
+
+| значение | что обновляется в `step_once` |
+|---|---|
+| `auto` (по умолчанию) | только пара источника: `je_y`/`jm_z` → $(E_y,H_z)$, `je_z`/`jm_y` → $(E_z,H_y)$ |
+| `TE`, `TM` | указанная пара (если она не совпадает с парой источника, печатается предупреждение: поля = 0) |
+| `both` | обе пары (как в исходном ядре) |
+
+* **LLG / Hybrid**: намагниченность $\vec M$ (Родригес + Гильберт) входит в $H_y$ и $H_z$, то есть
+  гиротропия $\mu_{yz},\mu_{zy}$. Поэтому всегда обновляются **обе** пары, при явном `TE`/`TM` печатается
+  `ВНИМАНИЕ`. В линейном приближении при `bias_orientation=x` обе компоненты $H_y,H_z\perp\vec H_0$ связаны.
+  При `y` или `z` линейно активна одна пара, а вторая возбуждается только нелинейностью.
+* **JA / Preisach / Preisach2D** — скалярные модели вдоль $z$: действуют только на $H_z$. $H_y$ в феррите
+  линеен с `mu_yy_lin` (по умолчанию 1, как в исходном ядре). Для TM-режимов $H_z\equiv0$, поэтому
+  неявный шаг феррита (самая дорогая часть) **пропускается целиком**.
+* `reset_state()` по-прежнему выделяет и обнуляет все четыре массива (их читают $T_{xx}$, энергия и формат
+  чекпойнта, который не менялся), а также буферы `*_new` и токи. Неактивная пара остаётся тождественно нулевой.
+* Старый C API (`mendrive_create`, `mendrive_create_ex`) работает с `POL_BOTH` и прежним отображением
+  кода (0 → magnetic_right, иначе electric_left). Поэтому `mendrive_ctypes.py` и ноутбук
+  `MenDriveCpp_run.ipynb` получают те же числа. Новые функции: `mendrive_create_mode(...,
+  polarization, src_k_phase, src_sigma_fix, eps_left, eps_ferrite, mu_yy_lin, mu_zz_lin)`,
+  `mendrive_get_polarization`, `mendrive_get_mode_info`, `mendrive_get_N`, `mendrive_step`, `mendrive_get_fields`.
+
+### 8.4. Новые параметры (все по умолчанию дают прежнее поведение)
+
+| ключ | умолч. | смысл |
+|---|---|---|
+| `excitation_mode` | `magnetic_right` | + `jm_z_right, je_y_left, je_z_left, jm_y_right, je_y_right, je_z_right, jm_z_left, jm_y_left` |
+| `ferrite_model` | `Preisach2D` | + `Linear`: $B=\mu H$ ($\mu_{yy}$=`mu_yy_lin`, $\mu_{zz}$=`mu_zz_lin`), магнитная проводимость `sigma_m_leak` |
+| `polarization` | `auto` | `auto | TE | TM | both` (см. 8.3) |
+| `src_k_phase` | 0 | $j=\text{amp}\cdot\text{ramp}\cdot e^{-\xi/\delta}\sin(\omega t-k\xi)$; комплексная амплитуда $\tilde j=i\,\text{amp}\,e^{iK\xi}$, $K=k+i/\delta$, т. е. $e^{+iK(x-a)}$ справа и $e^{-iK(x+a)}$ слева (анзацы ячеек 47/48). Чтобы воспроизвести скин-профиль ноутбука: `skin_depth`$=1/\mathrm{Im}K$, `src_k_phase`$=\mathrm{Re}K$ |
+| `src_sigma_fix` | 0 | 1: член $4\pi\Delta t\,j_e$ делится на $(\varepsilon+2\pi\sigma\Delta t)$ — согласованная полунеявная схема (в исходном ядре этого деления нет, ошибка $O(\sigma\Delta t)$) |
+| `eps_left`, `eps_ferrite` | 1 | $\varepsilon$ стенок (в ноутбуках $\varepsilon_r=16$) |
+| `mu_yy_lin` | 1 | $\mu_{yy}$ феррита для $H_y$ (JA/Preisach/Preisach2D/Linear; в LLG/Hybrid игнорируется) |
+| `mu_zz_lin` | 1 | $\mu_{zz}$ феррита для $H_z$ (только `Linear`) |
+
+Новые параметры с kind=2 входят в подпись чекпойнта, **только если отличаются от умолчания**. Поэтому
+`--resume` старых (уже идущих) прогонов работает. Формат `checkpoint.bin` не менялся.
+
+## 9. Экспорт полей (`// FIELDS:`)
+
+### 9.1. Параметры
+
+| ключ | умолч. | смысл |
+|---|---|---|
+| `fields_snap_phases` | пусто | доли периода, напр. `0,0.25,0.5,0.75` → `fields_snap.csv` |
+| `fields_snap_every_periods` | 0 | снимки каждые K периодов (0 — только последний полный период) |
+| `fields_snap_from_period` | −1 | первый период снимков (−1 = `record_from_period`) |
+| `fields_harm` | пусто | номера гармоник, напр. `1` или `0,1,2,3` → `fields_harm_n<k>.csv` |
+| `fields_harm_periods` | 0 | накопление по последним K периодам (0 — окно средних, `last_frac`) |
+| `time_convention` | `minus` | `minus`: $F=\mathrm{Re}[\tilde F e^{-i\omega t}]$, как в ноутбуках (`exp(-I*omega_t)`, ячейки 46/308/586); `plus`: $e^{+i\omega t}$ (комплексное сопряжение) |
+| `fields_harm_normalize` | `none` | `source`: $\tilde F/j_0$, $j_0=i\cdot\text{amp}$ (`minus`) или $-i\cdot\text{amp}$ (`plus`) — комплексная амплитуда источника $\sin\omega t$; сравнимо с `je0_ext`/`jm0_ext` ноутбука |
+| `fields_every_x` | 1 | прореживание узлов по $x$ |
+
+Экспорт на динамику не влияет. Его состояние (накопители гармоник, размер `fields_snap.csv`) хранится
+в отдельном `checkpoint_fields.bin`. При `--resume` с другими параметрами экспорта или со старым
+чекпойнтом гармоники продолжаются, только если окно накопления ещё не началось.
+
+### 9.2. Определения
+
+Гармоники накапливаются на лету, ряд не хранится:
+
+$$\tilde F_n(x)=\frac{c_n}{T_{rec}}\sum_k F(x,\tau_k)\,e^{\,s\,i n\omega\tau_k}\,\Delta t,\qquad c_0=1,\ c_{n\ge1}=2,\qquad s=\begin{cases}+1,&\texttt{minus}\\-1,&\texttt{plus}\end{cases}$$
+
+что для `minus` есть $\tilde F=\frac{2}{T_{rec}}\int F e^{i\omega t}dt$ и $F(x,t)=\mathrm{Re}\sum_n\tilde F_n e^{-in\omega t}$.
+Здесь $\tau_k$ — истинное время отсчёта по схеме Йи: $E$ — $t$, $H,M,B$ — $t+\Delta t/2$, токи — $t-\Delta t$.
+Поправки учитываются точно.
+
+Координаты: A-сетка $x_i=-(a+h_l)+i\,\Delta x$, начало в центре вакуумного зазора, стенки $x=-a$ и
+$x=+a$, как в ноутбуках (вакуум $-a\le x\le a$). $x_{cm}=x\cdot$`length_unit_cm`. Величины B-сетки
+($H$, $M$, $j_m$) интерполируются в узлы: $(F_{i-1}+F_i)/2$. `region` = −1 / 0 / 1 — левая стенка /
+вакуум / феррит.
+
+Величины (16): `Ey Ez Hy Hz Mx My Mz By Bz je_y je_z jm_y jm_z w Sx Txx`, где
+$B=H+4\pi M$ (для JA/Preisach $M$ — скаляр вдоль $z$, `Mz`; в `timeseries.csv` он по историческим
+причинам назван `My`; для `Linear` $M=(\mu-1)H/4\pi$),
+$w=(\varepsilon E^2+\vec H\cdot\vec B)/8\pi$, $S_x=(E_yH_z-E_zH_y)/4\pi$,
+$T_{xx}=(E_y^2+E_z^2+H_y^2+H_z^2)/8\pi$ (как `Txx_at()`: давление $-\sigma_{xx}$, в вакууме $=w$).
+В квадратичных величинах $H$ центрирован по времени. Для них полезны $n=0$ (средние) и $n=2$.
+
+### 9.3. Формат CSV
+
+`fields_harm_n<k>.csv`:
+```
+# MenDrive fields_harm: n=1 omega_n=... omega0=... T_rec=... periods=... samples=... a=... h_l=... h_r=... amp=...
+# time_convention=minus: F(x,t) = Re[F~(x) exp(-i n omega0 t)] ...
+# normalize=...; excitation_mode=...; polarization=...; x: центр зазора, стенки x=-a,+a; x_cm=x*...
+n,omega_n,i,x,x_cm,region,Ey_re,Ey_im,Ey_abs,Ey_arg,Ez_re,...,Txx_arg
+```
+`fields_snap.csv`: `period,phase_target,phase,t,i,x,x_cm,region,Ey,Ez,Hy,Hz,Mx,My,Mz,By,Bz,je_y,je_z,jm_y,jm_z,w,Sx,Txx`
+(фактическая фаза `phase` отличается от `phase_target` не больше чем на $\Delta t/T$).
+Линейные CSV (`linear1d.write_profiles_csv`, `export_sage_profiles`, `analytic_for_run`) имеют тот же
+формат без `i, region`.
+
+### 9.4. Команды
+
+```sh
+make && make test                                   # ctypes-сравнение + tests/test_fields_linear.py
+./mendrive -c examples/linear_check_TM.cfg          # Linear-феррит, je_z_left, гармоника 1 и снимки
+python3 linear1d.py out/linear_check_TM             # точный линейный профиль -> linear_analytic_n1.csv
+python3 plot.py out/linear_check_TM --compare out/linear_check_TM/linear_analytic_n1.csv --fit none --norm none
+./mendrive -c examples/mode_je_z_left_TM.cfg        # новая мода (JA, скан резонанса)
+./mendrive -c examples/fields_export_preisach_magnetic.cfg && python3 plot.py out/fields_pr_mag
+./mendrive -c examples/notebook_preisach_magnetic.cfg fields_harm=1 fields_snap_phases=0,0.25,0.5,0.75
+```
+
+`plot.py` строит в `out_dir/plots/` графики `fields_harm_n<k>_{E,H,B,M,j,dArg,energy}.png` в стиле ячеек
+521–537 ноутбуков: Re, Im, Abs, Arg/π тангенциальных компонент по трём участкам (левая стенка,
+вакуум, правая стенка), TM зелёным (`color="green"`), TE синим, плюс график «delta Arg H и E».
+Кроме того строятся `fields_snap_<F>.png` (снимки по фазам) и `compare_n<k>_<F>.png` с `compare_n<k>.txt`.
+
+## 10. Как сверять с линейной моделью
+
+1. **Внутренняя проверка схемы.** Возьмите `ferrite_model=Linear` и сравните с точным решением
+   `linear1d.solve_linear` (кусочно-однородные слои, источник $e^{iK\xi}$, $E=0$ на внешних границах, как в
+   FDTD). Ожидаемая невязка без подбора фазы и нормы — 3–8 % при $N=80$ и 1.5–4 % при $N=160$; она убывает как
+   $O(\Delta x)$ из-за ступенчатой границы. Это делает `make test-fields`; отдельно —
+   `examples/linear_check_*.cfg`. Numpy-копия схемы `fdtd1d_ref.py` должна совпадать с `./mendrive`
+   до ~1e-8 (это проверка C++ без компилятора).
+2. **Профиль из ноутбука.** В конце `MenDrive_qnm*.ipynb` (после ячейки `subs_fields(...)`, ≈506) выполните
+   ```python
+   import sys; sys.path.insert(0, '/Users/oleksiy.drozdov/articles/mendrive_llg/MenDriveCpp/standalone')
+   from linear1d import export_sage_profiles
+   export_sage_profiles('linear_mode3.csv',
+       {'Ey': (Ey_left_conductor_d, Ey_vacuum_d, Ey_right_conductor_d),
+        'Hz': (Hz_left_conductor_d, Hz_vacuum_d, Hz_right_conductor_d)},
+       A=A, h_l=h_conductor_l, h_r=h_conductor_r, y0=0)
+   ```
+   затем `python3 plot.py out_dir --compare linear_mode3.csv --xcol xa` (координата $x/a$, нормировка по
+   max, общая фаза). Перевод единиц, если нужно совпадение и по абсолютной шкале: длина
+   $L_0$=`length_unit_cm` см, $\omega_{code}=\omega L_0/c$, $\sigma_{code}=\sigma_{СГС}L_0/c$,
+   $\sigma_{m,code}=\sigma_{m}L_0/c$, `eps_*`/`mu_*_lin` — те же числа, что в ноутбуке.
+   Для управляемого прогона используйте `omega_drive_subs` (вещественная $\omega$), а не QNM-частоту.
+3. **Нелинейный режим.** При малом `amp` гармоника $n=1$ должна стремиться к линейному профилю с
+   эффективной $\mu$ феррита. Рост `amp` даёт отличие $n=1$ и ненулевые $n=2,3$. Это и есть мера
+   нелинейности, которую стоит показывать рядом с линейной кривой.
+4. Ноутбук-помощник **`compare_linear_vs_cpp.ipynb`** содержит эти шаги в виде пар «Markdown-ячейка с
+   формулами → Code-ячейка с численной проверкой (OK/FAIL и невязка)».
+
+## 11. Замечания к незакоммиченным изменениям `MenDrive_qnm-mode3_jm_z_TE.ipynb`
+
+(репозиторий `/Users/oleksiy.drozdov/articles`, HEAD `5fbe669`; рабочая копия = индекс, blob `ff584d7`
+против `879dcc9` в HEAD, т. е. изменения проиндексированы, но не закоммичены)
+
+* Ячейка 21: добавлены `jm_ext_y_op/jm_ext_y_sym` и профили для `driving_mode_0`
+  (`je_ext_z`, TM, левый, $K_E$), `driving_mode_4` (`jm_ext_z`, TE, правый, $K_H$) и `driving_mode_5`
+  (`jm_ext_y`, TM, правый, $K_E$). **Выбор $K_E$/`sign_K_E_r` для `jm_y` в TM верен**: в TM все компоненты в
+  стенке, включая $H_y\propto\partial_xE_z$, идут с $K_E$ (анзац $E_z$, ячейки 47/48). `sign_K_H_r`/`K_H_right`
+  здесь были бы ошибкой.
+* **Вероятная опечатка (унаследована от `driving_mode_3` и скопирована в `_4`, `_5`, а также в ячейку 280):**
+  профили правой стенки записаны как `exp(-I*sign_K*K_right*(x + a))`, а анзац полей правой стенки
+  (ячейки 48/276/279) — `exp(+I*sign_K*K_right*(x - a)) = exp(-I*K_r*(a - x))`. При $\mathrm{Im}K>0$
+  профиль $|e^{-iK(x+a)}|=e^{\mathrm{Im}K(x+a)}$ растёт вглубь феррита и в точке $x=a$ в $e^{2a\,\mathrm{Im}K}$
+  раз больше единицы. Тогда $|f_{jm\_ext\_D}|\propto e^{\mathrm{Im}K(x+a)}e^{-\mathrm{Im}K(x-a)}=\text{const}$, и
+  $\int_a^\infty$ в ячейке 332 не сходится. Шаблоны `collect(e^(2*ImK_H_r*a - 2*ImK_H_r*x))` в ячейке 330
+  рассчитаны на форму $(a-x)$. Исправление: `(x + a)` → `(a - x)` в правых профилях ячеек 21 и 280.
+* `# if ...` в ячейке 21 — это комментарии: все присваивания выполняются безусловно (`je_ext_z_profile` —
+  дважды для `_0`/`_2`, `jm_ext_z_profile` — дважды для `_3`/`_4`; сейчас тексты совпадают, ошибки нет).
+* Новые режимы `_0`, `_4`, `_5` **не подключены к уравнениям**: источники добавляются только для `_1`, `_2`, `_3`
+  (ячейки 54/75), силы — тоже (327–332). Для `_5` нужно
+  `eq_rot_E_right_conductor_y = ... == (I*omega/c*B_r[1])[0] - 4*pi/c*jm_ext_y_sym` и сила
+  $f_x=-\frac1c\,j_{m,y}D_z^*/2$ (по формуле $f_x=-\frac1c(j_{m,y}D_z-j_{m,z}D_y)$ из ячейки 327).
+* Ячейка 527 (Arg E): внутри цикла по `y_d` стоит `pl = plot(...)` вместо `pl += ...`, поэтому строится только
+  последний `y_d`. В ветке `is_TE` нет подстановки `(x=x, y=y_d)` у `Ey_*_d`.
+* `calc_F_jmD_conj_right(..., logging=True)` — умолчание изменено на `True`. Похоже на отладочный остаток.

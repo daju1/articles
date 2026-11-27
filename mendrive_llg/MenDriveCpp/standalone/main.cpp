@@ -21,6 +21,7 @@
 
 #include <cerrno>
 #include <cinttypes>
+#include <complex>
 #include <csignal>
 #include <chrono>
 #include <cstdlib>
@@ -45,7 +46,10 @@ static const double NaN = std::numeric_limits<double>::quiet_NaN();
 // Параметры
 // ============================================================================
 // kind = 0: влияет на результат (при --resume обязан совпадать);
-// kind = 1: служебный (можно менять между запусками).
+// kind = 1: служебный (можно менять между запусками);
+// kind = 2: MODE: новый параметр, влияющий на результат; входит в подпись чекпойнта, только если
+//           отличается от значения по умолчанию (старые чекпойнты продолжаются с --resume);
+// kind = 3: FIELDS: экспорт полей (на динамику не влияет; своя подпись в checkpoint_fields.bin).
 struct ParamDef { const char* key; const char* def; int kind; const char* help; };
 
 static const ParamDef PARAMS[] = {
@@ -56,8 +60,16 @@ static const ParamDef PARAMS[] = {
     {"h_r",             "0.2",      0, "толщина правой (ферритовой) стенки"},
     {"dt_frac",         "0.1",      0, "dt = dt_frac*dx"},
     // --- возбуждение и модель феррита
-    {"excitation_mode", "magnetic_right", 0, "magnetic_right | electric_left"},
-    {"ferrite_model",   "Preisach2D", 0, "JA | LLG | Hybrid | Preisach | Preisach2D"},
+    {"excitation_mode", "magnetic_right", 0, "magnetic_right(=jm_z_right) | electric_left(=je_y_left) | je_z_left | jm_y_right | je_y_right | je_z_right | jm_z_left | jm_y_left (README §8)"},
+    {"ferrite_model",   "Preisach2D", 0, "JA | LLG | Hybrid | Preisach | Preisach2D | Linear (B=mu*H, эталон для сверки)"},
+    // --- MODE: поляризация и линейные параметры стенок (по умолчанию -- как в исходном ядре)
+    {"polarization",    "auto",     2, "auto | TE (Ey,Hz) | TM (Ez,Hy) | both; auto = пара источника; LLG/Hybrid -> всегда both"},
+    {"src_k_phase",     "0",        2, "Re K источника: j=amp*exp(-xi/skin_depth)*sin(w t - k*xi) (профиль exp(iK xi) ноутбука)"},
+    {"src_sigma_fix",   "0",        2, "1 = je делится на (eps+2*pi*sigma*dt) (согласованная полунеявная схема; 0 = как в исходном ядре)"},
+    {"eps_left",        "1",        2, "диэлектрическая проницаемость левой стенки"},
+    {"eps_ferrite",     "1",        2, "диэлектрическая проницаемость феррита (в ноутбуках epsilon_r = 16)"},
+    {"mu_yy_lin",       "1",        2, "mu для Hy в феррите (JA/Preisach/Preisach2D/Linear; в ноутбуках mu_r_yy)"},
+    {"mu_zz_lin",       "1",        2, "mu для Hz в феррите (только Linear; в ноутбуках mu_r_zz)"},
     {"bias_orientation","x",        0, "none | x | y | z | parallel"},
     {"H0_bias",         "4.0",      0, "поле подмагничивания"},
     {"sigma_m_leak",    "3.0",      0, "магнитная утечка JA/Hybrid"},
@@ -111,6 +123,15 @@ static const ParamDef PARAMS[] = {
     {"fft_harmonics",   "8",        0, "ДПФ dTxx на гармониках k*omega0, k=0..K"},
     {"fft_bins",        "400",      0, "ДПФ на равномерной сетке [0, fft_wmax_factor*omega0]"},
     {"fft_wmax_factor", "4",        0, ""},
+    // --- FIELDS: экспорт профилей полей для сверки с линейными моделями (README §9)
+    {"fields_snap_phases", "",      3, "снимки профилей в фазах периода, напр. 0,0.25,0.5,0.75 (пусто = нет)"},
+    {"fields_snap_every_periods","0", 3, "снимки каждые K периодов начиная с fields_snap_from_period (0 = только последний период)"},
+    {"fields_snap_from_period","-1", 3, "с какого периода снимки (-1 = record_from_period)"},
+    {"fields_harm",     "",         3, "номера гармоник для комплексных профилей, напр. 1 или 0,1,2,3 (пусто = нет)"},
+    {"fields_harm_periods","0",     3, "накопление по последним K периодам (0 = то же окно, что для средних: last_frac)"},
+    {"time_convention", "minus",    3, "minus: F=Re[F~ exp(-i w t)] (как в ноутбуках MenDrive_qnm*) | plus: exp(+i w t)"},
+    {"fields_harm_normalize","none",3, "none | source: разделить на комплексную амплитуду источника j0 (= i*amp при minus)"},
+    {"fields_every_x",  "1",        3, "прореживание узлов по x в CSV полей"},
     // --- служебные
     {"threads",         "1",        1, "потоков (ячейки феррита в прогоне; частоты в скане)"},
     {"checkpoint_every_periods","100", 1, "чекпойнт каждые K периодов"},
@@ -171,7 +192,15 @@ struct Config {
     }
     std::string signature() const {
         std::ostringstream o;
-        for (const auto& p : PARAMS) if (p.kind == 0) o << p.key << '=' << s(p.key) << '\n';
+        // MODE: kind 2 -- только если отличается от умолчания (совместимость старых чекпойнтов)
+        for (const auto& p : PARAMS)
+            if (p.kind == 0 || (p.kind == 2 && s(p.key) != p.def)) o << p.key << '=' << s(p.key) << '\n';
+        return o.str();
+    }
+    // FIELDS: подпись параметров экспорта (kind 3) -- хранится в checkpoint_fields.bin
+    std::string fields_signature() const {
+        std::ostringstream o;
+        for (const auto& p : PARAMS) if (p.kind == 3) o << p.key << '=' << s(p.key) << '\n';
         return o.str();
     }
     void dump(FILE* f) const { for (const auto& p : PARAMS) fprintf(f, "%s=%s\n", p.key, s(p.key).c_str()); }
@@ -185,10 +214,17 @@ static int code_of(const std::string& v, const std::vector<std::pair<std::string
 }
 static int ferrite_code(const Config& c) {
     return code_of(c.s("ferrite_model"), {{"JA", JA}, {"LLG", LLG}, {"Hybrid", Hybrid},
-                   {"Preisach", Preisach}, {"Preisach2D", Preisach2D}}, "ferrite_model");
+                   {"Preisach", Preisach}, {"Preisach2D", Preisach2D}, {"Linear", Linear}}, "ferrite_model");
 }
 static int excitation_code(const Config& c) {
-    return code_of(c.s("excitation_mode"), {{"magnetic_right", 0}, {"electric_left", 1}}, "excitation_mode");
+    // MODE: прежние имена + новые (таблица соответствия driving_mode -- README §8)
+    return code_of(c.s("excitation_mode"), {{"magnetic_right", EXC_JM_Z_RIGHT}, {"electric_left", EXC_JE_Y_LEFT},
+                   {"jm_z_right", EXC_JM_Z_RIGHT}, {"je_y_left", EXC_JE_Y_LEFT}, {"je_z_left", EXC_JE_Z_LEFT},
+                   {"jm_y_right", EXC_JM_Y_RIGHT}, {"je_y_right", EXC_JE_Y_RIGHT}, {"je_z_right", EXC_JE_Z_RIGHT},
+                   {"jm_z_left", EXC_JM_Z_LEFT}, {"jm_y_left", EXC_JM_Y_LEFT}}, "excitation_mode");
+}
+static int polarization_code(const Config& c) {
+    return code_of(c.s("polarization"), {{"auto", POL_AUTO}, {"TE", POL_TE}, {"TM", POL_TM}, {"both", POL_BOTH}}, "polarization");
 }
 static int bias_code(const Config& c) {
     return code_of(c.s("bias_orientation"), {{"none", 0}, {"x", 1}, {"y", 2}, {"z", 3}, {"parallel", 4}}, "bias_orientation");
@@ -204,6 +240,12 @@ static int effective_n_hyst(const Config& c) {
 }
 
 static std::unique_ptr<MenDriveSim> make_sim(const Config& c, int threads) {
+    ModeOptions mo;   // MODE
+    mo.polarization = polarization_code(c);
+    mo.src_k_phase = c.d("src_k_phase");
+    mo.src_sigma_fix = (int)c.i("src_sigma_fix");
+    mo.eps_left = c.d("eps_left"); mo.eps_ferrite = c.d("eps_ferrite");
+    mo.mu_yy_lin = c.d("mu_yy_lin"); mo.mu_zz_lin = c.d("mu_zz_lin");
     return std::unique_ptr<MenDriveSim>(new MenDriveSim(
         (int)c.i("N"), c.d("a"), c.d("h_l"), c.d("h_r"), c.d("dt_frac"),
         excitation_code(c), ferrite_code(c), bias_code(c), c.d("H0_bias"),
@@ -212,7 +254,13 @@ static std::unique_ptr<MenDriveSim> make_sim(const Config& c, int threads) {
         (int)c.i("n_sub"), (int)c.i("n_fp"), (int)c.i("n_newton"),
         c.d("Ms_llg"), c.d("gamma_llg"), c.d("alpha_llg"), c.d("skin_depth"),
         effective_n_hyst(c), c.d("Hc_mean_pr"), c.d("Hc_sigma_pr"), c.d("Hb_sigma_pr"),
-        c.d("sigma_m_leak_pr"), pr2d_algo_code(c), threads));
+        c.d("sigma_m_leak_pr"), pr2d_algo_code(c), threads, mo));
+}
+
+// MODE: тангенциальное H «своей» пары в ячейке-пробе: Hz для TE (и both -- как раньше), Hy для TM.
+static inline double probe_H(const MenDriveSim& sim, int gi) {
+    if (gi < 0) return 0.0;
+    return (sim.upd_TE) ? (double)sim.Hz[gi] : (double)sim.Hy[gi];
 }
 
 // ============================================================================
@@ -275,8 +323,9 @@ struct ProbeVals { double Hn, Mx, My, Mz, HzJA, MzJA; };
 // Значения пробы -- в точности как пишет mendrive_run().
 static ProbeVals probe_values(const MenDriveSim& sim, int probe_idx, int gi) {
     ProbeVals v{0, 0, 0, 0, 0, 0};
-    v.Hn = (gi >= 0) ? (double)sim.Hz[gi] : 0.0;
+    v.Hn = probe_H(sim, gi);   // MODE: для TM-режимов -- Hy (для TE/both -- Hz, как раньше)
     if (sim.n_fer <= 0) return v;
+    if (sim.ferrite_model == Linear) return v;   // MODE: у Linear нет состояния M
     if (sim.ferrite_model == JA) v.My = (double)sim.M_field[probe_idx];
     else if (sim.ferrite_model == LLG) {
         const Vec3& M = sim.M_llg[probe_idx]; v.Mx = (double)M.x; v.My = (double)M.y; v.Mz = (double)M.z;
@@ -305,7 +354,7 @@ static double scan_response(const Config& c, double w, bool& stopped) {
     for (int64_t n = 0; n < nsteps; ++n) {
         sim->step_once(w, amp, ramp, T);
         if (n >= rs) {
-            double h = (gi >= 0) ? (double)sim->Hz[gi] : 0.0;
+            double h = probe_H(*sim, gi);   // MODE: Hz (TE/both) или Hy (TM)
             mx = std::max(mx, h); mn = std::min(mn, h); ++nrec;
         }
         if (!sim->fields_finite()) { blew = true; break; }
@@ -504,6 +553,289 @@ static FILE* open_checkpoint(const fs::path& path, const Config& c, double& omeg
     return f;
 }
 
+// ============================================================================
+// FIELDS: экспорт профилей полей по x для сверки с линейными моделями MenDrive_qnm*.ipynb
+// ============================================================================
+// Все величины выводятся на A-сетке xA[i] = -(a+h_l) + i*dx (узлы E), x -- в единицах кода с тем же
+// началом, что в ноутбуках (центр вакуумного зазора; стенки x = -a и x = +a), x_cm = x*length_unit_cm.
+// Величины H-типа (B-сетка) интерполируются в узлы: (F[i-1]+F[i])/2, на концах -- ближайшая ячейка.
+// Истинные моменты отсчёта после шага (схема Йи): E -- t; H, M, B -- t + dt/2; токи j -- t - dt.
+// Гармоники (накопление на лету, без хранения ряда):
+//     F~_n(x) = (c_n/T_rec) * sum_k F(x, tau_k) exp(+s i n w tau_k) dt,  c_0 = 1, c_{n>0} = 2,
+// s = +1 при time_convention=minus (F = Re[F~ exp(-i n w t)] -- конвенция ноутбуков), s = -1 при plus;
+// tau_k -- истинное время отсчёта каждой величины (фазовые поправки dt/2 и dt учитываются точно).
+// Квадратичные величины (w, Sx, Txx) считаются с H, центрированным по времени: (H^{n+1/2}+H^{n-1/2})/2.
+//   w   = (eps E^2 + H.B)/(8 pi)          -- плотность энергии (линейное приближение)
+//   Sx  = (Ey Hz - Ez Hy)/(4 pi)          -- поток Пойнтинга (c = 1)
+//   Txx = (Ey^2+Ez^2+Hy^2+Hz^2)/(8 pi)    -- как Txx_at() ядра (= -sigma_xx, давление; в вакууме = w)
+enum { FQ_EY, FQ_EZ, FQ_HY, FQ_HZ, FQ_MX, FQ_MY, FQ_MZ, FQ_BY, FQ_BZ, FQ_JEY, FQ_JEZ, FQ_JMY, FQ_JMZ,
+       FQ_W, FQ_SX, FQ_TXX, FQ_COUNT };
+static const char* FQ_NAMES[FQ_COUNT] = {"Ey", "Ez", "Hy", "Hz", "Mx", "My", "Mz", "By", "Bz",
+                                          "je_y", "je_z", "jm_y", "jm_z", "w", "Sx", "Txx"};
+static const int FQ_TCLASS[FQ_COUNT] = {0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0};  // 0: t, 1: t+dt/2, 2: t-dt
+
+static std::vector<double> parse_list(const std::string& v, const char* what) {
+    std::vector<double> out;
+    std::string cur;
+    std::istringstream ss(v);
+    while (std::getline(ss, cur, ',')) {
+        cur = trim(cur);
+        if (cur.empty()) continue;
+        char* end = nullptr;
+        double x = std::strtod(cur.c_str(), &end);
+        if (end == cur.c_str() || *end != '\0') throw std::runtime_error(std::string(what) + ": не число '" + cur + "'");
+        out.push_back(x);
+    }
+    return out;
+}
+
+struct FieldsExport {
+    bool snap_on = false, harm_on = false, harm_valid = true;
+    std::vector<double> phases;            // доли периода, [0,1)
+    long long snap_every = 0, snap_from = 0, p_last = -1;
+    std::vector<int> harm;                 // номера гармоник
+    int64_t harm_start = 0, harm_count = 0;
+    double sgn = 1.0;                      // s: +1 (minus), -1 (plus)
+    bool norm_src = false;
+    int every_x = 1;
+    double omega = 0, T = 0, dt = 0, amp = 0, x_unit = 1, a_geom = 0;
+    std::string fsig, exc_name, pol_name;
+    std::vector<std::vector<double>> acc_re, acc_im;   // [h*FQ_COUNT + q][i]
+    std::vector<std::vector<double>> q;                // текущие значения [q][i]
+    std::vector<long double> Mx, My, Mz;               // буферы
+    FILE* fsnap = nullptr;
+    uint64_t snap_bytes = 0;
+    fs::path snap_path, ck_path;
+
+    void init(const Config& c, const MenDriveSim& sim, const RunState& R, const fs::path& out_dir) {
+        phases = parse_list(c.s("fields_snap_phases"), "fields_snap_phases");
+        for (double& p : phases) { p = p - std::floor(p); }
+        std::sort(phases.begin(), phases.end());
+        snap_on = !phases.empty();
+        snap_every = c.i("fields_snap_every_periods");
+        const double sf = c.d("fields_snap_from_period");
+        snap_from = (sf < 0) ? (long long)std::floor(c.d("record_from_period")) : (long long)std::floor(sf);
+        for (double h : parse_list(c.s("fields_harm"), "fields_harm")) {
+            if (h < 0 || h != std::floor(h)) throw std::runtime_error("fields_harm: нужны целые >= 0");
+            harm.push_back((int)h);
+        }
+        harm_on = !harm.empty();
+        const std::string tc = c.s("time_convention");
+        if (tc != "minus" && tc != "plus") throw std::runtime_error("time_convention: minus | plus");
+        sgn = (tc == "minus") ? 1.0 : -1.0;
+        const std::string nm = c.s("fields_harm_normalize");
+        if (nm != "none" && nm != "source") throw std::runtime_error("fields_harm_normalize: none | source");
+        norm_src = (nm == "source");
+        every_x = (int)std::max(1LL, c.i("fields_every_x"));
+        omega = R.omega; T = R.T; dt = R.dt; amp = c.d("amp"); x_unit = c.d("length_unit_cm"); a_geom = (double)sim.a;
+        exc_name = c.s("excitation_mode"); pol_name = c.s("polarization");
+        fsig = c.fields_signature();
+        const long long hp = c.i("fields_harm_periods");
+        harm_start = (hp > 0) ? std::max<int64_t>(0, R.nsteps - (int64_t)hp * R.spp) : R.win_start;
+        p_last = (long long)std::floor((double)R.nsteps * dt / T + 1e-12) - 1;
+        if (harm_on) {
+            acc_re.assign(harm.size() * FQ_COUNT, std::vector<double>(sim.N + 1, 0.0));
+            acc_im.assign(harm.size() * FQ_COUNT, std::vector<double>(sim.N + 1, 0.0));
+            if ((double)harm_start * dt < c.d("ramp_periods") * T)
+                printf("[fields] ВНИМАНИЕ: накопление гармоник начинается до окончания разгона (ramp_periods)\n");
+        }
+        q.assign(FQ_COUNT, std::vector<double>(sim.N + 1, 0.0));
+        snap_path = out_dir / "fields_snap.csv";
+        ck_path = out_dir / "checkpoint_fields.bin";
+        if (snap_on || harm_on)
+            printf("[fields] снимки: %s; гармоники: %s (окно с шага %lld, %.1f периодов), time_convention=%s, normalize=%s\n",
+                   snap_on ? c.s("fields_snap_phases").c_str() : "нет", harm_on ? c.s("fields_harm").c_str() : "нет",
+                   (long long)harm_start, (double)(R.nsteps - harm_start) / (double)R.spp, tc.c_str(), nm.c_str());
+    }
+
+    static void head_cols(FILE* f) { for (int k = 0; k < FQ_COUNT; ++k) fprintf(f, ",%s", FQ_NAMES[k]); }
+
+    void open_snap(bool append) {
+        if (!snap_on) return;
+        if (append && fs::exists(snap_path)) {
+            std::error_code ec; fs::resize_file(snap_path, snap_bytes, ec);
+            fsnap = fopen(snap_path.string().c_str(), "ab");
+        } else {
+            fsnap = fopen(snap_path.string().c_str(), "wb");
+            if (fsnap) {
+                fprintf(fsnap, "# MenDrive fields_snap: E, w, Sx, Txx -- в момент t; Hy,Hz,M,B -- t+dt/2; j -- t-dt "
+                               "(x: центр зазора, стенки x=-a, x=+a; x_cm = x*length_unit_cm) omega0=%.12g a=%.12g dt=%.12g\n",
+                        omega, a_geom, dt);
+                fprintf(fsnap, "period,phase_target,phase,t,i,x,x_cm,region"); head_cols(fsnap); fputc('\n', fsnap);
+            }
+        }
+        if (!fsnap) throw std::runtime_error("не удалось открыть " + snap_path.string());
+    }
+
+    void sample(const MenDriveSim& sim) {
+        const int N = sim.N;
+        sim.magnetization_B(Mx, My, Mz);
+        auto toA = [N](const std::vector<long double>& b, int i) -> long double {
+            if (i <= 0) return b[0];
+            if (i >= N) return b[N - 1];
+            return 0.5L * (b[i - 1] + b[i]);
+        };
+        for (int i = 0; i <= N; ++i) {
+            const long double Ey = sim.Ey[i], Ez = sim.Ez[i];
+            const long double Hy = toA(sim.Hy, i), Hz = toA(sim.Hz, i);
+            // H^{n-1/2} лежит в буферах *_new после swap (неактивная пара -- нули)
+            const long double Hyc = 0.5L * (Hy + toA(sim.Hy_new, i)), Hzc = 0.5L * (Hz + toA(sim.Hz_new, i));
+            const long double mx = toA(Mx, i), my = toA(My, i), mz = toA(Mz, i);
+            q[FQ_EY][i] = (double)Ey; q[FQ_EZ][i] = (double)Ez; q[FQ_HY][i] = (double)Hy; q[FQ_HZ][i] = (double)Hz;
+            q[FQ_MX][i] = (double)mx; q[FQ_MY][i] = (double)my; q[FQ_MZ][i] = (double)mz;
+            q[FQ_BY][i] = (double)(Hy + 4 * M_PI * my); q[FQ_BZ][i] = (double)(Hz + 4 * M_PI * mz);
+            q[FQ_JEY][i] = (double)sim.j_e_y_A[i]; q[FQ_JEZ][i] = (double)sim.j_e_z_A[i];
+            q[FQ_JMY][i] = (double)toA(sim.j_m_y_B, i); q[FQ_JMZ][i] = (double)toA(sim.j_m_z_B, i);
+            q[FQ_W][i] = (double)((sim.eps_A[i] * (Ey * Ey + Ez * Ez) + Hyc * (Hyc + 4 * M_PI * my) + Hzc * (Hzc + 4 * M_PI * mz)) / (8 * M_PI));
+            q[FQ_SX][i] = (double)((Ey * Hzc - Ez * Hyc) / (4 * M_PI));
+            q[FQ_TXX][i] = (double)((Ey * Ey + Ez * Ez + Hyc * Hyc + Hzc * Hzc) / (8 * M_PI));
+        }
+    }
+
+    static int region_of(const MenDriveSim& sim, int i) { return sim.leftA[i] ? -1 : (sim.rightA[i] ? 1 : 0); }
+
+    // вызывается после КАЖДОГО шага n (sim.t = (n+1) dt)
+    void on_step(int64_t n, const MenDriveSim& sim) {
+        if (!snap_on && !harm_on) return;
+        const double t = (double)sim.t, t_prev = t - dt;
+        bool sampled = false;
+        if (snap_on) {
+            for (double ph : phases) {
+                const double pf = std::floor(t / T - ph);
+                if (pf < 0) continue;
+                const long long p = (long long)pf;
+                if (!((pf + ph) * T > t_prev)) continue;   // момент (p+ph)T попал в (t-dt, t]
+                if (p < snap_from) continue;
+                if (snap_every > 0) { if ((p - snap_from) % snap_every != 0) continue; }
+                else if (p != p_last) continue;
+                if (!sampled) { sample(sim); sampled = true; }
+                const double phase = t / T - (double)p;
+                for (int i = 0; i <= sim.N; i += every_x) write_snap_row(sim, p, ph, phase, t, i);
+                if ((sim.N % every_x) != 0) write_snap_row(sim, p, ph, phase, t, sim.N);
+            }
+        }
+        if (harm_on && harm_valid && n >= harm_start) {
+            if (!sampled) { sample(sim); sampled = true; }
+            for (size_t h = 0; h < harm.size(); ++h) {
+                const double th = std::fmod(sgn * harm[h] * omega * t, 2 * M_PI);
+                const double zr = std::cos(th), zi = std::sin(th);
+                for (int k = 0; k < FQ_COUNT; ++k) {
+                    std::vector<double>& ar = acc_re[h * FQ_COUNT + k];
+                    std::vector<double>& ai = acc_im[h * FQ_COUNT + k];
+                    const std::vector<double>& v = q[k];
+                    for (int i = 0; i <= sim.N; ++i) { ar[i] += v[i] * zr; ai[i] += v[i] * zi; }
+                }
+            }
+            harm_count++;
+        }
+    }
+
+    void write_snap_row(const MenDriveSim& sim, long long p, double ph, double phase, double t, int i) {
+        fprintf(fsnap, "%lld,%.6g,%.10g,%.12e,%d,%.12e,%.12e,%d", p, ph, phase, t, i, (double)sim.xA[i],
+                (double)sim.xA[i] * x_unit, region_of(sim, i));
+        for (int k = 0; k < FQ_COUNT; ++k) fprintf(fsnap, ",%.10e", q[k][i]);
+        fputc('\n', fsnap);
+    }
+
+    // ---- чекпойнт экспорта (отдельный файл: формат checkpoint.bin не менялся) ----
+    void save() {
+        if (!snap_on && !harm_on) return;
+        if (fsnap) { fflush(fsnap); snap_bytes = (uint64_t)ftell(fsnap); }
+        const fs::path tmp = ck_path.string() + ".tmp";
+        FILE* f = fopen(tmp.string().c_str(), "wb");
+        if (!f) return;
+        const char mg[8] = {'M', 'D', 'F', 'X', '0', '0', '0', '1'};
+        uint64_t ns = fsig.size();
+        int32_t hv = harm_valid ? 1 : 0;
+        bool ok = fwrite(mg, 1, 8, f) == 8 && ck_write_pod(f, ns) && fwrite(fsig.data(), 1, ns, f) == ns
+                  && ck_write_pod(f, harm_count) && ck_write_pod(f, snap_bytes) && ck_write_pod(f, hv);
+        for (size_t k = 0; ok && k < acc_re.size(); ++k) ok = ck_write_vec(f, acc_re[k]) && ck_write_vec(f, acc_im[k]);
+        ok = (fclose(f) == 0) && ok;
+        if (ok) { std::error_code ec; fs::rename(tmp, ck_path, ec); }
+    }
+    // resume: true, если состояние экспорта восстановлено
+    bool load(int64_t n_done) {
+        if (!snap_on && !harm_on) return true;
+        FILE* f = fopen(ck_path.string().c_str(), "rb");
+        bool ok = false;
+        if (f) {
+            char mg[8]; uint64_t ns = 0; int32_t hv = 1;
+            if (fread(mg, 1, 8, f) == 8 && std::memcmp(mg, "MDFX0001", 8) == 0 && ck_read_pod(f, ns) && ns < (1u << 20)) {
+                std::string sg(ns, '\0');
+                if (fread(&sg[0], 1, ns, f) == ns && sg == fsig && ck_read_pod(f, harm_count) && ck_read_pod(f, snap_bytes)
+                    && ck_read_pod(f, hv)) {
+                    ok = true;
+                    for (size_t k = 0; ok && k < acc_re.size(); ++k) ok = ck_read_vec(f, acc_re[k]) && ck_read_vec(f, acc_im[k]);
+                    harm_valid = (hv != 0);
+                }
+            }
+            fclose(f);
+        }
+        if (!ok) {
+            printf("[fields] ВНИМАНИЕ: нет совместимого checkpoint_fields.bin (другие параметры экспорта или старый чекпойнт)\n");
+            for (auto& v : acc_re) std::fill(v.begin(), v.end(), 0.0);
+            for (auto& v : acc_im) std::fill(v.begin(), v.end(), 0.0);
+            harm_count = 0; snap_bytes = 0;
+            if (harm_on && n_done > harm_start) {
+                harm_valid = false;
+                printf("[fields] окно гармоник уже началось -> гармоники в этом прогоне НЕ будут записаны\n");
+            }
+            open_snap(false);
+            return false;
+        }
+        open_snap(true);
+        return true;
+    }
+
+    void finish(const MenDriveSim& sim, const fs::path& out_dir) {
+        if (fsnap) { fclose(fsnap); fsnap = nullptr; printf("[fields] снимки: %s\n", snap_path.string().c_str()); }
+        if (!harm_on) return;
+        if (!harm_valid || harm_count == 0) { printf("[fields] гармоники не записаны (нет отсчётов)\n"); return; }
+        const double T_rec = (double)harm_count * dt;
+        for (size_t h = 0; h < harm.size(); ++h) {
+            const int n = harm[h];
+            const fs::path path = out_dir / ("fields_harm_n" + std::to_string(n) + ".csv");
+            FILE* f = fopen(path.string().c_str(), "w");
+            if (!f) continue;
+            const double cn = (n == 0 ? 1.0 : 2.0) * dt / T_rec;
+            // нормировка: j0 = i*s*amp -- комплексная амплитуда источника (sin(w t) = Re[i e^{-i w t}])
+            std::complex<double> j0(0.0, sgn * amp);
+            const bool do_norm = norm_src && n >= 1 && amp != 0;
+            fprintf(f, "# MenDrive fields_harm: n=%d omega_n=%.12g omega0=%.12g T_rec=%.12g periods=%.3f samples=%lld "
+                       "a=%.12g h_l=%.12g h_r=%.12g amp=%.12g\n",
+                    n, n * omega, omega, T_rec, T_rec / T, (long long)harm_count,
+                    (double)sim.a, (double)sim.h_l, (double)sim.h_r, amp);
+            fprintf(f, "# time_convention=%s: F(x,t) = Re[F~(x) exp(%si n omega0 t)] (n=0: F~ = среднее)\n",
+                    sgn > 0 ? "minus" : "plus", sgn > 0 ? "-" : "+");
+            fprintf(f, "# normalize=%s%s; excitation_mode=%s; polarization=%s(%s); x: центр зазора, стенки x=-a,+a; "
+                       "x_cm=x*%.6g\n", do_norm ? "source (F~/j0, j0=" : "none", do_norm ? (sgn > 0 ? "+i*amp)" : "-i*amp)") : "",
+                    exc_name.c_str(), pol_name.c_str(), sim.upd_TE && sim.upd_TM ? "both" : (sim.upd_TE ? "TE" : "TM"), x_unit);
+            fprintf(f, "n,omega_n,i,x,x_cm,region");
+            for (int k = 0; k < FQ_COUNT; ++k) fprintf(f, ",%s_re,%s_im,%s_abs,%s_arg", FQ_NAMES[k], FQ_NAMES[k], FQ_NAMES[k], FQ_NAMES[k]);
+            fputc('\n', f);
+            // фазовые поправки на истинное время отсчёта
+            std::complex<double> corr[3];
+            corr[0] = 1.0;
+            corr[1] = std::polar(1.0, sgn * n * omega * 0.5 * dt);
+            corr[2] = std::polar(1.0, -sgn * n * omega * dt);
+            for (int i = 0; i <= sim.N; ++i) {
+                if (i % every_x != 0 && i != sim.N) continue;
+                fprintf(f, "%d,%.12g,%d,%.12e,%.12e,%d", n, n * omega, i, (double)sim.xA[i], (double)sim.xA[i] * x_unit,
+                        region_of(sim, i));
+                for (int k = 0; k < FQ_COUNT; ++k) {
+                    std::complex<double> v(acc_re[h * FQ_COUNT + k][i] * cn, acc_im[h * FQ_COUNT + k][i] * cn);
+                    v *= corr[FQ_TCLASS[k]];
+                    if (do_norm) v /= j0;
+                    fprintf(f, ",%.12e,%.12e,%.12e,%.12e", v.real(), v.imag(), std::abs(v), std::arg(v));
+                }
+                fputc('\n', f);
+            }
+            fclose(f);
+            printf("[fields] гармоника n=%d: %s\n", n, path.string().c_str());
+        }
+    }
+};
+
 static void print_usage() {
     printf("Использование: mendrive [-c файл.cfg] [ключ=значение ...] [--resume]\n\n");
     printf("  -c, --config F   прочитать параметры из файла (строки ключ=значение, # -- комментарий)\n");
@@ -535,7 +867,7 @@ static int real_main(int argc, char** argv) {
         } else throw std::runtime_error("непонятный аргумент '" + a + "' (см. --help)");
     }
     // ранняя проверка всех строковых кодов
-    const int fm = ferrite_code(cfg); excitation_code(cfg); bias_code(cfg); pr2d_algo_code(cfg);
+    const int fm = ferrite_code(cfg); excitation_code(cfg); bias_code(cfg); pr2d_algo_code(cfg); polarization_code(cfg);
     if (cfg.s("ts_format") != "csv" && cfg.s("ts_format") != "bin") throw std::runtime_error("ts_format: csv | bin");
     const int threads = (int)std::max(1LL, cfg.i("threads"));
 
@@ -557,6 +889,7 @@ static int real_main(int argc, char** argv) {
     const int gi = sim->probe_global_index(probe_idx);
     printf("[init] модель=%s, возбуждение=%s, N=%d, dx=%.6g, dt=%.6g, ячеек феррита n_fer=%d, потоков=%d\n",
            cfg.s("ferrite_model").c_str(), cfg.s("excitation_mode").c_str(), sim->N, (double)sim->dx, dt, sim->n_fer, threads);
+    printf("[mode] %s\n", sim->mode_info().c_str());   // MODE
     if (fm == Preisach2D) {
         const double ng = sim->pr2d->n_grid, pairs = ng * ng;
         printf("[init] Preisach2D: n_grid=%d, пар=%.0f, алгоритм=%s\n", sim->pr2d->n_grid, pairs, cfg.s("pr2d_algo").c_str());
@@ -647,6 +980,10 @@ static int real_main(int argc, char** argv) {
         }
     }
     if (!fper || (ts_every > 0 && !fts)) throw std::runtime_error("не удалось открыть выходные файлы в " + out_dir.string());
+    // FIELDS: экспорт профилей (снимки и гармоники); состояние -- в checkpoint_fields.bin
+    FieldsExport fx;
+    fx.init(cfg, *sim, R, out_dir);
+    if (R.n_done > 0) fx.load(R.n_done); else fx.open_snap(false);
 
     {
         const double ts_rows = (ts_every > 0) ? (double)(R.nsteps - R.ts_from) / (double)ts_every : 0.0;
@@ -753,6 +1090,7 @@ static int real_main(int argc, char** argv) {
             }
             R.rec_count++;
         }
+        fx.on_step(n, *sim);   // FIELDS
         const bool finite = sim->fields_finite();
         R.n_done = n + 1;
         if (!finite) { R.blew_up = 1; printf("[run] ВНИМАНИЕ: поля стали нечисловыми (blew_up) на шаге %" PRId64 "\n", n); break; }
@@ -772,16 +1110,20 @@ static int real_main(int argc, char** argv) {
             const double el = elapsed();
             R.wall_prev += el - last_ck; last_ck = el;
             write_checkpoint(ck_path, sig, R, *sim, fper, fts);
+            fx.save();   // FIELDS
             if (g_stop) {
                 printf("[run] остановлено на шаге %" PRId64 ", чекпойнт записан. Продолжить: тот же запуск + --resume\n", R.n_done);
                 fclose(fper); if (fts) fclose(fts);
+                if (fx.fsnap) { fclose(fx.fsnap); fx.fsnap = nullptr; }
                 return 130;
             }
         }
     }
     { const double el = elapsed(); R.wall_prev += el - last_ck; last_ck = el; }
     write_checkpoint(ck_path, sig, R, *sim, fper, fts);
+    fx.save();   // FIELDS
     fclose(fper); if (fts) fclose(fts);
+    fx.finish(*sim, out_dir);   // FIELDS: fields_harm_n*.csv
 
     // ---------- итоги (порт force_per_power / check_energy_balance / shoelace_area) ----------
     const double wc = (double)R.w_count;
@@ -851,6 +1193,7 @@ static int real_main(int argc, char** argv) {
     both("# Итоги прогона MenDrive (main.cpp)\n");
     both("ferrite_model=%s\nexcitation_mode=%s\namp=%.10g\nN=%d\nn_fer=%d\n", cfg.s("ferrite_model").c_str(),
          cfg.s("excitation_mode").c_str(), amp, sim->N, sim->n_fer);
+    both("polarization=%s\n", sim->upd_TE && sim->upd_TM ? "both" : (sim->upd_TE ? "TE" : "TM"));   // MODE
     both("omega_res=%.17g\ndt=%.17g\nspp=%" PRId64 "\nn_rec=%" PRId64 "\nn_window=%" PRId64 "\nblew_up=%d\n",
          R.omega, dt_d, R.spp, R.rec_count, R.w_count, (int)R.blew_up);
     both("# средние по окну (последние last_frac записанных периодов)\n");

@@ -4,7 +4,7 @@
 
 ### user · 2026-10-22 12:41
 
-/Users/oleksiy.drozdov/articles - у тебя есть доступ к этой моей папке?
+articles - у тебя есть доступ к этой моей папке?
 
 ---
 
@@ -7061,7 +7061,7 @@ $$n_2=\langle 0_1|\hat a_2^\dagger \hat a_2|0_1\rangle \;=\; \int \big(\hat a_2\
 
 ### assistant · 2026-10-26 12:58
 
-PDF скопирован в папку проекта: [bra_ket_dictionary.pdf](qw-file:///Users/oleksiy.drozdov/articles/theory/bra_ket_dictionary.pdf) (`~/articles/theory/`).
+PDF скопирован в папку проекта: [bra_ket_dictionary.pdf](qw-file://articles/theory/bra_ket_dictionary.pdf) (`~/articles/theory/`).
 
 <decision question="Что дальше?">
 <option description="Посчитать перекрытие двух гауссиан разной ширины и получить из него β=½(√(ω₂/ω₁)−√(ω₁/ω₂)), без бра-кет">Вывести β из гауссова интеграла</option>
@@ -7106,7 +7106,7 @@ PDF скопирован в папку проекта: [bra_ket_dictionary.pdf](
 
 ### assistant · 2026-10-26 21:40
 
-Переработанный раздел вставлен в обе версии статьи: [noether_casimir_drive.tex](qw-file:///Users/oleksiy.drozdov/articles/casimir_noether/noether_casimir_drive.tex) и [noether_casimir_drive_ru.tex](qw-file:///Users/oleksiy.drozdov/articles/casimir_noether/noether_casimir_drive_ru.tex). LaTeX я не запускал, в песочнице его нет, поэтому соберите PDF сами. Сделал только простую проверку: блоки `multicols` в обоих файлах парные (по 6 открытий и закрытий).
+Переработанный раздел вставлен в обе версии статьи: [noether_casimir_drive.tex](qw-file://articles/casimir_noether/noether_casimir_drive.tex) и [noether_casimir_drive_ru.tex](qw-file://articles/casimir_noether/noether_casimir_drive_ru.tex). LaTeX я не запускал, в песочнице его нет, поэтому соберите PDF сами. Сделал только простую проверку: блоки `multicols` в обоих файлах парные (по 6 открытий и закрытий).
 
 - **Английская версия:** старый раздел ON THE INCOMPLETENESS… (до CONCLUSION) заменён новым текстом из `section_incompleteness_reworked.tex`.
 - **Русская версия:** соответствующий раздел «О неполноте…» заменён переводом нового текста. Порядок изложения тот же: сначала сноска 22 и теорема Гаусса со скачками, затем приложение B (давление мод, F/S ≥ δE/V = 8,55 дин/м²), «коробочка» и два замечания.
@@ -9014,7 +9014,7 @@ cd ~/articles && git add theory/NOTE_Dirac_Cosserat_Vassiliev_vs_Lazar_2026-10-2
 
 ### assistant · 2026-10-29 05:53
 
-Положил файл со ссылкой в `~/articles/theory/ref/`: [Ni_Markenscoff_2008_DOWNLOAD_LINK.md](qw-file:///Users/oleksiy.drozdov/articles/theory/ref/Ni_Markenscoff_2008_DOWNLOAD_LINK.md).
+Положил файл со ссылкой в `~/articles/theory/ref/`: [Ni_Markenscoff_2008_DOWNLOAD_LINK.md](qw-file://articles/theory/ref/Ni_Markenscoff_2008_DOWNLOAD_LINK.md).
 
 В нём есть полное название статьи, журнал, DOI и рабочая http-ссылка на PDF. Ещё указано, под каким именем сохранить файл в эту папку после скачивания.
 
@@ -9507,7 +9507,7 @@ Now link articles: add `% [проверка: §N]` comments near key equations.
 
 Да, скопировал. Сейчас проверил: ноутбук лежит в вашей папке.
 
-- [verification_unified_theory.ipynb](qw-file:///Users/oleksiy.drozdov/articles/theory/verification/verification_unified_theory.ipynb) (около 41 КБ). Это последняя версия, в ней 16 разделов, включая сонолюминесценцию и символьные проверки в Sage.
+- [verification_unified_theory.ipynb](qw-file://articles/theory/verification/verification_unified_theory.ipynb) (около 41 КБ). Это последняя версия, в ней 16 разделов, включая сонолюминесценцию и символьные проверки в Sage.
 - Рядом лежит `README.md` с инструкцией по запуску.
 
 Запустить можно так:

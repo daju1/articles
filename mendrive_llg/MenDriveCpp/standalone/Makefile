@@ -19,7 +19,7 @@ ARCH ?= $(shell echo 'int main(){}' | $(CXX) -march=native -x c++ - -o /dev/null
 
 BASEFLAGS = -O3 $(ARCH) -std=c++17 -Wall -Wextra
 FLAGS     = $(BASEFLAGS) $(CXXFLAGS)
-LDLIBS   += -pthread
+LDLIBS   += -pthread -lstdc++fs
 
 ifeq ($(UNAME_S),Darwin)
   SHLIB_EXT = dylib

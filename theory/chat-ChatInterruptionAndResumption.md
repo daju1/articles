@@ -62133,7 +62133,7 @@ CSV: scan_vc0.4.csv, логи: logs_vc0.4/
    100  none         1    1   1     -1.987049 +- 0.0051        0.011582     1  0
   
 CSV: scan_vc0.5.csv, логи: logs_vc0.5/
-oleksiy.drozdov@8513a2ace382:/Users/oleksiy.drozdov/articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ for r in 2 3 5 8; do
+oleksiy.drozdov@8513a2ace382:articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ for r in 2 3 5 8; do
 >   python3 run_scan.py --rho0 $r --modes none --delay 0,1 --fast 1 --rot 1 \
 >       --omega 0.05 --out scan_om05_r$r.csv --logdir logs_om05_r$r
 > done
@@ -62173,13 +62173,13 @@ CSV: scan_om05_r5.csv, логи: logs_om05_r5/
      8  none         1    1   1     -1.693716 +- 0.003         0.099040     1  0
   
 CSV: scan_om05_r8.csv, логи: logs_om05_r8/
-oleksiy.drozdov@8513a2ace382:/Users/oleksiy.drozdov/articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ 
-oleksiy.drozdov@8513a2ace382:/Users/oleksiy.drozdov/articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ 
-oleksiy.drozdov@8513a2ace382:/Users/oleksiy.drozdov/articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ 
-oleksiy.drozdov@8513a2ace382:/Users/oleksiy.drozdov/articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ 
-oleksiy.drozdov@8513a2ace382:/Users/oleksiy.drozdov/articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ 
-oleksiy.drozdov@8513a2ace382:/Users/oleksiy.drozdov/articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ 
-oleksiy.drozdov@8513a2ace382:/Users/oleksiy.drozdov/articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ for vc in 0.1 0.2 0.3 0.4 0.5; do
+oleksiy.drozdov@8513a2ace382:articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ 
+oleksiy.drozdov@8513a2ace382:articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ 
+oleksiy.drozdov@8513a2ace382:articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ 
+oleksiy.drozdov@8513a2ace382:articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ 
+oleksiy.drozdov@8513a2ace382:articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ 
+oleksiy.drozdov@8513a2ace382:articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ 
+oleksiy.drozdov@8513a2ace382:articles/inertial_mass_of_charged_particle/numerical_integrators/cuba$ for vc in 0.1 0.2 0.3 0.4 0.5; do
 >   python3 run_scan.py --rho0 2,100 --modes none,fermi_P --delay 0,1 --fast 1 --rot 1 \
 >       --lorentz off,lorentz --v-c $vc --jobs 4 \
 >       --out scan_lor_vc$vc.csv --logdir logs_lor_vc$vc

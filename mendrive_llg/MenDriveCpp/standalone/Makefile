@@ -7,6 +7,8 @@
 #   make test       -> сравнение с исходным ctypes-путём + проверка новых мод и экспорта полей (python3 + numpy)
 #   make test-fields-> только новые моды (MODE) и экспорт полей (FIELDS): tests/test_fields_linear.py
 #   make smoke      -> smoke-тест Preisach2D, замер памяти, проверка --resume
+#   make plot       -> прогон с экспортом полей + графики (CFG=..., OUT=..., ARGS="key=val ...")
+#   make plot-linear-> линейный эталон TE + сравнение с точным решением
 #   make clean
 
 CXX      ?= c++
@@ -34,7 +36,7 @@ else
   OMPLIBS   = -fopenmp
 endif
 
-.PHONY: all omp lib reflib test test-fields smoke clean
+.PHONY: all omp lib reflib test test-fields smoke plot plot-linear clean
 
 all: mendrive
 
@@ -61,6 +63,18 @@ test-fields: mendrive
 
 smoke: mendrive
 	sh tests/smoke.sh
+
+CFG ?=
+OUT ?= out/fields
+ARGS ?=
+plot: mendrive
+	./mendrive $(if $(CFG),-c $(CFG),) out_dir=$(OUT) $(ARGS)
+	python3 plot.py $(OUT)
+
+plot-linear: mendrive
+	./mendrive -c examples/linear_check_TE.cfg out_dir=out/linear_check_TE
+	python3 linear1d.py out/linear_check_TE
+	python3 plot.py out/linear_check_TE --compare out/linear_check_TE/linear_analytic_n1.csv --fit none --norm none
 
 clean:
 	rm -f mendrive mendrive_omp libmendrive_new.* libmendrive_ref.*

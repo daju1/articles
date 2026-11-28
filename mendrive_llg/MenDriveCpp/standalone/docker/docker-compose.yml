@@ -1,0 +1,11 @@
+services:
+  mendrive:
+    build: .
+    image: mendrive-standalone:latest
+    working_dir: /work/standalone
+    volumes:
+      - ..:/work/standalone          # standalone/
+      - ../..:/work/MenDriveCpp       # для make reflib (../mendrive_core.cpp)
+    user: "${UID:-1000}:${GID:-1000}"
+    tty: true
+    stdin_open: true
